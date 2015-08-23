@@ -28,12 +28,20 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             public string PieceId { get; set; }
         }
 
+        private class PieceDirectionPatternDefinitionSettings
+        {
+            public string PieceId { get; set; }
+            public bool IsRepeatable { get; set; }
+            public string[] DirectionIds { get; set; }
+        }
+
         protected string BoardId { get; set; }
 
         private readonly IList<TileDefinitionSettings> _tileDefinitions = new List<TileDefinitionSettings>();
         private readonly IList<DirectionDefinitionSettings> _directionDefinitions = new List<DirectionDefinitionSettings>();
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
+        private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
 
         public abstract void Build();
 
@@ -50,7 +58,8 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             var tiles = _tileDefinitions.Select(CreateTileDefinition).ToArray();
             var directions = _directionDefinitions.Select(CreateDirectionDefinition).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelationDefinition(x, tiles, directions)).ToArray();
-            var pieces = _pieceDefinitions.Select(CreatePieceDefinition).ToArray();
+            var pieceDirections = _pieceDirectionPatternDefinitions.Select(x => CreatePieceDirectionPatternDefinition(x, directions)).ToArray();
+            var pieces = _pieceDefinitions.Select(x => CreatePieceDefinition(x, pieceDirections)).ToArray();
             _boardDefinition = new BoardDefinition(BoardId, tiles, relations, pieces);
             return _boardDefinition;
         }
@@ -73,9 +82,17 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             return new TileRelationDefinition(sourceTile, destinationTile, direction, tileRelationDefinitionSettings.Distance);
         }
 
-        private PieceDefinition CreatePieceDefinition(PieceDefinitionSettings pieceDefinitionSettings)
+        private KeyValuePair<string, DirectionPatternDefinition> CreatePieceDirectionPatternDefinition(PieceDirectionPatternDefinitionSettings pieceDirectionPatternDefinitionSettings, IEnumerable<DirectionDefinition> directions)
         {
-            return new PieceDefinition(pieceDefinitionSettings.PieceId);
+            var directionDefinitions = pieceDirectionPatternDefinitionSettings.DirectionIds.Select(x => directions.SingleOrDefault(y => string.Equals(y.DirectionId, x))).ToArray();
+            return new KeyValuePair<string, DirectionPatternDefinition>(
+                pieceDirectionPatternDefinitionSettings.PieceId,
+                new DirectionPatternDefinition(pieceDirectionPatternDefinitionSettings.IsRepeatable, directionDefinitions));
+        }
+
+        private PieceDefinition CreatePieceDefinition(PieceDefinitionSettings pieceDefinitionSettings, IEnumerable<KeyValuePair<string, DirectionPatternDefinition>> pieceDirections)
+        {
+            return new PieceDefinition(pieceDefinitionSettings.PieceId, pieceDirections.Where(x => string.Equals(x.Key, pieceDefinitionSettings.PieceId)).Select(x => x.Value).ToArray());
         }
 
         protected void AddTileDefinition(string tileId)
@@ -92,9 +109,14 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId, Distance = distance });
         }
 
+        protected void AddPieceDirectionPatternDefinition(string pieceId, bool isRepeatable, params string[] directions)
+        {
+            _pieceDirectionPatternDefinitions.Add(new PieceDirectionPatternDefinitionSettings { PieceId = pieceId, IsRepeatable = isRepeatable, DirectionIds = directions });
+        }
+
         protected void AddPieceDefinition(string pieceId)
         {
-            _pieceDefinitions.Add(new PieceDefinitionSettings {PieceId = pieceId});
+            _pieceDefinitions.Add(new PieceDefinitionSettings { PieceId = pieceId });
         }
     }
 }

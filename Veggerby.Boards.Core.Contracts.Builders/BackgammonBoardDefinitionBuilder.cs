@@ -45,6 +45,9 @@ namespace Veggerby.Boards.Core.Contracts.Builders
 
             AddPieceDefinition("white");
             AddPieceDefinition("black");
+
+            AddPieceDirectionPatternDefinition("white", true, "clockwise");
+            AddPieceDirectionPatternDefinition("black", true, "counterclockwise");
         }
     }
 }

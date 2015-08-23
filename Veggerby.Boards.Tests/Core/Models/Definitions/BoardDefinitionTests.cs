@@ -135,5 +135,37 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions
                 Assert.IsEmpty(actual);
             }
         }
+
+        [TestFixture]
+        public class GetPieceDefinition
+        {
+            [Test]
+            public void Should_return_valid_piece()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                // act
+                var actual = boardDefinition.GetPiece("white");
+
+                // assert
+                Assert.AreEqual("white", actual.PieceId);
+            }
+
+            [Test]
+            public void Should_not_return_invalid_piece()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                // act
+                var actual = boardDefinition.GetPiece("bogus");
+
+                // assert
+                Assert.IsNull(actual);
+            }
+        }
     }
 }

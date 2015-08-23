@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Veggerby.Boards.Core.Contracts.Builders;
 using Veggerby.Boards.Core.Contracts.Models.Navigation;
 using Veggerby.Boards.Tests.Core.Models.Definitions.Builder;
 
@@ -170,7 +171,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
                 var tilepathResolver = new TilePathResolver();
 
                 // act
-                var paths = tilepathResolver.ResolvePaths(boardDefinition, "bar", "bpgus");
+                var paths = tilepathResolver.ResolvePaths(boardDefinition, "bar", "bogus");
             }
         }
     }

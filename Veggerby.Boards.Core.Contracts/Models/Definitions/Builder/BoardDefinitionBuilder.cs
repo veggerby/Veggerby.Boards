@@ -23,21 +23,36 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             public int Distance { get; set; }
         }
 
+        private class PieceDefinitionSettings
+        {
+            public string PieceId { get; set; }
+        }
+
         protected string BoardId { get; set; }
 
         private readonly IList<TileDefinitionSettings> _tileDefinitions = new List<TileDefinitionSettings>();
         private readonly IList<DirectionDefinitionSettings> _directionDefinitions = new List<DirectionDefinitionSettings>();
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
+        private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
 
         public abstract void Build();
 
+        private BoardDefinition _boardDefinition;
+
         public BoardDefinition Compile()
         {
+            if (_boardDefinition != null)
+            {
+                return _boardDefinition;
+            }
+
             Build();
-            var tiles = _tileDefinitions.Select(CreateTileDefinition).ToList();
-            var directions = _directionDefinitions.Select(CreateDirectionDefinition).ToList();
-            var relations = _tileRelationDefinitions.Select(x => CreateTileRelationDefinition(x, tiles, directions)).ToList();
-            return new BoardDefinition(BoardId, tiles.ToArray(), relations.ToArray(), null);
+            var tiles = _tileDefinitions.Select(CreateTileDefinition).ToArray();
+            var directions = _directionDefinitions.Select(CreateDirectionDefinition).ToArray();
+            var relations = _tileRelationDefinitions.Select(x => CreateTileRelationDefinition(x, tiles, directions)).ToArray();
+            var pieces = _pieceDefinitions.Select(CreatePieceDefinition).ToArray();
+            _boardDefinition = new BoardDefinition(BoardId, tiles, relations, pieces);
+            return _boardDefinition;
         }
 
         private TileDefinition CreateTileDefinition(TileDefinitionSettings tileDefinitionSettings)
@@ -58,6 +73,11 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             return new TileRelationDefinition(sourceTile, destinationTile, direction, tileRelationDefinitionSettings.Distance);
         }
 
+        private PieceDefinition CreatePieceDefinition(PieceDefinitionSettings pieceDefinitionSettings)
+        {
+            return new PieceDefinition(pieceDefinitionSettings.PieceId);
+        }
+
         protected void AddTileDefinition(string tileId)
         {
             _tileDefinitions.Add(new TileDefinitionSettings { TileId = tileId });
@@ -70,6 +90,11 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
         protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId, int distance = 1)
         {
             _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId, Distance = distance });
+        }
+
+        protected void AddPieceDefinition(string pieceId)
+        {
+            _pieceDefinitions.Add(new PieceDefinitionSettings {PieceId = pieceId});
         }
     }
 }

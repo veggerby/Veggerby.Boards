@@ -34,5 +34,10 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
         {
             return _tileRelations.Where(x => string.Equals(x.SourceTile.TileId, sourceTileId)).ToList();
         }
+
+        public PieceDefinition GetPiece(string pieceId)
+        {
+            return _pieces.FirstOrDefault(x => string.Equals(x.PieceId, pieceId));
+        }
     }
 }

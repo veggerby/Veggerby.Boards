@@ -20,6 +20,9 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
             AddTileRelationDefinition("tile2", "tile3", "clockWise");
             AddTileRelationDefinition("tile3", "tile2", "counterClockWise", 2);
             AddTileRelationDefinition("tile2", "tile1", "counterClockWise", 2);
+
+            AddPieceDefinition("white");
+            AddPieceDefinition("black");
         }
     }
 }

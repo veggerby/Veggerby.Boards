@@ -62,6 +62,9 @@ namespace Veggerby.Boards.Tests.Core.Builders
                 Assert.IsNotNull(actual.GetTile("bar"));
                 Assert.IsNotNull(actual.GetTile("home-white"));
                 Assert.IsNotNull(actual.GetTile("home-black"));
+
+                Assert.IsNotNull(actual.GetPiece("black"));
+                Assert.IsNotNull(actual.GetPiece("white"));
             }
         }
     }

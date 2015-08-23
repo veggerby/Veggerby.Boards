@@ -51,6 +51,7 @@
     <Compile Include="Core\Builders\BackgammonBoardDefinitionBuilderTests.cs" />
     <Compile Include="Core\Builders\ChessBoardDefinitionBuilderTests.cs" />
     <Compile Include="Core\Models\Definitions\BoardDefinitionTests.cs" />
+    <Compile Include="Core\Models\Definitions\Builder\BoardDefinitionBuilderTests.cs" />
     <Compile Include="Core\Models\Definitions\Builder\CircularBoardDefinitionBuilder.cs" />
     <Compile Include="Core\Models\Definitions\TileRelationDefinitionTests.cs" />
     <Compile Include="Core\Models\Navigation\TilePathResolverTests.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="Core\Persistence\Static\StaticBoardDefinitionRepositoryTests.cs" />
     <Compile Include="Core\Services\DefinitionServiceTests.cs" />
     <Compile Include="Core\Models\Definitions\Builder\SimpleBoardDefinitionBuilder.cs" />
-    <Compile Include="Core\Models\Definitions\Builder\BoardDefinitionHelperTests.cs" />
+    <Compile Include="Core\Models\Definitions\Builder\SimpleBoardDefinitionBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,13 +9,13 @@ namespace Veggerby.Boards.Core.Contracts.Builders
             BoardId = "chess";
 
             /*         N
-             * (1,1) ----- (8,1)
+             * (1,1) ----- (8,1)    BLACK
              *   |           |
              *   |           |
              * W |           | E
              *   |           |
              *   |           |
-             * (1,8) ----- (8,8)
+             * (1,8) ----- (8,8)    WHITE
              *         S
              */
             for (int x = 1; x <= 8; x++)
@@ -73,6 +73,20 @@ namespace Veggerby.Boards.Core.Contracts.Builders
             AddDirectionDefinition("north-west");
             AddDirectionDefinition("south-east");
             AddDirectionDefinition("south-west");
+
+            AddPieceDefinition("white-pawn");
+            AddPieceDefinition("white-rook");
+            AddPieceDefinition("white-knight");
+            AddPieceDefinition("white-bishop");
+            AddPieceDefinition("white-queen");
+            AddPieceDefinition("white-king");
+
+            AddPieceDefinition("black-pawn");
+            AddPieceDefinition("black-rook");
+            AddPieceDefinition("black-knight");
+            AddPieceDefinition("black-bishop");
+            AddPieceDefinition("black-queen");
+            AddPieceDefinition("black-king");
         }
     }
 }

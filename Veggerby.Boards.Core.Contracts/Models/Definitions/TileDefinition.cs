@@ -2,7 +2,13 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
     public class TileDefinition
     {
-        public string TileId { get; set; }
-        public TileRelationDefinition[] RelationsDefinition { get; set; }
+        private readonly string _tileId;
+
+        public TileDefinition(string tileId)
+        { 
+            _tileId = tileId;
+        }
+
+        public string TileId => _tileId;
     }
 }

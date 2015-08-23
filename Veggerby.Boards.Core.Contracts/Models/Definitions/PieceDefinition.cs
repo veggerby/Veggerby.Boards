@@ -2,6 +2,13 @@
 {
     public class PieceDefinition
     {
-        public string PieceId { get; set; }
+        private readonly string _pieceId;
+
+        public PieceDefinition(string pieceId)
+        {
+            _pieceId = pieceId;
+        }
+
+        public string PieceId => _pieceId;
     }
 }

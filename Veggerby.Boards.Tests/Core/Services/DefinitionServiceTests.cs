@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Veggerby.Boards.Core.Contracts.Models.Definitions;
 using Veggerby.Boards.Core.Contracts.Persistence;
 using Veggerby.Boards.Core.Services;
-using Veggerby.Boards.Tests.Helpers;
 
 namespace Veggerby.Boards.Tests.Core.Services
 {
@@ -20,9 +20,9 @@ namespace Veggerby.Boards.Tests.Core.Services
             public async Task Should_return_definition()
             {
                 // arrange
-                var expected = BoardDefinitionHelper.GetBoardDefinition();
+                var expected = new BoardDefinition("board", null, null, null);
 
-                var repository = new Mock<IBoardDefinitionRepository>();
+                var repository = new Mock<IReadBoardDefinitionRepository>();
                 repository.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(expected);
 
                 var service = new DefinitionService(repository.Object);
@@ -41,7 +41,7 @@ namespace Veggerby.Boards.Tests.Core.Services
             public async Task Should_return_null_for_nonexisting_definition()
             {
                 // arrange
-                var repository = new Mock<IBoardDefinitionRepository>();
+                var repository = new Mock<IReadBoardDefinitionRepository>();
 
                 var service = new DefinitionService(repository.Object);
 

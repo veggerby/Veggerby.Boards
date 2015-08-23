@@ -11,16 +11,16 @@ namespace Veggerby.Boards.Core.Services
 {
     public class DefinitionService : IDefinitionService
     {
-        private readonly IBoardDefinitionRepository _boardDefinitionRepository;
+        private readonly IReadBoardDefinitionRepository _readBoardDefinitionRepository;
 
-        public DefinitionService(IBoardDefinitionRepository boardDefinitionRepository)
+        public DefinitionService(IReadBoardDefinitionRepository readBoardDefinitionRepository)
         {
-            _boardDefinitionRepository = boardDefinitionRepository;
+            _readBoardDefinitionRepository = readBoardDefinitionRepository;
         }
 
         public Task<BoardDefinition> GetBoardDefinitionAsync(string boardId)
         {
-            return _boardDefinitionRepository.GetAsync(boardId);
+            return _readBoardDefinitionRepository.GetAsync(boardId);
         }
     }
 }

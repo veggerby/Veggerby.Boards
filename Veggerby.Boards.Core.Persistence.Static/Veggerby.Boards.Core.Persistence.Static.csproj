@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BDB91689-2E82-4859-8924-B76C991DD966}</ProjectGuid>
+    <ProjectGuid>{E1122B2C-8FCA-49EA-A6F0-C3FFCDBD0D1E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Veggerby.Boards.Core.Contracts</RootNamespace>
-    <AssemblyName>Veggerby.Boards.Core.Contracts</AssemblyName>
+    <RootNamespace>Veggerby.Boards.Core.Persistence.Static</RootNamespace>
+    <AssemblyName>Veggerby.Boards.Core.Persistence.Static</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,17 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Definitions\BoardDefinition.cs" />
-    <Compile Include="Models\Definitions\Builder\BoardDefinitionBuilder.cs" />
-    <Compile Include="Models\Definitions\PieceDefinition.cs" />
-    <Compile Include="Persistence\IBoardDefinitionRepository.cs" />
-    <Compile Include="Persistence\IReadRepository.cs" />
+    <Compile Include="StaticBoardDefinitionRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\Definitions\DirectionDefinition.cs" />
-    <Compile Include="Models\Definitions\TileDefinition.cs" />
-    <Compile Include="Models\Definitions\TileRelationDefinition.cs" />
-    <Compile Include="Services\IDefinitionService.cs" />
-    <Compile Include="Persistence\IWriteRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Veggerby.Boards.Core.Contracts.Builders\Veggerby.Boards.Core.Contracts.Builders.csproj">
+      <Project>{A7346B11-AE74-485A-8604-6A276D1C3346}</Project>
+      <Name>Veggerby.Boards.Core.Contracts.Builders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Veggerby.Boards.Core.Contracts\Veggerby.Boards.Core.Contracts.csproj">
+      <Project>{BDB91689-2E82-4859-8924-B76C991DD966}</Project>
+      <Name>Veggerby.Boards.Core.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

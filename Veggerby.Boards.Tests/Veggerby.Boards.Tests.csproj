@@ -51,6 +51,10 @@
     <Compile Include="Core\Builders\BackgammonBoardDefinitionBuilderTests.cs" />
     <Compile Include="Core\Builders\ChessBoardDefinitionBuilderTests.cs" />
     <Compile Include="Core\Models\Definitions\BoardDefinitionTests.cs" />
+    <Compile Include="Core\Models\Definitions\Builder\CircularBoardDefinitionBuilder.cs" />
+    <Compile Include="Core\Models\Definitions\TileRelationDefinitionTests.cs" />
+    <Compile Include="Core\Models\Navigation\TilePathResolverTests.cs" />
+    <Compile Include="Core\Models\Navigation\TilePathTests.cs" />
     <Compile Include="Core\Persistence\Static\StaticBoardDefinitionRepositoryTests.cs" />
     <Compile Include="Core\Services\DefinitionServiceTests.cs" />
     <Compile Include="Core\Models\Definitions\Builder\SimpleBoardDefinitionBuilder.cs" />

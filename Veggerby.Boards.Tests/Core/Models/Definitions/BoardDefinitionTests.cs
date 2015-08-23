@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using Veggerby.Boards.Tests.Core.Models.Definitions.Builder;
 
 namespace Veggerby.Boards.Tests.Core.Models.Definitions
@@ -98,6 +99,40 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions
 
                 // assert
                 Assert.IsNull(actual);
+            }
+        }
+
+        [TestFixture]
+        public class GetTileRelationsFromSource
+        {
+            [Test]
+            public void Should_return_valid_tile_relations()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                // act
+                var actual = boardDefinition.GetTileRelationsFromSource("tile2");
+
+                // assert
+                Assert.AreEqual(2, actual.Count());
+                Assert.IsTrue(actual.Any(x => x.DestinationTile.TileId == "tile1"), "No tile with destination tile1 found");
+                Assert.IsTrue(actual.Any(x => x.DestinationTile.TileId == "tile3"), "No tile with destination tile2 found");
+            }
+
+            [Test]
+            public void Should_return_empty_tile_relations()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                // act
+                var actual = boardDefinition.GetTileRelationsFromSource("bar");
+
+                // assert
+                Assert.IsEmpty(actual);
             }
         }
     }

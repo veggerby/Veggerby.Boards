@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
@@ -27,6 +28,11 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
         public TileRelationDefinition GetTileRelation(string sourceTileId, string destinationTileId)
         {
             return _tileRelations.FirstOrDefault(x => string.Equals(x.SourceTile.TileId, sourceTileId) && string.Equals(x.DestinationTile.TileId, destinationTileId));
+        }
+
+        public IEnumerable<TileRelationDefinition> GetTileRelationsFromSource(string sourceTileId)
+        {
+            return _tileRelations.Where(x => string.Equals(x.SourceTile.TileId, sourceTileId)).ToList();
         }
     }
 }

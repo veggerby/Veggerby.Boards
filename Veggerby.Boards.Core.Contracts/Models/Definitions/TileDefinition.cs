@@ -10,5 +10,10 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
         }
 
         public string TileId => _tileId;
+
+        public override string ToString()
+        {
+            return $"tile {TileId}";
+        }
     }
 }

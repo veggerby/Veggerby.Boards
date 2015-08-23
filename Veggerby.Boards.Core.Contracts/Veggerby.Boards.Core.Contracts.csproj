@@ -43,6 +43,8 @@
     <Compile Include="Models\Definitions\BoardDefinition.cs" />
     <Compile Include="Models\Definitions\Builder\BoardDefinitionBuilder.cs" />
     <Compile Include="Models\Definitions\PieceDefinition.cs" />
+    <Compile Include="Models\Navigation\TilePath.cs" />
+    <Compile Include="Models\Navigation\TilePathResolver.cs" />
     <Compile Include="Persistence\IBoardDefinitionRepository.cs" />
     <Compile Include="Persistence\IReadRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

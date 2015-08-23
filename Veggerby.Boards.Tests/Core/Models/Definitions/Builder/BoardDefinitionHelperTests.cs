@@ -43,22 +43,25 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
                 Assert.AreSame(tile1, relation12.SourceTile);
                 Assert.AreSame(tile2, relation12.DestinationTile);
                 Assert.AreEqual("clockWise", relation12.Direction.DirectionId);
+                Assert.AreEqual(1, relation12.Distance);
 
                 // 2-3
                 Assert.AreSame(tile2, relation23.SourceTile);
                 Assert.AreSame(tile3, relation23.DestinationTile);
                 Assert.AreEqual("clockWise", relation23.Direction.DirectionId);
-
+                Assert.AreEqual(1, relation23.Distance);
 
                 // 3-2
                 Assert.AreSame(tile3, relation32.SourceTile);
                 Assert.AreSame(tile2, relation32.DestinationTile);
                 Assert.AreEqual("counterClockWise", relation32.Direction.DirectionId);
+                Assert.AreEqual(2, relation32.Distance);
 
                 // 2-1
                 Assert.AreSame(tile2, relation21.SourceTile);
                 Assert.AreSame(tile1, relation21.DestinationTile);
                 Assert.AreEqual("counterClockWise", relation21.Direction.DirectionId);
+                Assert.AreEqual(2, relation21.Distance);
             }
         }
     }

@@ -20,6 +20,7 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             public string SourceTileId { get; set; }
             public string DestinationTileId { get; set; }
             public string DirectionId { get; set; }
+            public int Distance { get; set; }
         }
 
         protected string BoardId { get; set; }
@@ -54,7 +55,7 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             var sourceTile = tiles.Single(x => string.Equals(x.TileId, tileRelationDefinitionSettings.SourceTileId));
             var destinationTile = tiles.Single(x => string.Equals(x.TileId, tileRelationDefinitionSettings.DestinationTileId));
             var direction = directions.Single(x => string.Equals(x.DirectionId, tileRelationDefinitionSettings.DirectionId));
-            return new TileRelationDefinition(sourceTile, destinationTile, direction);
+            return new TileRelationDefinition(sourceTile, destinationTile, direction, tileRelationDefinitionSettings.Distance);
         }
 
         protected void AddTileDefinition(string tileId)
@@ -66,9 +67,9 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions.Builder
             _directionDefinitions.Add(new DirectionDefinitionSettings { DirectionId = directionId });
         }
 
-        protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId)
+        protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId, int distance = 1)
         {
-            _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId });
+            _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId, Distance = distance });
         }
     }
 }

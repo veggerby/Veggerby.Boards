@@ -38,6 +38,7 @@ namespace Veggerby.Boards.Tests.Core.Builders
                         Assert.AreSame(tile, clockwise.SourceTile);
                         Assert.AreEqual($"point-{i + 1}", clockwise.DestinationTile.TileId);
                         Assert.AreEqual("clockwise", clockwise.Direction.DirectionId);
+                        Assert.AreEqual(1, clockwise.Distance);
                     }
                     else
                     {
@@ -50,6 +51,7 @@ namespace Veggerby.Boards.Tests.Core.Builders
                         Assert.AreSame(tile, counterclockwise.SourceTile);
                         Assert.AreEqual($"point-{i - 1}", counterclockwise.DestinationTile.TileId);
                         Assert.AreEqual("counterclockwise", counterclockwise.Direction.DirectionId);
+                        Assert.AreEqual(1, counterclockwise.Distance);
                     }
                     else
                     {

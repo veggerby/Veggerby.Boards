@@ -14,12 +14,21 @@ namespace Veggerby.Boards.Core.Contracts.Models.Navigation
 
             if (sourceTile == null)
             {
-                throw new ApplicationException("source til not found");
+                throw new ApplicationException("source tile not found");
+            }
+
+            var destinationTile = boardDefinition.GetTile(destinationTileId);
+
+            if (destinationTile == null)
+            {
+                throw new ApplicationException("destination tile not found");
             }
 
             var tilepath = new TilePath(sourceTile, sourceTile, null);
 
-            return ResolvePathSteps(boardDefinition, tilepath, destinationTileId).OrderBy(x => x.GetDistance()).ToList();
+            return ResolvePathSteps(boardDefinition, tilepath, destinationTileId)
+                .OrderBy(x => x.GetDistance())
+                .ToList();
         }
 
         private IEnumerable<TilePath> ResolvePathSteps(BoardDefinition boardDefinition, TilePath currentPath,

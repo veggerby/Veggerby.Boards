@@ -134,6 +134,44 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
                 Assert.AreEqual(tile3, path2.GetTileDefinitions().Skip(1).First());
                 Assert.AreEqual(tile2, path2.GetTileDefinitions().Skip(2).First());
             }
+
+            [Test]
+            public void Should_throw_exception_with_invalid_sourceTileId()
+            {
+                // assert
+                Assert.Throws<ApplicationException>(Method_should_throw_exception_with_invalid_sourceTileId, "source tile is not valid");
+            }
+
+            public void Method_should_throw_exception_with_invalid_sourceTileId()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                var tilepathResolver = new TilePathResolver();
+
+                // act
+                var paths = tilepathResolver.ResolvePaths(boardDefinition, "bogus", "bar");
+            }
+
+            [Test]
+            public void Should_throw_exception_with_invalid_destinationTileId()
+            {
+                // assert
+                Assert.Throws<ApplicationException>(Method_should_throw_exception_with_invalid_destinationTileId, "destination tile is not valid");
+            }
+
+            public void Method_should_throw_exception_with_invalid_destinationTileId()
+            {
+                // arrange
+                var builder = new SimpleBoardDefinitionBuilder();
+                var boardDefinition = builder.Compile();
+
+                var tilepathResolver = new TilePathResolver();
+
+                // act
+                var paths = tilepathResolver.ResolvePaths(boardDefinition, "bar", "bpgus");
+            }
         }
     }
 }

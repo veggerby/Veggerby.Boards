@@ -1,0 +1,39 @@
+{
+    "version": "1.0.0-*",
+    "description": "Veggerby.Boards.Tests",
+    "authors": [
+        "veggerby"
+    ],
+    "tags": [
+        ""
+    ],
+    "projectUrl": "",
+    "licenseUrl": "",
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
+    "dependencies": {
+        "Veggerby.Boards.Core.Contracts": "1.0.0-*",
+        "Veggerby.Boards.Core.Contracts.Builders": "1.0.0-*",
+        "Veggerby.Boards.Core.Persistence.Static": "1.0.0-*",
+        "Veggerby.Boards.Core.Services": "1.0.0-*",
+        "xunit": "2.2.0-*",
+        "xunit.runner.dnx": "2.1.0-*",
+        "moq": "4.2.1510.2205"
+    },
+    "commands": {
+        "test": "xunit.runner.dnx"
+    },
+    "frameworks": {
+        "dnx451": {},
+        "dnxcore50": {
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1-beta-23516",
+                "System.Collections": "4.0.11-beta-23516",
+                "System.Console": "4.0.0-beta-23516",
+                "System.Linq": "4.0.1-beta-23516",
+                "System.Threading": "4.0.11-beta-23516"
+            }
+        }
+    }
+}

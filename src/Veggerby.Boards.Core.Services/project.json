@@ -9,8 +9,8 @@
     ],
     "projectUrl": "",
     "licenseUrl": "",
-    "compilationOptions": {
-        "emitEntryPoint": true
+    "tooling": {
+        "defaultNamespace": "Veggerby.Boards.Core.Services"
     },
     "dependencies": {
         "Veggerby.Boards.Core.Contracts": "1.0.0-*"

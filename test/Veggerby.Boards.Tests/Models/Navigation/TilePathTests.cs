@@ -92,7 +92,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             [Fact]
             public async Task Should_throw_application_exception_when_source_of_relations_is_not_the_one_specified()
             {
-                await Assert.ThrowsAsync<TileException>(
+                await Assert.ThrowsAsync<TilePathException>(
                     Method_that_should_throw_application_exception_when_source_of_relations_is_not_the_one_specified);
             }
 
@@ -117,7 +117,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             [Fact]
             public async Task Should_throw_application_exception_when_destination_of_relations_is_not_the_one_specified()
             {
-                await Assert.ThrowsAsync<TileException>(
+                await Assert.ThrowsAsync<TilePathException>(
                     Method_that_should_throw_application_exception_when_destination_of_relations_is_not_the_one_specified);
             }
 

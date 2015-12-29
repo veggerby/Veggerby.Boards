@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Core.Contracts.Models.Navigation
 
             if (_sourceTileDefinition != SourceTileDefinition || _destinationTileDefinition != DestinationTileDefinition)
             {
-                throw new ApplicationException("Tile Path it not between soure and destination");
+                throw new TilePathException("Tile Path it not between soure and destination");
             }
         }
 

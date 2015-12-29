@@ -14,14 +14,14 @@ namespace Veggerby.Boards.Core.Contracts.Models.Navigation
 
             if (sourceTile == null)
             {
-                throw new ApplicationException("source tile not found");
+                throw new TileException("source tile not found");
             }
 
             var destinationTile = boardDefinition.GetTile(destinationTileId);
 
             if (destinationTile == null)
             {
-                throw new ApplicationException("destination tile not found");
+                throw new TileException("destination tile not found");
             }
 
             var tilepath = new TilePath(sourceTile, sourceTile, null);

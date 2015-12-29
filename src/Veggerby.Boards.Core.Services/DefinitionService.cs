@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Veggerby.Boards.Core.Contracts.Models.Definitions;
 using Veggerby.Boards.Core.Contracts.Persistence;
 using Veggerby.Boards.Core.Contracts.Services;

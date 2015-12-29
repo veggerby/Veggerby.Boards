@@ -12,7 +12,9 @@
     "compilationOptions": {
         "emitEntryPoint": true
     },
-    "dependencies": {},
+    "dependencies": {
+        "Veggerby.Boards.Core.Contracts": "1.0.0-*"
+    },
     "commands": {},
     "frameworks": {
         "dnx451": {},

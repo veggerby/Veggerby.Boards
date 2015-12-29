@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Veggerby.Boards.Core.Contracts.Builders;
 using Veggerby.Boards.Core.Contracts.Models.Navigation;
 using Veggerby.Boards.Tests.Core.Models.Definitions.Builder;
 
@@ -139,7 +135,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             public async Task Should_throw_exception_with_invalid_sourceTileId()
             {
                 // assert
-                await Assert.ThrowsAsync<ApplicationException>(Method_should_throw_exception_with_invalid_sourceTileId);
+                await Assert.ThrowsAsync<TileException>(Method_should_throw_exception_with_invalid_sourceTileId);
             }
 
             public Task Method_should_throw_exception_with_invalid_sourceTileId()
@@ -160,7 +156,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             public async Task Should_throw_exception_with_invalid_destinationTileId()
             {
                 // assert
-                await Assert.ThrowsAsync<ApplicationException>(Method_should_throw_exception_with_invalid_destinationTileId);
+                await Assert.ThrowsAsync<TileException>(Method_should_throw_exception_with_invalid_destinationTileId);
             }
 
             public Task Method_should_throw_exception_with_invalid_destinationTileId()

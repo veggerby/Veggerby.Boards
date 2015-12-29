@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Xunit;
+﻿using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 {

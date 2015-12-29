@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Veggerby.Boards.Core.Contracts.Models.Definitions;
@@ -95,7 +92,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             [Fact]
             public async Task Should_throw_application_exception_when_source_of_relations_is_not_the_one_specified()
             {
-                await Assert.ThrowsAsync<ApplicationException>(
+                await Assert.ThrowsAsync<TileException>(
                     Method_that_should_throw_application_exception_when_source_of_relations_is_not_the_one_specified);
             }
 
@@ -120,7 +117,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Navigation
             [Fact]
             public async Task Should_throw_application_exception_when_destination_of_relations_is_not_the_one_specified()
             {
-                await Assert.ThrowsAsync<ApplicationException>(
+                await Assert.ThrowsAsync<TileException>(
                     Method_that_should_throw_application_exception_when_destination_of_relations_is_not_the_one_specified);
             }
 

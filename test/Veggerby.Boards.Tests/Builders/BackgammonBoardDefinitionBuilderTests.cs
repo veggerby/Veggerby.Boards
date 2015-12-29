@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 using Veggerby.Boards.Core.Contracts.Builders;
 
 namespace Veggerby.Boards.Tests.Core.Builders

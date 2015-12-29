@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Veggerby.Boards.Core.Contracts.Models.Definitions.Builder;
+﻿using Veggerby.Boards.Core.Contracts.Models.Definitions.Builder;
 
 namespace Veggerby.Boards.Core.Contracts.Builders
 {

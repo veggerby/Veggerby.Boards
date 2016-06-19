@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Veggerby.Boards.Core.Contracts.Builders;
 using Veggerby.Boards.Core.Contracts.Models.Definitions;
@@ -35,11 +34,6 @@ namespace Veggerby.Boards.Core.Persistence.Static
         public Task<IEnumerable<BoardDefinition>> ListAsync()
         {
             return Task.FromResult(_definitions.Values.AsEnumerable());
-        }
-
-        public Task<IEnumerable<BoardDefinition>> ListAsync(Expression<Predicate<BoardDefinition>> query)
-        {
-            return Task.FromResult(_definitions.Values.Where(x => query.Compile()(x)).ToList().AsEnumerable());
         }
     }
 }

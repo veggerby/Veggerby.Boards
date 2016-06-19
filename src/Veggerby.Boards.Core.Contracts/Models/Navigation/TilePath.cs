@@ -8,13 +8,13 @@ namespace Veggerby.Boards.Core.Contracts.Models.Navigation
     {
         private readonly TileDefinition _sourceTileDefinition;
         private readonly TileDefinition _destinationTileDefinition;
-        private readonly TileRelationDefinition[] _relations;
+        private readonly IEnumerable<TileRelationDefinition> _relations;
 
-        public TilePath(TileDefinition sourceTileDefinition, TileDefinition destinationTileDefinition, TileRelationDefinition[] relations)
+        public TilePath(TileDefinition sourceTileDefinition, TileDefinition destinationTileDefinition, IEnumerable<TileRelationDefinition> relations)
         {
             _sourceTileDefinition = sourceTileDefinition;
             _destinationTileDefinition = destinationTileDefinition;
-            _relations = relations;
+            _relations = (relations ?? Enumerable.Empty<TileRelationDefinition>()).ToList();
 
             if (_sourceTileDefinition != SourceTileDefinition || _destinationTileDefinition != DestinationTileDefinition)
             {

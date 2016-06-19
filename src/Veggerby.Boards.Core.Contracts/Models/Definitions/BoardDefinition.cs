@@ -6,16 +6,16 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
     public class BoardDefinition
     {
         private readonly string _boardId;
-        private readonly TileDefinition[] _tiles;
-        private readonly TileRelationDefinition[] _tileRelations;
-        private readonly PieceDefinition[] _pieces;
+        private readonly IEnumerable<TileDefinition> _tiles;
+        private readonly IEnumerable<TileRelationDefinition> _tileRelations;
+        private readonly IEnumerable<PieceDefinition> _pieces;
 
-        public BoardDefinition(string boardId, TileDefinition[] tiles, TileRelationDefinition[] tileRelations, PieceDefinition[] pieces)
+        public BoardDefinition(string boardId, IEnumerable<TileDefinition> tiles, IEnumerable<TileRelationDefinition> tileRelations, IEnumerable<PieceDefinition> pieces)
         {
             _boardId = boardId;
-            _tiles = tiles;
-            _tileRelations = tileRelations;
-            _pieces = pieces;
+            _tiles = (tiles ?? Enumerable.Empty<TileDefinition>()).ToList();
+            _tileRelations = (tileRelations ?? Enumerable.Empty<TileRelationDefinition>()).ToList();;
+            _pieces = (pieces ?? Enumerable.Empty<PieceDefinition>()).ToList();;
         }
 
         public string BoardId => _boardId;

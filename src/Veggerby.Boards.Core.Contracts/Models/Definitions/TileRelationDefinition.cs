@@ -20,6 +20,7 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
         public TileDefinition DestinationTile => _destinationTile;
 
         public DirectionDefinition Direction => _direction;
+        
         public int Distance => _distance;
     }
 }

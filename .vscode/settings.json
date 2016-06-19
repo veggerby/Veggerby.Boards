@@ -1,5 +1,7 @@
 {
 	"files.exclude": {
+		"**/bin/": true,
+		"**/obj/": true,
 		"**/.git": true,
 		"**/.DS_Store": true,
 		"**/project.lock.json": true

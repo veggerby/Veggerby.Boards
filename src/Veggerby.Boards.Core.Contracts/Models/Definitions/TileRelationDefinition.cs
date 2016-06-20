@@ -2,25 +2,20 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
     public class TileRelationDefinition
     {
-        private readonly TileDefinition _sourceTile;
-        private readonly TileDefinition _destinationTile;
-        private readonly DirectionDefinition _direction;
-        private readonly int _distance;
-
         public TileRelationDefinition(TileDefinition sourceTile, TileDefinition destinationTile, DirectionDefinition direction, int distance = 1)
         {
-            _sourceTile = sourceTile;
-            _destinationTile = destinationTile;
-            _direction = direction;
-            _distance = distance;
+            SourceTile = sourceTile;
+            DestinationTile = destinationTile;
+            Direction = direction;
+            Distance = distance;
         }
 
-        public TileDefinition SourceTile => _sourceTile;
+        public TileDefinition SourceTile { get; }
 
-        public TileDefinition DestinationTile => _destinationTile;
+        public TileDefinition DestinationTile { get; }
 
-        public DirectionDefinition Direction => _direction;
+        public DirectionDefinition Direction { get; }
         
-        public int Distance => _distance;
+        public int Distance { get; }
     }
 }

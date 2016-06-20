@@ -2,14 +2,12 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
     public class TileDefinition
     {
-        private readonly string _tileId;
-
         public TileDefinition(string tileId)
         { 
-            _tileId = tileId;
+            TileId = tileId;
         }
 
-        public string TileId => _tileId;
+        public string TileId { get; }
 
         public override string ToString()
         {

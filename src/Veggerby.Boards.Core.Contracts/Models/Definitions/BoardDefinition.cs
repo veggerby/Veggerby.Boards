@@ -5,20 +5,19 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
     public class BoardDefinition
     {
-        private readonly string _boardId;
         private readonly IEnumerable<TileDefinition> _tiles;
         private readonly IEnumerable<TileRelationDefinition> _tileRelations;
         private readonly IEnumerable<PieceDefinition> _pieces;
 
         public BoardDefinition(string boardId, IEnumerable<TileDefinition> tiles, IEnumerable<TileRelationDefinition> tileRelations, IEnumerable<PieceDefinition> pieces)
         {
-            _boardId = boardId;
+            BoardId = boardId;
             _tiles = (tiles ?? Enumerable.Empty<TileDefinition>()).ToList();
             _tileRelations = (tileRelations ?? Enumerable.Empty<TileRelationDefinition>()).ToList();;
             _pieces = (pieces ?? Enumerable.Empty<PieceDefinition>()).ToList();;
         }
 
-        public string BoardId => _boardId;
+        public string BoardId { get; }
 
         public TileDefinition GetTile(string tileId)
         {

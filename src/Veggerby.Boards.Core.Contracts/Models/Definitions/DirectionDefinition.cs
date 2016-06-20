@@ -2,13 +2,11 @@ namespace Veggerby.Boards.Core.Contracts.Models.Definitions
 {
     public class DirectionDefinition
     {
-        private readonly string _directionId;
-
         public DirectionDefinition(string directionId)
         {
-            _directionId = directionId;
+            DirectionId = directionId;
         }
 
-        public string DirectionId => _directionId;
+        public string DirectionId { get; }
     }
 }

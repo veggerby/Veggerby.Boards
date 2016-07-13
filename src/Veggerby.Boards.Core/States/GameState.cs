@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {

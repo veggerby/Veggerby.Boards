@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
@@ -12,12 +13,24 @@ namespace Veggerby.Boards.Core.States
         {
             _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();
         }
-
-        public State<TChild> GetState<TChild>(TChild artifact) where TChild : Artifact
+        
+        public IEnumerable<State<TChild>> GetStates<TChild>() where TChild : Artifact
         {
             return _childStates
                 .OfType<State<TChild>>()
+                .ToList();
+        }
+
+        public State<TChild> GetState<TChild>(TChild artifact) where TChild : Artifact
+        {
+            return GetStates<TChild>()
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
+        }
+
+        public CompositeState<T> RemoveState<TChild>(TChild artifact) where TChild : Artifact
+        {
+            var state = GetState(artifact);
+            return new CompositeState<T>(Artifact, _childStates.Except(new IState[] { state }));
         }
 
         public CompositeState<T> ApplyState<TChild>(State<TChild> newState) where TChild : Artifact

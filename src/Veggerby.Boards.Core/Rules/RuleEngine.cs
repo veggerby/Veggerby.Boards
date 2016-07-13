@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core
+namespace Veggerby.Boards.Core.Rules
 {
     public class RuleEngine
     {
-        private readonly IEnumerable<Rule> _rules;
+        private readonly IEnumerable<IRule> _rules;
 
-        public RuleEngine(IEnumerable<Rule> rules)
+        public RuleEngine(IEnumerable<IRule> rules)
         {
-            _rules = (rules ?? Enumerable.Empty<Rule>()).ToList();
+            _rules = (rules ?? Enumerable.Empty<IRule>()).ToList();
         }
 
         public GameState GetState(GameState currentState, IGameEvent @event)

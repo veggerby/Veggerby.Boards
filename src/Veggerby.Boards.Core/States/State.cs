@@ -1,3 +1,5 @@
+using Veggerby.Boards.Core.Artifacts;
+
 namespace Veggerby.Boards.Core.States
 {
     public abstract class State<T> : IState

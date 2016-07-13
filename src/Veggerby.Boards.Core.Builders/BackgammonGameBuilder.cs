@@ -1,6 +1,4 @@
-﻿using Veggerby.Boards.Core;
-
-namespace Veggerby.Boards.Core.Builders
+﻿namespace Veggerby.Boards.Core.Builders
 {
     public class BackgammonGameBuilder : GameBuilder
     {

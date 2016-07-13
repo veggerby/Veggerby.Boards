@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core.Rules;
 
 namespace Veggerby.Boards.Core
 {
@@ -59,7 +62,7 @@ namespace Veggerby.Boards.Core
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x)).ToArray();
 
             var board = new Board(BoardId, tiles, relations);
-            _game = new Game(BoardId, board, pieces, new RuleEngine(null));
+            _game = new Game(BoardId, board, pieces);
 
             return _game;
         }
@@ -69,12 +72,12 @@ namespace Veggerby.Boards.Core
             return new Tile(tileDefinitionSettings.TileId);
         }
 
-        private TileRelationDirection CreateTileRelationDirection(DirectionDefinitionSettings directionDefinitionSettings)
+        private Direction CreateTileRelationDirection(DirectionDefinitionSettings directionDefinitionSettings)
         {
-            return new TileRelationDirection(directionDefinitionSettings.DirectionId);
+            return new Direction(directionDefinitionSettings.DirectionId);
         }
 
-        private TileRelation CreateTileRelaton(TileRelationDefinitionSettings tileRelationDefinitionSettings, IEnumerable<Tile> tiles, IEnumerable<TileRelationDirection> directions)
+        private TileRelation CreateTileRelaton(TileRelationDefinitionSettings tileRelationDefinitionSettings, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
         {
             var sourceTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.SourceTileId));
             var destinationTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.DestinationTileId));

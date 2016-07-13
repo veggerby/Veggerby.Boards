@@ -2,7 +2,6 @@
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Rules;
 
 namespace Veggerby.Boards.Core
 {

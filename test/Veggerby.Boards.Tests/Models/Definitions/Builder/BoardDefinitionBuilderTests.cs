@@ -8,7 +8,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
     {
         public class AddTileDefinition
         {
-            public class GenericBoardBuilder : BoardDefinitionBuilder
+            public class GenericBoardBuilder : GameBuilder
             {
                 public override void Build()
                 {
@@ -53,7 +53,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 
         public class AddTileRelationDefinition
         {
-            public class GenericBoardBuilder : BoardDefinitionBuilder
+            public class GenericBoardBuilder : GameBuilder
             {
                 public override void Build()
                 {
@@ -126,7 +126,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 
         public class AddPieceDefinition
         {
-            public class GenericBoardBuilder : BoardDefinitionBuilder
+            public class GenericBoardBuilder : GameBuilder
             {
                 public override void Build()
                 {
@@ -176,7 +176,7 @@ namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 
         public class AddPiecAddPieceDirectionPatternDefinitioneDefinition
         {
-            public class GenericBoardBuilder : BoardDefinitionBuilder
+            public class GenericBoardBuilder : GameBuilder
             {
                 public override void Build()
                 {

@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Core.Persistence.Static
             AddBoardDefinition(new ChessBoardDefinitionBuilder());
         }
 
-        private void AddBoardDefinition(BoardDefinitionBuilder builder)
+        private void AddBoardDefinition(GameBuilder builder)
         {
             var definition = builder.Compile();
             _definitions.Add(definition.BoardId, definition);

@@ -2,7 +2,7 @@
 
 namespace Veggerby.Boards.Core.Contracts.Builders
 {
-    public class ChessBoardDefinitionBuilder : BoardDefinitionBuilder
+    public class ChessBoardDefinitionBuilder : GameBuilder
     {
         public override void Build()
         {

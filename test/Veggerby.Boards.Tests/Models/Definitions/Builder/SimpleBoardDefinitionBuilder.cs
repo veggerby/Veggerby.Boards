@@ -2,7 +2,7 @@
 
 namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 {
-    public class SimpleBoardDefinitionBuilder : BoardDefinitionBuilder
+    public class SimpleBoardDefinitionBuilder : GameBuilder
     {
         public override void Build()
         {

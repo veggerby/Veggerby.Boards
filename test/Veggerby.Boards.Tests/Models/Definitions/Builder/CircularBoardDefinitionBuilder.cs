@@ -2,7 +2,7 @@
 
 namespace Veggerby.Boards.Tests.Core.Models.Definitions.Builder
 {
-    public class CircularBoardDefinitionBuilder : BoardDefinitionBuilder
+    public class CircularBoardDefinitionBuilder : GameBuilder
     {
         public override void Build()
         {

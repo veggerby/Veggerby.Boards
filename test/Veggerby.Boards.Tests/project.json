@@ -1,19 +1,7 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
-    "Veggerby.Boards.Core.Contracts": {
-      "target": "project",
-      "version": "1.0.0-*"
-    },
-    "Veggerby.Boards.Core.Contracts.Builders": {
-      "target": "project",
-      "version": "1.0.0-*"
-    },
-    "Veggerby.Boards.Core.Persistence.Static": {
-      "target": "project",
-      "version": "1.0.0-*"
-    },
-    "Veggerby.Boards.Core.Services": {
+    "Veggerby.Boards.Core": {
       "target": "project",
       "version": "1.0.0-*"
     },

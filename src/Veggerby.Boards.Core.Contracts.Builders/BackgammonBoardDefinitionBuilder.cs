@@ -2,7 +2,7 @@
 
 namespace Veggerby.Boards.Core.Contracts.Builders
 {
-    public class BackgammonBoardDefinitionBuilder : BoardDefinitionBuilder
+    public class BackgammonBoardDefinitionBuilder : GameBuilder
     {
         public override void Build()
         {

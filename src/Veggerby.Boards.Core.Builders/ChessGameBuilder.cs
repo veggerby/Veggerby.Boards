@@ -1,8 +1,8 @@
-﻿using Veggerby.Boards.Core.Contracts.Models.Definitions.Builder;
+﻿using Veggerby.Boards.Core;
 
-namespace Veggerby.Boards.Core.Contracts.Builders
+namespace Veggerby.Boards.Core.Builders
 {
-    public class ChessBoardDefinitionBuilder : GameBuilder
+    public class ChessGameBuilder : GameBuilder
     {
         public override void Build()
         {

@@ -20,7 +20,6 @@ namespace Veggerby.Boards.Core
             public string SourceTileId { get; set; }
             public string DestinationTileId { get; set; }
             public string DirectionId { get; set; }
-            public int Distance { get; set; }
         }
 
         private class PieceDefinitionSettings
@@ -57,9 +56,10 @@ namespace Veggerby.Boards.Core
             var tiles = _tileDefinitions.Select(CreateTile).ToArray();
             var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
+            var pieces = _pieceDefinitions.Select(x => CreatePiece(x)).ToArray();
 
             var board = new Board(BoardId, tiles, relations);
-            _game = new Game(BoardId, board);
+            _game = new Game(BoardId, board, pieces);
 
             return _game;
         }
@@ -82,6 +82,11 @@ namespace Veggerby.Boards.Core
             return new TileRelation(sourceTile, destinationTile, direction);
         }
 
+        private Piece CreatePiece(PieceDefinitionSettings pieceDefinitionSettings)
+        {
+            return new Piece(pieceDefinitionSettings.PieceId);
+        }
+
         protected void AddTileDefinition(string tileId)
         {
             _tileDefinitions.Add(new TileDefinitionSettings { TileId = tileId });
@@ -91,9 +96,9 @@ namespace Veggerby.Boards.Core
             _directionDefinitions.Add(new DirectionDefinitionSettings { DirectionId = directionId });
         }
 
-        protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId, int distance = 1)
+        protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId)
         {
-            _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId, Distance = distance });
+            _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId });
         }
 
         protected void AddPieceDirectionPatternDefinition(string pieceId, bool isRepeatable, params string[] directions)

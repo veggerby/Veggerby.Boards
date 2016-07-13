@@ -5,6 +5,10 @@
       "target": "project",
       "version": "1.0.0-*"
     },
+    "Veggerby.Boards.Core.Builders": {
+      "target": "project",
+      "version": "1.0.0-*"
+    },
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-rc2-build10025",
     "Microsoft.NETCore.App": {
@@ -15,7 +19,7 @@
   "testRunner": "xunit",
   "frameworks": {
     "netcoreapp1.0": {
-      "imports": [ 
+      "imports": [
         "dnxcore50",
         "portable-net45+win8"
       ]

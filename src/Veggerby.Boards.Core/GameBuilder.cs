@@ -59,7 +59,7 @@ namespace Veggerby.Boards.Core
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x)).ToArray();
 
             var board = new Board(BoardId, tiles, relations);
-            _game = new Game(BoardId, board, pieces);
+            _game = new Game(BoardId, board, pieces, new RuleEngine(null));
 
             return _game;
         }

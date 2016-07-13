@@ -9,10 +9,13 @@ namespace Veggerby.Boards.Core
 
         public IEnumerable<Piece> Pieces { get; }
 
-        public Game(string id, Board board, IEnumerable<Piece> pieces) : base(id)
+        public RuleEngine Rules { get; }
+
+        public Game(string id, Board board, IEnumerable<Piece> pieces, RuleEngine rules) : base(id)
         {
             Board = board;
             Pieces = (pieces ?? Enumerable.Empty<Piece>()).ToList();
+            Rules = rules;
         }
     }
 }

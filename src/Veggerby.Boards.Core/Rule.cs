@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core
 {
-    public abstract class Rule<T> where T : Artifact
+    public abstract class Rule
     {
-        public abstract IEnumerable<State<T>> GetValidstates(T artifact);
+        public abstract GameState GetState(GameState currentState, IGameEvent @event);
     }
 }

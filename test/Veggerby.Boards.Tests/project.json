@@ -5,7 +5,11 @@
       "target": "project",
       "version": "1.0.0-*"
     },
-    "Veggerby.Boards.Core.Builders": {
+    "Veggerby.Boards.Backgammon": {
+      "target": "project",
+      "version": "1.0.0-*"
+    },
+    "Veggerby.Boards.Chess": {
       "target": "project",
       "version": "1.0.0-*"
     },

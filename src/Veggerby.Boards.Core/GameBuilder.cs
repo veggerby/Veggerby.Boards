@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core
@@ -58,7 +59,7 @@ namespace Veggerby.Boards.Core
             var tiles = _tileDefinitions.Select(CreateTile).ToArray();
             var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
-            var pieces = _pieceDefinitions.Select(x => CreatePiece(x)).ToArray();
+            var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions)).ToArray();
 
             var board = new Board(BoardId, tiles, relations);
             _game = new Game(BoardId, board, pieces);
@@ -84,11 +85,33 @@ namespace Veggerby.Boards.Core
             return new TileRelation(sourceTile, destinationTile, direction);
         }
 
-        private Piece CreatePiece(PieceDefinitionSettings pieceDefinitionSettings)
+        
+        private Piece CreatePiece(PieceDefinitionSettings pieceDefinitionSettings, IEnumerable<PieceDirectionPatternDefinitionSettings> pieceDirectionPatternDefinitions, IEnumerable<Direction> directions)
         {
-            return new Piece(pieceDefinitionSettings.PieceId);
+            var patterns = pieceDirectionPatternDefinitions.Where(x => x.PieceId == pieceDefinitionSettings.PieceId).ToList();
+
+            return new Piece(pieceDefinitionSettings.PieceId, patterns.Select(x => CreatePattern(x, directions)));
         }
 
+        private IPattern CreatePattern(PieceDirectionPatternDefinitionSettings pieceDefinitionSettings, IEnumerable<Direction> directions)
+        {
+            var patternDirections = pieceDefinitionSettings.DirectionIds.Select(directionId => directions.Single(x => string.Equals(x.Id, directionId))).ToList();
+
+            if (!patternDirections.Any())
+            {
+                return new NullPattern();
+            }
+
+            if (patternDirections.Count() == 1)
+            {
+                return new DirectionPattern(patternDirections.Single(), pieceDefinitionSettings.IsRepeatable);
+            }
+
+            return pieceDefinitionSettings.IsRepeatable 
+                ? new MultiDirectionPattern(patternDirections, true) 
+                : (IPattern)new FixedPattern(patternDirections);
+        }
+      
         protected void AddTileDefinition(string tileId)
         {
             _tileDefinitions.Add(new TileDefinitionSettings { TileId = tileId });

@@ -1,10 +1,11 @@
 using System;
+using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core
 {
     public class RandomDieValueGenerator : NumericDieValueGenerator
     {
-        public override int GetValue()
+        public override int GetValue(DieState<int> currentState)
         {
             return new Random().Next(MinValue, MaxValue);
         }

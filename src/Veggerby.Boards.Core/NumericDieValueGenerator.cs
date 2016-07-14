@@ -1,3 +1,5 @@
+using Veggerby.Boards.Core.States;
+
 namespace Veggerby.Boards.Core
 {
     public abstract class NumericDieValueGenerator : IDieValueGenerator<int>
@@ -11,6 +13,6 @@ namespace Veggerby.Boards.Core
             MaxValue = maxValue;
         }
         
-        public abstract int GetValue();
+        public abstract int GetValue(DieState<int> currentState);
     }
 }

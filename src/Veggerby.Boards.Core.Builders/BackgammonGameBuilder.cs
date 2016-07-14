@@ -36,11 +36,14 @@
             AddDirectionDefinition("clockwise");
             AddDirectionDefinition("counterclockwise");
 
-            AddPieceDefinition("white");
-            AddPieceDefinition("black");
+            for (int i = 1; i <= 15; i++)
+            {
+                AddPieceDefinition($"white-{i}");
+                AddPieceDefinition($"black-{i}");
 
-            AddPieceDirectionPatternDefinition("white", true, "clockwise");
-            AddPieceDirectionPatternDefinition("black", true, "counterclockwise");
+                AddPieceDirectionPatternDefinition($"white-{i}", true, "clockwise");
+                AddPieceDirectionPatternDefinition($"black-{i}", true, "counterclockwise");
+            }
         }
     }
 }

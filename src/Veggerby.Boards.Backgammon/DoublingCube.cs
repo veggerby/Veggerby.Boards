@@ -1,4 +1,6 @@
-namespace Veggerby.Boards.Core.Artifacts
+using Veggerby.Boards.Core.Artifacts;
+
+namespace Veggerby.Boards.Backgammon
 {
     public class DoublingCube : Die<int>
     {

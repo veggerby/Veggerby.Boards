@@ -1,7 +1,8 @@
 using System;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core
+namespace Veggerby.Boards.Backgammon
 {
     public class DoublingCubeValueGenerator : NumericDieValueGenerator
     {
@@ -11,7 +12,9 @@ namespace Veggerby.Boards.Core
         
         public override int GetValue(DieState<int> currentState)
         {
-            return 2 * currentState.CurrentValue;
+            return currentState.CurrentValue < MaxValue
+                ? 2 * currentState.CurrentValue
+                : MaxValue;
         }
     }
 }

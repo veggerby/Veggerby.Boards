@@ -1,12 +1,13 @@
 using Xunit;
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Core;
 
 namespace Veggerby.Boards.Tests.Backgammon
 {
     public class DoublingCubeTests
     {
-        public class GetValue
+        public class Roll
         {
             [Theory]
             [InlineData(1, 2)]
@@ -28,6 +29,20 @@ namespace Veggerby.Boards.Tests.Backgammon
                 // asser
                 Assert.Equal(expected, actual);
             }
+
+            [Fact]
+            public void Should_throw_exception_with_wrong_state()
+            {
+                // arrange
+                var die = new DoublingCube("doubling-cube");
+                var currentState = new DieState<int>(die, 3);
+
+                // act
+                var actual = Assert.Throws<BoardException>(() => die.Roll(currentState));
+
+                // asser
+                Assert.Equal("Illegal die value", actual.Message);
+            } 
         }
     }
 }

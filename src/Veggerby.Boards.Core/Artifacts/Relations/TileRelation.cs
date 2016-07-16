@@ -4,9 +4,12 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
     {
         public Direction Direction { get; }
 
-        public TileRelation(Tile source, Tile destination, Direction direction) : base(source, destination)
+        public int Distance { get; }
+
+        public TileRelation(Tile source, Tile destination, Direction direction, int distance = 1) : base(source, destination)
         {
             Direction = direction;
+            Distance = distance;
         }
     }
 }

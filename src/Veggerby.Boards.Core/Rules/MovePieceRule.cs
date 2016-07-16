@@ -1,11 +1,12 @@
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
 {
     public abstract class MovePieceRule : Rule<MovePieceGameEvent>
     {
-        protected abstract bool CanMove(GameState currentState, State<Piece> piece, State<Tile> from, State<Tile> to);
+        protected abstract TilePath GetPath(GameState currentState, State<Piece> piece, State<Tile> from, State<Tile> to);
 
         public override GameState GetState(GameState currentState, MovePieceGameEvent @event)
         {
@@ -13,7 +14,9 @@ namespace Veggerby.Boards.Core.Rules
             var fromState = currentState.GetState(@event.From);
             var toState = currentState.GetState(@event.To);
 
-            if (!CanMove(currentState, pieceState, fromState, toState)) 
+            var path = GetPath(currentState, pieceState, fromState, toState);
+            
+            if (path == null)
             {
                 return null;
             }

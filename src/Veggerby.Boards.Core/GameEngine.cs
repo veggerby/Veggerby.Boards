@@ -12,10 +12,10 @@ namespace Veggerby.Boards.Core.Rules
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
         private GameState _gameState;
 
-        public GameEngine(Game game, RuleEngine rules)
+        public GameEngine(Game game, GameState initialState, RuleEngine rules)
         {
             Game = game;
-            _gameState = new GameState(game, null);
+            _gameState = initialState ?? new GameState(game, null);
         }
 
         private GameState PlayEvent(GameState state, IGameEvent @event)

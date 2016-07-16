@@ -9,9 +9,9 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         public IEnumerable<TileRelation> Relations { get; }
         public IEnumerable<Tile> Tiles => new[] { Relations.First().From }.Concat(Relations.Select(x => x.To)).ToList();
         public IEnumerable<Direction> Directions => Relations.Select(x => x.Direction).ToList();
-
         public Tile From => Relations.First().From;
         public Tile To => Relations.First().To;
+        public int Distance => Relations.Sum(x => x.Distance);
 
         public TilePath(IEnumerable<TileRelation> relations)
         {

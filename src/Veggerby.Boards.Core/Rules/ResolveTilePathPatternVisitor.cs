@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Rules
         private readonly Board _board;
         private readonly Tile _from;
         private readonly Tile _to;
-        private TilePath _resultPath;
+        public TilePath ResultPath { get; private set; }
 
         public ResolveTilePathPatternVisitor(Board board, Tile from, Tile to)
         {
@@ -47,7 +47,7 @@ namespace Veggerby.Boards.Core.Rules
                 var path = GetPathFromDirection(direction, pattern.IsRepeatable);
                 if (path != null) 
                 {
-                    _resultPath = path;
+                    ResultPath = path;
                     return;
                 }
             }
@@ -55,7 +55,7 @@ namespace Veggerby.Boards.Core.Rules
 
         public void Visit(NullPattern pattern)
         {
-            _resultPath = null;
+            ResultPath = null;
         }
 
         public void Visit(FixedPattern pattern)
@@ -67,19 +67,19 @@ namespace Veggerby.Boards.Core.Rules
                 var relation = _board.GetTileRelation(_from, direction);
                 if (relation == null) 
                 {
-                    _resultPath = null;
+                    ResultPath = null;
                     return;
                 }
 
                 path = TilePath.Create(path, relation);
             }
 
-            _resultPath = _to.Equals(path?.To) ? path : null;
+            ResultPath = _to.Equals(path?.To) ? path : null;
         }
 
         public void Visit(DirectionPattern pattern)
         {
-            _resultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
+            ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
         }
 
         public TilePath GetPathFromDirection(Direction direction, bool isRepeatable)

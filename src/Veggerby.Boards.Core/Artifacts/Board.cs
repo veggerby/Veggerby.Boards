@@ -12,5 +12,10 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             _tileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList();
         }
+
+        public TileRelation GetTileRelation(Tile from, Direction direction)
+        {
+            return _tileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
+        }
     }
 }

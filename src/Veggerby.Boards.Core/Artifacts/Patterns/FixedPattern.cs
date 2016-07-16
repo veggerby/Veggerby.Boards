@@ -12,5 +12,10 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
         {
             Pattern = (pattern ?? Enumerable.Empty<Direction>()).ToList();
         }
+
+        public void Accept(IPatternVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

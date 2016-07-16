@@ -1,6 +1,7 @@
 namespace Veggerby.Boards.Core.Artifacts.Patterns
 {
-    public interface IPattern 
+    public interface IPattern
     {
+        void Accept(IPatternVisitor visitor);
     }
 }

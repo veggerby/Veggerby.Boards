@@ -15,22 +15,14 @@ namespace Veggerby.Boards.Core.Rules
 
         public GameState GetState(GameState currentState, IGameEvent @event)
         {
-            var newStates = _rules
-                .Select(x => x.GetState(currentState, @event))
-                .Where(x => x != null)
-                .ToList();
+            var newState = currentState;
 
-            if (!newStates.Any())
+            foreach (var rule in _rules)
             {
-                return null;
+                newState = rule.GetState(newState, @event) ?? newState;
             }
 
-            if (newStates.Count() == 1)
-            {
-                return newStates.Single();
-            }
-
-            throw new BoardException("Event does not result in unambiguous state");
+            return newState != currentState ? newState : null;
         }
     }
 }

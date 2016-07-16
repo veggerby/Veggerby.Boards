@@ -14,5 +14,10 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
             Directions = (directions ?? Enumerable.Empty<Direction>()).ToList();
             IsRepeatable = isRepeatable;
         }
+
+        public void Accept(IPatternVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

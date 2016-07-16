@@ -13,6 +13,18 @@ namespace Veggerby.Boards.Core.States
             _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();
         }
 
+        public IEnumerable<State<T>> GetStates<T>() where T : Artifact
+        {
+            return _childStates
+                .OfType<State<T>>()
+                .ToList();
+        }
+
+        public State<T> GetState<T>(T artifact) where T : Artifact
+        {
+            return GetState(artifact) as State<T>;
+        }
+
         public IState GetState(Artifact artifact)
         {
             return _childStates

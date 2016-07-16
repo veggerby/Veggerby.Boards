@@ -1,12 +1,59 @@
 using System.Collections.Generic;
+using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public class GameState : CompositeState<Game>
+    public class GameState : State<Game>
     {
-        public GameState(Game game, IEnumerable<IState> childStates) : base(game, childStates)
+        private readonly IEnumerable<IState> _childStates;
+
+        public GameState(Game game, IEnumerable<IState> childStates) : base(game)
         {
+            _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();
+        }
+
+        public IState GetState(Artifact artifact)
+        {
+            return _childStates
+                .SingleOrDefault(x => x.Artifact.Equals(artifact));
+        }
+
+        public GameState Update(IEnumerable<IState> newStates)
+        {
+            var currentStates = newStates.Select(x => GetState(x.Artifact)).ToList();
+            var states = _childStates.Except(currentStates).Concat(newStates).ToList();
+            return new GameState(Artifact, states);
+        }
+
+        public new GameState OnBeforeEvent(IGameEvent @event)
+        {
+            var states = _childStates
+                .Select(x => x.OnBeforeEvent(@event))
+                .Where(x => x != null)
+                .ToList();
+
+            if (!states.Any())
+            {
+                return this;
+            }
+            
+            return Update(states);
+        }
+
+        public new GameState OnAfterEvent(IGameEvent @event)
+        {
+             var states = _childStates
+                .Select(x => x.OnAfterEvent(@event))
+                .Where(x => x != null)
+                .ToList();
+            
+            if (!states.Any())
+            {
+                return this;
+            }
+            
+            return Update(states);
         }
     }
 }

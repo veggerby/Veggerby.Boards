@@ -7,9 +7,48 @@ namespace Veggerby.Boards.Core.States
     {
         public T Artifact { get; }
 
-        public State(T artifact)
+        private readonly GameEventHandler<T> _eventHandler;
+
+        public State(T artifact, GameEventHandler<T> eventHandler = null)
         {
             Artifact = artifact;
+            _eventHandler = eventHandler;
+        }
+
+        public State<T> OnBeforeEvent(IGameEvent @event) 
+        {
+            var newState = _eventHandler?.OnBeforeEvent(this, @event);
+
+            if (newState == null || newState == this)
+            {
+                return null;
+            }
+
+            return newState;
+        }
+
+        public State<T> OnAfterEvent(IGameEvent @event) 
+        {
+            var newState = _eventHandler?.OnAfterEvent(this, @event);
+
+            if (newState == null || newState == this)
+            {
+                return null;
+            }
+
+            return newState;
+        }
+
+        Artifact IState.Artifact => Artifact;
+
+        IState IState.OnBeforeEvent(IGameEvent @event)
+        {
+            return OnBeforeEvent(@event);
+        }
+
+        IState IState.OnAfterEvent(IGameEvent @event)
+        {
+            return OnAfterEvent(@event);
         }
     }
 }

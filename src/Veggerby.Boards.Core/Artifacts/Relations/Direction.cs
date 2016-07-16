@@ -4,6 +4,8 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
     {
         public static Direction Left = new Direction("left");
         public static Direction Right = new Direction("right");
+        public static Direction Up = new Direction("up");
+        public static Direction Down = new Direction("down");
 
         public static Direction North = new Direction("north");
         public static Direction South = new Direction("south");

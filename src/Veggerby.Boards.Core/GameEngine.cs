@@ -18,9 +18,16 @@ namespace Veggerby.Boards.Core.Rules
             _gameState = new GameState(game, null);
         }
 
+        private GameState PlayEvent(GameState state, IGameEvent @event)
+        {
+            return Rules.GetState(state, @event);
+        }
+
         public bool AddEvent(IGameEvent @event)
         {
-            var newState = Rules.GetState(_gameState, @event);
+            var newState = _gameState.OnBeforeEvent(@event);
+            
+            newState = PlayEvent(newState, @event);
 
             if (newState == null)
             {
@@ -28,8 +35,24 @@ namespace Veggerby.Boards.Core.Rules
             }
 
             _events.Add(@event);
-            _gameState = newState;
+
+            _gameState = newState.OnAfterEvent(@event);
+            
             return true;
+        }
+
+        public void PlayEvents(IEnumerable<IGameEvent> events)
+        {
+            var state = _gameState;
+            foreach (var @event in events)
+            {
+                state = PlayEvent(state, @event);
+
+                if (state == null)
+                {
+                    throw new BoardException("Event does not generate valid state");
+                }
+            }
         }
     }
 }

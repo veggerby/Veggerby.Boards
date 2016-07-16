@@ -12,11 +12,5 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             _tileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList();
         }
-
-        public Tile GetNextTile(Tile from, Direction direction)
-        {
-            var relation = _tileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
-            return relation?.To;
-        }
     }
 }

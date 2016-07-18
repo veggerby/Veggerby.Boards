@@ -1,3 +1,5 @@
+using System;
+
 namespace Veggerby.Boards.Core.Artifacts.Relations
 {
     public class Direction
@@ -25,6 +27,11 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
         public Direction(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException(nameof(id));
+            }
+
             Id = id;
         }
 

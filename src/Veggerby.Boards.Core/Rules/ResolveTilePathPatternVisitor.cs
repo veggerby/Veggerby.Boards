@@ -64,7 +64,7 @@ namespace Veggerby.Boards.Core.Rules
             TilePath path = null;
             foreach (var direction in pattern.Pattern)
             {
-                var relation = _board.GetTileRelation(_from, direction);
+                var relation = _board.GetTileRelation(from, direction);
                 if (relation == null) 
                 {
                     ResultPath = null;
@@ -72,6 +72,7 @@ namespace Veggerby.Boards.Core.Rules
                 }
 
                 path = TilePath.Create(path, relation);
+                from = relation.To;
             }
 
             ResultPath = _to.Equals(path?.To) ? path : null;

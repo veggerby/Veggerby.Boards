@@ -33,5 +33,55 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 Assert.Equal(new[] { "clockwise", "clockwise", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
             }
         }
+
+        public class Visit_MultiDirectionPattern
+        {
+            [Fact]
+            public void Should_get_valid_path()
+            {
+                // arrange
+                var board = new TestBoard();
+                var from = board.GetTile("tile-0");
+                var to = board.GetTile("tile-24");
+                var visitor = new ResolveTilePathPatternVisitor(board, from, to);
+                var pattern = new MultiDirectionPattern(new [] { Direction.Across });
+
+                // act
+                pattern.Accept(visitor);
+                
+                // assert
+                var actual = visitor.ResultPath;
+
+                Assert.NotNull(actual);
+                Assert.Equal(8, actual.Distance);
+                Assert.Equal(new[] { "tile-0", "tile-24" }, actual.Tiles.Select(x => x.Id));
+                Assert.Equal(new[] { "across" }, actual.Directions.Select(x => x.Id));
+            }
+        }
+
+        public class Visit_FixedPattern
+        {
+            [Fact]
+            public void Should_get_valid_path()
+            {
+                // arrange
+                var board = new TestBoard();
+                var from = board.GetTile("tile-0");
+                var to = board.GetTile("tile-26");
+                var visitor = new ResolveTilePathPatternVisitor(board, from, to);
+                var pattern = new FixedPattern(new [] { Direction.Across, Direction.Clockwise, Direction.Clockwise });
+
+                // act
+                pattern.Accept(visitor);
+                
+                // assert
+                var actual = visitor.ResultPath;
+
+                Assert.NotNull(actual);
+                Assert.Equal(10, actual.Distance);
+                Assert.Equal(new[] { "tile-0", "tile-24", "tile-25", "tile-26" }, actual.Tiles.Select(x => x.Id));
+                Assert.Equal(new[] { "across", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
+            }
+        }
     }
 }

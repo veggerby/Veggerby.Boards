@@ -46,5 +46,11 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         {
             return path != null ? path.Add(relation) : new TilePath(new [] { relation });
         }
+
+        public override string ToString()
+        {
+            var path = string.Join(" ", Relations.Select(x => $"{x.Direction} {x.To}"));
+            return $"Path: {From} {path}";
+        }
     }
 }

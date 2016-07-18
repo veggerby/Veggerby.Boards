@@ -23,6 +23,11 @@ namespace Veggerby.Boards.Core.States
                 return currentState;
             }
 
+            if (currentState != null && !newState.Artifact.Equals(currentState.Artifact))
+            {
+                throw new BoardException("Event handler can not change state of other artifact");
+            }
+
             return newState;
         }
 

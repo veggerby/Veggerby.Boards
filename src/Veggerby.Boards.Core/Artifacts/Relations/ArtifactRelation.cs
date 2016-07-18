@@ -1,3 +1,5 @@
+using System;
+
 namespace Veggerby.Boards.Core.Artifacts.Relations
 {
     public abstract class ArtifactRelation<TFrom, TTo> 
@@ -9,8 +11,23 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
         public ArtifactRelation(TFrom from, TTo to)
         {
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
+            }
+
             From = from;
             To = to;
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} {From} --> {To}";
         }
     }
 }

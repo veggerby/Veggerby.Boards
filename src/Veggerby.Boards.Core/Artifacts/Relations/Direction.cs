@@ -6,6 +6,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         public static Direction Right = new Direction("right");
         public static Direction Up = new Direction("up");
         public static Direction Down = new Direction("down");
+        public static Direction Across = new Direction("across");
 
         public static Direction North = new Direction("north");
         public static Direction South = new Direction("south");
@@ -43,6 +44,11 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} {Id}";
         }
     }
 }

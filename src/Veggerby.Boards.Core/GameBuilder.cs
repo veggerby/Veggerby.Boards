@@ -61,7 +61,7 @@ namespace Veggerby.Boards.Core
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions)).ToArray();
 
-            var board = new Board(BoardId, tiles, relations);
+            var board = new Board(BoardId, relations);
             _game = new Game(BoardId, board, pieces);
 
             return _game;

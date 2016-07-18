@@ -10,17 +10,31 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         public IEnumerable<Tile> Tiles => new[] { Relations.First().From }.Concat(Relations.Select(x => x.To)).ToList();
         public IEnumerable<Direction> Directions => Relations.Select(x => x.Direction).ToList();
         public Tile From => Relations.First().From;
-        public Tile To => Relations.First().To;
+        public Tile To => Relations.Last().To;
         public int Distance => Relations.Sum(x => x.Distance);
 
         public TilePath(IEnumerable<TileRelation> relations)
         {
-            if (relations == null || !relations.Any())
+            if (relations == null || !relations.Any() || relations.Any(x => x == null))
             {
                 throw new ArgumentException(nameof(relations));
             }
 
             Relations = relations.ToList();
+
+            if (Relations.Count() > 1)
+            {
+                var first = Relations.First();
+
+                var chainedTo = Relations
+                    .Skip(1)
+                    .Aggregate(first.To, (to, relation) => to != null && relation.From.Equals(to) ? relation.To : null);
+
+                if (chainedTo == null)
+                {
+                    throw new ArgumentException(nameof(relations), "Relations are not a connected");
+                }
+            }
         }
 
         public TilePath Add(TileRelation relation)

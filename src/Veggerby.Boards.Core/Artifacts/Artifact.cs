@@ -33,5 +33,10 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             return Id.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} {Id}";
+        }
     }
 }

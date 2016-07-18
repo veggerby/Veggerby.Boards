@@ -8,10 +8,9 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             return game.ChildArtifacts.SingleOrDefault(x => string.Equals(x.Id, id));
         }
-
         public static Tile GetTile(this Game game, string id)
         {
-            return game.Board.ChildArtifacts.SingleOrDefault(x => string.Equals(x.Id, id));
+            return game.Board.GetTile(id);
         }
     }
 }

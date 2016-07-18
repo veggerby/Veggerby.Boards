@@ -88,14 +88,14 @@ namespace Veggerby.Boards.Core.Rules
             TilePath path = null;
             while (path == null || isRepeatable) // we have not yet taken a step or it is repeatable
             {
-                var relation = _board.GetTileRelation(_from, direction);
-                
+                var relation = _board.GetTileRelation(from, direction);
+            
                 if (relation == null) 
                 {
                     return null;
                 }
 
-                if (relation.To.Equals(_from) || path.Tiles.Contains(relation.To))
+                if (relation.To.Equals(_from) || (path?.Tiles.Contains(relation.To) ?? false))
                 {
                     // back to where we started or we crossed paths... break
                     return null;
@@ -107,6 +107,8 @@ namespace Veggerby.Boards.Core.Rules
                 {
                     return path;
                 }
+
+                from = relation.To;
             }
 
             return null;

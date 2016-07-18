@@ -39,7 +39,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             {
                 var from = tiles.Single(x => x.Id == $"tile-{((i+1) * 8) % 32}");
                 var to = tiles.Single(x => x.Id == $"tile-{i * 8}");
-                var relation = new TileRelation(from, to, Direction.Across, 8);
+                var relation = new TileRelation(from, to, Direction.Across, 5);
                 //System.Console.WriteLine($"Relation: {relation}");
                 _tileRelations.Add(relation);
             }

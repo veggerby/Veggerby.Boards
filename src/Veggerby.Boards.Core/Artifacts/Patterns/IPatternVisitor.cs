@@ -6,5 +6,6 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
         void Visit(FixedPattern pattern);
         void Visit(MultiDirectionPattern pattern);
         void Visit(NullPattern pattern);
+        void Visit(AnyPattern pattern);
     }
 }

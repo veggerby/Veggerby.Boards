@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
@@ -42,15 +43,17 @@ namespace Veggerby.Boards.Core.Rules
 
         public void Visit(MultiDirectionPattern pattern)
         {
+            var paths = new List<TilePath>();
             foreach (var direction in pattern.Directions)
             {
                 var path = GetPathFromDirection(direction, pattern.IsRepeatable);
-                if (path != null) 
+                if (path != null)
                 {
-                    ResultPath = path;
-                    return;
+                    paths.Add(path);
                 }
             }
+            
+            ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
         }
 
         public void Visit(NullPattern pattern)
@@ -83,7 +86,13 @@ namespace Veggerby.Boards.Core.Rules
             ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
         }
 
-        public TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
+        public void Visit(AnyPattern pattern)
+        {
+            // use https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm to calculate shortest path(s)
+            throw new NotImplementedException();
+        }
+
+        private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
         {
             var from = _from;
             TilePath path = null;

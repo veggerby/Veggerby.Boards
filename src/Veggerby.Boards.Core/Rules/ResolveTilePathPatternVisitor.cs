@@ -88,7 +88,7 @@ namespace Veggerby.Boards.Core.Rules
 
         public void Visit(AnyPattern pattern)
         {
-            // use https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm to calculate shortest path(s)
+            // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
             throw new NotImplementedException();
         }
 

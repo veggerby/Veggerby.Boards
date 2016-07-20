@@ -91,8 +91,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
             {
                 // arrange
                 var board = new TestBoard();
-                var from = board.GetTile("tile-0");
-                var to = board.GetTile("tile-26");
+                var from = board.GetTile("tile-31");
+                var to = board.GetTile("tile-27");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
                 var pattern = new AnyPattern();
 
@@ -101,9 +101,9 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 var actual = visitor.ResultPath;
-                Assert.Equal(7, actual.Distance);
-                Assert.Equal(new[] { "tile-0", "tile-24", "tile-25", "tile-26" }, actual.Tiles.Select(x => x.Id));
-                Assert.Equal(new[] { "across", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
+                Assert.Equal(9, actual.Distance);
+                Assert.Equal(new[] { "tile-31", "tile-0", "tile-24", "tile-25", "tile-26", "tile-27" }, actual.Tiles.Select(x => x.Id));
+                Assert.Equal(new[] { "clockwise", "across", "clockwise", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
             }
         }
 

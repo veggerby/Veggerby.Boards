@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +33,7 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
 
                 foreach (var to in graph.Vertices.Where(x => !from.Equals(x)))
                 {
-                    var edge = new Edge<T>(from, to, path[to] + potential[to] - potential[from]);
+                    var edge = new Edge<T>(from, to, path.Single(x => x.To.Equals(to)).Distance + potential[to] - potential[from]);
                     result.Add(edge);
                 }
             }

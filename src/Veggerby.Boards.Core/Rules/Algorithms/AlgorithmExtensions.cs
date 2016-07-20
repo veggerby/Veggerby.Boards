@@ -1,3 +1,5 @@
+using System;
+
 namespace Veggerby.Boards.Core.Rules.Algorithms
 {
     public static class AlgorithmExtensions
@@ -15,7 +17,7 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
             {
                 System.Console.Write($"\t{array[i]}");
             }
-            
+
             System.Console.WriteLine();
         }
 

@@ -1,92 +1,51 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Veggerby.Boards.Core.Rules.Algorithms
 {
     public class DijkstraShortestPath
     {
-        public int[] GetShortestPath(int source, int[,] adjacencymatrix)
+        public IDictionary<T, int> GetShortestPath<T>(T source, Graph<T> graph)
         {
-            if (adjacencymatrix.GetLength(0) != adjacencymatrix.GetLength(1))
-            {
-                throw new ArgumentException("Adjacency matrix must be square", nameof(adjacencymatrix));
-            }
-            
-            var numberOfVertices = adjacencymatrix.GetLength(0);
+            var settled = new List<T>();
+            var unsettled = new List<T>(graph.Vertices);
+            var distances = graph.Vertices.ToDictionary(x => x, x => source.Equals(x) ? 0 : int.MaxValue);
 
-            var settled = new bool[numberOfVertices];
-            var unsettled = new bool[numberOfVertices];
-            var distances = new int[numberOfVertices];
-            var _adjacencyMatrix = new int[numberOfVertices, numberOfVertices];
-    
-            int evaluationnode;
-            for (int vertex = 0; vertex < numberOfVertices; vertex++)
+            while (unsettled.Any())
             {
-                distances[vertex] = int.MaxValue;
-            }
-    
-            for (int sourcevertex = 0; sourcevertex < numberOfVertices; sourcevertex++)
-            {
-                for (int destinationvertex = 0; destinationvertex < numberOfVertices; destinationvertex++)
-                {
-                    _adjacencyMatrix[sourcevertex, destinationvertex] = adjacencymatrix[sourcevertex, destinationvertex];
-                }
-            }
-    
-            unsettled[source] = true;
-            distances[source] = 0;
-            while (GetUnsettledCount(unsettled) != 0)
-            {
-                evaluationnode = GetNodeWithMinimumDistanceFromUnsettled(unsettled, distances);
-                unsettled[evaluationnode] = false;
-                settled[evaluationnode] = true;
-
-                EvaluateNeighbours(evaluationnode, settled, _adjacencyMatrix, ref unsettled, ref distances);
+                var evaluationnode = GetNodeWithMinimumDistanceFromUnsettled(unsettled, distances);
+                unsettled.Remove(evaluationnode);
+                settled.Add(evaluationnode);
+                EvaluateNeighbours(evaluationnode, settled, graph, unsettled, distances);
             }
 
             return distances;
-        } 
-    
-        private int GetUnsettledCount(bool[] unsettled)
-        {
-            return unsettled.Count(x => x);
         }
-    
-        private int GetNodeWithMinimumDistanceFromUnsettled(bool[] unsettled, int[] distances)
-        {
-            int min = int.MaxValue;
-            int node = 0;
-            for (int vertex = 0; vertex < unsettled.Length; vertex++)
-            {
-                if (unsettled[vertex] == true && distances[vertex] < min)
-                {
-                    node = vertex;
-                    min = distances[vertex];
-                }
-            }
 
-            return node;
+        private T GetNodeWithMinimumDistanceFromUnsettled<T>(IEnumerable<T> unsettled, IDictionary<T, int> distances)
+        {
+            return unsettled
+                .OrderBy(x => distances.ContainsKey(x) ? distances[x] : int.MaxValue)
+                .FirstOrDefault();
         }
     
-        private void EvaluateNeighbours(int evaluationNode, bool[] settled, int[,] adjacencyMatrix, ref bool[] unsettled, ref int[] distances)
+        private void EvaluateNeighbours<T>(T evaluationNode, IEnumerable<T> settled, Graph<T> graph, IList<T> unsettled, IDictionary<T, int> distances)
         {
-            int edgeDistance = -1;
-            int newDistance = -1;
-    
-            for (int destinationNode = 0; destinationNode < settled.Length; destinationNode++)
+            foreach (var destinationNode in graph.Vertices)
             {
-                if (settled[destinationNode] == false)
+                if (!settled.Contains(destinationNode))
                 {
-                    if (adjacencyMatrix[evaluationNode, destinationNode] != int.MaxValue)
+                    var edge = graph.GetEdge(evaluationNode, destinationNode);
+                    if (edge != null)
                     {
-                        edgeDistance = adjacencyMatrix[evaluationNode, destinationNode];
-                        newDistance = distances[evaluationNode] + edgeDistance;
+                        var newDistance = distances[evaluationNode] + edge.Weight;
                         if (newDistance < distances[destinationNode])
                         {
                             distances[destinationNode] = newDistance;
                         }
 
-                        unsettled[destinationNode] = true;
+                        unsettled.Add(destinationNode);
                     }
                 }
             }

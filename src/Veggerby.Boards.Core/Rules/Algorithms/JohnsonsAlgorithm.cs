@@ -1,78 +1,60 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Veggerby.Boards.Core.Rules.Algorithms
 {
     /// From http://www.sanfoundry.com/java-program-to-implement-johnsons-algorithm/
     public class JohnsonsAlgorithm 
     {
-        public int[,] GetShortestPath(int[,] adjacencyMatrix)
+        public IEnumerable<Edge<T>> GetShortestPath<T>(Graph<T> graph, T source)
         {
-            if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
-            {
-                throw new ArgumentException("Adjacency matrix must be square", nameof(adjacencyMatrix));
-            }
+            // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
+            // http://www.geeksforgeeks.org/johnsons-algorithm/
             
-            var numberOfNodes = adjacencyMatrix.GetLength(0);
-            var sourceNode = numberOfNodes;
-
             var bellmanFord = new BellmanFord();
             var dijsktraShortestPath = new DijkstraShortestPath();
 
-            var augmentedMatrix = ComputeAugmentedGraph(adjacencyMatrix, sourceNode);
+            // step 1: First, a new node q is added to the graph, connected by zero-weight edges to each of the other nodes.
+            var augmentedGraph = ComputeAugmentedGraph(graph, source);
 
-            var potential = bellmanFord.BellmanFordEvaluation(sourceNode, augmentedMatrix);
-            var reweightedGraph = ReweightGraph(adjacencyMatrix, potential);
-            var allPairShortestPath = new int[numberOfNodes, numberOfNodes];     
+            // step 2: Second, the Bellman–Ford algorithm is used, starting from the new vertex q, to find for each vertex v the minimum weight h(v) of a path from q to v. If this step detects a negative cycle, the algorithm is terminated.
+            var potential = bellmanFord.BellmanFordEvaluation(source, augmentedGraph);
 
-            for (int source = 0; source < numberOfNodes; source++)
+            // step 3: Next the edges of the original graph are reweighted using the values computed by the Bellman–Ford algorithm: an edge from u to v, having length w(u,v), is given the new length w(u,v) + h(u) − h(v).
+            var reweightedGraph = ReweightGraph(graph, potential);
+
+            // step 4: Finally, q is removed, and Dijkstra's algorithm is used to find the shortest paths from each node s to every other vertex in the reweighted graph.
+            var allPairShortestPath = new int[graph.Vertices.Count(), graph.Vertices.Count()];     
+
+            var result = new List<Edge<T>>();
+            foreach (var from in graph.Vertices)
             {
-                var result = dijsktraShortestPath.GetShortestPath(source, reweightedGraph);
+                var path = dijsktraShortestPath.GetShortestPath(from, reweightedGraph);
 
-                for (int destination = 0; destination < numberOfNodes; destination++)
+                foreach (var to in graph.Vertices.Where(x => !from.Equals(x)))
                 {
-                    allPairShortestPath[source, destination] = result[destination] + potential[destination] - potential[source];
-                }
-            }
-
-            return allPairShortestPath;
-        }
-    
-        private int[,] ComputeAugmentedGraph(int[,] adjacencyMatrix, int sourceNode)
-        {
-            var numberOfNodes = adjacencyMatrix.GetLength(0);
-            
-            var augmentedMatrix = new int[numberOfNodes + 1, numberOfNodes + 1];
-            
-            for (int source = 0; source < numberOfNodes; source++)
-            {
-                for (int destination = 0; destination < numberOfNodes; destination++)
-                { 
-                    augmentedMatrix[source, destination] = adjacencyMatrix[source, destination];
-                }
-            }
-
-            for (int destination = 0; destination < numberOfNodes; destination++)
-            {
-                augmentedMatrix[sourceNode, destination] = 0;
-            }
-
-            return augmentedMatrix;
-        }
-    
-        private int[,] ReweightGraph(int[,] adjacencyMatrix, int[] potential)
-        {
-            var numberOfNodes = adjacencyMatrix.GetLength(0);
-
-            int[,] result = new int[numberOfNodes, numberOfNodes];
-            for (int source = 0; source < numberOfNodes; source++)
-            {
-                for (int destination = 0; destination < numberOfNodes; destination++)
-                {
-                    result[source, destination] = adjacencyMatrix[source, destination] + potential[source] - potential[destination];
+                    var edge = new Edge<T>(from, to, path[to] + potential[to] - potential[from]);
+                    result.Add(edge);
                 }
             }
 
             return result;
+        }
+    
+        private Graph<T> ComputeAugmentedGraph<T>(Graph<T> graph, T q)
+        {
+            var edges = graph.Vertices.Select(x => new Edge<T>(q, x, 0)).ToList();
+
+            return new Graph<T>(graph.Vertices.Concat(new[] { q }), graph.Edges.Concat(edges));
+        }
+    
+        private Graph<T> ReweightGraph<T>(Graph<T> graph, IDictionary<T, int> potential)
+        {
+            return new Graph<T>(
+                graph.Vertices,
+                graph.Edges  
+                    .Select(x => new Edge<T>(x.From, x.To, x.Weight + potential[x.From] - potential[x.To])));
         }
     }
 }

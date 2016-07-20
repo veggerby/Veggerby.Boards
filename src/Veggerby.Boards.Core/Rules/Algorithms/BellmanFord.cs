@@ -1,55 +1,50 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Veggerby.Boards.Core.Rules.Algorithms
 {
     public class BellmanFord 
     {
-        public int[] BellmanFordEvaluation(int source, int[,] adjacencymatrix)
+        public IDictionary<T, int> BellmanFordEvaluation<T>(T source, Graph<T> graph)
         {
-            if (adjacencymatrix.GetLength(0) != adjacencymatrix.GetLength(1))
-            {
-                throw new ArgumentException("Adjacency matrix must be square", nameof(adjacencymatrix));
-            }
-            
-            var numberOfVertices = adjacencymatrix.GetLength(0);
+            var numberOfVertices = graph.Vertices.Count();
 
-            var distances = new int[numberOfVertices];
-
-            for (int node = 0; node < numberOfVertices; node++)
+            if (!graph.Vertices.Contains(source))
             {
-                distances[node] = int.MaxValue;
+                throw new ArgumentOutOfRangeException(nameof(source));
             }
-    
-            distances[source] = 0;
-    
+
+            // step 1: initialize distance to all vertices as infinite, except source is 0
+            var distances = graph
+                .Vertices
+                .ToDictionary(x => x, x => source.Equals(x) ? 0 : int.MaxValue);
+                
+            /* step 2: This step calculates shortest distances. Do following |V|-1 times where |V| is the number of vertices in given graph.
+	         * Do following for each edge u-v
+             * - If dist[v] > dist[u] + weight of edge uv, then update dist[v] to dist[v] = dist[u] + weight of edge uv
+             */
+
             for (int node = 0; node < numberOfVertices - 1; node++)
             {
-                for (int sourcenode = 0; sourcenode < numberOfVertices; sourcenode++)
+                foreach (var edge in graph.Edges)
                 {
-                    for (int destinationnode = 0; destinationnode < numberOfVertices; destinationnode++)
+                    if (distances[edge.To] > distances[edge.From] + edge.Weight)
                     {
-                        if (adjacencymatrix[sourcenode, destinationnode] != int.MaxValue)
-                        {
-                            if (distances[destinationnode] > distances[sourcenode] + adjacencymatrix[sourcenode, destinationnode])
-                            {
-                                distances[destinationnode] = distances[sourcenode] + adjacencymatrix[sourcenode, destinationnode];
-                            }
-                        }
+                        distances[edge.To] = distances[edge.From] + edge.Weight;
                     }
                 }
             }
     
-            for (int sourcenode = 0; sourcenode < numberOfVertices; sourcenode++)
+            /* step 3: This step reports if there is a negative weight cycle in graph. Do following for each edge u-v
+             * If dist[v] > dist[u] + weight of edge uv, then “Graph contains negative weight cycle”
+             */
+
+            foreach (var edge in graph.Edges)
             {
-                for (int destinationnode = 0; destinationnode < numberOfVertices; destinationnode++)
+                if (distances[edge.To] > distances[edge.From] + edge.Weight)
                 {
-                    if (adjacencymatrix[sourcenode, destinationnode] != int.MaxValue)
-                    {
-                        if (distances[destinationnode] > distances[sourcenode] + adjacencymatrix[sourcenode, destinationnode])
-                        {
-                            throw new BoardException("The Graph contains negative egde cycle");
-                        }
-                    }
+                    throw new BoardException("Graph contains negative egde cycle");
                 }
             }
 

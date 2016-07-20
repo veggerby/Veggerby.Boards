@@ -57,10 +57,10 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
                 };
                 
                 // act
-                var actual = algorithm.GetShortestPath(graph, 4);
+                var actual = algorithm.GetShortestPath(graph, int.MaxValue);
 
                 // assert
-                Assert.Equal(expected, actual);
+                Assert.Equal(expected, actual.Select(x => new Edge<int>(x.From, x.To, x.Distance)));
             }
         }
     }

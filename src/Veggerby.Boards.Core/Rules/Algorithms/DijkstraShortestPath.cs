@@ -3,9 +3,11 @@ using System.Linq;
 
 namespace Veggerby.Boards.Core.Rules.Algorithms
 {
+    /// From http://www.sanfoundry.com/java-program-to-implement-johnsons-algorithm/
+    /// http://stackoverflow.com/questions/10674468/finding-the-shortest-route-using-dijkstra-algorithm
     public class DijkstraShortestPath
     {
-        public IEnumerable<Path<T>> GetShortestPath<T>(T from, Graph<T> graph)
+        public IEnumerable<Path<T>> CalculateShortestPaths<T>(T from, Graph<T> graph)
         {
             var settled = new List<T>();
             var unsettled = new List<T>(graph.Vertices);

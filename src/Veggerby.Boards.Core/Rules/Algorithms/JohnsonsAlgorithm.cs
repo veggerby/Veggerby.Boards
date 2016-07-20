@@ -6,7 +6,7 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
     /// From http://www.sanfoundry.com/java-program-to-implement-johnsons-algorithm/
     public class JohnsonsAlgorithm 
     {
-        public IEnumerable<Edge<T>> GetShortestPath<T>(Graph<T> graph, T source)
+        public IEnumerable<Path<T>> GetShortestPath<T>(Graph<T> graph, T source)
         {
             // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
             // http://www.geeksforgeeks.org/johnsons-algorithm/
@@ -26,20 +26,31 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
             // step 4: Finally, q is removed, and Dijkstra's algorithm is used to find the shortest paths from each node s to every other vertex in the reweighted graph.
             var allPairShortestPath = new int[graph.Vertices.Count(), graph.Vertices.Count()];     
 
-            var result = new List<Edge<T>>();
+            var result = new List<Path<T>>();
             foreach (var from in graph.Vertices)
             {
-                var path = dijsktraShortestPath.GetShortestPath(from, reweightedGraph);
+                var paths = dijsktraShortestPath.CalculateShortestPaths(from, reweightedGraph);
 
-                foreach (var to in graph.Vertices.Where(x => !from.Equals(x)))
-                {
-                    var edge = new Edge<T>(from, to, path.Single(x => x.To.Equals(to)).Distance + potential[to] - potential[from]);
-                    result.Add(edge);
-                }
+                result.AddRange(paths.Select(x => GetOriginalPath(x, graph)));
+                //result.AddRange(
+                //    paths.Select(x => new Edge<T>(x.From, x.To, x.Distance + potential[x.To] - potential[x.From])));
             }
 
             return result;
         }
+    
+        private Path<T> GetOriginalPath<T>(Path<T> path, Graph<T> originalGraph)
+        {
+            var edges = new List<Edge<T>>();
+
+            foreach (var edge in path.Edges)
+            {
+                var originalEdge = originalGraph.GetEdge(edge.From, edge.To);
+                edges.Add(originalEdge);
+            }
+
+            return new Path<T>(edges);
+        } 
     
         private Graph<T> ComputeAugmentedGraph<T>(Graph<T> graph, T q)
         {

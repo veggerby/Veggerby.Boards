@@ -20,5 +20,11 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
 
             Edges = edges.ToList();
         }
+
+        public override string ToString()
+        {
+            var path = string.Join(" ", Edges.Select(x => $"[{x.Weight}] {x.To}"));
+            return $"Path: {From} {path}";
+        }
     }
 }

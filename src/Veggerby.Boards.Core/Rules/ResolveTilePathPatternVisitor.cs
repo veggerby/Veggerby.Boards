@@ -4,6 +4,7 @@ using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core.Rules.Algorithms;
 
 namespace Veggerby.Boards.Core.Rules
 {
@@ -89,7 +90,27 @@ namespace Veggerby.Boards.Core.Rules
         public void Visit(AnyPattern pattern)
         {
             // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
-            throw new NotImplementedException();
+            var graph = new Graph<Tile>(_board.Tiles, _board.TileRelations.Select(x => new Edge<Tile>(x.From, x.To, x.Distance)));
+
+            var algorithm = new JohnsonsAlgorithm();
+            var paths = algorithm.GetShortestPath(graph, new Tile("q"));
+
+            var path = paths.SingleOrDefault(x => x.From.Equals(_from) && x.To.Equals(_to));
+
+            if (path == null)
+            {
+                ResultPath = null;
+                return;
+            }
+
+            TilePath resultPath = null;
+
+            foreach (var edge in path.Edges)
+            {
+                resultPath = TilePath.Create(resultPath, _board.GetTileRelation(edge.From, edge.To));
+            }
+
+            ResultPath = resultPath;
         }
 
         private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)

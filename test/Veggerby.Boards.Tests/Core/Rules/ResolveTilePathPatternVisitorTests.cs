@@ -97,8 +97,14 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
                 var pattern = new AnyPattern();
 
-                // act + assert
-                Assert.Throws<NotImplementedException>(() => pattern.Accept(visitor));
+                // act
+                pattern.Accept(visitor);
+
+                // assert
+                var actual = visitor.ResultPath;
+                Assert.Equal(7, actual.Distance);
+                Assert.Equal(new[] { "tile-0", "tile-24", "tile-25", "tile-26" }, actual.Tiles.Select(x => x.Id));
+                Assert.Equal(new[] { "across", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
             }
         }
 

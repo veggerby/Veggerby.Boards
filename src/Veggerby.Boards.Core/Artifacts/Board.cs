@@ -7,13 +7,13 @@ namespace Veggerby.Boards.Core.Artifacts
 {
     public class Board : Artifact
     {
-        private readonly IEnumerable<Tile> _tiles;
-        private readonly IEnumerable<TileRelation> _tileRelations;
+        public IEnumerable<Tile> Tiles { get; }
+        public IEnumerable<TileRelation> TileRelations { get; }
 
         public Board(string id, IEnumerable<TileRelation> tileRelations) : base(id)
         {
-            _tileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList();
-            _tiles = tileRelations.SelectMany(x => new [] { x.From, x.To }).Distinct().ToList();
+            TileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList().AsReadOnly();
+            Tiles = tileRelations.SelectMany(x => new [] { x.From, x.To }).Distinct().ToList().AsReadOnly();
         }
 
         public Tile GetTile(string tileId)
@@ -23,7 +23,7 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException(nameof(tileId));
             }
 
-            return _tiles.SingleOrDefault(x => string.Equals(x.Id, tileId)); 
+            return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId)); 
         }
 
         public TileRelation GetTileRelation(Tile from, Direction direction)
@@ -38,7 +38,22 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException(nameof(direction));
             }
 
-            return _tileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
+            return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
+        }
+
+        public TileRelation GetTileRelation(Tile from, Tile to)
+        {
+            if (from == null)
+            {
+                throw new ArgumentException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentException(nameof(to));
+            }
+
+            return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));
         }
     }
 }

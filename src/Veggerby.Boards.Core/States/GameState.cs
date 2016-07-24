@@ -8,6 +8,8 @@ namespace Veggerby.Boards.Core.States
     {
         private readonly IEnumerable<IState> _childStates;
 
+        public IEnumerable<IState> ChildStates => _childStates.ToList().AsReadOnly();
+
         public GameState(Game game, IEnumerable<IState> childStates) : base(game)
         {
             _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();

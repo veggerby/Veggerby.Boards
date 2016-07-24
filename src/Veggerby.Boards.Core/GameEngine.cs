@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 
@@ -10,19 +11,22 @@ namespace Veggerby.Boards.Core.Rules
         public RuleEngine Rules { get; }
         
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
-        private GameState _gameState;
+        public GameState GameState { get; private set; }
+
+        public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
 
         public GameEngine(Game game, GameState initialState, RuleEngine rules)
         {
             Game = game;
-            _gameState = initialState ?? new GameState(game, null);
+            GameState = initialState ?? new GameState(game, null);
+            Rules = rules;
         }
 
         private GameState PlayEvent(GameState state, IGameEvent @event)
         {
-            var newState = state.OnBeforeEvent(@event);
+            var newState = state?.OnBeforeEvent(@event);
             newState = Rules.GetState(newState, @event);
-            newState = newState.OnAfterEvent(@event);
+            newState = newState?.OnAfterEvent(@event);
 
             if (newState == state) 
             {
@@ -34,7 +38,7 @@ namespace Veggerby.Boards.Core.Rules
 
         public bool AddEvent(IGameEvent @event)
         {
-            var newState = PlayEvent(_gameState, @event);
+            var newState = PlayEvent(GameState, @event);
 
             if (newState == null)
             {
@@ -43,14 +47,14 @@ namespace Veggerby.Boards.Core.Rules
 
             _events.Add(@event);
 
-            _gameState = newState;
+            GameState = newState;
             
             return true;
         }
 
         public void PlayEvents(IEnumerable<IGameEvent> events)
         {
-            var state = _gameState;
+            var state = GameState;
             foreach (var @event in events)
             {
                 state = PlayEvent(state, @event);

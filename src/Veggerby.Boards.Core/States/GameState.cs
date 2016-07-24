@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Core.States
 
         public State<T> GetState<T>(T artifact) where T : Artifact
         {
-            return GetState(artifact) as State<T>;
+            return GetState(artifact as Artifact) as State<T>;
         }
 
         public IState GetState(Artifact artifact)

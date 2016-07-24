@@ -20,14 +20,21 @@ namespace Veggerby.Boards.Core.Rules
 
         private GameState PlayEvent(GameState state, IGameEvent @event)
         {
-            return Rules.GetState(state, @event);
+            var newState = state.OnBeforeEvent(@event);
+            newState = Rules.GetState(newState, @event);
+            newState = newState.OnAfterEvent(@event);
+
+            if (newState == state) 
+            {
+                return null;
+            }
+
+            return newState;
         }
 
         public bool AddEvent(IGameEvent @event)
         {
-            var newState = _gameState.OnBeforeEvent(@event);
-            
-            newState = PlayEvent(newState, @event);
+            var newState = PlayEvent(_gameState, @event);
 
             if (newState == null)
             {
@@ -36,7 +43,7 @@ namespace Veggerby.Boards.Core.Rules
 
             _events.Add(@event);
 
-            _gameState = newState.OnAfterEvent(@event);
+            _gameState = newState;
             
             return true;
         }

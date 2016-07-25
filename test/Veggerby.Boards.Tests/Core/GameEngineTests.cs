@@ -1,4 +1,5 @@
 using System.Linq;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
@@ -33,7 +34,8 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new GameEngine(
                     game, 
                     new GameState(game, new [] { new PieceState(piece, from)}), 
-                    rules);
+                    rules,
+                    new [] { new Player("player-1"),  new Player("player-2") });
 
                 var @event = new MovePieceGameEvent(piece, from, to);
 
@@ -67,7 +69,8 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new GameEngine(
                     game, 
                     new GameState(game, new [] { new PieceState(piece, from)}), 
-                    rules);
+                    rules,
+                    new [] { new Player("player-1"),  new Player("player-2") });
 
                 var @event = new MovePieceGameEvent(piece, from, to);
 

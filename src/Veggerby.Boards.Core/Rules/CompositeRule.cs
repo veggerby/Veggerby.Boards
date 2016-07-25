@@ -5,25 +5,29 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
 {
-    public class RuleEngine
+    public class CompositeRule : IRule
     {
         private readonly IEnumerable<IRule> _rules;
 
-        public RuleEngine(IEnumerable<IRule> rules)
+        public CompositeRule(IEnumerable<IRule> rules)
         {
             _rules = (rules ?? Enumerable.Empty<IRule>()).ToList();
         }
 
         public GameState GetState(GameState currentState, IGameEvent @event)
         {
-            var newState = currentState;
-
+            var state = currentState;
             foreach (var rule in _rules)
             {
-                newState = rule.GetState(newState, @event) ?? newState;
+                state = rule?.GetState(currentState, @event) ?? state;
             }
 
-            return newState != currentState ? newState : null;
+            if (state == currentState)
+            {
+                return null;
+            }
+
+            return state;
         }
     }
 }

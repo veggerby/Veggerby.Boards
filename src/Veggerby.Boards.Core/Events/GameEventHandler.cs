@@ -1,7 +1,8 @@
 using System;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.States
+namespace Veggerby.Boards.Core.Events
 {
     public class GameEventHandler<T> where T : Artifact
     {

@@ -2,6 +2,7 @@ using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core.Events;
 using Veggerby.Boards.Core.Rules;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;

@@ -1,4 +1,4 @@
-namespace Veggerby.Boards.Core.States
+namespace Veggerby.Boards.Core.Events
 {
     public interface IGameEvent
     {

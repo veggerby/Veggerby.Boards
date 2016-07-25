@@ -1,6 +1,6 @@
 using Veggerby.Boards.Core.Artifacts;
 
-namespace Veggerby.Boards.Core.States
+namespace Veggerby.Boards.Core.Events
 {
     public class RollDieGameEvent<T> : IGameEvent
     {

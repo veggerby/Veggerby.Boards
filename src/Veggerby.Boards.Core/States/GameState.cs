@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Events;
 
 namespace Veggerby.Boards.Core.States
 {

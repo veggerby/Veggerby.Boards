@@ -3,7 +3,7 @@ using Veggerby.Boards.Core.Events;
 
 namespace Veggerby.Boards.Core.States
 {
-    public abstract class State<T> : IState
+    public abstract class State<T> : IArtifactState
         where T : Artifact
     {
         public T Artifact { get; }
@@ -40,7 +40,7 @@ namespace Veggerby.Boards.Core.States
             return newState;
         }
 
-        Artifact IState.Artifact => Artifact;
+        Artifact IArtifactState.Artifact => Artifact;
 
         IState IState.OnBeforeEvent(IGameEvent @event)
         {

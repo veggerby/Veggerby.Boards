@@ -13,11 +13,10 @@ namespace Veggerby.Boards.Core
         public Game Game { get; }
         public RuleEngine Rules { get; }
         public IEnumerable<Player> Players { get; }
+        public GameState GameState { get; private set; }
+        public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
         
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
-        public GameState GameState { get; private set; }
-
-        public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
 
         public GameEngine(Game game, GameState initialState, RuleEngine rules, IEnumerable<Player> players)
         {

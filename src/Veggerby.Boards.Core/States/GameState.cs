@@ -31,13 +31,17 @@ namespace Veggerby.Boards.Core.States
         public IState GetState(Artifact artifact)
         {
             return _childStates
+                .OfType<IArtifactState>()
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
         }
 
         public GameState Update(IEnumerable<IState> newStates)
         {
-            var currentStates = newStates.Select(x => GetState(x.Artifact)).ToList();
-            var states = _childStates.Except(currentStates).Concat(newStates).ToList();
+            var states = _childStates
+                .Except(newStates, new StateBaseEntityEqualityComparer()) // remove current state of base entities
+                .Concat(newStates) // add ned states
+                .ToList();
+
             return new GameState(Artifact, states);
         }
 

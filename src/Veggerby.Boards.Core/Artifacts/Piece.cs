@@ -6,10 +6,12 @@ namespace Veggerby.Boards.Core.Artifacts
 {
     public class Piece : Artifact
     {
+        public Player Owner { get; }
         public IEnumerable<IPattern> Patterns { get; }
 
-        public Piece(string id, IEnumerable<IPattern> patterns) : base(id)
+        public Piece(string id, Player owner, IEnumerable<IPattern> patterns) : base(id)
         {
+            Owner = owner;
             Patterns = (patterns ?? Enumerable.Empty<IPattern>()).ToList();
         }
     }

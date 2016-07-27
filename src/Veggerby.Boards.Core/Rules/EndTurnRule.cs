@@ -15,6 +15,7 @@ namespace Veggerby.Boards.Core.Rules
             {
                 var turn = currentState.ActiveTurn;
                 var nextPlayer = gameEngine
+                    .Game
                     .Players
                     .SkipWhile(x => !(turn?.Turn.Player.Equals(x) ?? false)) // find current player
                     .Skip(1) // skip to next
@@ -25,7 +26,7 @@ namespace Veggerby.Boards.Core.Rules
                 if (nextPlayer == null)
                 {
                     var round = new Round((turn.Round?.Number ?? 0) + 1);
-                    nextTurn = new Turn(round, gameEngine.Players.First());
+                    nextTurn = new Turn(round, gameEngine.Game.Players.First());
 
                 }
                 else

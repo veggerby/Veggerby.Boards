@@ -8,6 +8,9 @@ namespace Veggerby.Boards.Backgammon
         {
             BoardId = "backgammon";
 
+            AddPlayerDefinition("white");
+            AddPlayerDefinition("black");
+
             for (int i = 1; i <= 24; i++)
             {
                 AddTileDefinition($"point-{i}");
@@ -40,8 +43,8 @@ namespace Veggerby.Boards.Backgammon
 
             for (int i = 1; i <= 15; i++)
             {
-                AddPieceDefinition($"white-{i}");
-                AddPieceDefinition($"black-{i}");
+                AddPieceDefinition($"white-{i}", "white");
+                AddPieceDefinition($"black-{i}", "black");
 
                 AddPieceDirectionPatternDefinition($"white-{i}", true, "clockwise");
                 AddPieceDirectionPatternDefinition($"black-{i}", true, "counterclockwise");

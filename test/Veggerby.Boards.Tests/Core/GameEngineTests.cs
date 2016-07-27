@@ -19,14 +19,16 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_return_new_state()
             {
                 // arrange
+                var player = new Player("player");
                 var board = new TestBoard();
-                var piece = new Piece("id", new[] { new DirectionPattern(Direction.Clockwise) });
+                var piece = new Piece("id", player, new[] { new DirectionPattern(Direction.Clockwise) });
                 var from = board.GetTile("tile-3");
                 var to = board.GetTile("tile-6");
 
                 var game = new Game(
                     "game",
                     board,
+                    new [] { player },
                     new [] { piece });
 
                 var rules = new RuleEngine(new[] { new PatternMovePieceRule()});
@@ -34,8 +36,7 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new GameEngine(
                     game, 
                     new GameState(game, new [] { new PieceState(piece, from)}, null), 
-                    rules,
-                    new [] { new Player("player-1"),  new Player("player-2") });
+                    rules);
 
                 var @event = new MovePieceGameEvent(piece, from, to);
 
@@ -54,14 +55,16 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_not_return_new_state()
             {
                 // arrange
+                var player = new Player("player");
                 var board = new TestBoard();
-                var piece = new Piece("id", new[] { new DirectionPattern(Direction.CounterClockwise) });
+                var piece = new Piece("id", player, new[] { new DirectionPattern(Direction.CounterClockwise) });
                 var from = board.GetTile("tile-3");
                 var to = board.GetTile("tile-6");
 
                 var game = new Game(
                     "game",
                     board,
+                    new [] { player },
                     new [] { piece });
 
                 var rules = new RuleEngine(new[] { new PatternMovePieceRule()});
@@ -69,8 +72,7 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new GameEngine(
                     game, 
                     new GameState(game, new [] { new PieceState(piece, from)}, null), 
-                    rules,
-                    new [] { new Player("player-1"),  new Player("player-2") });
+                    rules);
 
                 var @event = new MovePieceGameEvent(piece, from, to);
 

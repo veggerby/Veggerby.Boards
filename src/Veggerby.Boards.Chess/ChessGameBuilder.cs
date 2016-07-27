@@ -8,6 +8,9 @@ namespace Veggerby.Boards.Chess
         {
             BoardId = "chess";
 
+            AddPlayerDefinition("white");
+            AddPlayerDefinition("black");
+
             /*         N
              * (1,1) ----- (8,1)    BLACK
              *   |           |
@@ -74,11 +77,11 @@ namespace Veggerby.Boards.Chess
             AddDirectionDefinition("south-east");
             AddDirectionDefinition("south-west");
 
-            AddPieceDefinition("white-queen");
-            AddPieceDefinition("white-king");
+            AddPieceDefinition("white-queen", "white");
+            AddPieceDefinition("white-king", "white");
 
-            AddPieceDefinition("black-queen");
-            AddPieceDefinition("black-king");
+            AddPieceDefinition("black-queen", "black");
+            AddPieceDefinition("black-king", "black");
 
 
             AddPieceDirectionPatternDefinition("white-queen", true, "north");
@@ -119,8 +122,8 @@ namespace Veggerby.Boards.Chess
             
             for (int i = 1; i <= 8; i++)
             {
-                AddPieceDefinition($"white-pawn-{i}");
-                AddPieceDefinition($"black-pawn-{i}");
+                AddPieceDefinition($"white-pawn-{i}", "white");
+                AddPieceDefinition($"black-pawn-{i}", "black");
                 
                 AddPieceDirectionPatternDefinition($"white-pawn-{i}", true, "north");
                 AddPieceDirectionPatternDefinition($"black-pawn-{i}", true, "south");
@@ -128,13 +131,13 @@ namespace Veggerby.Boards.Chess
 
             for (int i = 1; i <= 8; i++)
             {
-                AddPieceDefinition($"white-rook-{i}");
-                AddPieceDefinition($"white-knight-{i}");
-                AddPieceDefinition($"white-bishop-{i}");
+                AddPieceDefinition($"white-rook-{i}", "white");
+                AddPieceDefinition($"white-knight-{i}", "white");
+                AddPieceDefinition($"white-bishop-{i}", "white");
 
-                AddPieceDefinition($"black-rook-{i}");
-                AddPieceDefinition($"black-knight-{i}");
-                AddPieceDefinition($"black-bishop-{i}");
+                AddPieceDefinition($"black-rook-{i}", "black");
+                AddPieceDefinition($"black-knight-{i}", "black");
+                AddPieceDefinition($"black-bishop-{i}", "black");
 
                 AddPieceDirectionPatternDefinition($"white-rook-{i}", true, "north");
                 AddPieceDirectionPatternDefinition($"white-rook-{i}", true, "east");

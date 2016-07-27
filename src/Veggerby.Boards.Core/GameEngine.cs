@@ -13,13 +13,12 @@ namespace Veggerby.Boards.Core
     {
         public Game Game { get; }
         public RuleEngine Rules { get; }
-        public IEnumerable<Player> Players { get; }
         public GameState GameState { get; private set; }
         public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
         
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
 
-        public GameEngine(Game game, GameState initialState, RuleEngine rules, IEnumerable<Player> players)
+        public GameEngine(Game game, GameState initialState, RuleEngine rules)
         {
             if (game == null)
             {
@@ -31,20 +30,9 @@ namespace Veggerby.Boards.Core
                 throw new ArgumentNullException(nameof(rules));
             }
 
-            if (players == null)
-            {
-                throw new ArgumentNullException(nameof(players));
-            }
-
-            if (!players.Any())
-            {
-                throw new ArgumentException(nameof(players));
-            }
-
             Game = game;
             GameState = initialState ?? new GameState(game, null, null);
             Rules = rules;
-            Players = players.ToList();
         }
 
         private GameState PlayEvent(GameState state, IGameEvent @event)

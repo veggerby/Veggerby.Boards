@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
+using Veggerby.Boards.Core.Phases;
 using Veggerby.Boards.Core.Rules;
 using Veggerby.Boards.Core.States;
 
@@ -41,7 +42,7 @@ namespace Veggerby.Boards.Core
             }
 
             Game = game;
-            GameState = initialState ?? new GameState(game, null);
+            GameState = initialState ?? new GameState(game, null, null);
             Rules = rules;
             Players = players.ToList();
         }
@@ -49,7 +50,7 @@ namespace Veggerby.Boards.Core
         private GameState PlayEvent(GameState state, IGameEvent @event)
         {
             var newState = state?.OnBeforeEvent(@event);
-            newState = Rules.GetState(newState, @event);
+            newState = Rules.GetState(this, newState, @event);
             newState = newState?.OnAfterEvent(@event);
 
             if (newState == state) 
@@ -88,6 +89,11 @@ namespace Veggerby.Boards.Core
                     throw new BoardException("Event does not generate valid state");
                 }
             }
+        }
+
+        public TurnState EvaluateTurnState(Turn nextTurn)
+        {
+            return new TurnState(Game.GamePhases.Single(), nextTurn, Game.TurnPhases.Single());
         }
     }
 }

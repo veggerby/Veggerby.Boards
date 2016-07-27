@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Tests.Core
 
                 var engine = new GameEngine(
                     game, 
-                    new GameState(game, new [] { new PieceState(piece, from)}), 
+                    new GameState(game, new [] { new PieceState(piece, from)}, null), 
                     rules,
                     new [] { new Player("player-1"),  new Player("player-2") });
 
@@ -68,7 +68,7 @@ namespace Veggerby.Boards.Tests.Core
 
                 var engine = new GameEngine(
                     game, 
-                    new GameState(game, new [] { new PieceState(piece, from)}), 
+                    new GameState(game, new [] { new PieceState(piece, from)}, null), 
                     rules,
                     new [] { new Player("player-1"),  new Player("player-2") });
 

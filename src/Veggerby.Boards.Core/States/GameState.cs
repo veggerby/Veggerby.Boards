@@ -2,18 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
+using Veggerby.Boards.Core.Phases;
 
 namespace Veggerby.Boards.Core.States
 {
     public class GameState : State<Game>
     {
         private readonly IEnumerable<IState> _childStates;
+        private readonly IEnumerable<TurnState> _turns;
 
         public IEnumerable<IState> ChildStates => _childStates.ToList().AsReadOnly();
+        public IEnumerable<Round> Rounds => _turns.Select(x => x.Round).Distinct().OrderBy(x => x.Number).ToList();
+        public IEnumerable<Turn> Turns => _turns.Select(x => x.Turn).ToList();
+        public TurnState ActiveTurn => _turns.LastOrDefault();
 
-        public GameState(Game game, IEnumerable<IState> childStates) : base(game)
+        public GameState(Game game, IEnumerable<IState> childStates, IEnumerable<TurnState> turns) : base(game)
         {
             _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();
+            _turns = (turns ?? Enumerable.Empty<TurnState>()).ToList();
         }
 
         public IEnumerable<State<T>> GetStates<T>() where T : Artifact
@@ -42,7 +48,7 @@ namespace Veggerby.Boards.Core.States
                 .Concat(newStates) // add ned states
                 .ToList();
 
-            return new GameState(Artifact, states);
+            return new GameState(Artifact, states, _turns);
         }
 
         public new GameState OnBeforeEvent(IGameEvent @event)
@@ -73,6 +79,13 @@ namespace Veggerby.Boards.Core.States
             }
             
             return Update(states);
+        }
+
+        public GameState NextTurn(TurnState turnState)
+        {
+            var turnStates = new List<TurnState>(_turns);
+            turnStates.Add(turnState);
+            return new GameState(Artifact, _childStates, turnStates);
         }
     }
 }

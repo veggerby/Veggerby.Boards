@@ -4,6 +4,11 @@ namespace Veggerby.Boards.Core.States
 {
     public class StateBaseEntityEqualityComparer : IEqualityComparer<IState>
     {
+        private bool? Equals(IArtifactState x, IArtifactState y)
+        {
+            return x?.Artifact.Equals(y?.Artifact);
+        }
+
         public bool Equals(IState x, IState y)
         {
             if ((x ?? y) == null)
@@ -21,7 +26,8 @@ namespace Veggerby.Boards.Core.States
                 return false;
             }
 
-            return (x as IArtifactState)?.Artifact.Equals((y as IArtifactState)?.Artifact) ?? false;
+            return Equals(x as IArtifactState, y as IArtifactState)
+                ?? false;
         }
 
         public int GetHashCode(IState obj)

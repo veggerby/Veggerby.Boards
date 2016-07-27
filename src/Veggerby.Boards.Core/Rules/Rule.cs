@@ -5,16 +5,16 @@ namespace Veggerby.Boards.Core.Rules
 {
     public abstract class Rule<T> : IRule where T : IGameEvent
     {
-        public abstract GameState GetState(GameState currentState, T @event);
+        public abstract GameState GetState(GameEngine gameEngine, GameState currentState, T @event);
 
-        GameState IRule.GetState(GameState currentState, IGameEvent @event)
+        GameState IRule.GetState(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
             if (!(@event is T))
             {
                 return null;
             }
 
-            return GetState(currentState, (T)@event);
+            return GetState(gameEngine, currentState, (T)@event);
         }
     }
 }

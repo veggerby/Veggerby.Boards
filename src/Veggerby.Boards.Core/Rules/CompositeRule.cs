@@ -14,12 +14,12 @@ namespace Veggerby.Boards.Core.Rules
             _rules = (rules ?? Enumerable.Empty<IRule>()).ToList();
         }
 
-        public GameState GetState(GameState currentState, IGameEvent @event)
+        public GameState GetState(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
             var state = currentState;
             foreach (var rule in _rules)
             {
-                state = rule?.GetState(currentState, @event) ?? state;
+                state = rule?.GetState(gameEngine, currentState, @event) ?? state;
             }
 
             if (state == currentState)

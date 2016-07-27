@@ -20,11 +20,11 @@ namespace Veggerby.Boards.Core.Rules
 
         protected abstract bool EvaluateCondition(GameState currentState, IGameEvent @event);
 
-        public GameState GetState(GameState currentState, IGameEvent @event)
+        public GameState GetState(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
             if (EvaluateCondition(currentState, @event))
             {
-                return _innerRule.GetState(currentState, @event);
+                return _innerRule.GetState(gameEngine, currentState, @event);
             }
 
             return null;

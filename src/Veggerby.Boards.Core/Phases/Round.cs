@@ -1,30 +1,30 @@
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Veggerby.Boards.Core.Phases
 {
     public class Round
     {
         public int Number { get; }
-        public IEnumerable<Turn> Turns { get; }
 
-        public Round(int number, IEnumerable<Turn> turns)
+        public Round(int number)
         {
             Number = number;
-            Turns = (turns ?? Enumerable.Empty<Turn>()).ToList();
         }
 
-        public Turn NextTurn(Turn turn)
+        protected bool Equals(Round other)
         {
-            if (turn == null)
-            {
-                return Turns.FirstOrDefault();
-            }
+            return Number == other.Number;
+        }
 
-            return Turns
-                .SkipWhile(x => x != turn) // find the current turn 
-                .Skip(1) // skip current turn
-                .FirstOrDefault(); // take next
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Round)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Number.GetHashCode();
         }
     }
 }

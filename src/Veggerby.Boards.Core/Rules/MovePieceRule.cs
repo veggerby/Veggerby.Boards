@@ -9,12 +9,28 @@ namespace Veggerby.Boards.Core.Rules
     {
         protected abstract TilePath GetPath(GameState currentState, State<Piece> piece, Tile from, Tile to);
 
+        protected virtual bool CanMovePath(GameState currentState, State<Piece> piece, TilePath path)
+        {
+            return true;
+        }
+
         public override GameState GetState(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
         {
+            // check if piece owner is current in turn
+            if (!(@event.Piece?.Owner.Equals(currentState.ActiveTurn.Turn.Player) ?? true))
+            {
+                return null;
+            }
+
             var pieceState = currentState.GetState(@event.Piece);
             var path = GetPath(currentState, pieceState, @event.From, @event.To);
             
             if (path == null)
+            {
+                return null;
+            }
+
+            if (!CanMovePath(currentState, pieceState, path))
             {
                 return null;
             }

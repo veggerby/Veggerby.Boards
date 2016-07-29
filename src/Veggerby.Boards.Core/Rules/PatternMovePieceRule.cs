@@ -8,8 +8,7 @@ namespace Veggerby.Boards.Core.Rules
     {
         protected override TilePath GetPath(GameState currentState, State<Piece> piece, Tile from, Tile to)
         {
-            var game = currentState.Artifact;
-            var board = game.Board;
+            var board = currentState.Game.Board;
 
             foreach (var pattern in piece.Artifact.Patterns)
             {

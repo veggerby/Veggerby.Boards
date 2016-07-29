@@ -31,7 +31,7 @@ namespace Veggerby.Boards.Core
             }
 
             Game = game;
-            GameState = initialState ?? new GameState(game, null, null);
+            GameState = initialState ?? GameState.New(game);
             Rules = rules;
         }
 

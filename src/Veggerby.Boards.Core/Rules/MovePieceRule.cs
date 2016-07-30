@@ -14,29 +14,33 @@ namespace Veggerby.Boards.Core.Rules
             return true;
         }
 
-        public override GameState GetState(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
+        public override bool Check(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
         {
             // check if piece owner is current in turn
             if (!(@event.Piece?.Owner.Equals(currentState.ActiveTurn.Turn.Player) ?? true))
             {
-                return null;
+                return false;
             }
 
             var pieceState = currentState.GetState(@event.Piece);
             var path = GetPath(currentState, pieceState, @event.From, @event.To);
             
-            if (path == null)
+            if (path == null || !path.From.Equals(@event.From) || !path.To.Equals(@event.To))
             {
-                return null;
+                return false;
             }
 
             if (!CanMovePath(currentState, pieceState, path))
             {
-                return null;
+                return false;
             }
 
-            var newPieceState = new PieceState(@event.Piece, @event.To);
+            return true;
+        }
 
+        public override GameState Evaluate(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
+        {
+            var newPieceState = new PieceState(@event.Piece, @event.To);
             return currentState.Update(new IState[] { newPieceState, });
         }
     }

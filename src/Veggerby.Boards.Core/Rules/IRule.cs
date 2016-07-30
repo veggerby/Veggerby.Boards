@@ -5,6 +5,7 @@ namespace Veggerby.Boards.Core.Rules
 {
     public interface IRule
     {
-        GameState GetState(GameEngine gameEngine, GameState currentState, IGameEvent @event);
+        bool Check(GameEngine gameEngine, GameState currentState, IGameEvent @event);
+        GameState Evaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event);
     }
 }

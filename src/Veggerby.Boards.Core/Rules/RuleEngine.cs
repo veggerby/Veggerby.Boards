@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Events;
@@ -5,7 +6,7 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
 {
-    public class RuleEngine
+    public class RuleEngine : IRule
     {
         private readonly IEnumerable<IRule> _rules;
 
@@ -14,16 +15,31 @@ namespace Veggerby.Boards.Core.Rules
             _rules = (rules ?? Enumerable.Empty<IRule>()).ToList();
         }
 
-        public GameState GetState(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        private Tuple<bool, GameState> InternalEvaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
-            var newState = currentState;
+            bool check = false;
+            var state = currentState;
 
             foreach (var rule in _rules)
             {
-                newState = rule.GetState(gameEngine, newState, @event) ?? newState;
+                if (rule.Check(gameEngine, state, @event))
+                {
+                    check = true;
+                    state = rule.Evaluate(gameEngine, state, @event);
+                }
             }
 
-            return newState != currentState ? newState : null;
+            return new Tuple<bool, GameState>(check, state);
+        }
+
+        public bool Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        {
+            return InternalEvaluate(gameEngine, currentState, @event).Item1;
+        }
+
+        public GameState Evaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        {
+            return InternalEvaluate(gameEngine, currentState, @event).Item2;
         }
     }
 }

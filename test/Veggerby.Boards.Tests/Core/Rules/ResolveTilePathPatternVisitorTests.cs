@@ -1,7 +1,7 @@
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Rules;
+using Veggerby.Boards.Core.Rules.Algorithms;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 

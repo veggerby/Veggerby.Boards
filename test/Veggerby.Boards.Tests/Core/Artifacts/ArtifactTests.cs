@@ -1,7 +1,4 @@
-using System;
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts

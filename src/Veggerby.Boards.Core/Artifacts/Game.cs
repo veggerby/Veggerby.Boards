@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Veggerby.Boards.Core.Phases;
 
 namespace Veggerby.Boards.Core.Artifacts
 {

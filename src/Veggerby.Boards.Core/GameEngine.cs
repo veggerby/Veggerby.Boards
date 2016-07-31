@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
-using Veggerby.Boards.Core.Phases;
 using Veggerby.Boards.Core.Rules;
 using Veggerby.Boards.Core.States;
 

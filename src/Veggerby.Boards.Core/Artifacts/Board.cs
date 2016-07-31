@@ -30,12 +30,12 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             if (from == null)
             {
-                throw new ArgumentException(nameof(from));
+                throw new ArgumentNullException(nameof(from));
             }
 
             if (direction == null)
             {
-                throw new ArgumentException(nameof(direction));
+                throw new ArgumentNullException(nameof(direction));
             }
 
             return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
@@ -45,12 +45,12 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             if (from == null)
             {
-                throw new ArgumentException(nameof(from));
+                throw new ArgumentNullException(nameof(from));
             }
 
             if (to == null)
             {
-                throw new ArgumentException(nameof(to));
+                throw new ArgumentNullException(nameof(to));
             }
 
             return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));

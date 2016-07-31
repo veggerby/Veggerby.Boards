@@ -16,8 +16,10 @@ namespace Veggerby.Boards.Core.Rules
 
         public override bool Check(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
         {
+            var activeTurn = currentState.GetActiveTurn();
+
             // check if piece owner is current in turn
-            if (!(@event.Piece?.Owner.Equals(currentState.ActiveTurn.Turn.Player) ?? true))
+            if (activeTurn == null || !(@event.Piece?.Owner.Equals(activeTurn.Artifact) ?? true))
             {
                 return false;
             }

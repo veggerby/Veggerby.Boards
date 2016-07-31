@@ -1,33 +1,26 @@
 using System;
-using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.Phases
 {
     public class Turn
     {
-        public Player Player { get; }
-
         public Round Round { get; }
+        public int Number { get; }
 
-        public Turn(Round round, Player player)
+        public Turn(Round round, int number)
         {
             if (round == null)
             {
                 throw new ArgumentNullException(nameof(round));
             }
 
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
-
             Round = round;
-            Player = player;
+            Number = number;
         }
 
         protected bool Equals(Turn other)
         {
-            return Player.Equals(other.Player) && Round.Equals(other.Round);
+            return Number.Equals(other.Number) && Round.Equals(other.Round);
         }
 
         public override bool Equals(object obj)
@@ -42,7 +35,7 @@ namespace Veggerby.Boards.Core.Phases
         {
             unchecked
             {
-                var hashCode = Player?.GetHashCode() ?? 0;
+                var hashCode = Number.GetHashCode();
                 hashCode = (hashCode*397) ^ (Round?.GetHashCode() ?? 0);
                 return hashCode;
             }

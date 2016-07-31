@@ -18,7 +18,7 @@ namespace Veggerby.Boards.Core
         
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
 
-        public GameEngine(Game game, GameState initialState, RuleEngine rules)
+        private GameEngine(Game game, GameState initialState, RuleEngine rules)
         {
             if (game == null)
             {
@@ -76,9 +76,31 @@ namespace Veggerby.Boards.Core
             }
         }
 
-        public TurnState EvaluateTurnState(Turn nextTurn)
+        public TurnState EvaluateTurnState(Player nextPlayer, Turn nextTurn)
         {
-            return new TurnState(Game.GamePhases.Single(), nextTurn, Game.TurnPhases.Single());
+            if (nextPlayer == null)
+            {
+                throw new ArgumentNullException(nameof(nextPlayer));
+            }
+
+            if (nextTurn == null)
+            {
+                throw new ArgumentNullException(nameof(nextTurn));
+            }
+
+            return new TurnState(
+                nextPlayer, 
+                nextTurn, 
+                Game.GamePhases.Single(), 
+                Game.TurnPhases.Single());
+        }
+
+        public static GameEngine New(Game game, GameState initialState, RuleEngine rules)
+        {
+            var engine = new GameEngine(game, initialState, rules);
+            var turn = engine.FirstTurn();
+            engine.GameState = initialState.Set(turn.Artifact, (artifact, state) => turn);
+            return engine;
         }
     }
 }

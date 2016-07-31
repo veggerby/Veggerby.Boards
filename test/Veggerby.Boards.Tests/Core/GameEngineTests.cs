@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Tests.Core
 
                 var rules = new RuleEngine(new[] { new PatternMovePieceRule()});
 
-                var engine = new GameEngine(
+                var engine = GameEngine.New(
                     game, 
                     GameState.New(game, new [] { new PieceState(piece, from) }), 
                     rules);
@@ -46,7 +46,9 @@ namespace Veggerby.Boards.Tests.Core
                 // assert
                 Assert.True(actual);
                 Assert.Equal(@event, engine.Events.Single());
-                Assert.IsType<PieceState>(engine.GameState.ChildStates.Single());
+                Assert.Equal(2, engine.GameState.ChildStates.Count());
+                Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
+                Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
                 var state = (PieceState)engine.GameState.GetState(piece);
                 Assert.Equal(to, state.CurrentTile);
             }
@@ -69,7 +71,7 @@ namespace Veggerby.Boards.Tests.Core
 
                 var rules = new RuleEngine(new[] { new PatternMovePieceRule()});
 
-                var engine = new GameEngine(
+                var engine = GameEngine.New(
                     game, 
                     GameState.New(game, new [] { new PieceState(piece, from)}), 
                     rules);
@@ -82,7 +84,9 @@ namespace Veggerby.Boards.Tests.Core
                 // assert
                 Assert.False(actual);
                 Assert.Empty(engine.Events);
-                Assert.IsType<PieceState>(engine.GameState.ChildStates.Single());
+                Assert.Equal(2, engine.GameState.ChildStates.Count());
+                Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
+                Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
                 var state = (PieceState)engine.GameState.GetState(piece);
                 Assert.Equal(from, state.CurrentTile);
             }

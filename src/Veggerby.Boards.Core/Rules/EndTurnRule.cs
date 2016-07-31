@@ -9,11 +9,12 @@ namespace Veggerby.Boards.Core.Rules
     {
         public override GameState Evaluate(GameEngine gameEngine, GameState currentState, EndTurnGameEvent @event)
         {
-            var turn = currentState.ActiveTurn;
+            var turnState = currentState.GetActiveTurn();
+
             var nextPlayer = gameEngine
                 .Game
                 .Players
-                .SkipWhile(x => !(turn?.Turn.Player.Equals(x) ?? false)) // find current player
+                .SkipWhile(x => !(turnState?.Artifact.Equals(x) ?? false)) // find current player
                 .Skip(1) // skip to next
                 .FirstOrDefault();
         
@@ -21,18 +22,18 @@ namespace Veggerby.Boards.Core.Rules
 
             if (nextPlayer == null)
             {
-                var round = new Round((turn.Round?.Number ?? 0) + 1);
-                nextTurn = new Turn(round, gameEngine.Game.Players.First());
-
+                var round = new Round((turnState.Round?.Number ?? 0) + 1);
+                nextTurn = new Turn(round, 1);
+                nextPlayer = gameEngine.Game.Players.First();
             }
             else
             {
-                nextTurn = new Turn(turn.Round, nextPlayer);
+                nextTurn = new Turn(turnState.Round, turnState.Turn.Number + 1);
             }
 
-            var turnState = gameEngine.EvaluateTurnState(nextTurn);
-
-            return currentState.NextTurn(turnState);
+            return currentState.Set(
+                nextPlayer, 
+                (player, state) => gameEngine.EvaluateTurnState(nextPlayer, nextTurn));
         }
     }
 }

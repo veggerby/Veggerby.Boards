@@ -99,7 +99,7 @@ namespace Veggerby.Boards.Core
         {
             var engine = new GameEngine(game, initialState, rules);
             var turn = engine.FirstTurn();
-            engine.GameState = initialState.Set(turn.Artifact, (artifact, state) => turn);
+            engine.GameState = initialState.Set(turn.Artifact, state => turn);
             return engine;
         }
     }

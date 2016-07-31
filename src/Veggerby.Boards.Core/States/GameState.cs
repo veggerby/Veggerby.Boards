@@ -25,15 +25,15 @@ namespace Veggerby.Boards.Core.States
                 .ToList();
         }
 
-        public State<T> GetState<T>(T artifact) where T : Artifact
+        public TState GetState<T, TState>(T artifact) where T : Artifact where TState : State<T>
         {
-            return GetState(artifact as Artifact) as State<T>;
+            return GetState<TState>(artifact as Artifact) as TState;
         }
 
-        public IState GetState(Artifact artifact)
+        public TState GetState<TState>(Artifact artifact) where TState : IArtifactState
         {
             return _childStates
-                .OfType<IArtifactState>()
+                .OfType<TState>()
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
         }
 
@@ -56,10 +56,10 @@ namespace Veggerby.Boards.Core.States
             return new GameState(Game, states);
         }
 
-        public GameState Remove(Artifact artifact)
+        public GameState Remove<TState>(Artifact artifact) where TState : IArtifactState
         {
             var states = _childStates
-                .Except(GetState(artifact)) // remove current state of base entities
+                .Except(GetState<TState>(artifact)) // remove current state of base entities
                 .ToList();
 
             return new GameState(Game, states);

@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Core.Rules
 
             return currentState.Set(
                 nextPlayer, 
-                (player, state) => gameEngine.EvaluateTurnState(nextPlayer, nextTurn));
+                state => gameEngine.EvaluateTurnState(nextPlayer, nextTurn));
         }
     }
 }

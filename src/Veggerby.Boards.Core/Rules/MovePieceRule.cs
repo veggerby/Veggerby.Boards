@@ -24,7 +24,7 @@ namespace Veggerby.Boards.Core.Rules
                 return false;
             }
 
-            var pieceState = currentState.GetState(@event.Piece);
+            var pieceState = currentState.GetState<PieceState>(@event.Piece);
             var path = GetPath(currentState, pieceState, @event.From, @event.To);
             
             if (path == null || !path.From.Equals(@event.From) || !path.To.Equals(@event.To))

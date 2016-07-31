@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Tests.Core
                 Assert.Equal(2, engine.GameState.ChildStates.Count());
                 Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
                 Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
-                var state = (PieceState)engine.GameState.GetState(piece);
+                var state = engine.GameState.GetState<PieceState>(piece);
                 Assert.Equal(to, state.CurrentTile);
             }
 
@@ -87,7 +87,7 @@ namespace Veggerby.Boards.Tests.Core
                 Assert.Equal(2, engine.GameState.ChildStates.Count());
                 Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
                 Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
-                var state = (PieceState)engine.GameState.GetState(piece);
+                var state = engine.GameState.GetState<PieceState>(piece);
                 Assert.Equal(from, state.CurrentTile);
             }
         }

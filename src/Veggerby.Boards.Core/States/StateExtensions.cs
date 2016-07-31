@@ -5,16 +5,18 @@ namespace Veggerby.Boards.Core.States
 {
     public static class StateExtensions
     {
-        public static GameState Set<T>(this GameState state, T artifact, Func<T, State<T>, State<T>> stateFunc) where T : Artifact
+        public static GameState Set<T, TState>(this GameState state, T artifact, Func<IArtifactState, TState> stateFunc) 
+            where T : Artifact
+            where TState : IArtifactState
         {
-            var currentState = state.GetState(artifact);
-            var newState = stateFunc(artifact, currentState);
+            var currentState = state.GetState<TState>(artifact);
+            var newState = stateFunc(currentState);
             if (newState == null)
             {
-                return state.Remove(artifact);
+                return state.Remove<TState>(artifact);
             }
 
-            return state.Update(new[] { newState });
+            return state.Update(new IState[] { newState });
         }
     }
 }

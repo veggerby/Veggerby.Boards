@@ -24,7 +24,7 @@ namespace Veggerby.Boards.Core.Rules
             foreach (var rule in _rules)
             {
                 var check = rule.Check(gameEngine, state, @event);
-                if (check)
+                if (check == RuleCheckState.Valid)
                 {
                     // mutate state with rule
                     state = rule.Evaluate(gameEngine, state, @event);
@@ -32,7 +32,7 @@ namespace Veggerby.Boards.Core.Rules
 
                 result.Add(rule, new RuleResult(check, state));
 
-                if (check && !_allRulesMustApply)
+                if (check == RuleCheckState.Valid && !_allRulesMustApply)
                 {
                     // first valid rule, stop looping (evaluated state is new state)
                     break;
@@ -40,11 +40,13 @@ namespace Veggerby.Boards.Core.Rules
             }
 
             return new RuleResult(
-                _allRulesMustApply ? result.All(x => x.Value.Check) : result.Any(x => x.Value.Check), 
+                (_allRulesMustApply ? result.All(x => x.Value.Check != RuleCheckState.Invalid) : true) && result.Any(x => x.Value.Check == RuleCheckState.Valid)
+                    ? RuleCheckState.Valid 
+                    : RuleCheckState.Invalid, 
                 state);
         }
 
-        public bool Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public RuleCheckState Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
             return InternalEvaluate(gameEngine, currentState, @event).Check;
         }

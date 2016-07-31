@@ -34,7 +34,7 @@ namespace Veggerby.Boards.Core
             Rules = rules;
         }
 
-        private bool Check(GameState state, IGameEvent @event)
+        private RuleCheckState Check(GameState state, IGameEvent @event)
         {
             var newState = state?.OnBeforeEvent(@event);
             return Rules.Check(this, newState, @event);
@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Core
 
         public bool AddEvent(IGameEvent @event)
         {
-            if (!Check(GameState, @event))
+            if (Check(GameState, @event) != RuleCheckState.Valid)
             {
                 return false;
             }
@@ -66,7 +66,7 @@ namespace Veggerby.Boards.Core
             var state = GameState;
             foreach (var @event in events)
             {
-                if (!Check(state, @event))
+                if (Check(state, @event) != RuleCheckState.Valid)
                 {
                     throw new BoardException("Invalid event");
                 }

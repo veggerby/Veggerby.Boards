@@ -22,11 +22,11 @@ namespace Veggerby.Boards.Core.Rules
 
         protected abstract bool EvaluateCondition(GameEngine gameEngine, GameState currentState, IGameEvent @event);
 
-        public bool Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public RuleCheckState Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
         {
             var condition = EvaluateCondition(gameEngine, currentState, @event);
             
-            return condition ? _ruleIfTrue.Check(gameEngine, currentState, @event) : (_ruleIfFalse?.Check(gameEngine, currentState, @event) ?? false);
+            return condition ? _ruleIfTrue.Check(gameEngine, currentState, @event) : (_ruleIfFalse?.Check(gameEngine, currentState, @event) ?? RuleCheckState.Invalid);
         }
 
         public GameState Evaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)

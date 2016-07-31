@@ -4,10 +4,10 @@ namespace Veggerby.Boards.Core.Rules
 {
     internal class RuleResult
     {
-        public bool Check { get; }
+        public RuleCheckState Check { get; }
         public GameState State { get; }
 
-        public RuleResult(bool check, GameState state)
+        public RuleResult(RuleCheckState check, GameState state)
         {
             Check = check;
             State = state;

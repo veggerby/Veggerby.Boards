@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Artifacts
@@ -8,6 +9,11 @@ namespace Veggerby.Boards.Core.Artifacts
 
         public T Roll(DieState<T> currentState)
         {
+            if (!currentState.Artifact.Equals(this))
+            {
+                throw new ArgumentException(nameof(currentState));
+            }
+
             return _valueGenerator.GetValue(currentState);
         }
 

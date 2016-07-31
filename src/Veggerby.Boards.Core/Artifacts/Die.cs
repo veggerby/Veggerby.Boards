@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Core.Artifacts
 
         public T Roll(DieState<T> currentState)
         {
-            if (!currentState.Artifact.Equals(this))
+            if (currentState != null && !currentState.Artifact.Equals(this))
             {
                 throw new ArgumentException(nameof(currentState));
             }

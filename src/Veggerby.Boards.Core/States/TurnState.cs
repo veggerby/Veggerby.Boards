@@ -7,14 +7,10 @@ namespace Veggerby.Boards.Core.States
     {
         public Round Round => Turn.Round;
         public Turn Turn { get; }
-        public GamePhase GamePhase { get; }
-        public TurnPhase TurnPhase { get; }
 
-        public TurnState(Player player, Turn turn, GamePhase gamePhase, TurnPhase turnPhase) : base(player)
+        public TurnState(Player player, Turn turn) : base(player)
         {
             Turn = turn;
-            GamePhase = gamePhase;
-            TurnPhase = turnPhase;
         }
     }
 }

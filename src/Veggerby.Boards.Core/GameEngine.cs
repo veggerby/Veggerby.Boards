@@ -76,31 +76,15 @@ namespace Veggerby.Boards.Core
             }
         }
 
-        public TurnState EvaluateTurnState(Player nextPlayer, Turn nextTurn)
-        {
-            if (nextPlayer == null)
-            {
-                throw new ArgumentNullException(nameof(nextPlayer));
-            }
-
-            if (nextTurn == null)
-            {
-                throw new ArgumentNullException(nameof(nextTurn));
-            }
-
-            return new TurnState(
-                nextPlayer, 
-                nextTurn, 
-                Game.GamePhases.Single(), 
-                Game.TurnPhases.Single());
-        }
-
         public static GameEngine New(Game game, GameState initialState, RuleEngine rules)
         {
-            var engine = new GameEngine(game, initialState, rules);
-            var turn = engine.FirstTurn();
-            engine.GameState = initialState.Set(turn.Artifact, state => turn);
-            return engine;
+            if (initialState.GetActiveTurn() == null)
+            {
+                var turn = game.FirstTurn();
+                initialState = initialState.Set(turn);
+            }
+
+            return new GameEngine(game, initialState, rules);
         }
     }
 }

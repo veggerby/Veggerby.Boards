@@ -9,8 +9,6 @@ namespace Veggerby.Boards.Core.Artifacts
     {
         public Board Board { get; }
         public IEnumerable<Player> Players { get; }
-        public IEnumerable<GamePhase> GamePhases { get; }
-        public IEnumerable<TurnPhase> TurnPhases { get; }
 
         public Game(string id, Board board, IEnumerable<Player> players, IEnumerable<Piece> pieces) : base(id, pieces)
         {
@@ -31,8 +29,6 @@ namespace Veggerby.Boards.Core.Artifacts
 
             Board = board;
             Players = players.ToList();
-            GamePhases = new [] { new GamePhase() };
-            TurnPhases = new [] { new TurnPhase() };
         }
     }
 }

@@ -11,10 +11,15 @@ namespace Veggerby.Boards.Core.Rules
         {
             var turnState = currentState.GetActiveTurn();
 
+            if (turnState == null)
+            {
+                throw new BoardException("No active turn to end");
+            }
+
             var nextPlayer = gameEngine
                 .Game
                 .Players
-                .SkipWhile(x => !(turnState?.Artifact.Equals(x) ?? false)) // find current player
+                .SkipWhile(x => !turnState.Artifact.Equals(x)) // find current player
                 .Skip(1) // skip to next
                 .FirstOrDefault();
         
@@ -22,7 +27,7 @@ namespace Veggerby.Boards.Core.Rules
 
             if (nextPlayer == null)
             {
-                var round = new Round((turnState.Round?.Number ?? 0) + 1);
+                var round = new Round(turnState.Round.Number + 1);
                 nextTurn = new Turn(round, 1);
                 nextPlayer = gameEngine.Game.Players.First();
             }
@@ -31,9 +36,7 @@ namespace Veggerby.Boards.Core.Rules
                 nextTurn = new Turn(turnState.Round, turnState.Turn.Number + 1);
             }
 
-            return currentState.Set(
-                nextPlayer, 
-                state => gameEngine.EvaluateTurnState(nextPlayer, nextTurn));
+            return currentState.Set(new TurnState(nextPlayer, nextTurn));
         }
     }
 }

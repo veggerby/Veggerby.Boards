@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
@@ -8,6 +9,11 @@ namespace Veggerby.Boards.Core.States
 
         public PieceState(Piece piece, Tile currentTile) : base(piece)
         {
+            if (currentTile == null)
+            {
+                throw new ArgumentNullException(nameof(currentTile));
+            }
+
             CurrentTile = currentTile;
         }
     }

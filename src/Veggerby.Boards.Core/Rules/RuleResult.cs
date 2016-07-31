@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
@@ -9,6 +10,11 @@ namespace Veggerby.Boards.Core.Rules
 
         public RuleResult(RuleCheckState check, GameState state)
         {
+            if (state == null)
+            {
+                throw new ArgumentNullException(nameof(state));
+            }
+
             Check = check;
             State = state;
         }

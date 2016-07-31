@@ -1,3 +1,5 @@
+using System;
+
 namespace Veggerby.Boards.Core.Artifacts.Relations
 {
     public class TileRelation : ArtifactRelation<Tile, Tile>
@@ -8,6 +10,16 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
         public TileRelation(Tile from, Tile to, Direction direction, int distance = 1) : base(from, to)
         {
+            if (direction == null)
+            {
+                throw new ArgumentNullException(nameof(direction));
+            }
+
+            if (distance <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(distance), "Distance must be positive and non-zero");
+            }
+
             Direction = direction;
             Distance = distance;
         }

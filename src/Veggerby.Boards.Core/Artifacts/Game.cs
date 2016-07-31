@@ -23,7 +23,7 @@ namespace Veggerby.Boards.Core.Artifacts
 
             if (!players.Any())
             {
-                throw new ArgumentException(nameof(players));
+                throw new ArgumentException("Empty player list", nameof(players));
             }
 
             Board = board;

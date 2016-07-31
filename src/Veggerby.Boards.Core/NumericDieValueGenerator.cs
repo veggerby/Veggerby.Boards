@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core
@@ -9,8 +10,8 @@ namespace Veggerby.Boards.Core
 
         public NumericDieValueGenerator(int minValue, int maxValue)
         {
-            MinValue = minValue;
-            MaxValue = maxValue;
+            MinValue = Math.Min(minValue, maxValue);
+            MaxValue = Math.Max(minValue, maxValue);
         }
         
         public abstract int GetValue(DieState<int> currentState);

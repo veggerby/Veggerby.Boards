@@ -14,6 +14,11 @@ namespace Veggerby.Boards.Core.Phases
                 throw new ArgumentNullException(nameof(round));
             }
 
+            if (number <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(number), "Turn number must be positive and non-zero");
+            }
+            
             Round = round;
             Number = number;
         }

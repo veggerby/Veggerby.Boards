@@ -30,7 +30,7 @@ namespace Veggerby.Boards.Core.States
 
             if (!artifact.Equals(newState.Artifact))
             {
-                throw new ArgumentException(nameof(artifact));
+                throw new ArgumentException("Invalid artifact", nameof(artifact));
             }
 
             return state.Set(newState);

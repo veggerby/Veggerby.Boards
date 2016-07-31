@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             if (currentState != null && !currentState.Artifact.Equals(this))
             {
-                throw new ArgumentException(nameof(currentState));
+                throw new ArgumentException("Invalid current state artifact", nameof(currentState));
             }
 
             return _valueGenerator.GetValue(currentState);
@@ -19,6 +19,11 @@ namespace Veggerby.Boards.Core.Artifacts
 
         public Die(string id, IDieValueGenerator<T> valueGenerator) : base(id)
         {
+            if (valueGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(valueGenerator));
+            }
+
             _valueGenerator = valueGenerator;
         }
     }

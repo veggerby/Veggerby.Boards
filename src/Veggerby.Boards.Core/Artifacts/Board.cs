@@ -12,6 +12,16 @@ namespace Veggerby.Boards.Core.Artifacts
 
         public Board(string id, IEnumerable<TileRelation> tileRelations) : base(id)
         {
+            if (tileRelations == null)
+            {
+                throw new ArgumentNullException(nameof(tileRelations));
+            }
+
+            if (!tileRelations.Any())
+            {
+                throw new ArgumentException("Empty relations list", nameof(tileRelations));
+            }
+
             TileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList().AsReadOnly();
             Tiles = tileRelations.SelectMany(x => new [] { x.From, x.To }).Distinct().ToList().AsReadOnly();
         }
@@ -20,7 +30,7 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             if (string.IsNullOrEmpty(tileId))
             {
-                throw new ArgumentException(nameof(tileId));
+                throw new ArgumentException("Invalid Tile Id", nameof(tileId));
             }
 
             return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId)); 

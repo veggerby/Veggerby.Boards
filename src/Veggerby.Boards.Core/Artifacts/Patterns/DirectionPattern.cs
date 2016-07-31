@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Artifacts.Patterns
@@ -9,6 +10,11 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
 
         public DirectionPattern(Direction direction, bool isRepeatable = true)
         {
+            if (direction == null)
+            {
+                throw new ArgumentNullException(nameof(direction));
+            }
+
             Direction = direction;
             IsRepeatable = isRepeatable;
         }

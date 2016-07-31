@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         {
             if (relations == null || !relations.Any() || relations.Any(x => x == null))
             {
-                throw new ArgumentException(nameof(relations));
+                throw new ArgumentException("Invalid relations", nameof(relations));
             }
 
             Relations = relations.ToList();
@@ -32,7 +32,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
                 if (chainedTo == null)
                 {
-                    throw new ArgumentException(nameof(relations), "Relations are not a connected");
+                    throw new ArgumentException("Relations are not a connected", nameof(relations));
                 }
             }
         }

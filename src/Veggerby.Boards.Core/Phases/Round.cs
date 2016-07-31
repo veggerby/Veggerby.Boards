@@ -1,3 +1,5 @@
+using System;
+
 namespace Veggerby.Boards.Core.Phases
 {
     public class Round
@@ -6,6 +8,11 @@ namespace Veggerby.Boards.Core.Phases
 
         public Round(int number)
         {
+            if (number <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(number), "Round number must be positive and non-zero");
+            }
+            
             Number = number;
         }
 

@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 
@@ -12,6 +13,11 @@ namespace Veggerby.Boards.Core.States
 
         public State(T artifact, GameEventHandler<T> eventHandler = null)
         {
+            if (artifact == null)
+            {
+                throw new ArgumentNullException(nameof(artifact));
+            }
+
             Artifact = artifact;
             EventHandler = eventHandler;
         }

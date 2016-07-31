@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentException(nameof(id));
+                throw new ArgumentException("Invalid Artifact Id", nameof(id));
             }
 
             Id = id;

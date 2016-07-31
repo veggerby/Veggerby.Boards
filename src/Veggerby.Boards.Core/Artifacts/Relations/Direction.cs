@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         {
             if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentException(nameof(id));
+                throw new ArgumentException("Invalid Direction Id", nameof(id));
             }
 
             Id = id;

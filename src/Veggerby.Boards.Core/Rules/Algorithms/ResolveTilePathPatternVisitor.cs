@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
 
             if (from.Equals(to)) 
             {
-                throw new ArgumentException(nameof(to));
+                throw new ArgumentException("To cannot be the same af From", nameof(to));
             }
 
             _board = board;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Events;
@@ -12,7 +13,17 @@ namespace Veggerby.Boards.Core.Rules
 
         public CompositionRule(IEnumerable<IRule> rules, bool allRulesMustApply = true)
         {
-            _rules = (rules ?? Enumerable.Empty<IRule>()).ToList();
+            if (rules == null)
+            {
+                throw new ArgumentNullException(nameof(rules));
+            }
+
+            if (!rules.Any())
+            {
+                throw new ArgumentException("Empty rules list", nameof(rules));
+            }
+
+            _rules = rules.ToList();
             _allRulesMustApply = allRulesMustApply;
         }
 

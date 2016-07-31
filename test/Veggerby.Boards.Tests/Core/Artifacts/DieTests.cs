@@ -34,7 +34,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = Assert.Throws<ArgumentException>(() => die.Roll(new DieState<int>(other, 3)));
 
                 // assert
-                Assert.Equal("currentState", actual.Message);
+                Assert.Equal("currentState", actual.ParamName);
             }
         }
     }

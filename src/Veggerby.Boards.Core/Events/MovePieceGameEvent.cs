@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.Events
@@ -10,6 +11,21 @@ namespace Veggerby.Boards.Core.Events
 
         public MovePieceGameEvent(Piece piece, Tile from, Tile to)
         {
+            if (piece == null)
+            {
+                throw new ArgumentNullException(nameof(piece));
+            }
+
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
+            }
+
             Piece = piece;
             From = from;
             To = to;

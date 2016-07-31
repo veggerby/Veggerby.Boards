@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
@@ -12,8 +13,13 @@ namespace Veggerby.Boards.Core.States
         public Game Game { get; }
         public IEnumerable<IState> ChildStates => _childStates.ToList().AsReadOnly();
 
-        private GameState(Game game, IEnumerable<IState> childStates)
+        private GameState(Game game, IEnumerable<IState> childStates = null)
         {
+            if (game == null)
+            {
+                throw new ArgumentNullException(nameof(game));
+            }
+
             Game = game;
             _childStates = (childStates ?? Enumerable.Empty<IState>()).ToList();
         }

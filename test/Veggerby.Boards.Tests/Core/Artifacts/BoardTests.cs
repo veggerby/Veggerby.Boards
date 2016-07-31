@@ -68,7 +68,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = Assert.Throws<ArgumentException>(() => board.GetTile(id));
                 
                 // assert
-                Assert.Equal("tileId", actual.Message);
+                Assert.Equal("tileId", actual.ParamName);
             }
         }
 

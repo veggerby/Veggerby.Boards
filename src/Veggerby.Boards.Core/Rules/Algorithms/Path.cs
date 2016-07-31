@@ -15,7 +15,7 @@ namespace Veggerby.Boards.Core.Rules.Algorithms
         {
             if (edges == null || !edges.Any())
             {
-                throw new ArgumentException(nameof(edges));
+                throw new ArgumentException("Invalid edges list", nameof(edges));
             }
 
             Edges = edges.ToList();

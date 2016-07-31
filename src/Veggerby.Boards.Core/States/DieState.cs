@@ -1,3 +1,4 @@
+using System;
 using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
@@ -8,6 +9,11 @@ namespace Veggerby.Boards.Core.States
 
         public DieState(Die<T> die, T currentValue) : base(die)
         {
+            if (currentValue == null)
+            {
+                throw new ArgumentNullException(nameof(currentValue));
+            }
+
             CurrentValue = currentValue;
         }
     }

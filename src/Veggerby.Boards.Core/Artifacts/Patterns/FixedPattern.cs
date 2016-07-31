@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts.Relations;
@@ -10,7 +11,17 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
 
         public FixedPattern(IEnumerable<Direction> pattern)
         {
-            Pattern = (pattern ?? Enumerable.Empty<Direction>()).ToList();
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
+            if (!pattern.Any())
+            {
+                throw new ArgumentException("Empty pattern list", nameof(pattern));
+            }
+
+            Pattern = pattern.ToList();
         }
 
         public void Accept(IPatternVisitor visitor)

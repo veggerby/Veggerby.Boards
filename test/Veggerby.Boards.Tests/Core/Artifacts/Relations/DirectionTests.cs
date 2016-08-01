@@ -47,5 +47,62 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 Assert.Equal("id", actual.Id);
             }
         }
+
+        public class _Equals
+        {
+            [Fact]
+            public void Should_equal_same_object()
+            {
+                // arrange
+                var direction = new Direction("dir");
+
+                // act
+                var actual = direction.Equals(direction);
+
+                // assert
+                Assert.True(actual);
+            }
+
+            [Fact]
+            public void Should_not_equal_null()
+            {
+                // arrange
+                var direction = new Direction("dir");
+
+                // act
+                var actual = direction.Equals(null);
+
+                // assert
+                Assert.False(actual);
+            }
+
+            [Fact]
+            public void Should_equal_same_type_same_id()
+            {
+                // arrange
+                var direction1 = new Direction("dir");
+                var direction2 = new Direction("dir");
+
+                // act
+                var actual = direction1.Equals(direction2);
+
+                // assert
+                Assert.True(actual);
+            }
+
+            [Fact]
+            public void Should_not_equal_same_type_different_id()
+            {
+                // arrange
+                var direction1 = new Direction("dir1");
+                var direction2 = new Direction("dir2");
+
+                // act
+                var actual = direction1.Equals(direction2);
+
+                // assert
+                Assert.False(actual);
+            }    
+        }
     }
 }

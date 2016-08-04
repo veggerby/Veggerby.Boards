@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core XUnit Test",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/test/Veggerby.Boards.Tests/bin/Debug/netcoreapp1.0/Veggerby.Boards.Tests.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/test/Veggerby.Boards.Tests",
+            "stopAtEntry": false,
+            "externalConsole": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": 0
+        }
+    ]
+}

@@ -42,7 +42,7 @@ dlldata.c
 
 # DNX
 project.lock.json
-artifacts/
+#artifacts/
 
 *_i.c
 *_p.c
@@ -76,6 +76,7 @@ _Chutzpah*
 ipch/
 *.aps
 *.ncb
+*.opendb
 *.opensdf
 *.sdf
 *.cachefile
@@ -155,8 +156,13 @@ publish/
 csx/
 *.build.csdef
 
+# Windows Azure Emulator
+ecf/
+rcf/
+
 # Windows Store app package directory
 AppPackages/
+BundleArtifacts/
 
 # Visual Studio cache files
 # files ending in .cache can be ignored
@@ -166,7 +172,6 @@ AppPackages/
 
 # Others
 ClientBin/
-[Ss]tyle[Cc]op.*
 ~$*
 *~
 *.dbmdl
@@ -199,6 +204,9 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
+# GhostDoc plugin setting file
+*.GhostDoc.xml
+
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 
@@ -216,3 +224,8 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
+# Paket dependency manager
+.paket/paket.exe
+
+# FAKE - F# Make
+.fake/

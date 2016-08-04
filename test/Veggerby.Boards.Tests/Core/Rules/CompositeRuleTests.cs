@@ -226,7 +226,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
             }
 
             [Fact]
-            public void Should_return_original_state()
+            public void Should_return_original_state_invalid()
             {
                 // arrange
                 var player = new Player("player");
@@ -296,6 +296,77 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 Assert.Equal(1, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
             }
 
+            [Fact]
+            public void Should_return_original_state_not_applicable()
+            {
+                // arrange
+                var player = new Player("player");
+                var board = new TestBoard();
+                var piece = new Piece("id", player, new[] { new DirectionPattern(Direction.CounterClockwise) });
+                var game = new Game(
+                    "game",
+                    board,
+                    new [] { player },
+                    new [] { piece });
+                var die = new RegularDie("die");
+                    
+                var state = GameState.New(game, null);
+                var innerRule1 = new SimpleRule(
+                    RuleCheckState.NotApplicable, 
+                    x => x.Update(new PieceState(piece, board.GetTile("tile-1"))));
+
+                var rule = new CompositeRule(new[] { innerRule1 }); 
+
+                // act
+                var actual = rule.Evaluate(game, state, new NullEvent());
+                
+                // assert
+                Assert.Equal(state, actual);
+                Assert.Equal(1, innerRule1.CheckCallCount);
+                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+            }
+
+            [Fact]
+            public void Should_return_partly_chained_result()
+            {
+                // arrange
+                var player = new Player("player");
+                var board = new TestBoard();
+                var piece = new Piece("id", player, new[] { new DirectionPattern(Direction.CounterClockwise) });
+                var game = new Game(
+                    "game",
+                    board,
+                    new [] { player },
+                    new [] { piece });
+                var die = new RegularDie("die");
+                    
+                var state = GameState.New(game, null);
+                var innerRule1 = new SimpleRule(
+                    RuleCheckState.Valid, 
+                    x => x.Update(new PieceState(piece, board.GetTile("tile-1"))));
+                var innerRule2 = new SimpleRule(
+                    RuleCheckState.NotApplicable, 
+                    x => x.Update(new PieceState(piece, board.GetTile("tile-2"))));
+                var innerRule3 = new SimpleRule(
+                    RuleCheckState.Valid, 
+                    x => x.Update(new DieState<int>(die, 4)));
+
+                var rule = new CompositeRule(new[] { innerRule1, innerRule2, innerRule3 }); 
+
+                // act
+                var actual = rule.Evaluate(game, state, new NullEvent());
+                
+                // assert
+                Assert.Equal(2, actual.ChildStates.Count());
+                Assert.Equal(board.GetTile("tile-1"), actual.GetState<PieceState>(piece).CurrentTile);
+                Assert.Equal(4, actual.GetState<DieState<int>>(die).CurrentValue);
+                Assert.Equal(1, innerRule1.CheckCallCount);
+                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                Assert.Equal(1, innerRule2.CheckCallCount);
+                Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                Assert.Equal(1, innerRule3.CheckCallCount);
+                Assert.Equal(1, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+            }
         }
     }
 }

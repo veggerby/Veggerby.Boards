@@ -6,12 +6,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
 {
-    public class CompositionRule : IRule
+    public class CompositeRule : IRule
     {
         private readonly IEnumerable<IRule> _rules;
         private readonly bool _allRulesMustApply;
 
-        public CompositionRule(IEnumerable<IRule> rules, bool allRulesMustApply = true)
+        public CompositeRule(IEnumerable<IRule> rules, bool allRulesMustApply = true)
         {
             if (rules == null)
             {

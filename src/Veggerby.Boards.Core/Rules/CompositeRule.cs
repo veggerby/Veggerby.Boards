@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 using Veggerby.Boards.Core.States;
 
@@ -27,18 +28,18 @@ namespace Veggerby.Boards.Core.Rules
             _allRulesMustApply = allRulesMustApply;
         }
 
-        private RuleResult InternalEvaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        private RuleResult InternalEvaluate(Game game, GameState currentState, IGameEvent @event)
         {
             var result = new Dictionary<IRule, RuleResult>();
             var state = currentState;
 
             foreach (var rule in _rules)
             {
-                var check = rule.Check(gameEngine, state, @event);
+                var check = rule.Check(game, state, @event);
                 if (check == RuleCheckState.Valid)
                 {
                     // mutate state with rule
-                    state = rule.Evaluate(gameEngine, state, @event);
+                    state = rule.Evaluate(game, state, @event);
                 }
 
                 result.Add(rule, new RuleResult(check, state));
@@ -57,14 +58,14 @@ namespace Veggerby.Boards.Core.Rules
                 state);
         }
 
-        public RuleCheckState Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public RuleCheckState Check(Game game, GameState currentState, IGameEvent @event)
         {
-            return InternalEvaluate(gameEngine, currentState, @event).Check;
+            return InternalEvaluate(game, currentState, @event).Check;
         }
 
-        public GameState Evaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public GameState Evaluate(Game game, GameState currentState, IGameEvent @event)
         {
-            return InternalEvaluate(gameEngine, currentState, @event).State;
+            return InternalEvaluate(game, currentState, @event).State;
         }
     }
 }

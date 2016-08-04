@@ -37,13 +37,13 @@ namespace Veggerby.Boards.Core
         private RuleCheckState Check(GameState state, IGameEvent @event)
         {
             var newState = state?.OnBeforeEvent(@event);
-            return Rules.Check(this, newState, @event);
+            return Rules.Check(Game, newState, @event);
         }
     
         private GameState PlayEvent(GameState state, IGameEvent @event)
         {
             var newState = state?.OnBeforeEvent(@event);
-            newState = Rules.Evaluate(this, newState, @event);
+            newState = Rules.Evaluate(Game, newState, @event);
             return newState?.OnAfterEvent(@event);
         }
 

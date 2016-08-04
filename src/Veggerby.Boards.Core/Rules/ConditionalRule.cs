@@ -1,4 +1,5 @@
 using System;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 using Veggerby.Boards.Core.States;
 
@@ -20,20 +21,20 @@ namespace Veggerby.Boards.Core.Rules
             _ruleIfFalse = ruleIfFalse;
         }
 
-        protected abstract bool EvaluateCondition(GameEngine gameEngine, GameState currentState, IGameEvent @event);
+        protected abstract bool EvaluateCondition(Game game, GameState currentState, IGameEvent @event);
 
-        public RuleCheckState Check(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public RuleCheckState Check(Game game, GameState currentState, IGameEvent @event)
         {
-            var condition = EvaluateCondition(gameEngine, currentState, @event);
+            var condition = EvaluateCondition(game, currentState, @event);
             
-            return condition ? _ruleIfTrue.Check(gameEngine, currentState, @event) : (_ruleIfFalse?.Check(gameEngine, currentState, @event) ?? RuleCheckState.Invalid);
+            return condition ? _ruleIfTrue.Check(game, currentState, @event) : (_ruleIfFalse?.Check(game, currentState, @event) ?? RuleCheckState.Invalid);
         }
 
-        public GameState Evaluate(GameEngine gameEngine, GameState currentState, IGameEvent @event)
+        public GameState Evaluate(Game game, GameState currentState, IGameEvent @event)
         {
-            return EvaluateCondition(gameEngine, currentState, @event)
-                ? _ruleIfTrue.Evaluate(gameEngine, currentState, @event)
-                : (_ruleIfFalse?.Evaluate(gameEngine, currentState, @event) ?? currentState);
+            return EvaluateCondition(game, currentState, @event)
+                ? _ruleIfTrue.Evaluate(game, currentState, @event)
+                : (_ruleIfFalse?.Evaluate(game, currentState, @event) ?? currentState);
         }
     }
 }

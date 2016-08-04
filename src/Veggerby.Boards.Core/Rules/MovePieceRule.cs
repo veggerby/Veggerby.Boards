@@ -14,7 +14,7 @@ namespace Veggerby.Boards.Core.Rules
             return true;
         }
 
-        public override RuleCheckState Check(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
+        public override RuleCheckState Check(Game game, GameState currentState, MovePieceGameEvent @event)
         {
             var activeTurn = currentState.GetActiveTurn();
 
@@ -40,7 +40,7 @@ namespace Veggerby.Boards.Core.Rules
             return RuleCheckState.Valid;
         }
 
-        public override GameState Evaluate(GameEngine gameEngine, GameState currentState, MovePieceGameEvent @event)
+        public override GameState Evaluate(Game game, GameState currentState, MovePieceGameEvent @event)
         {
             var newPieceState = new PieceState(@event.Piece, @event.To);
             return currentState.Update(new IState[] { newPieceState, });

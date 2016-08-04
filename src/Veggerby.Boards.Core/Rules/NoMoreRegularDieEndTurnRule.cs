@@ -7,7 +7,7 @@ namespace Veggerby.Boards.Core.Rules
 {
     public abstract class NoMoreRegularDieEndTurnRule : EndTurnRule
     {
-        public override RuleCheckState Check(GameEngine gameEngine, GameState currentState, EndTurnGameEvent @event)
+        public override RuleCheckState Check(Game game, GameState currentState, EndTurnGameEvent @event)
         {
             var dieStates = currentState.GetStates<RegularDie>();
 

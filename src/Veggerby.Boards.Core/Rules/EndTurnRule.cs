@@ -1,4 +1,5 @@
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 using Veggerby.Boards.Core.Phases;
 using Veggerby.Boards.Core.States;
@@ -7,7 +8,7 @@ namespace Veggerby.Boards.Core.Rules
 {
     public abstract class EndTurnRule : Rule<EndTurnGameEvent>
     {
-        public override GameState Evaluate(GameEngine gameEngine, GameState currentState, EndTurnGameEvent @event)
+        public override GameState Evaluate(Game game, GameState currentState, EndTurnGameEvent @event)
         {
             var turnState = currentState.GetActiveTurn();
 
@@ -16,8 +17,7 @@ namespace Veggerby.Boards.Core.Rules
                 throw new BoardException("No active turn to end");
             }
 
-            var nextPlayer = gameEngine
-                .Game
+            var nextPlayer = game
                 .Players
                 .SkipWhile(x => !turnState.Artifact.Equals(x)) // find current player
                 .Skip(1) // skip to next
@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Core.Rules
             {
                 var round = new Round(turnState.Round.Number + 1);
                 nextTurn = new Turn(round, 1);
-                nextPlayer = gameEngine.Game.Players.First();
+                nextPlayer = game.Players.First();
             }
             else
             {

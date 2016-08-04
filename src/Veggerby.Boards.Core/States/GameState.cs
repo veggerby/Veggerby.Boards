@@ -52,14 +52,24 @@ namespace Veggerby.Boards.Core.States
                 .LastOrDefault();
         }
 
-        public GameState Update(IEnumerable<IState> newStates)
+        public GameState Update<TState>(TState state) where TState : IArtifactState
         {
             var states = _childStates
-                .Except(newStates, new StateBaseEntityEqualityComparer()) // remove current state of base entities
-                .Concat(newStates) // add ned states
+                .Where(x => !((x as IArtifactState)?.Artifact.Equals(state.Artifact) ?? false)) // remove current state of base entities
+                .Append(state) // add ned states
                 .ToList();
 
             return new GameState(Game, states);
+        }
+
+        public GameState Update(IState state)
+        {
+            if (state is IArtifactState)
+            {
+                return Update(state as IArtifactState);
+            }
+
+            return new GameState(Game, _childStates.Append(state));
         }
 
         public GameState Remove<TState>(Artifact artifact) where TState : IArtifactState
@@ -73,32 +83,34 @@ namespace Veggerby.Boards.Core.States
 
         public GameState OnBeforeEvent(IGameEvent @event)
         {
-            var states = _childStates
-                .Select(x => x.OnBeforeEvent(@event))
-                .Where(x => x != null)
-                .ToList();
+            var state = this;
 
-            if (!states.Any())
+            foreach (var childState in _childStates)
             {
-                return this;
+                var newState = childState.OnBeforeEvent(@event);
+                if (newState != null)
+                {
+                    state = state.Update(newState);
+                }
             }
-            
-            return Update(states);
+
+            return state;
         }
 
         public GameState OnAfterEvent(IGameEvent @event)
         {
-             var states = _childStates
-                .Select(x => x.OnAfterEvent(@event))
-                .Where(x => x != null)
-                .ToList();
-            
-            if (!states.Any())
+            var state = this;
+
+            foreach (var childState in _childStates)
             {
-                return this;
+                var newState = childState.OnAfterEvent(@event);
+                if (newState != null)
+                {
+                    state = state.Update(newState);
+                }
             }
-            
-            return Update(states);
+
+            return state;
         }
 
         public static GameState New(Game game, IEnumerable<IState> childStates = null)

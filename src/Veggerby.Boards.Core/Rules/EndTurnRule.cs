@@ -36,7 +36,7 @@ namespace Veggerby.Boards.Core.Rules
                 nextTurn = new Turn(turnState.Round, turnState.Turn.Number + 1);
             }
 
-            return currentState.Set(new TurnState(nextPlayer, nextTurn));
+            return currentState.Update(new TurnState(nextPlayer, nextTurn));
         }
     }
 }

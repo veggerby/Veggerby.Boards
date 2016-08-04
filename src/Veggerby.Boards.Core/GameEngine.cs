@@ -80,7 +80,7 @@ namespace Veggerby.Boards.Core
             if (initialState.GetActiveTurn() == null)
             {
                 var turn = game.FirstTurn();
-                initialState = initialState.Set(turn);
+                initialState = initialState.Update(turn);
             }
 
             return new GameEngine(game, initialState, rules);

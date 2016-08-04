@@ -43,7 +43,7 @@ namespace Veggerby.Boards.Core.Rules
         public override GameState Evaluate(Game game, GameState currentState, MovePieceGameEvent @event)
         {
             var newPieceState = new PieceState(@event.Piece, @event.To);
-            return currentState.Update(new IState[] { newPieceState, });
+            return currentState.Update(newPieceState);
         }
     }
 }

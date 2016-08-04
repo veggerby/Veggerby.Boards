@@ -11,12 +11,22 @@ namespace Veggerby.Boards.Core.Events
 
         public GameEventHandler(Func<State<T>, IGameEvent, State<T>> onBeforeEvent, Func<State<T>, IGameEvent, State<T>> onAfterEvent)
         {
+            if (onBeforeEvent == null && onAfterEvent == null)
+            {
+                throw new ArgumentNullException(nameof(onAfterEvent), "Both before and after event are null");
+            }
+
             _onBeforeEvent = onBeforeEvent;
             _onAfterEvent = onAfterEvent;
         }
 
         private State<T> HandleEvent(Func<State<T>, IGameEvent, State<T>> eventMutator, State<T> currentState, IGameEvent @event)
         {
+            if (@event == null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
+
             var newState = eventMutator != null ? eventMutator(currentState, @event) : null;
 
             if (newState == null) 
@@ -26,7 +36,7 @@ namespace Veggerby.Boards.Core.Events
 
             if (currentState != null && !newState.Artifact.Equals(currentState.Artifact))
             {
-                throw new BoardException("Event handler can not change state of other artifact");
+                throw new BoardException("Invalid artifact on state change");
             }
 
             return newState;

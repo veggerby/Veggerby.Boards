@@ -44,7 +44,7 @@ there would be a White King, a White Queen, 2 White Rooks, 2 White Knights, 2 Wh
 and 8 White Pawns (and similarly for Black), i.e. a total of 32 pieces. 
 
 Pieces have movement Patterns assigned, e.g. in Chess a Queen can move (linerarly) unbounded 
-in any direction, a King can move 1 step in any direction, but a bishop can move in an L 
+in any direction, a King can move 1 step in any direction, but a Knight can move in an L 
 shaped pattern (e.g. 2 steps north and 1 step east).
 
 Patterns are used to evaluate if a given move ("move piece A from tile 1 to tile 2") is valid.

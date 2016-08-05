@@ -5,7 +5,7 @@ using Veggerby.Boards.Core.Rules.Algorithms;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 
-namespace Veggerby.Boards.Tests.Core.Rules
+namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 {
     public class ResolveTilePathPatternVisitorTests
     {

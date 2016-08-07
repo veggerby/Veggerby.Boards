@@ -82,7 +82,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
                     new [] { piece });
 
                 var innerRule1 = new SimpleRule(RuleCheckState.Valid);
-                var innerRule2 = new SimpleRule(RuleCheckState.Invalid);
+                var innerRule2 = new SimpleRule(RuleCheckState.Fail("Rule2"));
 
                 var rule = new CompositeRule(new[] { innerRule1, innerRule2 }); 
 
@@ -91,10 +91,45 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual); // allRules = true by default
+                Assert.Equal("Rule2", actual.Reason);
                 Assert.Equal(1, innerRule1.CheckCallCount);
                 Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
                 Assert.Equal(1, innerRule2.CheckCallCount);
                 Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+            }
+
+
+            [Fact]
+            public void Should_return_simple_result_multiple_more_invalid()
+            {
+                // arrange
+                var player = new Player("player");
+                var board = new TestBoard();
+                var piece = new Piece("id", player, new[] { new DirectionPattern(Direction.CounterClockwise) });
+                var game = new Game(
+                    "game",
+                    board,
+                    new [] { player },
+                    new [] { piece });
+
+                var innerRule1 = new SimpleRule(RuleCheckState.Valid);
+                var innerRule2 = new SimpleRule(RuleCheckState.Fail("Rule2"));
+                var innerRule3 = new SimpleRule(RuleCheckState.Fail("Rule3"));
+
+                var rule = new CompositeRule(new[] { innerRule1, innerRule2, innerRule3 }); 
+
+                // act
+                var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
+                
+                // assert
+                Assert.Equal(RuleCheckState.Invalid, actual); // allRules = true by default
+                Assert.Equal("Rule2,Rule3", actual.Reason);
+                Assert.Equal(1, innerRule1.CheckCallCount);
+                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                Assert.Equal(1, innerRule2.CheckCallCount);
+                Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                Assert.Equal(1, innerRule3.CheckCallCount);
+                Assert.Equal(0, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]

@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Core
 
         public bool AddEvent(IGameEvent @event)
         {
-            if (Check(GameState, @event) != RuleCheckState.Valid)
+            if (!RuleCheckState.Valid.Equals(Check(GameState, @event)))
             {
                 return false;
             }
@@ -66,7 +66,7 @@ namespace Veggerby.Boards.Core
             var state = GameState;
             foreach (var @event in events)
             {
-                if (Check(state, @event) != RuleCheckState.Valid)
+                if (!RuleCheckState.Valid.Equals(Check(state, @event)))
                 {
                     throw new BoardException("Invalid event");
                 }

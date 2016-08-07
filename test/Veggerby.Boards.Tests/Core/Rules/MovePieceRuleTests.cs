@@ -67,6 +67,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidEventFrom", actual.Reason);
             }
 
             [Fact]
@@ -95,6 +96,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidTurn", actual.Reason);
             }
 
             [Fact]
@@ -122,6 +124,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidTurn", actual.Reason);
             }
 
             [Fact]
@@ -149,6 +152,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidPiece", actual.Reason);
             }
 
             [Fact]
@@ -178,6 +182,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidPath", actual.Reason);
             }
 
             [Fact]
@@ -207,8 +212,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("InvalidPath", actual.Reason);
             }
-
 
             [Fact]
             public void Should_return_invalid_can_move_path_is_false()
@@ -237,6 +242,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
 
                 // assert
                 Assert.Equal(RuleCheckState.Invalid, actual);
+                Assert.Equal("NoMovePath", actual.Reason);
             }
         }
     }

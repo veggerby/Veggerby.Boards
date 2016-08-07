@@ -18,29 +18,34 @@ namespace Veggerby.Boards.Core.Rules
         {
             var activeTurn = currentState.GetActiveTurn();
 
-            // check if piece owner is current in turn
+            // check if piece owner is active in turn
             if (activeTurn == null || !(@event.Piece?.Owner.Equals(activeTurn.Artifact) ?? true))
             {
-                return RuleCheckState.Invalid;
+                return RuleCheckState.Fail("InvalidTurn");
             }
 
             var pieceState = currentState.GetState<PieceState>(@event.Piece);
 
-            if (pieceState == null || !pieceState.CurrentTile.Equals(@event.From))
+            if (pieceState == null)
             {
-                return RuleCheckState.Invalid;
+                return RuleCheckState.Fail("InvalidPiece");
+            }
+
+            if (!pieceState.CurrentTile.Equals(@event.From))
+            {
+                return RuleCheckState.Fail("InvalidEventFrom");
             }
 
             var path = GetPath(currentState, pieceState, @event.From, @event.To);
             
             if (path == null || !path.From.Equals(@event.From) || !path.To.Equals(@event.To))
             {
-                return RuleCheckState.Invalid;
+                return RuleCheckState.Fail("InvalidPath");
             }
 
             if (!CanMovePath(currentState, pieceState, path))
             {
-                return RuleCheckState.Invalid;
+                return RuleCheckState.Fail("NoMovePath");
             }
 
             return RuleCheckState.Valid;

@@ -42,7 +42,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 // arrange
                 // act
                 var actual = new Direction("id");
-                
+
                 // assert
                 Assert.Equal("id", actual.Id);
             }
@@ -102,7 +102,34 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 
                 // assert
                 Assert.False(actual);
-            }    
+            }
+
+            [Fact]
+            public void Should_equal_any_direction()
+            {
+                // arrange
+                var direction = new Direction("dir1");
+
+                // act
+                var actual = direction.Equals(Direction.Any);
+
+                // assert
+                Assert.True(actual);
+            }
+
+            [Fact]
+            public void Should_equal_any_other_direction()
+            {
+                // arrange
+                var direction1 = new AnyDirection();
+                var direction2 = new Direction("dir2");
+
+                // act
+                var actual = direction1.Equals(direction2);
+
+                // assert
+                Assert.True(actual);
+            }
         }
     }
 }

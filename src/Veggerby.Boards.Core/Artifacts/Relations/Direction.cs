@@ -22,6 +22,8 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
         public static Direction Clockwise = new Direction("clockwise");
         public static Direction CounterClockwise = new Direction("counter-clockwise");
+
+        public static Direction Any = new AnyDirection();
         
         public string Id { get; }
 
@@ -44,6 +46,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
+            if (obj is AnyDirection) return true;
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Direction)obj);
         }

@@ -25,6 +25,12 @@ namespace Veggerby.Boards.Core.Rules
             }
 
             var pieceState = currentState.GetState<PieceState>(@event.Piece);
+
+            if (pieceState == null || !pieceState.CurrentTile.Equals(@event.From))
+            {
+                return RuleCheckState.Invalid;
+            }
+
             var path = GetPath(currentState, pieceState, @event.From, @event.To);
             
             if (path == null || !path.From.Equals(@event.From) || !path.To.Equals(@event.To))

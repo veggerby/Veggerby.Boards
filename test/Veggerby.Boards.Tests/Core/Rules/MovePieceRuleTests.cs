@@ -245,5 +245,43 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 Assert.Equal("NoMovePath", actual.Reason);
             }
         }
+
+        public class Evaluate
+        {
+            [Fact]
+            public void Should_move_piece()
+            {
+                // arrange
+                // arrange
+                var player1 = new Player("player-1");
+                var player2 = new Player("player-2");
+                var piece1 = new Piece("piece-1", player1, new [] { new AnyPattern() });
+                var piece2 = new Piece("piece-2", player2, new [] { new AnyPattern() });
+                var board = new TestBoard();
+                var game = new Game("game", board, new [] { player1, player2 }, new[] { piece1, piece2 });
+
+                var state = GameState.New(game, new IState[] {
+                    new TurnState(player1, new Turn(new Round(1), 1)),
+                    new PieceState(piece1, board.GetTile("tile-1")),
+                    new PieceState(piece2, board.GetTile("tile-4"))
+                } );
+
+                var rule = new SimpleMovePieceRule();
+
+                var @event = new MovePieceGameEvent(piece1, board.GetTile("tile-1"), board.GetTile("tile-3"));
+                
+                // act
+                var actual = rule.Evaluate(game, state, @event);
+                
+                // assert
+                var piece1State = actual.GetState<PieceState>(piece1);
+                var piece2State = actual.GetState<PieceState>(piece2);
+                Assert.Equal(piece1, piece1State.Artifact);
+                Assert.Equal(board.GetTile("tile-3"), piece1State.CurrentTile);
+                Assert.Equal(piece2, piece2State.Artifact);
+                Assert.Equal(piece1, piece1State.Artifact);
+                Assert.Equal(board.GetTile("tile-4"), piece2State.CurrentTile);
+            }
+        }
     }
 }

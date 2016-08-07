@@ -6,9 +6,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Rules
 {
-    public abstract class EndTurnRule : Rule<EndTurnGameEvent>
+    /* any event can trigger an EndTurnRule / EndTurnRule should therefore always be at the end
+     * of the rule chain
+     */
+    public abstract class EndTurnRule : Rule<IGameEvent>
     {
-        public override GameState Evaluate(Game game, GameState currentState, EndTurnGameEvent @event)
+        public override GameState Evaluate(Game game, GameState currentState, IGameEvent @event)
         {
             var turnState = currentState.GetActiveTurn();
 

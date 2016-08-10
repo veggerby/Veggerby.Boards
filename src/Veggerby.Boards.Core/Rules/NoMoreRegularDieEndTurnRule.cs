@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Rules
         {
             var dieStates = currentState.GetStates<RegularDie>();
 
-            return !(dieStates?.Any() ?? false) ? RuleCheckState.Valid : RuleCheckState.Fail("NoDice");
+            return !(dieStates?.Any() ?? false) ? RuleCheckState.Valid : RuleCheckState.Fail("MoreDice");
         }
     }
 }

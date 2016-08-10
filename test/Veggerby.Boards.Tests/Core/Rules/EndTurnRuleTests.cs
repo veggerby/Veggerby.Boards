@@ -1,4 +1,5 @@
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Phases;
@@ -31,11 +32,11 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, @event);
                 
                 // assert
-                Assert.Equal(2, actual.ChildStates.Count());
+                actual.ChildStates.Count().ShouldBe(2);
                 var turnState = actual.GetState<TurnState>(player2);
-                Assert.Equal(player2, turnState.Artifact);
-                Assert.Equal(1, turnState.Round.Number);                
-                Assert.Equal(2, turnState.Turn.Number);                
+                turnState.Artifact.ShouldBe(player2);
+                turnState.Round.Number.ShouldBe(1);                
+                turnState.Turn.Number.ShouldBe(2);                
             }
             
             [Fact]
@@ -57,11 +58,11 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, @event);
                 
                 // assert
-                Assert.Equal(2, actual.ChildStates.Count());
+                actual.ChildStates.Count().ShouldBe(2);
                 var turnState = actual.GetState<TurnState>(player1);
-                Assert.Equal(player1, turnState.Artifact);
-                Assert.Equal(2, turnState.Round.Number);                
-                Assert.Equal(1, turnState.Turn.Number);                
+                turnState.Artifact.ShouldBe(player1);
+                turnState.Round.Number.ShouldBe(2);                
+                turnState.Turn.Number.ShouldBe(1);      
             }
         }
     }

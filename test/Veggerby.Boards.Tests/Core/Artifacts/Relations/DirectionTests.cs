@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Xunit;
 
@@ -13,24 +14,26 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 // arrange
                 // act
                 // assert
-                Assert.NotNull(Direction.Left);
-                Assert.NotNull(Direction.Right);
-                Assert.NotNull(Direction.Up);
-                Assert.NotNull(Direction.Down);
-                Assert.NotNull(Direction.Across);
+                Direction.Left.ShouldNotBeNull();
+                Direction.Right.ShouldNotBeNull();
+                Direction.Up.ShouldNotBeNull();
+                Direction.Down.ShouldNotBeNull();
+                Direction.Across.ShouldNotBeNull();
 
-                Assert.NotNull(Direction.North);
-                Assert.NotNull(Direction.South);
-                Assert.NotNull(Direction.East);
-                Assert.NotNull(Direction.West);
+                Direction.North.ShouldNotBeNull();
+                Direction.South.ShouldNotBeNull();
+                Direction.East.ShouldNotBeNull();
+                Direction.West.ShouldNotBeNull();
 
-                Assert.NotNull(Direction.NorthWest);
-                Assert.NotNull(Direction.NorthEast);
-                Assert.NotNull(Direction.SouthEast);
-                Assert.NotNull(Direction.SouthEast);
+                Direction.NorthWest.ShouldNotBeNull();
+                Direction.NorthEast.ShouldNotBeNull();
+                Direction.SouthWest.ShouldNotBeNull();
+                Direction.SouthEast.ShouldNotBeNull();
 
-                Assert.NotNull(Direction.Clockwise);
-                Assert.NotNull(Direction.CounterClockwise);
+                Direction.Clockwise.ShouldNotBeNull();
+                Direction.CounterClockwise.ShouldNotBeNull();
+
+                Direction.Any.ShouldBeOfType<AnyDirection>();
             }
         }
 
@@ -44,7 +47,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new Direction("id");
 
                 // assert
-                Assert.Equal("id", actual.Id);
+                actual.Id.ShouldBe("id");
             }
         }
 
@@ -60,7 +63,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(direction);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -73,7 +76,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(null);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }
 
             [Fact]
@@ -87,7 +90,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -101,7 +104,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }
 
             [Fact]
@@ -114,7 +117,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(Direction.Any);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -128,7 +131,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
         }
     }

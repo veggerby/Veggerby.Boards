@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Phases;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 var actual = new Round(1);
                 
                 // assert
-                Assert.Equal(1, actual.Number);
+                actual.Number.ShouldBe(1);
             }
 
             [Theory]
@@ -28,10 +29,10 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 // arrange
                 
                 // act
-                var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new Round(number));
+                var actual = Should.Throw<ArgumentOutOfRangeException>(() => new Round(number));
                 
                 // assert
-                Assert.Equal("number", actual.ParamName);
+                actual.ParamName.ShouldBe("number");
             }
         }
 
@@ -47,7 +48,7 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 var actual = round.Equals(round);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -60,7 +61,7 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 var actual = round.Equals(null);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }
 
             [Fact]
@@ -74,7 +75,7 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 var actual = round1.Equals(round2);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -88,7 +89,7 @@ namespace Veggerby.Boards.Tests.Core.Phases
                 var actual = round1.Equals(round2);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }    
         }
     }

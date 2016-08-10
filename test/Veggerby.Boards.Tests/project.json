@@ -15,6 +15,7 @@
     },
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-rc2-build10025",
+    "Shouldly": "2.8.*",
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0-rc2-3002702"

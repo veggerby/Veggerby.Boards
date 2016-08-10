@@ -1,4 +1,5 @@
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
@@ -44,13 +45,13 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = engine.AddEvent(@event);
                 
                 // assert
-                Assert.True(actual);
-                Assert.Equal(@event, engine.Events.Single());
-                Assert.Equal(2, engine.GameState.ChildStates.Count());
-                Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
-                Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
+                actual.ShouldBeTrue();
+                engine.Events.Single().ShouldBe(@event);
+                engine.GameState.ChildStates.Count().ShouldBe(2);
+                engine.GameState.ChildStates.OfType<PieceState>().Count().ShouldBe(1);
+                engine.GameState.ChildStates.OfType<TurnState>().Count().ShouldBe(1);
                 var state = engine.GameState.GetState<PieceState>(piece);
-                Assert.Equal(to, state.CurrentTile);
+                state.CurrentTile.ShouldBe(to);
             }
 
             [Fact]
@@ -82,13 +83,13 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = engine.AddEvent(@event);
                 
                 // assert
-                Assert.False(actual);
-                Assert.Empty(engine.Events);
-                Assert.Equal(2, engine.GameState.ChildStates.Count());
-                Assert.Equal(1, engine.GameState.ChildStates.OfType<PieceState>().Count());
-                Assert.Equal(1, engine.GameState.ChildStates.OfType<TurnState>().Count());
+                actual.ShouldBeFalse();
+                engine.Events.ShouldBeEmpty();
+                engine.GameState.ChildStates.Count().ShouldBe(2);
+                engine.GameState.ChildStates.OfType<PieceState>().Count().ShouldBe(1);
+                engine.GameState.ChildStates.OfType<TurnState>().Count().ShouldBe(1);
                 var state = engine.GameState.GetState<PieceState>(piece);
-                Assert.Equal(from, state.CurrentTile);
+                state.CurrentTile.ShouldBe(from);
             }
         }
     }

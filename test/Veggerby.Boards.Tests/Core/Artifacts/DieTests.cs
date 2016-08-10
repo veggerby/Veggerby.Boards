@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -20,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = die.Roll(null);
 
                 // assert
-                Assert.Equal(3, actual);
+                actual.ShouldBe(3);
             }
 
             [Fact]
@@ -31,10 +32,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var other = new Die<int>("other", new StaticDieValueGenerator(3));
 
                 // act + assert
-                var actual = Assert.Throws<ArgumentException>(() => die.Roll(new DieState<int>(other, 3)));
+                var actual = Should.Throw<ArgumentException>(() => die.Roll(new DieState<int>(other, 3)));
 
                 // assert
-                Assert.Equal("currentState", actual.ParamName);
+                actual.ParamName.ShouldBe("currentState");
             }
         }
     }

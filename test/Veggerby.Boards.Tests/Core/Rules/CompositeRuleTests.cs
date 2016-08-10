@@ -1,4 +1,5 @@
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
@@ -34,9 +35,9 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Valid);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -61,11 +62,11 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(1, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Valid);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -90,12 +91,12 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual); // allRules = true by default
-                Assert.Equal("Rule2", actual.Reason);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("Rule2");
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
 
 
@@ -122,14 +123,14 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual); // allRules = true by default
-                Assert.Equal("Rule2,Rule3", actual.Reason);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule3.CheckCallCount);
-                Assert.Equal(0, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("Rule2,Rule3");
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(1);
+                innerRule3.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -155,13 +156,13 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual); // allRules = true by default
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(1, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule3.CheckCallCount);
-                Assert.Equal(1, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Valid);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(1);
+                innerRule3.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -187,13 +188,13 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual); // allRules = true by default
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(1, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(0, innerRule3.CheckCallCount); // not called due to breaking out
-                Assert.Equal(0, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Valid);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(0);
+                innerRule3.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -219,13 +220,13 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, GameState.New(game, null), new NullEvent());
                 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual); // allRules = true by default
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(1, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(0, innerRule3.CheckCallCount); // not called due to breaking out
-                Assert.Equal(0, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(RuleCheckState.Valid);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(0);
+                innerRule3.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
         }
 
@@ -255,9 +256,9 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, new NullEvent());
                 
                 // assert
-                Assert.Equal(board.GetTile("tile-1"), actual.GetState<PieceState>(piece).CurrentTile);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.GetState<PieceState>(piece).CurrentTile.ShouldBe(board.GetTile("tile-1"));
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -284,9 +285,9 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, new NullEvent());
                 
                 // assert
-                Assert.Equal(state, actual);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(state);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -320,15 +321,15 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, new NullEvent());
                 
                 // assert
-                Assert.Equal(2, actual.ChildStates.Count());
-                Assert.Equal(board.GetTile("tile-2"), actual.GetState<PieceState>(piece).CurrentTile);
-                Assert.Equal(4, actual.GetState<DieState<int>>(die).CurrentValue);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(1, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule3.CheckCallCount);
-                Assert.Equal(1, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ChildStates.Count().ShouldBe(2);
+                actual.GetState<PieceState>(piece).CurrentTile.ShouldBe(board.GetTile("tile-2"));
+                actual.GetState<DieState<int>>(die).CurrentValue.ShouldBe(4);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(1);
+                innerRule3.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -356,9 +357,9 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, new NullEvent());
                 
                 // assert
-                Assert.Equal(state, actual);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(0, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ShouldBe(state);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
             }
 
             [Fact]
@@ -392,15 +393,15 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Evaluate(game, state, new NullEvent());
                 
                 // assert
-                Assert.Equal(2, actual.ChildStates.Count());
-                Assert.Equal(board.GetTile("tile-1"), actual.GetState<PieceState>(piece).CurrentTile);
-                Assert.Equal(4, actual.GetState<DieState<int>>(die).CurrentValue);
-                Assert.Equal(1, innerRule1.CheckCallCount);
-                Assert.Equal(1, innerRule1.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule2.CheckCallCount);
-                Assert.Equal(0, innerRule2.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
-                Assert.Equal(1, innerRule3.CheckCallCount);
-                Assert.Equal(1, innerRule3.EvaluateCallCount); // to properly chain... evaluate is called after successfull check
+                actual.ChildStates.Count().ShouldBe(2);
+                actual.GetState<PieceState>(piece).CurrentTile.ShouldBe(board.GetTile("tile-1"));
+                actual.GetState<DieState<int>>(die).CurrentValue.ShouldBe(4);
+                innerRule1.CheckCallCount.ShouldBe(1);
+                innerRule1.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
+                innerRule2.CheckCallCount.ShouldBe(1);
+                innerRule2.EvaluateCallCount.ShouldBe(0); // to properly chain... evaluate is called after successfull check
+                innerRule3.CheckCallCount.ShouldBe(1);
+                innerRule3.EvaluateCallCount.ShouldBe(1); // to properly chain... evaluate is called after successfull check
             }
         }
     }

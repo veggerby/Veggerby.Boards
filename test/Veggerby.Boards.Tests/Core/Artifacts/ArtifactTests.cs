@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(player);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -30,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(null);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }
 
             [Fact]
@@ -44,7 +45,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -58,7 +59,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }    
             
             [Fact]
@@ -72,7 +73,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(die);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }        
         }
     }

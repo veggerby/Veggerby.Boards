@@ -2,6 +2,7 @@ using Xunit;
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core;
+using Shouldly;
 
 namespace Veggerby.Boards.Tests.Backgammon
 {
@@ -27,7 +28,7 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var actual = die.Roll(currentState);
 
                 // asser
-                Assert.Equal(expected, actual);
+                actual.ShouldBe(expected);
             }
 
             [Fact]
@@ -38,10 +39,10 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var currentState = new DieState<int>(die, 3);
 
                 // act
-                var actual = Assert.Throws<BoardException>(() => die.Roll(currentState));
+                var actual = Should.Throw<BoardException>(() => die.Roll(currentState));
 
                 // asser
-                Assert.Equal("Illegal die value", actual.Message);
+                actual.Message.ShouldBe("Illegal die value");
             } 
         }
     }

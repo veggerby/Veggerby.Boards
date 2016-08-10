@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Xunit;
@@ -17,8 +18,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new DirectionPattern(Direction.Clockwise);
                 
                 // assert
-                Assert.Equal(Direction.Clockwise, actual.Direction);
-                Assert.True(actual.IsRepeatable);
+                actual.Direction.ShouldBe(Direction.Clockwise);
+                actual.IsRepeatable.ShouldBeTrue();
             }
 
             [Fact]
@@ -26,10 +27,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Assert.Throws<ArgumentNullException>(() => new DirectionPattern(null));
+                var actual = Should.Throw<ArgumentNullException>(() => new DirectionPattern(null));
                 
                 // assert
-                Assert.Equal("direction", actual.ParamName);
+                actual.ParamName.ShouldBe("direction");
             }
 
             [Theory]
@@ -42,8 +43,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new DirectionPattern(Direction.Clockwise, isRepeatable);
                 
                 // assert
-                Assert.Equal(Direction.Clockwise, actual.Direction);
-                Assert.Equal(isRepeatable, actual.IsRepeatable);
+                actual.Direction.ShouldBe(Direction.Clockwise);
+                actual.IsRepeatable.ShouldBe(isRepeatable);
             }
         }
     }

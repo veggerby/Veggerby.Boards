@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Events;
@@ -38,7 +39,7 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Valid, actual);
+                actual.ShouldBe(RuleCheckState.Valid);
             }
 
             [Fact]
@@ -66,8 +67,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidEventFrom", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidEventFrom");
             }
 
             [Fact]
@@ -95,8 +96,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidTurn", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidTurn");
             }
 
             [Fact]
@@ -123,8 +124,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidTurn", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidTurn");
             }
 
             [Fact]
@@ -151,8 +152,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidPiece", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidPiece");
             }
 
             [Fact]
@@ -181,8 +182,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidPath", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidPath");
             }
 
             [Fact]
@@ -211,8 +212,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("InvalidPath", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("InvalidPath");
             }
 
             [Fact]
@@ -241,8 +242,8 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 var actual = rule.Check(game, state, @event);
 
                 // assert
-                Assert.Equal(RuleCheckState.Invalid, actual);
-                Assert.Equal("NoMovePath", actual.Reason);
+                actual.ShouldBe(RuleCheckState.Invalid);
+                actual.Reason.ShouldBe("NoMovePath");
             }
         }
 
@@ -276,11 +277,10 @@ namespace Veggerby.Boards.Tests.Core.Rules
                 // assert
                 var piece1State = actual.GetState<PieceState>(piece1);
                 var piece2State = actual.GetState<PieceState>(piece2);
-                Assert.Equal(piece1, piece1State.Artifact);
-                Assert.Equal(board.GetTile("tile-3"), piece1State.CurrentTile);
-                Assert.Equal(piece2, piece2State.Artifact);
-                Assert.Equal(piece1, piece1State.Artifact);
-                Assert.Equal(board.GetTile("tile-4"), piece2State.CurrentTile);
+                piece1State.Artifact.ShouldBe(piece1);
+                piece1State.CurrentTile.ShouldBe(board.GetTile("tile-3"));
+                piece2State.Artifact.ShouldBe(piece2);
+                piece2State.CurrentTile.ShouldBe(board.GetTile("tile-4"));
             }
         }
     }

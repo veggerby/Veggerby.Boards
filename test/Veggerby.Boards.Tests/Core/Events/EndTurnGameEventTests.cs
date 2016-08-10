@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = new EndTurnGameEvent(player);;
                 
                 // assert
-                Assert.Equal(player, actual.NextPlayer);
+                actual.NextPlayer.ShouldBe(player);
             }
         }
     }

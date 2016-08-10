@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -22,9 +23,9 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = new Board("board", new[] { relation });
                 
                 // assert
-                Assert.Equal("board", actual.Id);
-                Assert.Equal(new [] { tile1, tile2 }, actual.Tiles);
-                Assert.Equal(new [] { relation }, actual.TileRelations);
+                actual.Id.ShouldBe("board");
+                actual.Tiles.ShouldBe(new [] { tile1, tile2 });
+                actual.TileRelations.ShouldBe(new [] { relation });
             }
         }
 
@@ -40,7 +41,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTile("tile-1");
                 
                 // assert
-                Assert.Equal("tile-1", actual.Id);
+                actual.Id.ShouldBe("tile-1");
             }
 
             [Fact]
@@ -53,7 +54,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTile("unknown_tile");
                 
                 // assert
-                Assert.Null(actual);
+                actual.ShouldBeNull();
             }
 
             [Theory]
@@ -65,10 +66,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var board = new TestBoard();
                 
                 // act + assert
-                var actual = Assert.Throws<ArgumentException>(() => board.GetTile(id));
+                var actual = Should.Throw<ArgumentException>(() => board.GetTile(id));
                 
                 // assert
-                Assert.Equal("tileId", actual.ParamName);
+                actual.ParamName.ShouldBe("tileId");
             }
         }
 
@@ -85,8 +86,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTileRelation(from, Direction.Clockwise);
                 
                 // assert
-                Assert.Equal(from, actual.From);
-                Assert.Equal(Direction.Clockwise, actual.Direction);
+                actual.From.ShouldBe(from);
+                actual.Direction.ShouldBe(Direction.Clockwise);
             }
 
             [Fact]
@@ -100,7 +101,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTileRelation(from, Direction.North);
                 
                 // assert
-                Assert.Null(actual);
+                actual.ShouldBeNull();
             }
 
             [Theory]
@@ -115,10 +116,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var direction = directionId != null ? new Direction(directionId) : null;
                 
                 // act + assert
-                var actual = Assert.Throws<ArgumentNullException>(() => board.GetTileRelation(from, direction));
+                var actual = Should.Throw<ArgumentNullException>(() => board.GetTileRelation(from, direction));
                 
                 // assert
-                Assert.Equal(expected, actual.ParamName);
+                actual.ParamName.ShouldBe(expected);
             }
         }
 
@@ -136,8 +137,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTileRelation(from, to);
                 
                 // assert
-                Assert.Equal(from, actual.From);
-                Assert.Equal(to, actual.To);
+                actual.From.ShouldBe(from);
+                actual.To.ShouldBe(to);
             }
 
             [Fact]
@@ -152,7 +153,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = board.GetTileRelation(from, to);
                 
                 // assert
-                Assert.Null(actual);
+                actual.ShouldBeNull();
             }
 
             [Theory]
@@ -167,10 +168,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var to = toId != null ? board.GetTile(toId) : null;
                 
                 // act + assert
-                var actual = Assert.Throws<ArgumentNullException>(() => board.GetTileRelation(from, to));
+                var actual = Should.Throw<ArgumentNullException>(() => board.GetTileRelation(from, to));
                 
                 // assert
-                Assert.Equal(expected, actual.ParamName);
+                actual.ParamName.ShouldBe(expected);
             }
         }
     }

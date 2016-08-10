@@ -1,4 +1,5 @@
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Rules.Algorithms;
@@ -27,10 +28,10 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
                 // assert
                 var actual = visitor.ResultPath;
 
-                Assert.NotNull(actual);
-                Assert.Equal(4, actual.Distance);
-                Assert.Equal(new[] { "tile-0", "tile-1", "tile-2", "tile-3", "tile-4" }, actual.Tiles.Select(x => x.Id));
-                Assert.Equal(new[] { "clockwise", "clockwise", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
+                actual.ShouldNotBeNull();
+                actual.Distance.ShouldBe(4);
+                actual.Tiles.Select(x => x.Id).ShouldBe(new[] { "tile-0", "tile-1", "tile-2", "tile-3", "tile-4" });
+                actual.Directions.ShouldBe(new[] { Direction.Clockwise, Direction.Clockwise, Direction.Clockwise, Direction.Clockwise });
             }
         }
 
@@ -52,10 +53,10 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
                 // assert
                 var actual = visitor.ResultPath;
 
-                Assert.NotNull(actual);
-                Assert.Equal(5, actual.Distance);
-                Assert.Equal(new[] { "tile-0", "tile-24" }, actual.Tiles.Select(x => x.Id));
-                Assert.Equal(new[] { "across" }, actual.Directions.Select(x => x.Id));
+                actual.ShouldNotBeNull();
+                actual.Distance.ShouldBe(5);
+                actual.Tiles.Select(x => x.Id).ShouldBe(new[] { "tile-0", "tile-24" });
+                actual.Directions.ShouldBe(new[] { Direction.Across });
             }
         }
 
@@ -77,10 +78,10 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
                 // assert
                 var actual = visitor.ResultPath;
 
-                Assert.NotNull(actual);
-                Assert.Equal(7, actual.Distance);
-                Assert.Equal(new[] { "tile-0", "tile-24", "tile-25", "tile-26" }, actual.Tiles.Select(x => x.Id));
-                Assert.Equal(new[] { "across", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
+                actual.ShouldNotBeNull();
+                actual.Distance.ShouldBe(7);
+                actual.Tiles.Select(x => x.Id).ShouldBe(new[] { "tile-0", "tile-24", "tile-25", "tile-26" });
+                actual.Directions.ShouldBe(new[] { Direction.Across, Direction.Clockwise, Direction.Clockwise });
             }
         }
 
@@ -101,9 +102,9 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 
                 // assert
                 var actual = visitor.ResultPath;
-                Assert.Equal(9, actual.Distance);
-                Assert.Equal(new[] { "tile-31", "tile-0", "tile-24", "tile-25", "tile-26", "tile-27" }, actual.Tiles.Select(x => x.Id));
-                Assert.Equal(new[] { "clockwise", "across", "clockwise", "clockwise", "clockwise" }, actual.Directions.Select(x => x.Id));
+                actual.Distance.ShouldBe(9);
+                actual.Tiles.Select(x => x.Id).ShouldBe(new[] { "tile-31", "tile-0", "tile-24", "tile-25", "tile-26", "tile-27" });
+                actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Across, Direction.Clockwise, Direction.Clockwise, Direction.Clockwise });
             }
         }
 
@@ -125,7 +126,7 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
                 // assert
                 var actual = visitor.ResultPath;
 
-                Assert.Null(actual);
+                actual.ShouldBeNull();
             }
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Events;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -20,8 +21,8 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = new RollDieGameEvent<int>(die, 4);
                 
                 // assert
-                Assert.Equal(die, actual.Die);
-                Assert.Equal(4, actual.NewDieValue);
+                actual.Die.ShouldBe(die);
+                actual.NewDieValue.ShouldBe(4);
             }
 
             [Fact]
@@ -30,10 +31,10 @@ namespace Veggerby.Boards.Tests.Core.Events
                 // arrange
 
                 // act
-                 var actual = Assert.Throws<ArgumentNullException>(() => new RollDieGameEvent<int>(null, 4));
-                
+                var actual = Should.Throw<ArgumentNullException>(() => new RollDieGameEvent<int>(null, 4));
+
                 // assert
-                 Assert.Equal("die", actual.ParamName);
+                actual.ParamName.ShouldBe("die");
             }
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
@@ -19,10 +20,10 @@ namespace Veggerby.Boards.Tests.Core.Events
                 // arrange
 
                 // act
-                var actual = Assert.Throws<ArgumentNullException>(() => new GameEventHandler<Artifact>(null, null));
+                var actual = Should.Throw<ArgumentNullException>(() => new GameEventHandler<Artifact>(null, null));
 
                 // assert
-                Assert.Equal("onAfterEvent", actual.ParamName);
+                actual.ParamName.ShouldBe("onAfterEvent");
             }
         }
 
@@ -46,9 +47,9 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = handler.OnBeforeEvent(currentState, new NullEvent());
                 
                 // assert
-                Assert.IsType<PieceState>(actual);
-                Assert.Equal(piece, actual.Artifact);
-                Assert.Equal(tile2, ((PieceState)actual).CurrentTile);
+                actual.ShouldBeOfType<PieceState>();
+                actual.Artifact.ShouldBe(piece);
+                ((PieceState)actual).CurrentTile.ShouldBe(tile2);
             }
             
             [Fact]
@@ -69,7 +70,7 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = handler.OnBeforeEvent(currentState, new NullEvent());
                 
                 // assert
-                Assert.Equal(currentState, actual);
+                actual.ShouldBe(currentState);
             }
             
             [Fact]
@@ -90,7 +91,7 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = handler.OnBeforeEvent(currentState, new NullEvent());
                 
                 // assert
-                Assert.Equal(currentState, actual);
+                actual.ShouldBe(currentState);
             }
 
             [Fact]
@@ -109,10 +110,10 @@ namespace Veggerby.Boards.Tests.Core.Events
                 );
                 
                 // act
-                var actual = Assert.Throws<ArgumentNullException>(() => handler.OnBeforeEvent(currentState, null));
+                var actual = Should.Throw<ArgumentNullException>(() => handler.OnBeforeEvent(currentState, null));
                 
                 // assert
-                Assert.Equal("event", actual.ParamName);
+                actual.ParamName.ShouldBe("event");
             }
 
             [Fact]
@@ -131,10 +132,10 @@ namespace Veggerby.Boards.Tests.Core.Events
                 );
                 
                 // act
-                var actual = Assert.Throws<BoardException>(() => handler.OnBeforeEvent(currentState, new NullEvent()));
+                var actual = Should.Throw<BoardException>(() => handler.OnBeforeEvent(currentState, new NullEvent()));
                 
                 // assert
-                Assert.Equal("Invalid artifact on state change", actual.Message);
+                actual.Message.ShouldBe("Invalid artifact on state change");
             }
         }
     }

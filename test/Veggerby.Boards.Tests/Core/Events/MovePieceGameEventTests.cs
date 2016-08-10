@@ -1,4 +1,5 @@
 using System;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Events;
@@ -22,9 +23,9 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var actual = new MovePieceGameEvent(piece, from, to);
                 
                 // assert
-                Assert.Equal(piece, actual.Piece);
-                Assert.Equal(from, actual.From);
-                Assert.Equal(to, actual.To);
+                actual.Piece.ShouldBe(piece);
+                actual.From.ShouldBe(from);
+                actual.To.ShouldBe(to);
             }
 
             [Theory]
@@ -40,10 +41,10 @@ namespace Veggerby.Boards.Tests.Core.Events
                 var to = toId != null ? new Tile(toId) : null;
                 
                 // act
-                 var actual = Assert.Throws<ArgumentNullException>(() => new MovePieceGameEvent(piece, from, to));
+                 var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(piece, from, to));
                 
                 // assert
-                 Assert.Equal(expected, actual.ParamName);
+                 actual.ParamName.ShouldBe(expected);
             }
         }   
     }

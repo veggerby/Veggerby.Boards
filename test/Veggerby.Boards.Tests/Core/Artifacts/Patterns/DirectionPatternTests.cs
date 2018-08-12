@@ -16,7 +16,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = new DirectionPattern(Direction.Clockwise);
-                
+
                 // assert
                 actual.Direction.ShouldBe(Direction.Clockwise);
                 actual.IsRepeatable.ShouldBeTrue();
@@ -28,7 +28,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => new DirectionPattern(null));
-                
+
                 // assert
                 actual.ParamName.ShouldBe("direction");
             }
@@ -36,12 +36,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             [Theory]
             [InlineData(true)]
             [InlineData(false)]
-            public void Should_initialize_from_constructor(bool isRepeatable)
+            public void Should_initialize_from_constructor_with_repeatable_flag(bool isRepeatable)
             {
                 // arrange
                 // act
                 var actual = new DirectionPattern(Direction.Clockwise, isRepeatable);
-                
+
                 // assert
                 actual.Direction.ShouldBe(Direction.Clockwise);
                 actual.IsRepeatable.ShouldBe(isRepeatable);

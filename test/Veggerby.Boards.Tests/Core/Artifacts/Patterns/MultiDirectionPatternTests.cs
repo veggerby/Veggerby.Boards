@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = new MultiDirectionPattern(new[] { Direction.Clockwise, Direction.CounterClockwise });
-                
+
                 // assert
                 actual.Directions.ShouldBe(new[] { Direction.Clockwise, Direction.CounterClockwise });
                 actual.IsRepeatable.ShouldBeTrue();
@@ -26,12 +26,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             [Theory]
             [InlineData(true)]
             [InlineData(false)]
-            public void Should_initialize_from_constructor(bool isRepeatable)
+            public void Should_initialize_from_constructor_with_repeatable_flag(bool isRepeatable)
             {
                 // arrange
                 // act
                 var actual = new MultiDirectionPattern(new[] { Direction.Clockwise, Direction.CounterClockwise }, isRepeatable);
-                
+
                 // assert
                 actual.Directions.ShouldBe(new[] { Direction.Clockwise, Direction.CounterClockwise });
                 actual.IsRepeatable.ShouldBe(isRepeatable);
@@ -43,7 +43,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => new MultiDirectionPattern(null));
-                
+
                 // assert
                 actual.ParamName.ShouldBe("directions");
             }
@@ -54,7 +54,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = Should.Throw<ArgumentException>(() => new MultiDirectionPattern(Enumerable.Empty<Direction>()));
-                
+
                 // assert
                 actual.ParamName.ShouldBe("directions");
             }

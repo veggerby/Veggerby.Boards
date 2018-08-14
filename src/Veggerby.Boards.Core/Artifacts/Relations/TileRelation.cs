@@ -24,7 +24,6 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
             Distance = distance;
         }
 
-
         public override string ToString()
         {
             return $"{GetType().Name} {From} {Distance}x{Direction} {To}";

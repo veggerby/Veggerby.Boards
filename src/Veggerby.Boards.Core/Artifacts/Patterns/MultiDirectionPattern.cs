@@ -5,7 +5,7 @@ using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Artifacts.Patterns
 {
-    public class MultiDirectionPattern : IPattern 
+    public class MultiDirectionPattern : IPattern
     {
         public IEnumerable<Direction> Directions { get; }
         public bool IsRepeatable { get; }
@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
                 throw new ArgumentException("Empty directions list", nameof(directions));
             }
 
-            Directions = (directions ?? Enumerable.Empty<Direction>()).ToList();
+            Directions = directions.ToList();
             IsRepeatable = isRepeatable;
         }
 

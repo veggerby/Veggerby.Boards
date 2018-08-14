@@ -6,14 +6,9 @@ namespace Veggerby.Boards.Core.Flows.Rules
 {
     internal sealed class NullGameEventRule : IGameEventRule
     {
-        public RuleCheckState Check(Game game, GameState currentState, IGameEvent @event)
+        public RuleCheckState Check(GameEngine gameEngine, IGameEvent @event)
         {
             return RuleCheckState.New(RuleCheckResult.Ignore);
-        }
-
-        public GameState HandleEvent(Game game, GameState currentState, IGameEvent @event)
-        {
-            return currentState;
         }
     }
 }

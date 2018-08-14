@@ -1,4 +1,4 @@
-﻿using Veggerby.Boards.Core;
+﻿using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Chess
 {
@@ -101,7 +101,7 @@ namespace Veggerby.Boards.Chess
             AddPieceDirectionPatternDefinition("white-king", false, "north-west");
             AddPieceDirectionPatternDefinition("white-king", false, "south-east");
             AddPieceDirectionPatternDefinition("white-king", false, "south-west");
-                                                                                                
+
             AddPieceDirectionPatternDefinition("black-queen", true, "north");
             AddPieceDirectionPatternDefinition("black-queen", true, "east");
             AddPieceDirectionPatternDefinition("black-queen", true, "west");
@@ -110,7 +110,7 @@ namespace Veggerby.Boards.Chess
             AddPieceDirectionPatternDefinition("black-queen", true, "north-west");
             AddPieceDirectionPatternDefinition("black-queen", true, "south-east");
             AddPieceDirectionPatternDefinition("black-queen", true, "south-west");
-                                                
+
             AddPieceDirectionPatternDefinition("black-king", false, "north");
             AddPieceDirectionPatternDefinition("black-king", false, "east");
             AddPieceDirectionPatternDefinition("black-king", false, "west");
@@ -119,12 +119,12 @@ namespace Veggerby.Boards.Chess
             AddPieceDirectionPatternDefinition("black-king", false, "north-west");
             AddPieceDirectionPatternDefinition("black-king", false, "south-east");
             AddPieceDirectionPatternDefinition("black-king", false, "south-west");
-            
+
             for (int i = 1; i <= 8; i++)
             {
                 AddPieceDefinition($"white-pawn-{i}", "white");
                 AddPieceDefinition($"black-pawn-{i}", "black");
-                
+
                 AddPieceDirectionPatternDefinition($"white-pawn-{i}", true, "north");
                 AddPieceDirectionPatternDefinition($"black-pawn-{i}", true, "south");
             }

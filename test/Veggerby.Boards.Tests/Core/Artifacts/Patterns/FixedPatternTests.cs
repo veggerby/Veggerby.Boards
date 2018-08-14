@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new FixedPattern(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Across });
                 
                 // assert
-                Assert.Equal(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Across }, actual.Pattern);
+                actual.Pattern.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Across });
             }
 
             [Fact]
@@ -26,10 +27,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Assert.Throws<ArgumentNullException>(() => new FixedPattern(null));
+                var actual = Should.Throw<ArgumentNullException>(() => new FixedPattern(null));
                 
                 // assert
-                Assert.Equal("pattern", actual.ParamName);
+                 actual.ParamName.ShouldBe("pattern");
             }
 
             [Fact]
@@ -37,10 +38,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Assert.Throws<ArgumentException>(() => new FixedPattern(Enumerable.Empty<Direction>()));
+                var actual = Should.Throw<ArgumentException>(() => new FixedPattern(Enumerable.Empty<Direction>()));
                 
                 // assert
-                Assert.Equal("pattern", actual.ParamName);
+                actual.ParamName.ShouldBe("pattern");
             }
         }
     }

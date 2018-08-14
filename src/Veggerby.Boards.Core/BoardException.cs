@@ -1,6 +1,8 @@
+using System;
+
 namespace Veggerby.Boards.Core
 {
-    public class BoardException : System.Exception
+    public class BoardException : Exception
     {
         public BoardException() { }
         public BoardException(string message) : base(message) { }

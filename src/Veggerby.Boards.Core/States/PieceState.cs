@@ -3,7 +3,7 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public class PieceState : State<Piece>
+    public class PieceState : ArtifactState
     {
         public Tile CurrentTile { get; }
 

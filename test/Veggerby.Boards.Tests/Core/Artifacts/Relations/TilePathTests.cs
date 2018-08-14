@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
@@ -23,12 +24,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new TilePath(new [] { relation1to2, relation2to3 });
                 
                 // assert
-                Assert.Equal(new [] { relation1to2, relation2to3 }, actual.Relations);
-                Assert.Equal(new [] { tile1, tile2, tile3 }, actual.Tiles);
-                Assert.Equal(new [] { Direction.Clockwise, Direction.Clockwise }, actual.Directions);
-                Assert.Equal(tile1, actual.From);
-                Assert.Equal(tile3, actual.To);
-                Assert.Equal(2, actual.Distance);
+                actual.Relations.ShouldBe(new [] { relation1to2, relation2to3 });
+                actual.Tiles.ShouldBe(new [] { tile1, tile2, tile3 });
+                actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise });
+                actual.From.ShouldBe(tile1);
+                actual.To.ShouldBe(tile3);
+                actual.Distance.ShouldBe(2);
             }
         }
 
@@ -52,12 +53,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = path.Add(relation3to4);
                 
                 // assert
-                Assert.Equal(new [] { relation1to2, relation2to3, relation3to4 }, actual.Relations);
-                Assert.Equal(new [] { tile1, tile2, tile3, tile4 }, actual.Tiles);
-                Assert.Equal(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Clockwise }, actual.Directions);
-                Assert.Equal(tile1, actual.From);
-                Assert.Equal(tile4, actual.To);
-                Assert.Equal(3, actual.Distance);
+                actual.Relations.ShouldBe(new [] { relation1to2, relation2to3, relation3to4 });
+                actual.Tiles.ShouldBe(new [] { tile1, tile2, tile3, tile4 });
+                actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Clockwise });
+                actual.From.ShouldBe(tile1);
+                actual.To.ShouldBe(tile4);
+                actual.Distance.ShouldBe(3);
             }
         }
 
@@ -76,12 +77,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = TilePath.Create(null, relation1to2);
                 
                 // assert
-                Assert.Equal(new [] { relation1to2 }, actual.Relations);
-                Assert.Equal(new [] { tile1, tile2 }, actual.Tiles);
-                Assert.Equal(new [] { Direction.Clockwise }, actual.Directions);
-                Assert.Equal(tile1, actual.From);
-                Assert.Equal(tile2, actual.To);
-                Assert.Equal(1, actual.Distance);
+                actual.Relations.ShouldBe(new [] { relation1to2 });
+                actual.Tiles.ShouldBe(new [] { tile1, tile2 });
+                actual.Directions.ShouldBe(new [] { Direction.Clockwise });
+                actual.From.ShouldBe(tile1);
+                actual.To.ShouldBe(tile2);
+                actual.Distance.ShouldBe(1);
             }
 
             [Fact]
@@ -100,12 +101,12 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = TilePath.Create(path, relation2to3);
 
                 // assert
-                Assert.Equal(new [] { relation1to2, relation2to3 }, actual.Relations);
-                Assert.Equal(new [] { tile1, tile2, tile3 }, actual.Tiles);
-                Assert.Equal(new [] { Direction.Clockwise, Direction.Clockwise }, actual.Directions);
-                Assert.Equal(tile1, actual.From);
-                Assert.Equal(tile3, actual.To);
-                Assert.Equal(2, actual.Distance);
+                actual.Relations.ShouldBe(new [] { relation1to2, relation2to3 });
+                actual.Tiles.ShouldBe(new [] { tile1, tile2, tile3 });
+                actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise });
+                actual.From.ShouldBe(tile1);
+                actual.To.ShouldBe(tile3);
+                actual.Distance.ShouldBe(2);
             }
         }
     }

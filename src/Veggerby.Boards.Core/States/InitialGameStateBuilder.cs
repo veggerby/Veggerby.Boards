@@ -20,10 +20,10 @@ namespace Veggerby.Boards.Core.States
             Build(game);
 
             var pieceStates = _piecePositions
-                .Select(x => (IState)new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
+                .Select(x => new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
                 .ToList();
 
-            return GameState.New(game, pieceStates.ToList()); 
+            return GameState.New(game, pieceStates.ToList(), null);
         }
     }
 }

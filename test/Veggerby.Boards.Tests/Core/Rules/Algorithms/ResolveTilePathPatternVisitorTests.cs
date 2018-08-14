@@ -2,7 +2,7 @@ using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Rules.Algorithms;
+using Veggerby.Boards.Core.Flows.Rules.Algorithms;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 
@@ -24,7 +24,7 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 
                 // act
                 pattern.Accept(visitor);
-                
+
                 // assert
                 var actual = visitor.ResultPath;
 
@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 
                 // act
                 pattern.Accept(visitor);
-                
+
                 // assert
                 var actual = visitor.ResultPath;
 
@@ -74,7 +74,7 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 
                 // act
                 pattern.Accept(visitor);
-                
+
                 // assert
                 var actual = visitor.ResultPath;
 
@@ -122,7 +122,7 @@ namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
 
                 // act
                 pattern.Accept(visitor);
-                
+
                 // assert
                 var actual = visitor.ResultPath;
 

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Events;
-using Veggerby.Boards.Core.Rules;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core
@@ -11,79 +11,37 @@ namespace Veggerby.Boards.Core
     public class GameEngine
     {
         public Game Game { get; }
-        public RuleEngine Rules { get; }
         public GameState GameState { get; private set; }
+        public GamePhase GamePhaseRoot { get; }
         public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
-        
+
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
 
-        private GameEngine(Game game, GameState initialState, RuleEngine rules)
+        private GameEngine(Game game, GamePhase gamePhaseRoot, GameState initialState)
         {
             if (game == null)
             {
                 throw new ArgumentNullException(nameof(game));
             }
 
-            if (rules == null)
+            if (gamePhaseRoot == null)
             {
-                throw new ArgumentNullException(nameof(rules));
+                throw new ArgumentNullException(nameof(gamePhaseRoot));
+            }
+
+            if (initialState == null)
+            {
+                throw new ArgumentNullException(nameof(initialState));
             }
 
             Game = game;
-            GameState = initialState ?? GameState.New(game);
-            Rules = rules;
+            GamePhaseRoot = gamePhaseRoot;
+            GameState = initialState;
         }
 
-        private RuleCheckState Check(GameState state, IGameEvent @event)
+        public static GameEngine New(Game game, GamePhase gamePhaseRoot, GameState initialState)
         {
-            var newState = state?.OnBeforeEvent(@event);
-            return Rules.Check(Game, newState, @event);
-        }
-    
-        private GameState PlayEvent(GameState state, IGameEvent @event)
-        {
-            var newState = state?.OnBeforeEvent(@event);
-            newState = Rules.Evaluate(Game, newState, @event);
-            return newState?.OnAfterEvent(@event);
-        }
-
-        public bool AddEvent(IGameEvent @event)
-        {
-            if (!RuleCheckState.Valid.Equals(Check(GameState, @event)))
-            {
-                return false;
-            }
-
-            var newState = PlayEvent(GameState, @event);
-            _events.Add(@event);
-            GameState = newState;
-            
-            return true;
-        }
-
-        public void PlayEvents(IEnumerable<IGameEvent> events)
-        {
-            var state = GameState;
-            foreach (var @event in events)
-            {
-                if (!RuleCheckState.Valid.Equals(Check(state, @event)))
-                {
-                    throw new BoardException("Invalid event");
-                }
-
-                state = PlayEvent(state, @event);
-            }
-        }
-
-        public static GameEngine New(Game game, GameState initialState, RuleEngine rules)
-        {
-            if (initialState.GetActiveTurn() == null)
-            {
-                var turn = game.FirstTurn();
-                initialState = initialState.Update(turn);
-            }
-
-            return new GameEngine(game, initialState, rules);
+            return new GameEngine(game, gamePhaseRoot, initialState);
         }
     }
 }

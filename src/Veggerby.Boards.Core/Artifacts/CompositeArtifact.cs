@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Veggerby.Boards.Core.Artifacts 
+namespace Veggerby.Boards.Core.Artifacts
 {
     public class CompositeArtifact<T> : Artifact
         where T : Artifact

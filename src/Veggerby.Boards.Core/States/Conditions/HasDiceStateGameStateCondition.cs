@@ -5,12 +5,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.States.Conditions
 {
-    public class AllDiceAreRolledGameStateCondition<TDice, TValue> : IGameStateCondition
+    public class HasDiceStateGameStateCondition<TDice, TValue> : IGameStateCondition
         where TDice : Dice<TValue>
     {
         private IEnumerable<TDice> _dice;
 
-        public AllDiceAreRolledGameStateCondition(IEnumerable<TDice> dice)
+        public HasDiceStateGameStateCondition(IEnumerable<TDice> dice)
         {
             if (dice == null)
             {

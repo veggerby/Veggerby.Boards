@@ -3,12 +3,6 @@ using System.Linq;
 
 namespace Veggerby.Boards.Core.States.Conditions
 {
-    public enum CompositeMode
-    {
-        Any,
-        All
-    }
-
     public class CompositeGameStateCondition : IGameStateCondition
     {
         public IEnumerable<IGameStateCondition> ChildConditions { get; }

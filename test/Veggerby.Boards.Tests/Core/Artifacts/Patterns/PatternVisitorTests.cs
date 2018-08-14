@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -21,7 +22,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = visitor.Type;
                 
                 // assert
-                Assert.Equal(pattern.GetType(), actual);
+                actual.ShouldBe(typeof(AnyPattern));
             }
 
             [Fact]
@@ -36,7 +37,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = visitor.Type;
                 
                 // assert
-                Assert.Equal(pattern.GetType(), actual);
+                actual.ShouldBe(typeof(DirectionPattern));
             }
 
             [Fact]
@@ -51,7 +52,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = visitor.Type;
                 
                 // assert
-                Assert.Equal(pattern.GetType(), actual);
+                actual.ShouldBe(typeof(FixedPattern));
             }
 
             [Fact]
@@ -66,7 +67,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = visitor.Type;
                 
                 // assert
-                Assert.Equal(pattern.GetType(), actual);
+                actual.ShouldBe(typeof(MultiDirectionPattern));
             }
 
             [Fact]
@@ -81,7 +82,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = visitor.Type;
                 
                 // assert
-                Assert.Equal(pattern.GetType(), actual);
+                actual.ShouldBe(typeof(NullPattern));
             }
         }
     }

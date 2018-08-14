@@ -1,4 +1,4 @@
-﻿using Veggerby.Boards.Core;
+﻿using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Backgammon
 {

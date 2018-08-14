@@ -2,7 +2,7 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public interface IArtifactState : IState
+    public interface IArtifactState
     {
         Artifact Artifact { get; }
     }

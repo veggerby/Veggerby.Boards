@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Xunit;
@@ -16,24 +17,24 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // arrange
                 // act
                 var actual = new MultiDirectionPattern(new[] { Direction.Clockwise, Direction.CounterClockwise });
-                
+
                 // assert
-                Assert.Equal(new[] { Direction.Clockwise, Direction.CounterClockwise }, actual.Directions);
-                Assert.True(actual.IsRepeatable);
+                actual.Directions.ShouldBe(new[] { Direction.Clockwise, Direction.CounterClockwise });
+                actual.IsRepeatable.ShouldBeTrue();
             }
 
             [Theory]
             [InlineData(true)]
             [InlineData(false)]
-            public void Should_initialize_from_constructor(bool isRepeatable)
+            public void Should_initialize_from_constructor_with_repeatable_flag(bool isRepeatable)
             {
                 // arrange
                 // act
                 var actual = new MultiDirectionPattern(new[] { Direction.Clockwise, Direction.CounterClockwise }, isRepeatable);
-                
+
                 // assert
-                Assert.Equal(new[] { Direction.Clockwise, Direction.CounterClockwise }, actual.Directions);
-                Assert.Equal(isRepeatable, actual.IsRepeatable);
+                actual.Directions.ShouldBe(new[] { Direction.Clockwise, Direction.CounterClockwise });
+                actual.IsRepeatable.ShouldBe(isRepeatable);
             }
 
             [Fact]
@@ -41,10 +42,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Assert.Throws<ArgumentNullException>(() => new MultiDirectionPattern(null));
-                
+                var actual = Should.Throw<ArgumentNullException>(() => new MultiDirectionPattern(null));
+
                 // assert
-                Assert.Equal("directions", actual.ParamName);
+                actual.ParamName.ShouldBe("directions");
             }
 
             [Fact]
@@ -52,10 +53,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Assert.Throws<ArgumentException>(() => new MultiDirectionPattern(Enumerable.Empty<Direction>()));
-                
+                var actual = Should.Throw<ArgumentException>(() => new MultiDirectionPattern(Enumerable.Empty<Direction>()));
+
                 // assert
-                Assert.Equal("directions", actual.ParamName);
+                actual.ParamName.ShouldBe("directions");
             }
         }
     }

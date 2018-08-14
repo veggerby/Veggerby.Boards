@@ -1,6 +1,4 @@
 using System.Linq;
-using Veggerby.Boards.Core.Phases;
-using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Artifacts
 {
@@ -8,19 +6,12 @@ namespace Veggerby.Boards.Core.Artifacts
     {
         public static Piece GetPiece(this Game game, string id)
         {
-            return game.ChildArtifacts.SingleOrDefault(x => string.Equals(x.Id, id));
+            return game.Pieces.SingleOrDefault(x => string.Equals(x.Id, id));
         }
-        
+
         public static Tile GetTile(this Game game, string id)
         {
             return game.Board.GetTile(id);
-        }
-
-        public static TurnState FirstTurn(this Game game)
-        {
-            var player = game.Players.First();
-            var turn = new Turn(new Round(1), 1);
-            return new TurnState(player, turn);
         }
     }
 }

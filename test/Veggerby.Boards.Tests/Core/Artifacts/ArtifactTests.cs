@@ -1,3 +1,4 @@
+using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(player);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -30,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(null);
 
                 // assert
-                Assert.False(actual);
+                actual.ShouldBeFalse();
             }
 
             [Fact]
@@ -44,7 +45,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                Assert.True(actual);
+                actual.ShouldBeTrue();
             }
 
             [Fact]
@@ -58,22 +59,22 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                Assert.False(actual);
-            }    
-            
+                actual.ShouldBeFalse();
+            }
+
             [Fact]
             public void Should_not_equal_different_type_same_id()
             {
                 // arrange
                 var player = new Player("id");
-                var die = new RegularDie("id");
+                var dice = new RegularDice("id");
 
                 // act
-                var actual = player.Equals(die);
+                var actual = player.Equals(dice);
 
                 // assert
-                Assert.False(actual);
-            }        
+                actual.ShouldBeFalse();
+            }
         }
     }
 }

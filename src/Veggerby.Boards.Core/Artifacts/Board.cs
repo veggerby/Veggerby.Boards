@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException("Empty relations list", nameof(tileRelations));
             }
 
-            TileRelations = (tileRelations ?? Enumerable.Empty<TileRelation>()).ToList().AsReadOnly();
+            TileRelations = tileRelations.ToList().AsReadOnly();
             Tiles = tileRelations.SelectMany(x => new [] { x.From, x.To }).Distinct().ToList().AsReadOnly();
         }
 
@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException("Invalid Tile Id", nameof(tileId));
             }
 
-            return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId)); 
+            return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId));
         }
 
         public TileRelation GetTileRelation(Tile from, Direction direction)

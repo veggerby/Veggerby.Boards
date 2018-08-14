@@ -1,29 +1,54 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    "version": "0.1.0",
-    "command": "dotnet",
-    "isShellCommand": true,
+    "version": "2.0.0",
     "args": [],
     "tasks": [
+        // see https://www.hanselman.com/blog/AutomaticUnitTestingInNETCorePlusCodeCoverageInVisualStudioCode.aspx
         {
-            "taskName": "build",
-            "args": [ "test/Veggerby.Boards.Tests" ],
-            "isBuildCommand": true,
-            "showOutput": "silent",
-            "problemMatcher": "$msCompile"
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/test/Veggerby.Boards.Tests"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
-            // see https://www.hanselman.com/blog/AutomaticUnitTestingInNETCorePlusCodeCoverageInVisualStudioCode.aspx
-            "taskName": "test",
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
             "args": [
-                "test/Veggerby.Boards.Tests",
+                "test",
+                "${workspaceFolder}/test/Veggerby.Boards.Tests"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "test with coverage",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
                 "/p:CollectCoverage=true",
                 "/p:CoverletOutputFormat=lcov",
-                "/p:CoverletOutput=./lcov.info"
+                "/p:CoverletOutput=./lcov.info",
+                "${workspaceFolder}/test/Veggerby.Boards.Tests"
             ],
-            "isTestCommand": true,
-            "showOutput": "silent"
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }

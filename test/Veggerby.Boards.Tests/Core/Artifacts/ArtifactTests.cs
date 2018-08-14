@@ -1,3 +1,4 @@
+using System;
 using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Xunit;
@@ -6,6 +7,34 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
 {
     public class ArtifactTests
     {
+        public class _ctor
+        {
+            [Fact]
+            public void Should_create_with_id()
+            {
+                // arrange
+                var player = new Player("player");
+
+                // act
+                var actual = player.Id;
+
+                // assert
+                actual.ShouldBe("player");
+            }
+
+            [Fact]
+            public void Should_throw_with_empty_id()
+            {
+                // arrange
+
+                // act
+                var actual = Should.Throw<ArgumentException>(() => new Player(null));
+
+                // assert
+                actual.ParamName.ShouldBe("id");
+            }
+        }
+
         public class _Equals
         {
             [Fact]

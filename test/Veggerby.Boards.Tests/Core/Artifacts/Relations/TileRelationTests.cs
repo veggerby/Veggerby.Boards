@@ -107,5 +107,23 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 actual.ParamName.ShouldBe("distance");
             }
         }
+
+        public class _ToString
+        {
+            [Fact]
+            public void Should_return_expected_string()
+            {
+                // arrange
+                var from = new Tile("tile-1");
+                var to = new Tile("tile-2");
+                var relation = new TileRelation(from, to, Direction.Clockwise);
+
+                // act
+                var actual = relation.ToString();
+
+                // assert
+                actual.ShouldBe("TileRelation Tile tile-1 1xDirection clockwise Tile tile-2");
+            }
+        }
     }
 }

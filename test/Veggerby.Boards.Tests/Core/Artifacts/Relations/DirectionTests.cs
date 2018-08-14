@@ -1,3 +1,4 @@
+using System;
 using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Xunit;
@@ -48,6 +49,17 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 
                 // assert
                 actual.Id.ShouldBe("id");
+            }
+
+            [Fact]
+            public void Should_throw_from_constructor_no_id()
+            {
+                // arrange
+                // act
+                var actual = Should.Throw<ArgumentException>(() => new Direction(string.Empty));
+
+                // assert
+                actual.ParamName.ShouldBe("id");
             }
         }
 
@@ -132,6 +144,53 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 
                 // assert
                 actual.ShouldBeTrue();
+            }
+
+            [Fact]
+            public void Should_not_equal_other_type()
+            {
+                // arrange
+                var direction = new Direction("dir");
+
+                // act
+                var actual = direction.Equals("some string");
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+        }
+
+        public class _GetHashCode
+        {
+            [Fact]
+            public void Should_return_hashcode_from_id()
+            {
+                // arrange
+                var id = "south";
+                var expected = id.GetHashCode();
+                var direction = new Direction(id);
+
+                // act
+                var actual = direction.GetHashCode();
+
+                // assert
+                actual.ShouldBe(expected);
+            }
+        }
+
+        public class _ToString
+        {
+            [Fact]
+            public void Should_return_expected()
+            {
+                // arrange
+                var direction = new Direction("south");
+
+                // act
+                var actual = direction.ToString();
+
+                // assert
+                actual.ShouldBe("Direction south");
             }
         }
     }

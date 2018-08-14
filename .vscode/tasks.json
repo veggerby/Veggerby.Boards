@@ -14,8 +14,14 @@
             "problemMatcher": "$msCompile"
         },
         {
+            // see https://www.hanselman.com/blog/AutomaticUnitTestingInNETCorePlusCodeCoverageInVisualStudioCode.aspx
             "taskName": "test",
-            "args": [ "test/Veggerby.Boards.Tests" ],
+            "args": [
+                "test/Veggerby.Boards.Tests",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=lcov",
+                "/p:CoverletOutput=./lcov.info"
+            ],
             "isTestCommand": true,
             "showOutput": "silent"
         }

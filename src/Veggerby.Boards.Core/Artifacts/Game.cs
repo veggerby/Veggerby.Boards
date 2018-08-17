@@ -28,9 +28,19 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException("Empty player list", nameof(players));
             }
 
+            if (pieces == null)
+            {
+                throw new ArgumentNullException(nameof(pieces));
+            }
+
+            if (!pieces.Any())
+            {
+                throw new ArgumentException("Empty piece list", nameof(pieces));
+            }
+
             Board = board;
-            Players = players.ToList();
-            Pieces = pieces;
+            Players = players.ToList().AsReadOnly();
+            Pieces = pieces.ToList().AsReadOnly();
         }
     }
 }

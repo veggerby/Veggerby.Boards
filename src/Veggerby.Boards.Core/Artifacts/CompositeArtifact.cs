@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException("Empty child artifacts list", nameof(childArtifacts));
             }
 
-            ChildArtifacts = childArtifacts;
+            ChildArtifacts = childArtifacts.ToList().AsReadOnly();
         }
     }
 }

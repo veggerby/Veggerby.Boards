@@ -5,7 +5,7 @@ using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Artifacts.Patterns
 {
-    public class FixedPattern : IPattern 
+    public class FixedPattern : IPattern
     {
         public IEnumerable<Direction> Pattern { get; }
 
@@ -27,6 +27,24 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
         public void Accept(IPatternVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        protected bool Equals(FixedPattern other)
+        {
+            return Pattern.SequenceEqual(other.Pattern);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FixedPattern)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Pattern.Aggregate(0, (seed, direction) => seed ^ direction.GetHashCode());
         }
     }
 }

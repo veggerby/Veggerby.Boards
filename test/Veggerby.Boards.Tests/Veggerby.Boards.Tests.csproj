@@ -17,4 +17,9 @@
     <ProjectReference Include="..\..\src\Veggerby.Boards.Chess\Veggerby.Boards.Chess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- https://medium.com/bluekiri/code-coverage-in-vsts-with-xunit-coverlet-and-reportgenerator-be2a64cd9c2f -->
+    <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.0-rc3" />
+  </ItemGroup>
+
 </Project>

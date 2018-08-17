@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts.Patterns;
@@ -12,7 +13,7 @@ namespace Veggerby.Boards.Core.Artifacts
         public Piece(string id, Player owner, IEnumerable<IPattern> patterns) : base(id)
         {
             Owner = owner;
-            Patterns = (patterns ?? Enumerable.Empty<IPattern>()).ToList();
+            Patterns = patterns?.ToList().AsReadOnly();
         }
     }
 }

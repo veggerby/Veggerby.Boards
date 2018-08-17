@@ -30,5 +30,23 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
         {
             visitor.Visit(this);
         }
+
+        protected bool Equals(MultiDirectionPattern other)
+        {
+            return IsRepeatable == other.IsRepeatable && !Directions.Except(other.Directions).Any() && !other.Directions.Except(Directions).Any();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MultiDirectionPattern)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Directions.Aggregate(IsRepeatable.GetHashCode(), (seed, direction) => seed ^ direction.GetHashCode());
+        }
     }
 }

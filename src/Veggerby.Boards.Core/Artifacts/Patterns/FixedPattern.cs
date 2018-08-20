@@ -44,7 +44,8 @@ namespace Veggerby.Boards.Core.Artifacts.Patterns
 
         public override int GetHashCode()
         {
-            return Pattern.Aggregate(0, (seed, direction) => seed ^ direction.GetHashCode());
+            var index = 1;
+            return Pattern.Aggregate(0, (seed, direction) => seed ^ (index++) * direction.GetHashCode());
         }
     }
 }

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
 {
-    public class AnyPatternTests
+    public class NullPatternTests
     {
         public class ctor
         {
@@ -15,7 +15,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = new AnyPattern();
+                var actual = new NullPattern();
 
                 // assert
                 actual.ShouldNotBeNull();
@@ -28,7 +28,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_equal_same_object()
             {
                 // arrange
-                var pattern = new AnyPattern();
+                var pattern = new NullPattern();
 
                 // act
                 var actual = pattern.Equals(pattern);
@@ -41,7 +41,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_not_equal_null()
             {
                 // arrange
-                var pattern = new AnyPattern();
+                var pattern = new NullPattern();
 
                 // act
                 var actual = pattern.Equals(null);
@@ -54,8 +54,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_equal_another_any_patterm()
             {
                 // arrange
-                var pattern1 = new AnyPattern();
-                var pattern2 = new AnyPattern();
+                var pattern1 = new NullPattern();
+                var pattern2 = new NullPattern();
 
                 // act
                 var actual = pattern1.Equals(pattern2);
@@ -68,7 +68,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_not_equal_another_pattern()
             {
                 // arrange
-                var pattern1 = new AnyPattern();
+                var pattern1 = new NullPattern();
                 var pattern2 = new DirectionPattern(Direction.North, true);
 
                 // act
@@ -82,7 +82,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_not_equal_other_type()
             {
                 // arrange
-                var pattern = new AnyPattern();
+                var pattern = new NullPattern();
 
                 // act
                 var actual = pattern.Equals("some string");
@@ -98,8 +98,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_return_hashcode()
             {
                 // arrange
-                var expected = typeof(AnyPattern).GetHashCode();
-                var pattern = new AnyPattern();
+                var expected = typeof(NullPattern).GetHashCode();
+                var pattern = new NullPattern();
 
                 // act
                 var actual = pattern.GetHashCode();

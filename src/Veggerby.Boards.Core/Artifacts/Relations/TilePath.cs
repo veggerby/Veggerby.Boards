@@ -20,7 +20,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
                 throw new ArgumentException("Invalid relations", nameof(relations));
             }
 
-            Relations = relations.ToList();
+            Relations = relations.ToList().AsReadOnly();
 
             if (Relations.Count() > 1)
             {

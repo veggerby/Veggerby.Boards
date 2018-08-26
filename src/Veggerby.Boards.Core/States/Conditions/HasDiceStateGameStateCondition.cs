@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
@@ -8,28 +9,33 @@ namespace Veggerby.Boards.Core.States.Conditions
     public class HasDiceStateGameStateCondition<TDice, TValue> : IGameStateCondition
         where TDice : Dice<TValue>
     {
-        private IEnumerable<TDice> _dice;
+        public IEnumerable<TDice> Dice { get; }
 
         public HasDiceStateGameStateCondition(IEnumerable<TDice> dice)
         {
             if (dice == null)
             {
-                throw new System.ArgumentNullException(nameof(dice));
+                throw new ArgumentNullException(nameof(dice));
             }
 
-            _dice = dice;
+            if (!dice.Any())
+            {
+                throw new ArgumentException("Dice list cannot be empty", nameof(dice));
+            }
+
+            Dice = dice.Distinct().ToList().AsReadOnly();
         }
 
         public bool Evaluate(GameState state)
         {
-            var rolledDice = _dice
+            var rolledDice = Dice
                 .Select(x => state.GetState(x))
                 .OfType<DiceState<TValue>>()
                 .Where(x => !EqualityComparer<TValue>.Default.Equals(x.CurrentValue, default(TValue)))
                 .Select(x => x.Artifact)
                 .ToList();
 
-            return !_dice.Except(rolledDice).Any();
+            return !Dice.Except(rolledDice).Any();
         }
     }
 }

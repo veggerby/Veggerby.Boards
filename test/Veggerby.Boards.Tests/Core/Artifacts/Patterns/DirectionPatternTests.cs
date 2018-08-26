@@ -145,5 +145,23 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 actual.ShouldBeFalse();
             }
         }
+
+        public class _GetHashCode
+        {
+            [Fact]
+            public void Should_return_hashcode()
+            {
+                // arrange
+                var expected = Direction.South.GetHashCode() ^ true.GetHashCode();
+                var pattern = new DirectionPattern(Direction.South, true);
+
+                // act
+                var actual = pattern.GetHashCode();
+
+                // assert
+                actual.ShouldBe(expected);
+            }
+        }
+
     }
 }

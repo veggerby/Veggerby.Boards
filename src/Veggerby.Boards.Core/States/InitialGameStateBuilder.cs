@@ -4,9 +4,9 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public abstract class InitialGameStateBuilder<T> where T : Game
+    public abstract class InitialGameStateBuilder
     {
-        public abstract void Build(T game);
+        public abstract void Build(Game game);
 
         private IDictionary<string, string> _piecePositions = new Dictionary<string, string>();
 
@@ -15,7 +15,7 @@ namespace Veggerby.Boards.Core.States
             _piecePositions.Add(pieceId, tileId);
         }
 
-        public GameState Compile(T game)
+        public GameState Compile(Game game)
         {
             Build(game);
 

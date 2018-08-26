@@ -22,8 +22,8 @@ namespace Veggerby.Boards.Core.States.Conditions
 
         public bool Evaluate(GameState state)
         {
-            var states = state.GetState(_dice);
-            var rolledDice = states
+            var rolledDice = _dice
+                .Select(x => state.GetState(x))
                 .OfType<DiceState<TValue>>()
                 .Where(x => !EqualityComparer<TValue>.Default.Equals(x.CurrentValue, default(TValue)))
                 .Select(x => x.Artifact)

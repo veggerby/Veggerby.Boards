@@ -16,5 +16,7 @@ namespace Veggerby.Boards.Core.States
 
             Artifact = artifact;
         }
+
+
     }
 }

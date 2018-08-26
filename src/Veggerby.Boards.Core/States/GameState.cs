@@ -13,9 +13,6 @@ namespace Veggerby.Boards.Core.States
 
         public Game Game { get; }
         public IEnumerable<IArtifactState> ChildStates => _childStates.ToList().AsReadOnly();
-
-        public GamePhase GamePhase { get; }
-
         public bool IsInitialState => _previousState == null;
 
         private GameState(Game game, IEnumerable<IArtifactState> childStates = null, GameState previousState = null)
@@ -34,23 +31,6 @@ namespace Veggerby.Boards.Core.States
         {
             return _childStates
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
-        }
-
-        public IEnumerable<IArtifactState> GetState(IEnumerable<Artifact> artifacts)
-        {
-            return artifacts
-                .Select(x => GetState(x))
-                .Where(x => x != null);
-        }
-
-        public GameState Update(IArtifactState state)
-        {
-            var states = _childStates
-                .Where(x => !x.Artifact.Equals(state.Artifact)) // remove current state of base entities
-                .Append(state) // add ned states
-                .ToList();
-
-            return new GameState(Game, states, this);
         }
 
         public static GameState New(Game game, IEnumerable<IArtifactState> childStates, GameState previousState)

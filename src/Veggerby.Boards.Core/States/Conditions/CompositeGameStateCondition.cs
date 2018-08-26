@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Veggerby.Boards.Core.States.Conditions
@@ -10,9 +11,9 @@ namespace Veggerby.Boards.Core.States.Conditions
 
         private CompositeGameStateCondition(IEnumerable<IGameStateCondition> childConditions, CompositeMode compositeMode)
         {
-            if (childConditions == null)
+            if (!childConditions.All(x => x != null))
             {
-                throw new System.ArgumentNullException(nameof(childConditions));
+                throw new ArgumentException("Conditions cannot contain null", nameof(childConditions));
             }
 
             ChildConditions = childConditions.ToList();

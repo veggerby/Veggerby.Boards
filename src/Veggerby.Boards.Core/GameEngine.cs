@@ -17,11 +17,16 @@ namespace Veggerby.Boards.Core
 
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
 
-        private GameEngine(Game game, GamePhase gamePhaseRoot, GameState initialState)
+        private GameEngine(GameState initialState, GamePhase gamePhaseRoot)
         {
-            if (game == null)
+            if (initialState == null)
             {
-                throw new ArgumentNullException(nameof(game));
+                throw new ArgumentNullException(nameof(initialState));
+            }
+
+            if (!initialState.IsInitialState)
+            {
+                throw new ArgumentException("GameState is not initial state", nameof(initialState));
             }
 
             if (gamePhaseRoot == null)
@@ -29,19 +34,14 @@ namespace Veggerby.Boards.Core
                 throw new ArgumentNullException(nameof(gamePhaseRoot));
             }
 
-            if (initialState == null)
-            {
-                throw new ArgumentNullException(nameof(initialState));
-            }
-
-            Game = game;
-            GamePhaseRoot = gamePhaseRoot;
             GameState = initialState;
+            GamePhaseRoot = gamePhaseRoot;
+            Game = initialState.Game;
         }
 
-        public static GameEngine New(Game game, GamePhase gamePhaseRoot, GameState initialState)
+        public static GameEngine New(GameState initialState, GamePhase gamePhaseRoot)
         {
-            return new GameEngine(game, gamePhaseRoot, initialState);
+            return new GameEngine(initialState, gamePhaseRoot);
         }
     }
 }

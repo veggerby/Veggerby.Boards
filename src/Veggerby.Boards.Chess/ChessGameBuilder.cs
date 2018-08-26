@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Chess
 {
     public class ChessGameBuilder : GameBuilder
     {
-        public override void Build()
+        protected override void Build()
         {
             BoardId = "chess";
 

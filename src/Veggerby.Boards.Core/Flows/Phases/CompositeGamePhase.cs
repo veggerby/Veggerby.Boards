@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
     {
         private readonly IList<GamePhase> _childPhases;
 
-        public CompositeGamePhase(int number, CompositeGamePhase parent, IGameStateCondition condition) : base(number, parent, condition)
+        public CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent) : base(number, condition, parent)
         {
             _childPhases = new List<GamePhase>();
         }

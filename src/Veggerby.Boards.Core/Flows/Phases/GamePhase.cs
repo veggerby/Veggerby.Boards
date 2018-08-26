@@ -4,22 +4,17 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Phases
 {
-    public abstract class GamePhase
+    public class GamePhase
     {
         public int Number { get; }
         public CompositeGamePhase Parent { get; }
         public IGameStateCondition Condition { get; }
 
-        protected GamePhase(int number, CompositeGamePhase parent, IGameStateCondition condition)
+        protected GamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent)
         {
             if (number <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "Round number must be positive and non-zero");
-            }
-
-            if (parent == null)
-            {
-                throw new ArgumentNullException(nameof(parent));
             }
 
             if (condition == null)
@@ -28,10 +23,10 @@ namespace Veggerby.Boards.Core.Flows.Phases
             }
 
             Number = number;
-            Parent = parent;
             Condition = condition;
 
-            parent.Add(this);
+            Parent = parent;
+            parent?.Add(this);
         }
 
         public virtual GamePhase GetActiveGamePhase(GameEngine engine)
@@ -44,6 +39,11 @@ namespace Veggerby.Boards.Core.Flows.Phases
             }
 
             return null;
+        }
+
+        public static GamePhase New(int number, IGameStateCondition condition, CompositeGamePhase parent = null)
+        {
+            return new GamePhase(number, condition, parent);
         }
     }
 }

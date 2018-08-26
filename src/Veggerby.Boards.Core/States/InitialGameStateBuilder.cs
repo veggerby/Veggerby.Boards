@@ -23,7 +23,7 @@ namespace Veggerby.Boards.Core.States
                 .Select(x => new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
                 .ToList();
 
-            return GameState.New(game, pieceStates.ToList(), null);
+            return GameState.New(game, pieceStates.ToList());
         }
     }
 }

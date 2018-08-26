@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Backgammon
 {
     public class BackgammonGameBuilder : GameBuilder
     {
-        public override void Build()
+        protected override void Build()
         {
             BoardId = "backgammon";
 

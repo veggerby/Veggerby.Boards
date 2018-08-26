@@ -33,9 +33,19 @@ namespace Veggerby.Boards.Core.States
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
         }
 
-        public static GameState New(Game game, IEnumerable<IArtifactState> childStates, GameState previousState)
+        public GameState Next(IEnumerable<IArtifactState> newStates)
         {
-            return new GameState(game, childStates, previousState);
+            return new GameState(
+                Game,
+                ChildStates
+                    .Except(newStates ?? Enumerable.Empty<IArtifactState>(), new ArtifactStateEqualityComparer())
+                    .Concat(newStates ?? Enumerable.Empty<IArtifactState>()),
+                this);
+        }
+
+        public static GameState New(Game game, IEnumerable<IArtifactState> initialStates)
+        {
+            return new GameState(game, initialStates, null);
         }
     }
 }

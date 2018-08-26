@@ -50,7 +50,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public Evaluate()
             {
                 _game = new TestGameBuilder().Compile();
-                _state = GameState.New(_game, null, null);
+                _state = GameState.New(_game, null);
             }
 
             [Fact]

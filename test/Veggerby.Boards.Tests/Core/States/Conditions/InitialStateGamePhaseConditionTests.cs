@@ -15,7 +15,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var game = new TestGameBuilder().Compile();
-                var state = GameState.New(game, null, null);
+                var state = GameState.New(game, null);
 
                 var condition = new InitialStateGamePhaseCondition();
 
@@ -31,8 +31,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var game = new TestGameBuilder().Compile();
-                var state = GameState.New(game, null, null);
-                state = GameState.New(game, null, state);
+                var state = GameState.New(game, null).Next(null);
 
                 var condition = new InitialStateGamePhaseCondition();
 

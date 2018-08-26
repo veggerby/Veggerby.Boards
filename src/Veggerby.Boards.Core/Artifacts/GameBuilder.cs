@@ -50,7 +50,7 @@ namespace Veggerby.Boards.Core.Artifacts
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
         private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
 
-        public abstract void Build();
+        protected abstract void Build();
 
         private Game _game;
 

@@ -7,7 +7,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 {
     public class TestGameBuilder : GameBuilder
     {
-        public override void Build()
+        protected override void Build()
         {
             BoardId = "test";
 

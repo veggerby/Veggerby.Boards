@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
@@ -28,9 +28,9 @@ namespace Veggerby.Boards.Core.Flows.Rules
             CompositeMode = compositeMode;
         }
 
-        public RuleCheckState Check(GameEngine gameEngine, IGameEvent @event)
+        public RuleCheckState Check(GameState gameState, IGameEvent @event)
         {
-            var results = Rules.Select(x => x.Check(gameEngine, @event));
+            var results = Rules.Select(x => x.Check(gameState, @event));
 
             return (CompositeMode == CompositeMode.All
                 ? results.All(x => RuleCheckState.Valid.Equals(x.Result))
@@ -38,6 +38,11 @@ namespace Veggerby.Boards.Core.Flows.Rules
             )
                 ? RuleCheckState.Valid
                 : RuleCheckState.Fail(results.Where(x => RuleCheckState.Invalid.Equals(x.Result)));
+        }
+
+        public GameState HandleEvent(GameState gameState, IGameEvent @event)
+        {
+            return Rules.Aggregate(gameState, (state, rule) => rule.HandleEvent(state, @event));
         }
     }
 }

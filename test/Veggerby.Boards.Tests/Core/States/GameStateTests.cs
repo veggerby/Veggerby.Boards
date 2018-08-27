@@ -75,7 +75,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var gameState = GameState.New(Game, new [] { expected });
 
                 // act
-                var actual = gameState.GetState(piece);
+                var actual = gameState.GetState<PieceState>(piece);
 
                 // assert
                 actual.ShouldNotBeNull();

@@ -3,7 +3,7 @@ using Shouldly;
 using Veggerby.Boards.Core.Flows.Rules.Algorithms;
 using Xunit;
 
-namespace Veggerby.Boards.Tests.Core.Rules.Algorithms
+namespace Veggerby.Boards.Tests.Core.Flows.Rules.Algorithms
 {
     public class JohnsonsAlgorithmTests
     {

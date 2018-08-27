@@ -6,14 +6,10 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public class DiceStateMutator<T> : IStateMutator<RollDiceGameEvent<T>>
     {
-        public IArtifactState MutateState(IArtifactState currentState, RollDiceGameEvent<T> @event)
+        public GameState MutateState(GameState gameState, RollDiceGameEvent<T> @event)
         {
-            if (!currentState.Artifact.Equals(@event.Dice))
-            {
-                throw new ArgumentException("Incorrect artifact state", nameof(currentState));
-            }
-
-            return new DiceState<T>(@event.Dice, @event.NewDiceValue);
+            var newState = new DiceState<T>(@event.Dice, @event.NewDiceValue);
+            return gameState.Next(new [] { newState });
         }
     }
 }

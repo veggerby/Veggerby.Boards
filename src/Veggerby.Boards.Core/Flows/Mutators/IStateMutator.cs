@@ -6,6 +6,6 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public interface IStateMutator<T> where T : IGameEvent
     {
-        IArtifactState MutateState(IArtifactState currentState, T @event);
+        GameState MutateState(GameState gameState, T @event);
     }
 }

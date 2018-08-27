@@ -6,6 +6,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 {
     public interface IGameEventRule
     {
-        RuleCheckState Check(GameEngine gameEngine, IGameEvent @event);
+        RuleCheckState Check(GameState gameState, IGameEvent @event);
+        GameState HandleEvent(GameState gameState, IGameEvent @event);
     }
 }

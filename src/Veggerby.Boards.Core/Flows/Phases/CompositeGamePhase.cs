@@ -10,19 +10,23 @@ namespace Veggerby.Boards.Core.Flows.Phases
     {
         private readonly IList<GamePhase> _childPhases;
 
-        public CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent) : base(number, condition, parent)
+        public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
+
+        internal CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent) : base(number, condition, null, parent)
         {
             _childPhases = new List<GamePhase>();
         }
 
-        public override GamePhase GetActiveGamePhase(GameEngine engine)
+        public override GamePhase GetActiveGamePhase(GameState gameState)
         {
-            if (!Condition.Evaluate(engine.GameState))
+            if (!Condition.Evaluate(gameState))
             {
                 return null;
             }
 
-            return _childPhases.FirstOrDefault(x => x.GetActiveGamePhase(engine) != null);
+            return _childPhases
+                .Select(x => x.GetActiveGamePhase(gameState))
+                .FirstOrDefault(x => x != null);
         }
 
         internal void Add(GamePhase phase)

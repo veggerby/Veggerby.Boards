@@ -27,7 +27,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
         protected bool Equals(RuleCheckState other)
         {
-            return string.Equals(Result, other.Result);
+            return Result == other.Result;
         }
 
         public override bool Equals(object obj)

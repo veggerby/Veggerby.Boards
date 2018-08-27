@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Algorithm.Graphs;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 
-namespace Veggerby.Boards.Core.Flows.Rules.Algorithms
+namespace Veggerby.Boards.Core.Flows.Rules
 {
     public class ResolveTilePathPatternVisitor : IPatternVisitor
     {

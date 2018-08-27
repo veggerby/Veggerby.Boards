@@ -32,9 +32,9 @@ namespace Veggerby.Boards.Tests.Core.States
             actual.ChildStates.Count().ShouldBe(3);
             actual.ChildStates.All(x => x is PieceState).ShouldBeTrue();
 
-            var state1 = actual.GetState(piece1);
-            var state2 = actual.GetState(piece2);
-            var stateN = actual.GetState(pieceN);
+            var state1 = actual.GetState<PieceState>(piece1);
+            var state2 = actual.GetState<PieceState>(piece2);
+            var stateN = actual.GetState<PieceState>(pieceN);
 
             state1.ShouldNotBeNull();
             (state1 as PieceState).CurrentTile.ShouldBe(tile1);

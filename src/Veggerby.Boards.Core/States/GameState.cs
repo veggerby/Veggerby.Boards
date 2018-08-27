@@ -27,9 +27,10 @@ namespace Veggerby.Boards.Core.States
             _previousState = previousState;
         }
 
-        public IArtifactState GetState(Artifact artifact)
+        public T GetState<T>(Artifact artifact) where T : IArtifactState
         {
             return _childStates
+                .OfType<T>()
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
         }
 

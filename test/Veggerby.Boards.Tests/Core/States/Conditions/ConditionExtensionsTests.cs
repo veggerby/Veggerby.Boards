@@ -37,7 +37,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var condition1 = new InitialStateGamePhaseCondition();
                 var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
-                var condition3 = new SimpleGameStateCondition();
+                var condition3 = new NullGameStateCondition();
 
                 // act
                 var actual = condition1.And(condition2).And(condition3);
@@ -55,7 +55,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var condition1 = new InitialStateGamePhaseCondition();
                 var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
-                var condition3 = new SimpleGameStateCondition();
+                var condition3 = new NullGameStateCondition();
 
                 // act
                 var actual = condition1.Or(condition2).And(condition3);
@@ -96,7 +96,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var condition1 = new InitialStateGamePhaseCondition();
                 var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
-                var condition3 = new SimpleGameStateCondition();
+                var condition3 = new NullGameStateCondition();
 
                 // act
                 var actual = condition1.Or(condition2).Or(condition3);
@@ -114,7 +114,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var condition1 = new InitialStateGamePhaseCondition();
                 var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
-                var condition3 = new SimpleGameStateCondition();
+                var condition3 = new NullGameStateCondition();
 
                 // act
                 var actual = condition1.And(condition2).Or(condition3);

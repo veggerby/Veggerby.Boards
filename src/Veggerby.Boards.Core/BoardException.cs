@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Veggerby.Boards.Core
 {
+    [ExcludeFromCodeCoverage]
     public class BoardException : Exception
     {
         public BoardException() { }

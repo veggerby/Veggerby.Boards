@@ -57,8 +57,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_true_when_all_are_true_when_mode_all()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(true)
-                    .And(new SimpleGameStateCondition(true));
+                var condition = new NullGameStateCondition(true)
+                    .And(new NullGameStateCondition(true));
 
                 // act
                 var actual = condition.Evaluate(_state);
@@ -71,8 +71,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_false_when_not_all_are_true_when_mode_all()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(true)
-                    .And(new SimpleGameStateCondition(false));
+                var condition = new NullGameStateCondition(true)
+                    .And(new NullGameStateCondition(false));
 
                 // act
                 var actual = condition.Evaluate(_state);
@@ -85,8 +85,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_false_when_none_are_true_when_mode_all()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(false)
-                    .And(new SimpleGameStateCondition(false));
+                var condition = new NullGameStateCondition(false)
+                    .And(new NullGameStateCondition(false));
 
                 // act
                 var actual = condition.Evaluate(_state);
@@ -99,8 +99,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_true_when_all_are_true_when_mode_any()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(true)
-                    .Or(new SimpleGameStateCondition(true));
+                var condition = new NullGameStateCondition(true)
+                    .Or(new NullGameStateCondition(true));
 
                 // act
                 var actual = condition.Evaluate(_state);
@@ -113,8 +113,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_true_when_not_all_are_true_when_mode_any()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(true)
-                    .Or(new SimpleGameStateCondition(false));
+                var condition = new NullGameStateCondition(true)
+                    .Or(new NullGameStateCondition(false));
 
                 // act
                 var actual = condition.Evaluate(_state);
@@ -127,8 +127,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_false_when_none_are_true_when_mode_any()
             {
                 // arrange
-                var condition = new SimpleGameStateCondition(false)
-                    .Or(new SimpleGameStateCondition(false));
+                var condition = new NullGameStateCondition(false)
+                    .Or(new NullGameStateCondition(false));
 
                 // act
                 var actual = condition.Evaluate(_state);

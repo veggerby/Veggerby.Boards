@@ -18,6 +18,10 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             {
                 _tiles.Add(new Tile($"tile-{i}"));
             }
+
+            _tiles.Add(new Tile("tile-x"));
+            _tiles.Add(new Tile("tile-y"));
+
             return _tiles;
         }
 
@@ -26,7 +30,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             var tiles = GetTiles();
             var _tileRelations = new List<TileRelation>();
 
-            for (int i = 0; i < 32; i++)            
+            for (int i = 0; i < 32; i++)
             {
                 var from = tiles.Single(x => x.Id == $"tile-{i}");
                 var to = tiles.Single(x => x.Id == $"tile-{(i+1) % 32}");
@@ -43,6 +47,12 @@ namespace Veggerby.Boards.Tests.Core.Fakes
                 //System.Console.WriteLine($"Relation: {relation}");
                 _tileRelations.Add(relation);
             }
+
+            _tileRelations.Add(new TileRelation(
+                tiles.Single(x => x.Id == "tile-x"),
+                tiles.Single(x => x.Id == "tile-y"),
+                Direction.Left
+            ));
 
             return _tileRelations;
         }

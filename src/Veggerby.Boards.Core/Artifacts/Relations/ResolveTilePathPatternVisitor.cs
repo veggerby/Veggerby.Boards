@@ -6,13 +6,13 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 
-namespace Veggerby.Boards.Core.Flows.Rules
+namespace Veggerby.Boards.Core.Artifacts.Relations
 {
     public class ResolveTilePathPatternVisitor : IPatternVisitor
     {
-        private readonly Board _board;
-        private readonly Tile _from;
-        private readonly Tile _to;
+        public Board Board { get; }
+        public Tile From { get; }
+        public Tile To { get; }
         public TilePath ResultPath { get; private set; }
 
         public ResolveTilePathPatternVisitor(Board board, Tile from, Tile to)
@@ -37,9 +37,9 @@ namespace Veggerby.Boards.Core.Flows.Rules
                 throw new ArgumentException("To cannot be the same af From", nameof(to));
             }
 
-            _board = board;
-            _from = from;
-            _to = to;
+            Board = board;
+            From = from;
+            To = to;
         }
 
         public void Visit(MultiDirectionPattern pattern)
@@ -64,11 +64,11 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
         public void Visit(FixedPattern pattern)
         {
-            var from = _from;
+            var from = From;
             TilePath path = null;
             foreach (var direction in pattern.Pattern)
             {
-                var relation = _board.GetTileRelation(from, direction);
+                var relation = Board.GetTileRelation(from, direction);
                 if (relation == null)
                 {
                     ResultPath = null;
@@ -79,7 +79,8 @@ namespace Veggerby.Boards.Core.Flows.Rules
                 from = relation.To;
             }
 
-            ResultPath = _to.Equals(path?.To) ? path : null;
+            // path will always have a value because there will always be at least ONE direction in FixedPattern
+            ResultPath = To.Equals(path.To) ? path : null;
         }
 
         public void Visit(DirectionPattern pattern)
@@ -90,12 +91,13 @@ namespace Veggerby.Boards.Core.Flows.Rules
         public void Visit(AnyPattern pattern)
         {
             // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
-            var graph = new Graph<Tile>(_board.Tiles, _board.TileRelations.Select(x => new Edge<Tile>(x.From, x.To, x.Distance)));
+            var q = new Tile("q");
+            var graph = new Graph<Tile>(Board.Tiles, Board.TileRelations.Select(x => new Edge<Tile>(x.From, x.To, x.Distance)));
 
             var algorithm = new JohnsonsAlgorithm();
-            var paths = algorithm.GetShortestPath(graph, new Tile("q"));
+            var paths = algorithm.GetShortestPath(graph, q);
 
-            var path = paths.SingleOrDefault(x => x.From.Equals(_from) && x.To.Equals(_to));
+            var path = paths.SingleOrDefault(x => x.From.Equals(From) && x.To.Equals(To));
 
             if (path == null)
             {
@@ -107,7 +109,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
             foreach (var edge in path.Edges)
             {
-                resultPath = TilePath.Create(resultPath, _board.GetTileRelation(edge.From, edge.To));
+                resultPath = TilePath.Create(resultPath, Board.GetTileRelation(edge.From, edge.To));
             }
 
             ResultPath = resultPath;
@@ -115,18 +117,18 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
         private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
         {
-            var from = _from;
+            var from = From;
             TilePath path = null;
             while (path == null || isRepeatable) // we have not yet taken a step or it is repeatable
             {
-                var relation = _board.GetTileRelation(from, direction);
+                var relation = Board.GetTileRelation(from, direction);
 
                 if (relation == null)
                 {
                     return null;
                 }
 
-                if (relation.To.Equals(_from) || (path?.Tiles.Contains(relation.To) ?? false))
+                if (relation.To.Equals(From) || (path?.Tiles.Contains(relation.To) ?? false))
                 {
                     // back to where we started or we crossed paths... break
                     return null;
@@ -134,7 +136,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
                 path = TilePath.Create(path, relation);
 
-                if (_to.Equals(path?.To))
+                if (To.Equals(path.To))
                 {
                     return path;
                 }

@@ -31,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise });
                 actual.From.ShouldBe(tile1);
                 actual.To.ShouldBe(tile3);
-                actual.Distance.ShouldBe(2);
+                actual.Distance.ShouldBe(6);
             }
 
             [Fact]
@@ -135,7 +135,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Clockwise });
                 actual.From.ShouldBe(tile1);
                 actual.To.ShouldBe(tile4);
-                actual.Distance.ShouldBe(3);
+                actual.Distance.ShouldBe(9);
             }
         }
 
@@ -159,7 +159,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 actual.Directions.ShouldBe(new [] { Direction.Clockwise });
                 actual.From.ShouldBe(tile1);
                 actual.To.ShouldBe(tile2);
-                actual.Distance.ShouldBe(1);
+                actual.Distance.ShouldBe(3);
             }
 
             [Fact]
@@ -183,7 +183,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 actual.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise });
                 actual.From.ShouldBe(tile1);
                 actual.To.ShouldBe(tile3);
-                actual.Distance.ShouldBe(2);
+                actual.Distance.ShouldBe(6);
             }
         }
     }

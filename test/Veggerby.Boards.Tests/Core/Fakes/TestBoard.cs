@@ -14,7 +14,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
         private static IEnumerable<Tile> GetTiles()
         {
             var _tiles = new List<Tile>();
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < 16; i++)
             {
                 _tiles.Add(new Tile($"tile-{i}"));
             }
@@ -30,23 +30,37 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             var tiles = GetTiles();
             var _tileRelations = new List<TileRelation>();
 
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < 16; i++)
             {
                 var from = tiles.Single(x => x.Id == $"tile-{i}");
-                var to = tiles.Single(x => x.Id == $"tile-{(i+1) % 32}");
-                var relation = new TileRelation(from, to, Direction.Clockwise);
+                var to = tiles.Single(x => x.Id == $"tile-{(i+1) % 16}");
+                var relation = new TileRelation(from, to, Direction.Clockwise, 3);
                 //System.Console.WriteLine($"Relation: {relation}");
                 _tileRelations.Add(relation);
             }
 
             for (int i = 0; i < 4; i++)
             {
-                var from = tiles.Single(x => x.Id == $"tile-{((i+1) * 8) % 32}");
-                var to = tiles.Single(x => x.Id == $"tile-{i * 8}");
-                var relation = new TileRelation(from, to, Direction.Across, 5);
+                var from = tiles.Single(x => x.Id == $"tile-{((i+1) * 4) % 16}");
+                var to = tiles.Single(x => x.Id == $"tile-{i * 4}");
+                var relation = new TileRelation(from, to, Direction.Across, 2);
                 //System.Console.WriteLine($"Relation: {relation}");
                 _tileRelations.Add(relation);
             }
+
+            _tileRelations.Add(new TileRelation(
+                tiles.Single(x => x.Id == "tile-4"),
+                tiles.Single(x => x.Id == "tile-12"),
+                Direction.Up,
+                1
+            ));
+
+            _tileRelations.Add(new TileRelation(
+                tiles.Single(x => x.Id == "tile-8"),
+                tiles.Single(x => x.Id == "tile-0"),
+                Direction.Up,
+                1
+            ));
 
             _tileRelations.Add(new TileRelation(
                 tiles.Single(x => x.Id == "tile-x"),

@@ -4,6 +4,6 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public interface IDiceValueGenerator<T>
     {
-        T GetValue(DiceState<T> currentState);
+        T GetValue(IArtifactState currentState);
     }
 }

@@ -28,7 +28,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
 
                 // assert
                 actual.Board.ShouldBe(board);
-                actual.Pieces.ShouldBe(new [] { piece1, piece2 });
+                actual.Artifacts.ShouldBe(new [] { piece1, piece2 });
                 actual.Players.ShouldBe(new [] { player1, player2 });
             }
 
@@ -94,7 +94,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = Should.Throw<ArgumentNullException>(() => new Game(board, new [] { player1, player2 }, null));
 
                 // assert
-                actual.ParamName.ShouldBe("pieces");
+                actual.ParamName.ShouldBe("artifacts");
             }
 
             [Fact]
@@ -109,7 +109,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = Should.Throw<ArgumentException>(() => new Game(board, new [] { player1, player2 }, Enumerable.Empty<Piece>()));
 
                 // assert
-                actual.ParamName.ShouldBe("pieces");
+                actual.ParamName.ShouldBe("artifacts");
             }
         }
     }

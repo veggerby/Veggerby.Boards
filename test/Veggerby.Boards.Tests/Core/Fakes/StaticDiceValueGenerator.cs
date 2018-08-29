@@ -8,7 +8,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
     {
         private readonly int _value;
 
-        public int GetValue(DiceState<int> currentState)
+        public int GetValue(IArtifactState currentState)
         {
             return _value;
         }

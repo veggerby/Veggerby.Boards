@@ -11,6 +11,8 @@ namespace Veggerby.Boards.Tests.Core.Fakes
         {
             BoardId = "test";
 
+            AddDiceDefinition("dice");
+
             AddPlayerDefinition("player-1");
             AddPlayerDefinition("player-2");
 

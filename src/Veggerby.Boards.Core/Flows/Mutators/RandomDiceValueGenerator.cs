@@ -5,13 +5,16 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public class RandomDiceValueGenerator : NumericDiceValueGenerator
     {
-        public override int GetValue(DiceState<int> currentState)
+        private readonly Random _random;
+
+        public override int GetValue(IArtifactState currentState)
         {
-            return new Random().Next(MinValue, MaxValue);
+            return _random.Next(MinValue, MaxValue + 1);
         }
 
         public RandomDiceValueGenerator(int minValue, int maxValue) : base(minValue, maxValue)
         {
+            _random = new Random();
         }
     }
 }

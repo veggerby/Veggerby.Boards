@@ -10,15 +10,16 @@ namespace Veggerby.Boards.Backgammon
         {
         }
 
-        public override int GetValue(DiceState<int> currentState)
+        public override int GetValue(IArtifactState currentState)
         {
-            if (currentState.CurrentValue < MinValue || (currentState.CurrentValue & (currentState.CurrentValue - 1)) != 0)
+            var state = currentState as DiceState<int>;
+            if (state == null || state.CurrentValue < MinValue || (state.CurrentValue & (state.CurrentValue - 1)) != 0)
             {
                 throw new BoardException("Illegal dice value");
             }
 
-            return currentState.CurrentValue < MaxValue
-                ? 2 * currentState.CurrentValue
+            return state.CurrentValue < MaxValue
+                ? 2 * state.CurrentValue
                 : MaxValue;
         }
     }

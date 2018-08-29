@@ -22,6 +22,11 @@ namespace Veggerby.Boards.Core.Artifacts
             public string DirectionId { get; set; }
         }
 
+        private class DiceDefinitionSettings
+        {
+            public string DiceId { get; set; }
+        }
+
         private class TileRelationDefinitionSettings
         {
             public string SourceTileId { get; set; }
@@ -46,6 +51,7 @@ namespace Veggerby.Boards.Core.Artifacts
         private readonly IList<PlayerDefinitionSettings> _playerDefinitions = new List<PlayerDefinitionSettings>();
         private readonly IList<TileDefinitionSettings> _tileDefinitions = new List<TileDefinitionSettings>();
         private readonly IList<DirectionDefinitionSettings> _directionDefinitions = new List<DirectionDefinitionSettings>();
+        private readonly IList<DiceDefinitionSettings> _diceDefinitions = new List<DiceDefinitionSettings>();
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
         private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
@@ -65,11 +71,12 @@ namespace Veggerby.Boards.Core.Artifacts
             var players = _playerDefinitions.Select(x => new Player(x.PlayerId));
             var tiles = _tileDefinitions.Select(CreateTile).ToArray();
             var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
+            var dice = _diceDefinitions.Select(CreateDice).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
 
             var board = new Board(BoardId, relations);
-            _game = new Game(board, players, pieces);
+            _game = new Game(board, players, pieces.Concat(dice));
 
             return _game;
         }
@@ -92,7 +99,12 @@ namespace Veggerby.Boards.Core.Artifacts
             return new TileRelation(sourceTile, destinationTile, direction);
         }
 
-        private Piece CreatePiece(PieceDefinitionSettings pieceDefinitionSettings, IEnumerable<PieceDirectionPatternDefinitionSettings> pieceDirectionPatternDefinitions, IEnumerable<Direction> directions, IEnumerable<Player> players)
+        private Artifact CreateDice(DiceDefinitionSettings diceDefinitionSettings)
+        {
+            return new RegularDice(diceDefinitionSettings.DiceId);
+        }
+
+        private Artifact CreatePiece(PieceDefinitionSettings pieceDefinitionSettings, IEnumerable<PieceDirectionPatternDefinitionSettings> pieceDirectionPatternDefinitions, IEnumerable<Direction> directions, IEnumerable<Player> players)
         {
             var player = !string.IsNullOrEmpty(pieceDefinitionSettings.PlayerId)
                 ? players.SingleOrDefault(x => string.Equals(x.Id, pieceDefinitionSettings.PlayerId))
@@ -139,6 +151,11 @@ namespace Veggerby.Boards.Core.Artifacts
         protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId)
         {
             _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId });
+        }
+
+        protected void AddDiceDefinition(string diceId)
+        {
+            _diceDefinitions.Add(new DiceDefinitionSettings { DiceId = diceId });
         }
 
         protected void AddPieceDirectionPatternDefinition(string pieceId, bool isRepeatable, params string[] directions)

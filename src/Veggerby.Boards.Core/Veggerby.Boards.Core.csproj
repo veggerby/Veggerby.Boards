@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Veggerby.Algorithm" Version="1.0.1-CI-20180828-123618" />
+    <PackageReference Include="Veggerby.Algorithm" Version="1.0.1-CI-20180828-190611" />
   </ItemGroup>
 
 </Project>

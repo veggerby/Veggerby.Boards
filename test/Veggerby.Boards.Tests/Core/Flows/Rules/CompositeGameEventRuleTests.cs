@@ -19,8 +19,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
                 };
 
                 // act
@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
 
                 // act
-                var rule = Should.Throw<ArgumentException>(() => new CompositeGameEventRule(Enumerable.Empty<IGameEventRule>(), CompositeMode.All));
+                var rule = Should.Throw<ArgumentException>(() => new CompositeGameEventRule(Enumerable.Empty<IGameEventRule<IGameEvent>>(), CompositeMode.All));
 
                 // assert
                 rule.ParamName.ShouldBe("rules");
@@ -66,9 +66,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.All);
@@ -90,9 +90,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("a reason") ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("yet another reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason")),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason")),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.All);
@@ -114,8 +114,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("a reason") ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("yet another reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason") ),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.All);
@@ -137,9 +137,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid ),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.Any);
@@ -161,9 +161,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Valid ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("a reason") ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("yet another reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason") ),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.Any);
@@ -185,8 +185,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 var subrules = new []
                 {
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("a reason") ),
-                    new SimpleGameEventRule((s, e) => RuleCheckState.Fail("yet another reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason") ),
+                    SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason") ),
                 };
 
                 var rule = new CompositeGameEventRule(subrules, CompositeMode.Any);

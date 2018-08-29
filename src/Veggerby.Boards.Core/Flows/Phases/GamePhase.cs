@@ -1,4 +1,5 @@
 using System;
+using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
@@ -10,9 +11,9 @@ namespace Veggerby.Boards.Core.Flows.Phases
         public int Number { get; }
         public CompositeGamePhase Parent { get; }
         public IGameStateCondition Condition { get; }
-        public IGameEventRule Rule { get; }
+        public IGameEventRule<IGameEvent> Rule { get; }
 
-        protected GamePhase(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent)
+        protected GamePhase(int number, IGameStateCondition condition, IGameEventRule<IGameEvent> rule, CompositeGamePhase parent)
         {
             if (number <= 0)
             {
@@ -26,7 +27,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
 
             Number = number;
             Condition = condition;
-            Rule = rule ?? new SimpleGameEventRule((state, @event) => RuleCheckState.Valid);
+            Rule = rule ?? SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
 
             Parent = parent;
             parent?.Add(this);
@@ -37,7 +38,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
             return Condition.Evaluate(gameState) ? this : null;
         }
 
-        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule = null, CompositeGamePhase parent = null)
+        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule<IGameEvent> rule = null, CompositeGamePhase parent = null)
         {
             return new GamePhase(number, condition, rule, parent);
         }

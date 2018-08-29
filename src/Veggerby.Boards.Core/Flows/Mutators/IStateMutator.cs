@@ -4,7 +4,7 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Mutators
 {
-    public interface IStateMutator<T> where T : IGameEvent
+    public interface IStateMutator<in T> where T : IGameEvent
     {
         GameState MutateState(GameState gameState, T @event);
     }

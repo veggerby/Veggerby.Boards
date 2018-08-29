@@ -19,8 +19,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
             // assert
             actual.ShouldNotBeNull();
 
-            actual.Artifacts.Count().ShouldBe(6);
-            actual.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice" });
+            actual.Artifacts.Count().ShouldBe(7);
+            actual.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary" });
 
             actual.Players.Count().ShouldBe(2);
             actual.Players.Select(x => x.Id).ShouldBe(new [] { "player-1", "player-2" });

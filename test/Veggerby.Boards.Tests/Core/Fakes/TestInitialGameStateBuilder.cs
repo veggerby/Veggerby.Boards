@@ -10,6 +10,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
         public override void Build(Game game)
         {
             AddNullDice("dice");
+            AddDiceValue("dice-secondary", 4);
 
             AddPieceOnTile("piece-1", "tile-1");
             AddPieceOnTile("piece-2", "tile-2");

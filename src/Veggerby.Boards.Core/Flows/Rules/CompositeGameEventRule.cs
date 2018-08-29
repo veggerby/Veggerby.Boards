@@ -30,14 +30,15 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
         public RuleCheckState Check(GameState gameState, IGameEvent @event)
         {
-            var results = Rules.Select(x => x.Check(gameState, @event));
+            var results = Rules.Select(x => x.Check(gameState, @event)).ToList();
 
-            return (CompositeMode == CompositeMode.All
-                ? results.All(x => RuleCheckState.Valid.Equals(x.Result))
-                : results.Any(x => RuleCheckState.Valid.Equals(x.Result))
-            )
+            var compositionResult = CompositeMode == CompositeMode.All
+                ? results.All(x => x.Result == RuleCheckResult.Valid)
+                : results.Any(x => x.Result == RuleCheckResult.Valid);
+
+            return compositionResult
                 ? RuleCheckState.Valid
-                : RuleCheckState.Fail(results.Where(x => RuleCheckState.Invalid.Equals(x.Result)));
+                : RuleCheckState.Fail(results.Where(x => x.Result == RuleCheckResult.Invalid));
         }
 
         public GameState HandleEvent(GameState gameState, IGameEvent @event)

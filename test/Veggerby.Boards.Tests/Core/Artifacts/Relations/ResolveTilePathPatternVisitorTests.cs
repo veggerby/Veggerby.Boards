@@ -371,6 +371,24 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 visitor.ResultPath.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Up, Direction.Across, Direction.Clockwise });
                 visitor.ResultPath.Distance.ShouldBe(9); // 3-4-12-8-9
             }
+
+
+            [Fact]
+            public void Should_visit_any_pattern_not_find_result()
+            {
+                // arrange
+                var board = new TestBoard();
+                var from = board.GetTile("tile-3");
+                var to = board.GetTile("tile-x");
+                var visitor = new ResolveTilePathPatternVisitor(board, from, to);
+                var pattern = new AnyPattern();
+
+                // act
+                pattern.Accept(visitor);
+
+                // assert
+                visitor.ResultPath.ShouldBeNull();
+            }
         }
     }
 }

@@ -29,8 +29,9 @@ namespace Veggerby.Boards.Tests.Core.States
             // assert
             actual.ShouldNotBeNull();
             actual.IsInitialState.ShouldBeTrue();
-            actual.ChildStates.Count().ShouldBe(3);
-            actual.ChildStates.All(x => x is PieceState).ShouldBeTrue();
+            actual.ChildStates.Count().ShouldBe(4);
+            actual.ChildStates.OfType<PieceState>().Count().ShouldBe(3);
+            actual.ChildStates.OfType<NullDiceState<int>>().Count().ShouldBe(1);
 
             var state1 = actual.GetState<PieceState>(piece1);
             var state2 = actual.GetState<PieceState>(piece2);

@@ -97,5 +97,77 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 actual.ShouldBeNull();
             }
         }
+
+        public class GetArtifact
+        {
+            [Fact]
+            public void Should_return_artifact()
+            {
+                 // arrange
+                var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
+                var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
+                var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
+                var dice1 = new RegularDice("dice-1");
+                var dice2 = new RegularDice("dice-2");
+
+                var board = new TestBoard();
+                var game = new Game(
+                    board,
+                    new [] { new Player ("player") },
+                    new Artifact[] { piece1, piece2, piece3, dice1, dice2 });
+
+                // act
+                var actual = game.GetArtifact<RegularDice>("dice-1");
+
+                // assert
+                actual.ShouldBe(dice1);
+            }
+
+            [Fact]
+            public void Should_not_return_artifact_not_in_list()
+            {
+                 // arrange
+                var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
+                var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
+                var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
+                var dice1 = new RegularDice("dice-1");
+                var dice2 = new RegularDice("dice-2");
+
+                var board = new TestBoard();
+                var game = new Game(
+                    board,
+                    new [] { new Player ("player") },
+                    new Artifact[] { piece1, piece2, piece3, dice2 });
+
+                // act
+                var actual = game.GetArtifact<RegularDice>("dice-1");
+
+                // assert
+                actual.ShouldBeNull();
+            }
+
+            [Fact]
+            public void Should_not_return_artifact_incorrect_type()
+            {
+                 // arrange
+                var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
+                var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
+                var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
+                var dice1 = new RegularDice("dice-1");
+                var dice2 = new RegularDice("dice-2");
+
+                var board = new TestBoard();
+                var game = new Game(
+                    board,
+                    new [] { new Player ("player") },
+                    new Artifact[] { piece1, piece2, piece3, dice1, dice2 });
+
+                // act
+                var actual = game.GetArtifact<Tile>("dice-1");
+
+                // assert
+                actual.ShouldBeNull();
+            }
+        }
     }
 }

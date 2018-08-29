@@ -14,6 +14,6 @@ namespace Veggerby.Boards.Core.Flows.Mutators
             MaxValue = Math.Max(minValue, maxValue);
         }
 
-        public abstract int GetValue(DiceState<int> currentState);
+        public abstract int GetValue(IArtifactState currentState);
     }
 }

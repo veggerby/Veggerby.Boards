@@ -8,10 +8,10 @@ namespace Veggerby.Boards.Core.Artifacts
     public class Game
     {
         public Board Board { get; }
-        public IEnumerable<Piece> Pieces { get; }
         public IEnumerable<Player> Players { get; }
+        public IEnumerable<Artifact> Artifacts { get; }
 
-        public Game(Board board, IEnumerable<Player> players, IEnumerable<Piece> pieces)
+        public Game(Board board, IEnumerable<Player> players, IEnumerable<Artifact> artifacts)
         {
             if (board == null)
             {
@@ -28,19 +28,19 @@ namespace Veggerby.Boards.Core.Artifacts
                 throw new ArgumentException("Empty player list", nameof(players));
             }
 
-            if (pieces == null)
+            if (artifacts == null)
             {
-                throw new ArgumentNullException(nameof(pieces));
+                throw new ArgumentNullException(nameof(artifacts));
             }
 
-            if (!pieces.Any())
+            if (!artifacts.Any())
             {
-                throw new ArgumentException("Empty piece list", nameof(pieces));
+                throw new ArgumentException("Empty piece list", nameof(artifacts));
             }
 
             Board = board;
             Players = players.ToList().AsReadOnly();
-            Pieces = pieces.ToList().AsReadOnly();
+            Artifacts = artifacts.ToList().AsReadOnly();
         }
     }
 }

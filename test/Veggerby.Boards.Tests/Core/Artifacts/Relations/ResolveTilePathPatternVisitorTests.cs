@@ -256,7 +256,6 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 visitor.ResultPath.Distance.ShouldBe(21);
             }
 
-
             [Fact]
             public void Should_visit_multi_direction_pattern_and_resolve_shortest_path()
             {
@@ -277,7 +276,6 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 visitor.ResultPath.Directions.ShouldAllBe(x => Direction.Across.Equals(x));
                 visitor.ResultPath.Distance.ShouldBe(2);
             }
-
 
             [Fact]
             public void Should_visit_multi_direction_pattern_and_not_resolve_when_not_repeatable()
@@ -371,7 +369,6 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 visitor.ResultPath.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Up, Direction.Across, Direction.Clockwise });
                 visitor.ResultPath.Distance.ShouldBe(9); // 3-4-12-8-9
             }
-
 
             [Fact]
             public void Should_visit_any_pattern_not_find_result()

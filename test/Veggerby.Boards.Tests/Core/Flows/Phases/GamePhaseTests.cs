@@ -2,6 +2,7 @@ using System;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
@@ -22,7 +23,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 // arrange
                 var condition = new NullGameStateCondition();
                 var parent = GamePhase.NewParent(1);
-                var rule = new SimpleGameEventRule((state, @event) => RuleCheckState.Valid);
+                var rule = SimpleGameEventRule<IGameEvent>.New();
 
                 // act
                 var actual = GamePhase.New(1, condition, rule, parent);

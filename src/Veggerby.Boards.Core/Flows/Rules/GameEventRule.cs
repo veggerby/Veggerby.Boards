@@ -6,25 +6,20 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules
 {
-    public abstract class GameEventRule : IGameEventRule
+    public abstract class GameEventRule<T> : IGameEventRule<T> where T : IGameEvent
     {
-        private readonly IStateMutator<IGameEvent> _onBeforeEvent;
-        private readonly IStateMutator<IGameEvent> _onAfterEvent;
+        private readonly IStateMutator<T> _onBeforeEvent;
+        private readonly IStateMutator<T> _onAfterEvent;
 
-        public GameEventRule(IStateMutator<IGameEvent> onBeforeEvent, IStateMutator<IGameEvent> onAfterEvent)
+        public GameEventRule(IStateMutator<T> onBeforeEvent, IStateMutator<T> onAfterEvent)
         {
-            if (_onBeforeEvent == null && _onAfterEvent == null)
-            {
-                throw new ArgumentNullException(nameof(_onAfterEvent), "Both onBefore and onAfter cannot be null");
-            }
-
             _onBeforeEvent = onBeforeEvent;
             _onAfterEvent = onAfterEvent;
         }
 
-        public abstract RuleCheckState Check(GameState gameState, IGameEvent @event);
+        public abstract RuleCheckState Check(GameState gameState, T @event);
 
-        private GameState MutateState(IStateMutator<IGameEvent> eventMutator, GameState gameState, IGameEvent @event)
+        private GameState MutateState(IStateMutator<T> eventMutator, GameState gameState, T @event)
         {
             if (@event == null)
             {
@@ -34,23 +29,23 @@ namespace Veggerby.Boards.Core.Flows.Rules
             return eventMutator != null ? eventMutator.MutateState(gameState, @event) : gameState;
         }
 
-        public GameState HandleEvent(GameState gameState, IGameEvent @event)
+        public GameState HandleEvent(GameState gameState, T @event)
         {
             var newState = MutateState(_onBeforeEvent, gameState, @event);
 
             var check = Check(newState, @event);
 
-            switch (check.Result)
+            if (check.Result == RuleCheckResult.Valid)
             {
-                case RuleCheckResult.Invalid:
-                    throw new BoardException("Invalid game event");
-                case RuleCheckResult.Ignore:
-                    return gameState;
-                case RuleCheckResult.Valid:
-                    return MutateState(_onAfterEvent, newState, @event);
-                default:
-                    throw new BoardException("Invalid rule check result");
+                return MutateState(_onAfterEvent, newState, @event);
             }
+            else if (check.Result == RuleCheckResult.Ignore)
+            {
+                // do nothing, return original state
+                return gameState;
+            }
+
+            throw new BoardException("Invalid game event");
         }
     }
 }

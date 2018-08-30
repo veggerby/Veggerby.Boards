@@ -34,16 +34,52 @@
             }
         },
         {
-            "label": "test with coverage",
+            "label": "test with coverage (lcov)",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "test",
                 "/p:CollectCoverage=true",
                 "/p:CoverletOutputFormat=lcov",
-                "/p:CoverletOutput=./lcov.info",
+                "/p:CoverletOutput=${workspaceFolder}/TestResults/Coverage/lcov.info",
                 "${workspaceFolder}/test/Veggerby.Boards.Tests"
             ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "test with coverage (cobertura)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=cobertura",
+                "/p:CoverletOutput=${workspaceFolder}/TestResults/Coverage/coverage.cobertura.xml",
+                "${workspaceFolder}/test/Veggerby.Boards.Tests"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "generate coverage report",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "reportgenerator",
+                "-reports:${workspaceFolder}/TestResults/Coverage/coverage.cobertura.xml",
+                "-targetdir:${workspaceFolder}/TestResults/Coverage/Reports",
+                "-reportTypes:htmlInline"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/test/Veggerby.Boards.Tests"
+            },
             "problemMatcher": "$msCompile",
             "group": {
                 "kind": "test",

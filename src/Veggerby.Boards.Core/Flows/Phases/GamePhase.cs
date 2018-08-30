@@ -11,9 +11,9 @@ namespace Veggerby.Boards.Core.Flows.Phases
         public int Number { get; }
         public CompositeGamePhase Parent { get; }
         public IGameStateCondition Condition { get; }
-        public IGameEventRule<IGameEvent> Rule { get; }
+        public IGameEventRule Rule { get; }
 
-        protected GamePhase(int number, IGameStateCondition condition, IGameEventRule<IGameEvent> rule, CompositeGamePhase parent)
+        protected GamePhase(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent)
         {
             if (number <= 0)
             {
@@ -38,7 +38,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
             return Condition.Evaluate(gameState) ? this : null;
         }
 
-        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule<IGameEvent> rule = null, CompositeGamePhase parent = null)
+        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule = null, CompositeGamePhase parent = null)
         {
             return new GamePhase(number, condition, rule, parent);
         }

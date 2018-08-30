@@ -12,22 +12,22 @@ namespace Veggerby.Boards.Core.Flows.Rules
         private SimpleGameEventRule(Func<GameState, T, RuleCheckState> handler, IStateMutator<T> onBeforeEvent, IStateMutator<T> onAfterEvent)
             : base(onBeforeEvent, onAfterEvent)
         {
+            _handler = handler;
+        }
+
+        protected override RuleCheckState Check(GameState gameState, T @event)
+        {
+            return _handler(gameState, @event);
+        }
+
+        public static IGameEventRule New(Func<RuleCheckState> handler, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
+        {
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handler = handler;
-        }
-
-        public override RuleCheckState Check(GameState gameState, T @event)
-        {
-            return _handler(gameState, @event);
-        }
-
-        public static IGameEventRule<T> New(Func<RuleCheckState> handler = null, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
-        {
-            return new SimpleGameEventRule<T>((state, @event) => handler != null ? handler() : RuleCheckState.Valid, onBeforeEvent, onAfterEvent ?? new NullStateMutator<T>());
+            return new SimpleGameEventRule<T>((state, @event) => handler(), onBeforeEvent, onAfterEvent ?? new NullStateMutator<T>());
         }
     }
 }

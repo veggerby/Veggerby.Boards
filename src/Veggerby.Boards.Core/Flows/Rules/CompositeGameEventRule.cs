@@ -7,33 +7,23 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules
 {
-    public class CompositeGameEventRule : IGameEventRule<IGameEvent>
+    public class CompositeGameEventRule : IGameEventRule
     {
-        public IEnumerable<IGameEventRule<IGameEvent>> Rules { get; }
+        public IEnumerable<IGameEventRule> Rules { get; }
         public CompositeMode CompositeMode { get; }
 
-        public CompositeGameEventRule(IEnumerable<IGameEventRule<IGameEvent>> rules, CompositeMode compositeMode)
+        private CompositeGameEventRule(IEnumerable<IGameEventRule> rules, CompositeMode compositeMode)
         {
-            if (rules == null)
-            {
-                throw new ArgumentNullException(nameof(rules));
-            }
-
-            if (!rules.Any())
-            {
-                throw new ArgumentException("Empty rules list", nameof(rules));
-            }
-
             Rules = rules.ToList();
             CompositeMode = compositeMode;
         }
 
-        private IDictionary<IGameEventRule<IGameEvent>, RuleCheckState> RunCompositeCheck(GameState gameState, IGameEvent @event)
+        private IDictionary<IGameEventRule, RuleCheckState> RunCompositeCheck(GameState gameState, IGameEvent @event)
         {
             return Rules.ToDictionary(x => x, x => x.Check(gameState, @event));
         }
 
-        private RuleCheckState GetCompositeRuleCheckState(IDictionary<IGameEventRule<IGameEvent>, RuleCheckState> results)
+        private RuleCheckState GetCompositeRuleCheckState(IDictionary<IGameEventRule, RuleCheckState> results)
         {
             var ignoreAll = results.All(x => x.Value.Result == RuleCheckResult.Ignore);
 
@@ -43,7 +33,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
             }
 
             var compositionResult = CompositeMode == CompositeMode.All
-                ? results.All(x => x.Value.Result == RuleCheckResult.Valid)
+                ? results.All(x => x.Value.Result != RuleCheckResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
                 : results.Any(x => x.Value.Result == RuleCheckResult.Valid);
 
             return compositionResult
@@ -85,6 +75,14 @@ namespace Veggerby.Boards.Core.Flows.Rules
             }
 
             throw new BoardException("Invalid game event");
+        }
+
+        internal static IGameEventRule CreateCompositeRule(CompositeMode mode, params IGameEventRule[] rules)
+        {
+            return new CompositeGameEventRule(
+                rules.SelectMany(x => x.IsCompositeRule(mode) ? ((CompositeGameEventRule)x).Rules : new [] { x }),
+                mode
+            );
         }
     }
 }

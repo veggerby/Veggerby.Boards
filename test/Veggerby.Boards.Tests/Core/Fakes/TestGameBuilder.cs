@@ -19,6 +19,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 
             AddTileDefinition("tile-1");
             AddTileDefinition("tile-2");
+            AddTileDefinition("tile-3");
 
             AddPieceDefinition("piece-1", "player-1");
             AddPieceDefinition("piece-2", "player-2");
@@ -28,9 +29,11 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 
             AddDirectionDefinition("clockwise");
             AddDirectionDefinition("counterclockwise");
+            AddDirectionDefinition("up");
 
             AddTileRelationDefinition("tile-1", "tile-2", "clockwise");
             AddTileRelationDefinition("tile-2", "tile-1", "counterclockwise");
+            AddTileRelationDefinition("tile-1", "tile-3", "up");
 
             AddPieceDirectionPatternDefinition("piece-1", true, "clockwise");
             AddPieceDirectionPatternDefinition("piece-2", false, "counterclockwise");

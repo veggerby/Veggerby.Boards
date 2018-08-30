@@ -23,7 +23,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 // arrange
                 var condition = new NullGameStateCondition();
                 var parent = GamePhase.NewParent(1);
-                var rule = SimpleGameEventRule<IGameEvent>.New();
+                var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
 
                 // act
                 var actual = GamePhase.New(1, condition, rule, parent);

@@ -4,9 +4,9 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules
 {
-    public interface IGameEventRule<in T> where T : IGameEvent
+    public interface IGameEventRule
     {
-        RuleCheckState Check(GameState gameState, T @event);
-        GameState HandleEvent(GameState gameState, T @event);
+        RuleCheckState Check(GameState gameState, IGameEvent @event);
+        GameState HandleEvent(GameState gameState, IGameEvent @event);
     }
 }

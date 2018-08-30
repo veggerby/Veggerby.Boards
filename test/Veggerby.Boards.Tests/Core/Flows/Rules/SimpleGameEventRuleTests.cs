@@ -25,6 +25,17 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // assert
                 actual.ShouldNotBeNull();
             }
+
+            [Fact]
+            public void Should_throw_with_null_handler()
+            {
+                // arrange
+                // act
+                var actual = Should.Throw<ArgumentNullException>(() => SimpleGameEventRule<NullGameEvent>.New(null));
+
+                // assert
+                actual.ParamName.ShouldBe("handler");
+            }
         }
 
         public class Check

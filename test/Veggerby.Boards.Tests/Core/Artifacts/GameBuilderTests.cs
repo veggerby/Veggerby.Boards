@@ -27,17 +27,21 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
 
             actual.Board.ShouldNotBeNull();
             actual.Board.Id.ShouldBe("test");
-            actual.Board.Tiles.Count().ShouldBe(2);
-            actual.Board.Tiles.Select(x => x.Id).ShouldBe(new [] { "tile-1", "tile-2" });
+            actual.Board.Tiles.Count().ShouldBe(3);
+            actual.Board.Tiles.Select(x => x.Id).ShouldBe(new [] { "tile-1", "tile-2", "tile-3" });
 
-            actual.Board.TileRelations.Count().ShouldBe(2);
+            actual.Board.TileRelations.Count().ShouldBe(3);
             actual.Board.TileRelations.First().From.Id.ShouldBe("tile-1");
             actual.Board.TileRelations.First().To.Id.ShouldBe("tile-2");
             actual.Board.TileRelations.First().Direction.Id.ShouldBe("clockwise");
 
-            actual.Board.TileRelations.Last().From.Id.ShouldBe("tile-2");
-            actual.Board.TileRelations.Last().To.Id.ShouldBe("tile-1");
-            actual.Board.TileRelations.Last().Direction.Id.ShouldBe("counterclockwise");
+            actual.Board.TileRelations.Skip(1).First().From.Id.ShouldBe("tile-2");
+            actual.Board.TileRelations.Skip(1).First().To.Id.ShouldBe("tile-1");
+            actual.Board.TileRelations.Skip(1).First().Direction.Id.ShouldBe("counterclockwise");
+
+            actual.Board.TileRelations.Last().From.Id.ShouldBe("tile-1");
+            actual.Board.TileRelations.Last().To.Id.ShouldBe("tile-3");
+            actual.Board.TileRelations.Last().Direction.Id.ShouldBe("up");
         }
 
         [Fact]

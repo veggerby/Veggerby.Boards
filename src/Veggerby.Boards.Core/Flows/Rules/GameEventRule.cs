@@ -6,7 +6,7 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules
 {
-    public abstract class GameEventRule<T> : IGameEventRule<T> where T : IGameEvent
+    public abstract class GameEventRule<T> : IGameEventRule where T : IGameEvent
     {
         private readonly IStateMutator<T> _onBeforeEvent;
         private readonly IStateMutator<T> _onAfterEvent;
@@ -17,19 +17,14 @@ namespace Veggerby.Boards.Core.Flows.Rules
             _onAfterEvent = onAfterEvent;
         }
 
-        public abstract RuleCheckState Check(GameState gameState, T @event);
+        protected abstract RuleCheckState Check(GameState gameState, T @event);
 
         private GameState MutateState(IStateMutator<T> eventMutator, GameState gameState, T @event)
         {
-            if (@event == null)
-            {
-                throw new ArgumentNullException(nameof(@event));
-            }
-
             return eventMutator != null ? eventMutator.MutateState(gameState, @event) : gameState;
         }
 
-        public GameState HandleEvent(GameState gameState, T @event)
+        protected GameState HandleEvent(GameState gameState, T @event)
         {
             var newState = MutateState(_onBeforeEvent, gameState, @event);
 
@@ -46,6 +41,36 @@ namespace Veggerby.Boards.Core.Flows.Rules
             }
 
             throw new BoardException("Invalid game event");
+        }
+
+        RuleCheckState IGameEventRule.Check(GameState gameState, IGameEvent @event)
+        {
+            if (@event == null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
+
+            if (@event is T)
+            {
+                return Check(gameState, (T)@event);
+            }
+
+            return RuleCheckState.NotApplicable;
+        }
+
+        GameState IGameEventRule.HandleEvent(GameState gameState, IGameEvent @event)
+        {
+            if (@event == null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
+
+            if (@event is T)
+            {
+                return HandleEvent(gameState, (T)@event);
+            }
+
+            return gameState;
         }
     }
 }

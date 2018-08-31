@@ -34,6 +34,40 @@ namespace Veggerby.Boards.Core.States
                 .SingleOrDefault(x => x.Artifact.Equals(artifact));
         }
 
+        protected bool Equals(GameState other)
+        {
+            if (!Game.Equals(other.Game) || IsInitialState != other.IsInitialState)
+            {
+                return false;
+            }
+
+            if (ChildStates.Count() != other.ChildStates.Count())
+            {
+                return false;
+            }
+
+            return !ChildStates.Except(other.ChildStates).Any();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GameState)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = this.GetType().GetHashCode();
+                hashCode = (hashCode*397) ^ Game.GetHashCode();
+                hashCode = (hashCode*397) ^ IsInitialState.GetHashCode();
+                return ChildStates.Aggregate(hashCode, (seed, state) => (397 * seed) ^ state.GetHashCode());
+            }
+        }
+
         public GameState Next(IEnumerable<IArtifactState> newStates)
         {
             return new GameState(

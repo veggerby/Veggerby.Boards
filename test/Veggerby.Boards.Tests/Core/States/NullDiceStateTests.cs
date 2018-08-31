@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States
 {
-    public class DiceStateTests
+    public class NullDiceStateTests
     {
         public class ctor
         {
@@ -19,11 +19,10 @@ namespace Veggerby.Boards.Tests.Core.States
                 var dice = new Dice<int>("dice");
 
                 // act
-                var actual = new DiceState<int>(dice, 5);
+                var actual = new NullDiceState<int>(dice);
 
                 // assert
                 actual.Artifact.ShouldBe(dice);
-                actual.CurrentValue.ShouldBe(5);
             }
 
             [Fact]
@@ -32,23 +31,137 @@ namespace Veggerby.Boards.Tests.Core.States
                 // assert
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DiceState<int>(null, 5));
+                var actual = Should.Throw<ArgumentNullException>(() => new NullDiceState<int>(null));
 
                 // assert
                 actual.ParamName.ShouldBe("artifact");
             }
+        }
 
+        public class _Equals
+        {
             [Fact]
-            public void Should_throw_when_null_value()
+            public void Should_equal_self()
             {
-                // assert
-                var dice = new Dice<string>("dice");
+                // arrange
+                var dice = new RegularDice("dice");
+                var state = new NullDiceState<int>(dice);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DiceState<string>(dice, null));
+                var actual = state.Equals(state);
 
                 // assert
-                actual.ParamName.ShouldBe("currentValue");
+                actual.ShouldBeTrue();
+            }
+
+            [Fact]
+            public void Should_not_equal_null()
+            {
+                // arrange
+                var dice = new RegularDice("dice");
+                var state = new NullDiceState<int>(dice);
+
+                // act
+                var actual = state.Equals(null);
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+
+            [Fact]
+            public void Should_equal_other_null_state_same_artifact()
+            {
+                // arrange
+                var dice = new RegularDice("dice");
+                var state1 = new NullDiceState<int>(dice);
+                var state2 = new NullDiceState<int>(dice);
+
+                // act
+                var actual = state1.Equals(state2);
+
+                // assert
+                actual.ShouldBeTrue();
+            }
+
+            [Fact]
+            public void Should_not_equal_different_artifacts()
+            {
+                // arrange
+                var dice1 = new RegularDice("dice-1");
+                var dice2 = new RegularDice("dice-2");
+                var state1 = new NullDiceState<int>(dice1);
+                var state2 = new NullDiceState<int>(dice2);
+
+                // act
+                var actual = state1.Equals(state2);
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+
+            [Fact]
+            public void Should_not_equal_different_base_types_same_artifact_id()
+            {
+                // arrange
+                var dice1 = new Dice<string>("dice-1");
+                var dice2 = new Dice<bool>("dice-1");
+                var state1 = new NullDiceState<string>(dice1);
+                var state2 = new NullDiceState<bool>(dice2);
+
+                // act
+                var actual = state1.Equals(state2);
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+
+            [Fact]
+            public void Should_not_equal_different_artifact_state_type()
+            {
+                // arrange
+                var dice = new RegularDice("dice");
+                var piece = new Piece("piece", null, null);
+                var tile = new Tile("tile");
+                var state1 = new NullDiceState<int>(dice);
+                var state2 = new PieceState(piece, tile);
+
+                // act
+                var actual = state1.Equals(state2);
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+
+            [Fact]
+            public void Should_not_equal_another_type()
+            {
+                // arrange
+                var dice = new RegularDice("dice");
+                var state = new NullDiceState<int>(dice);
+
+                // act
+                var actual = state.Equals("a string");
+
+                // assert
+                actual.ShouldBeFalse();
+            }
+        }
+
+        public class _GetHashCode
+        {
+            [Fact]
+            public void Should_equal_self()
+            {
+                // arrange
+                var dice = new RegularDice("dice");
+                var expected = (typeof(NullDiceState<int>).GetHashCode() * 397) ^ dice.GetHashCode();
+                var state = new NullDiceState<int>(dice);
+
+                // act
+                var actual = state.GetHashCode();
+
+                // assert
+                actual.ShouldBe(expected);
             }
         }
     }

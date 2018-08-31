@@ -159,16 +159,135 @@ namespace Veggerby.Boards.Tests.Core.States
             }
         }
 
+        public class CompareTo : GameStateTests
+        {
+            [Fact]
+            public void Should_return_no_changes_when_equals()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState = new DiceState<int>(dice, 5);
+                var gameState = GameState.New(Game, new IArtifactState[] { diceState, pieceState1, pieceState2 });
+
+                // act
+                var actual = gameState.CompareTo(gameState);
+
+                // assert
+                actual.ShouldBeEmpty();
+            }
+
+            [Fact]
+            public void Should_throw_comparing_different_games()
+            {
+                // arrange
+                var game1 = new Boards.Backgammon.BackgammonGameBuilder().Compile();
+                var game2 = new Boards.Chess.ChessGameBuilder().Compile();
+                var gameState1 = GameState.New(game1, null);
+                var gameState2 = GameState.New(game2, null);
+
+                // act
+                var actual = Should.Throw<ArgumentException>(() => gameState1.CompareTo(gameState2));
+
+                // assert
+                actual.ParamName.ShouldBe("state");
+            }
+
+            [Fact]
+            public void Should_single_addition()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState = new DiceState<int>(dice, 5);
+                var gameState1 = GameState.New(Game, new IArtifactState[] { diceState, pieceState1 });
+                var gameState2 = gameState1.Next(new [] { pieceState2 });
+
+                // act
+                var actual = gameState2.CompareTo(gameState1);
+
+                // assert
+                actual.Count().ShouldBe(1);
+                actual.Single().From.ShouldBe(null);
+                actual.Single().To.ShouldBe(pieceState2);
+            }
+
+            [Fact]
+            public void Should_single_change()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState1 = new DiceState<int>(dice, 5);
+                var diceState2 = new DiceState<int>(dice, 3);
+                var gameState1 = GameState.New(Game, new IArtifactState[] { diceState1, pieceState1, pieceState2 });
+                var gameState2 = gameState1.Next(new IArtifactState[] { pieceState2, diceState2, pieceState1 });
+
+                // act
+                var actual = gameState2.CompareTo(gameState1);
+
+                // assert
+                actual.Count().ShouldBe(1);
+                actual.Single().From.ShouldBe(diceState1);
+                actual.Single().To.ShouldBe(diceState2);
+            }
+
+            [Fact]
+            public void Should_capture_various_updates()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var pieceN = Game.GetPiece("piece-n");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState1 = new DiceState<int>(dice, 5);
+                var diceState2 = new DiceState<int>(dice, 3);
+                var pieceState1new = new PieceState(piece1, tile2);
+                var pieceStateN = new PieceState(pieceN, tile1);
+                var gameState1 = GameState.New(Game, new IArtifactState[] { diceState1, pieceState1, pieceState2 });
+                var gameState2 = gameState1.Next(new IArtifactState[] { pieceState2, diceState2, pieceState1new, pieceStateN });
+
+                // act
+                var actual = gameState2.CompareTo(gameState1);
+
+                // assert
+                actual.Count().ShouldBe(3);
+                actual.Count(x => x.From == null && x.To.Equals(pieceStateN)).ShouldBe(1);
+                actual.Count(x => pieceState1.Equals(x.From) && pieceState1new.Equals(x.To)).ShouldBe(1);
+                actual.Count(x => diceState1.Equals(x.From) && diceState2.Equals(x.To)).ShouldBe(1);
+            }
+        }
+
         public class _Equals : GameStateTests
         {
             private GameState NewGameState(string tileId1 = "tile-1", string tileId2 = "tile-2", int diceValue = 3)
             {
-                var piece = Game.GetPiece("piece-1");
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
                 var tile1 = !string.IsNullOrEmpty(tileId1) ? Game.GetTile(tileId1) : null;
                 var tile2 = !string.IsNullOrEmpty(tileId2) ? Game.GetTile(tileId2) : null;
                 var dice = new RegularDice("dice");
-                var pieceState1 = tile1 != null ? new PieceState(piece, tile1) : null;
-                var pieceState2 = tile2 != null ? new PieceState(piece, tile2) : null;
+                var pieceState1 = tile1 != null ? new PieceState(piece1, tile1) : null;
+                var pieceState2 = tile2 != null ? new PieceState(piece2, tile2) : null;
                 var diceState = new DiceState<int>(dice, diceValue);
                 return GameState.New(Game, new IArtifactState[] { diceState, pieceState1, pieceState2 }.Where(x => x != null));
             }
@@ -272,7 +391,6 @@ namespace Veggerby.Boards.Tests.Core.States
                 actual.ShouldBeFalse();
             }
 
-
             [Fact]
             public void Should_not_equal_different_type()
             {
@@ -285,9 +403,31 @@ namespace Veggerby.Boards.Tests.Core.States
                 // assert
                 actual.ShouldBeFalse();
             }
+
+            [Fact]
+            public void Should_equal_same_states_different_order()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState = new DiceState<int>(dice, 3);
+                var gameState1 = GameState.New(Game, new IArtifactState[] { diceState, pieceState1, pieceState2 });
+                var gameState2 = GameState.New(Game, new IArtifactState[] { pieceState2, diceState, pieceState1 });
+
+                // act
+                var actual = gameState1.Equals(gameState2);
+
+                // assert
+                actual.ShouldBeTrue();
+            }
         }
 
-        public class _GetHashCode
+        public class _GetHashCode : GameStateTests
         {
             [Fact]
             public void Should_equal_self()
@@ -300,7 +440,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var state1 = new PieceState(piece, tile);
                 var state2 = new DiceState<int>(dice, 4);
                 var gameState = GameState.New(game, new IArtifactState[] { state1, state2 });
-                var expected = (((((typeof(GameState).GetHashCode() * 397) ^ game.GetHashCode()) * 397) ^ true.GetHashCode()) * 397 ^ state1.GetHashCode()) * 397 ^ state2.GetHashCode();
+                var expected = (((typeof(GameState).GetHashCode() * 397) ^ game.GetHashCode()) * 397) ^ true.GetHashCode() ^ state1.GetHashCode() ^ state2.GetHashCode();
 
                 // act
                 var actual = gameState.GetHashCode();
@@ -308,7 +448,28 @@ namespace Veggerby.Boards.Tests.Core.States
                 // assert
                 actual.ShouldBe(expected);
             }
-        }
 
+            [Fact]
+            public void Should_return_same_hashcode_different_order_states()
+            {
+                // arrange
+                var piece1 = Game.GetPiece("piece-1");
+                var piece2 = Game.GetPiece("piece-2");
+                var tile1 = Game.GetTile("tile-1");
+                var tile2 = Game.GetTile("tile-2");
+                var dice = new RegularDice("dice");
+                var pieceState1 = new PieceState(piece1, tile1);
+                var pieceState2 = new PieceState(piece2, tile2);
+                var diceState = new DiceState<int>(dice, 3);
+                var gameState1 = GameState.New(Game, new IArtifactState[] { diceState, pieceState1, pieceState2 });
+                var gameState2 = GameState.New(Game, new IArtifactState[] { pieceState2, diceState, pieceState1 });
+
+                // act
+                var actual = gameState1.GetHashCode() == gameState2.GetHashCode();
+
+                // assert
+                actual.ShouldBeTrue();
+            }
+        }
     }
 }

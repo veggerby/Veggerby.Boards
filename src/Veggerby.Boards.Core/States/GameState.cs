@@ -8,11 +8,11 @@ namespace Veggerby.Boards.Core.States
 {
     public class GameState
     {
-        private readonly IEnumerable<IArtifactState> _childStates;
+        private readonly IDictionary<Artifact, IArtifactState> _childStates;
         private readonly GameState _previousState;
 
         public Game Game { get; }
-        public IEnumerable<IArtifactState> ChildStates => _childStates.ToList().AsReadOnly();
+        public IEnumerable<IArtifactState> ChildStates => _childStates.Values.ToList().AsReadOnly();
         public bool IsInitialState => _previousState == null;
 
         private GameState(Game game, IEnumerable<IArtifactState> childStates = null, GameState previousState = null)
@@ -23,15 +23,13 @@ namespace Veggerby.Boards.Core.States
             }
 
             Game = game;
-            _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToList();
+            _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
             _previousState = previousState;
         }
 
         public T GetState<T>(Artifact artifact) where T : IArtifactState
         {
-            return _childStates
-                .OfType<T>()
-                .SingleOrDefault(x => x.Artifact.Equals(artifact));
+            return _childStates.ContainsKey(artifact) && _childStates[artifact] is T ? (T)_childStates[artifact] : default(T);
         }
 
         protected bool Equals(GameState other)
@@ -64,7 +62,7 @@ namespace Veggerby.Boards.Core.States
                 var hashCode = this.GetType().GetHashCode();
                 hashCode = (hashCode*397) ^ Game.GetHashCode();
                 hashCode = (hashCode*397) ^ IsInitialState.GetHashCode();
-                return ChildStates.Aggregate(hashCode, (seed, state) => (397 * seed) ^ state.GetHashCode());
+                return ChildStates.Aggregate(hashCode, (seed, state) => seed ^ state.GetHashCode());
             }
         }
 
@@ -76,6 +74,34 @@ namespace Veggerby.Boards.Core.States
                     .Except(newStates ?? Enumerable.Empty<IArtifactState>(), new ArtifactStateEqualityComparer())
                     .Concat(newStates ?? Enumerable.Empty<IArtifactState>()),
                 this);
+        }
+
+        public IEnumerable<ArtifactStateChange> CompareTo(GameState state)
+        {
+            if (!Game.Equals(state.Game))
+            {
+                throw new ArgumentException("Must compare GameState for the same game", nameof(state));
+            }
+
+            if (Equals(state))
+            {
+                return Enumerable.Empty<ArtifactStateChange>();
+            }
+
+            var additions = ChildStates
+                .Except(state.ChildStates, new ArtifactStateEqualityComparer())
+                .Select(to => new ArtifactStateChange(null, to));
+
+            // states cannot be removed
+            /*var removals = state.ChildStates
+                .Except(ChildStates, new ArtifactStateEqualityComparer())
+                .Select(from => new ArtifactStateChange(from, null));*/
+
+            var changes = state.ChildStates
+                .Join(ChildStates, x => x.Artifact, x => x.Artifact, (from, to) => new ArtifactStateChange(from, to))
+                .Where(x => !x.From.Equals(x.To));
+
+            return changes.Concat(additions).ToList();
         }
 
         public static GameState New(Game game, IEnumerable<IArtifactState> initialStates)

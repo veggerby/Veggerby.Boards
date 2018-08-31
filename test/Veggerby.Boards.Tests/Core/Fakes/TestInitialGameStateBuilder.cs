@@ -7,7 +7,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 {
     public class TestInitialGameStateBuilder : InitialGameStateBuilder
     {
-        public override void Build(Game game)
+        protected override void Build(Game game)
         {
             AddNullDice("dice");
             AddDiceValue("dice-secondary", 4);

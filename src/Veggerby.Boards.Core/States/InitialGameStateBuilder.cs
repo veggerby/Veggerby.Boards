@@ -6,7 +6,7 @@ namespace Veggerby.Boards.Core.States
 {
     public abstract class InitialGameStateBuilder
     {
-        public abstract void Build(Game game);
+        protected abstract void Build(Game game);
 
         private IDictionary<string, int?> _diceState = new Dictionary<string, int?>();
 

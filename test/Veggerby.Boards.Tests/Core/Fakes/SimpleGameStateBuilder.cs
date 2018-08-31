@@ -5,7 +5,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 {
     public class SimpleGameStateBuilder : InitialGameStateBuilder
     {
-        public override void Build(Game game)
+        protected override void Build(Game game)
         {
             AddPieceOnTile("piece-1", "tile-1");
         }

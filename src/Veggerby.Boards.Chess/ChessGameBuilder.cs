@@ -1,9 +1,16 @@
-﻿using Veggerby.Boards.Core.Artifacts;
+﻿using System.Text;
+using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Chess
 {
     public class ChessGameBuilder : GameBuilder
     {
+        private string GetChar(int i)
+        {
+            var b = Encoding.UTF8.GetBytes(new [] { 'a' })[0] + i - 1;
+            return Encoding.UTF8.GetString(new [] { (byte)b });
+        }
+
         protected override void Build()
         {
             BoardId = "chess";
@@ -12,57 +19,59 @@ namespace Veggerby.Boards.Chess
             AddPlayerDefinition("black");
 
             /*         N
-             * (1,1) ----- (8,1)    BLACK
+             * (a,1) ----- (h,1)    WHITE
              *   |           |
              *   |           |
              * W |           | E
              *   |           |
              *   |           |
-             * (1,8) ----- (8,8)    WHITE
+             * (a,8) ----- (h,8)    BLACK
              *         S
              */
             for (int x = 1; x <= 8; x++)
             {
                 for (int y = 1; y <= 8; y++)
                 {
-                    AddTileDefinition($"tile-{x}-{y}");
+                    AddTileDefinition($"tile-{GetChar(x)}{y}");
+
                     if (x > 1)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x - 1}-{y}", "west");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x - 1)}{y}", "west");
                     }
 
                     if (x < 8)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x + 1}-{y}", "east");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x + 1)}{y}", "east");
                     }
 
                     if (y > 1)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x}-{y - 1}", "north");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x)}{y - 1}", "north");
                     }
 
                     if (y < 8)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x}-{y + 1}", "south");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x)}{y + 1}", "south");
                     }
+
                     if (x > 1 && y > 1)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x - 1}-{y - 1}", "north-west");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x - 1)}{y - 1}", "north-west");
                     }
 
                     if (x < 8 && y < 8)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x + 1}-{y + 1}", "south-east");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x + 1)}{y + 1}", "south-east");
                     }
 
                     if (x > 1 && y < 8)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x - 1}-{y + 1}", "south-west");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x - 1)}{y + 1}", "south-west");
                     }
 
                     if (x < 8 && y > 1)
                     {
-                        AddTileRelationDefinition($"tile-{x}-{y}", $"tile-{x + 1}-{y - 1}", "south-east");
+                        AddTileRelationDefinition($"tile-{GetChar(x)}{y}", $"tile-{GetChar(x + 1)}{y - 1}", "north-east");
                     }
 
                 }
@@ -82,7 +91,6 @@ namespace Veggerby.Boards.Chess
 
             AddPieceDefinition("black-queen", "black");
             AddPieceDefinition("black-king", "black");
-
 
             AddPieceDirectionPatternDefinition("white-queen", true, "north");
             AddPieceDirectionPatternDefinition("white-queen", true, "east");
@@ -125,8 +133,8 @@ namespace Veggerby.Boards.Chess
                 AddPieceDefinition($"white-pawn-{i}", "white");
                 AddPieceDefinition($"black-pawn-{i}", "black");
 
-                AddPieceDirectionPatternDefinition($"white-pawn-{i}", true, "north");
-                AddPieceDirectionPatternDefinition($"black-pawn-{i}", true, "south");
+                AddPieceDirectionPatternDefinition($"white-pawn-{i}", false, "south");
+                AddPieceDirectionPatternDefinition($"black-pawn-{i}", false, "north");
             }
 
             for (int i = 1; i <= 8; i++)

@@ -49,6 +49,10 @@ namespace Veggerby.Boards.Backgammon
                 AddPieceDirectionPatternDefinition($"white-{i}", true, "clockwise");
                 AddPieceDirectionPatternDefinition($"black-{i}", true, "counterclockwise");
             }
+
+            AddDiceDefinition("dice-1");
+            AddDiceDefinition("dice-2");
+            AddDiceDefinition("doubling-dice");
         }
     }
 }

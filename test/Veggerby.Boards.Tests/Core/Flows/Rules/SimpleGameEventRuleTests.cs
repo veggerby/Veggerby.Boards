@@ -70,6 +70,36 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 actual.Result.ShouldBe(RuleCheckResult.Ignore);
                 actual.Reason.ShouldBe("just because");
             }
+
+            [Fact]
+            public void Should_throw_with_null_event_on_explicit_interface()
+            {
+                // arrange
+                var game = new TestGameBuilder().Compile();
+                var state = GameState.New(game, null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+
+                // act
+                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(state, null));
+
+                // assert
+                actual.ParamName.ShouldBe("event");
+            }
+
+            [Fact]
+            public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
+            {
+                // arrange
+                var game = new TestGameBuilder().Compile();
+                var state = GameState.New(game, null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+
+                // act
+                var actual = rule.Check(state, new NullGameEvent());
+
+                // assert
+                actual.Result.ShouldBe(RuleCheckResult.Ignore);
+            }
         }
 
         public class HandleEvent
@@ -178,6 +208,36 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 // assert
                 actual.ShouldBe(state);
+            }
+
+            [Fact]
+            public void Should_throw_with_null_event_on_explicit_interface()
+            {
+                // arrange
+                var game = new TestGameBuilder().Compile();
+                var state = GameState.New(game, null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+
+                // act
+                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(state, null));
+
+                // assert
+                actual.ParamName.ShouldBe("event");
+            }
+
+            [Fact]
+            public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
+            {
+                // arrange
+                var game = new TestGameBuilder().Compile();
+                var state = GameState.New(game, null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+
+                // act
+                var actual = rule.HandleEvent(state, new NullGameEvent());
+
+                // assert
+                actual.ShouldBeSameAs(state);
             }
         }
     }

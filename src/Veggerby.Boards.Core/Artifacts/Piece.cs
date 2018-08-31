@@ -13,7 +13,7 @@ namespace Veggerby.Boards.Core.Artifacts
         public Piece(string id, Player owner, IEnumerable<IPattern> patterns) : base(id)
         {
             Owner = owner;
-            Patterns = patterns?.ToList().AsReadOnly();
+            Patterns = (patterns ?? Enumerable.Empty<IPattern>()).ToList().AsReadOnly();
         }
     }
 }

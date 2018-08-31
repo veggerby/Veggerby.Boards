@@ -17,6 +17,6 @@ namespace Veggerby.Boards.Core.States
             Artifact = artifact;
         }
 
-
+        public abstract bool Equals(IArtifactState other);
     }
 }

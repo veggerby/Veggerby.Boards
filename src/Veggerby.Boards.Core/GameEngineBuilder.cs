@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
@@ -51,6 +52,25 @@ namespace Veggerby.Boards.Core
             public string[] DirectionIds { get; set; }
         }
 
+        private interface IArtifactDefinition
+        {
+            string ArtifactId { get; }
+            Artifact Create();
+        }
+
+        private class ArtifactDefinition<T> : IArtifactDefinition where T : Artifact
+        {
+            public string ArtifactId { get; set; }
+
+            public Func<string, T> New { get; set; }
+
+            public Artifact Create()
+            {
+                return New(ArtifactId);
+            }
+        }
+
+
         protected string BoardId { get; set; }
         private readonly IList<PlayerDefinitionSettings> _playerDefinitions = new List<PlayerDefinitionSettings>();
         private readonly IList<TileDefinitionSettings> _tileDefinitions = new List<TileDefinitionSettings>();
@@ -59,6 +79,7 @@ namespace Veggerby.Boards.Core
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
         private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
+        private readonly IList<IArtifactDefinition> _artifactDefinitions = new List<IArtifactDefinition>();
 
         private Tile CreateTile(TileDefinitionSettings tileDefinitionSettings)
         {
@@ -147,6 +168,11 @@ namespace Veggerby.Boards.Core
             _pieceDefinitions.Add(new PieceDefinitionSettings { PieceId = pieceId, PlayerId = playerId });
         }
 
+        protected void AddArtifactDefinition<T>(string artifactId, Func<string, T> ctor) where T : Artifact
+        {
+            _artifactDefinitions.Add(new ArtifactDefinition<T> { ArtifactId = artifactId, New = ctor });
+        }
+
         #endregion
 
         #region Initial GameState builder
@@ -193,9 +219,10 @@ namespace Veggerby.Boards.Core
             var dice = _diceDefinitions.Select(CreateDice).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
+            var artifacts = _artifactDefinitions.Select(x => x.Create()).ToArray();
 
             var board = new Board(BoardId, relations);
-            var game = new Game(board, players, pieces.Concat(dice));
+            var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
 
             // compile Initial state
 

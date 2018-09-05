@@ -26,8 +26,8 @@ namespace Veggerby.Boards.Tests.Core
                 actual.GameState.ShouldNotBeNull();
                 actual.GamePhaseRoot.ShouldNotBeNull();
 
-                actual.Game.Artifacts.Count().ShouldBe(7);
-                actual.Game.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary" });
+                actual.Game.Artifacts.Count().ShouldBe(8);
+                actual.Game.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x" });
 
                 actual.Game.Players.Count().ShouldBe(2);
                 actual.Game.Players.Select(x => x.Id).ShouldBe(new [] { "player-1", "player-2" });

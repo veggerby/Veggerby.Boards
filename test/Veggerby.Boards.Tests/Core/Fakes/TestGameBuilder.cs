@@ -41,12 +41,15 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             AddPieceDirectionPatternDefinition("piece-x", true, "clockwise", "counterclockwise");
             AddPieceDirectionPatternDefinition("piece-y", false, "clockwise", "counterclockwise");
 
+            AddArtifactDefinition<TestArtifact>("artifact-x", id => new TestArtifact(id));
+
             // initial state state
             AddNullDice("dice");
             AddDiceValue("dice-secondary", 4);
 
             AddPieceOnTile("piece-1", "tile-1");
             AddPieceOnTile("piece-2", "tile-2");
-            AddPieceOnTile("piece-n", "tile-1");        }
+            AddPieceOnTile("piece-n", "tile-1");
+        }
     }
 }

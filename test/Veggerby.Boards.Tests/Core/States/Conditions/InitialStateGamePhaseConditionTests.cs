@@ -14,7 +14,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_true_on_initial_state()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
+                var game = new TestGameEngineBuilder().Compile().Game;
                 var state = GameState.New(game, null);
 
                 var condition = new InitialStateGamePhaseCondition();
@@ -30,7 +30,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_evaluate_false_on_non_initial_state()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
+                var game = new TestGameEngineBuilder().Compile().Game;
                 var state = GameState.New(game, null).Next(null);
 
                 var condition = new InitialStateGamePhaseCondition();

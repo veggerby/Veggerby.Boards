@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core;
 
 namespace Veggerby.Boards.Tests.Core.Fakes
 {
-    public class TestGameBuilder : GameBuilder
+    public class TestGameEngineBuilder : GameEngineBuilder
     {
         protected override void Build()
         {
+            // Game
             BoardId = "test";
 
             AddDiceDefinition("dice");
@@ -40,6 +40,13 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             AddPieceDirectionPatternDefinition("piece-n", true);
             AddPieceDirectionPatternDefinition("piece-x", true, "clockwise", "counterclockwise");
             AddPieceDirectionPatternDefinition("piece-y", false, "clockwise", "counterclockwise");
-        }
+
+            // initial state state
+            AddNullDice("dice");
+            AddDiceValue("dice-secondary", 4);
+
+            AddPieceOnTile("piece-1", "tile-1");
+            AddPieceOnTile("piece-2", "tile-2");
+            AddPieceOnTile("piece-n", "tile-1");        }
     }
 }

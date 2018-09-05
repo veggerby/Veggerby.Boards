@@ -49,7 +49,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
 
             public Evaluate()
             {
-                _game = new TestGameBuilder().Compile();
+                var engine = new TestGameEngineBuilder().Compile();
+                _game = engine.Game;
                 _state = GameState.New(_game, null);
             }
 

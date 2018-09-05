@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core.Flows.Phases;
+using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Artifacts
+namespace Veggerby.Boards.Core
 {
-    public abstract class GameBuilder
+    public abstract class GameEngineBuilder
     {
+        #region Game Builder
         private class TileDefinitionSettings
         {
             public string TileId { get; set; }
@@ -55,31 +59,6 @@ namespace Veggerby.Boards.Core.Artifacts
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
         private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
-
-        protected abstract void Build();
-
-        private Game _game;
-
-        public Game Compile()
-        {
-            if (_game != null)
-            {
-                return _game;
-            }
-
-            Build();
-            var players = _playerDefinitions.Select(x => new Player(x.PlayerId));
-            var tiles = _tileDefinitions.Select(CreateTile).ToArray();
-            var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
-            var dice = _diceDefinitions.Select(CreateDice).ToArray();
-            var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
-            var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
-
-            var board = new Board(BoardId, relations);
-            _game = new Game(board, players, pieces.Concat(dice));
-
-            return _game;
-        }
 
         private Tile CreateTile(TileDefinitionSettings tileDefinitionSettings)
         {
@@ -166,6 +145,80 @@ namespace Veggerby.Boards.Core.Artifacts
         protected void AddPieceDefinition(string pieceId, string playerId = null)
         {
             _pieceDefinitions.Add(new PieceDefinitionSettings { PieceId = pieceId, PlayerId = playerId });
+        }
+
+        #endregion
+
+        #region Initial GameState builder
+
+        private IDictionary<string, int?> _diceState = new Dictionary<string, int?>();
+
+        private IDictionary<string, string> _piecePositions = new Dictionary<string, string>();
+
+        protected void AddNullDice(string diceId)
+        {
+            _diceState.Add(diceId, null);
+        }
+
+        protected void AddDiceValue(string diceId, int value)
+        {
+            _diceState.Add(diceId, value);
+        }
+
+        protected void AddPieceOnTile(string pieceId, string tileId)
+        {
+            _piecePositions.Add(pieceId, tileId);
+        }
+
+        #endregion
+
+        protected abstract void Build();
+
+        private GameEngine _gameEngine;
+
+        public GameEngine Compile()
+        {
+            if (_gameEngine != null)
+            {
+                return _gameEngine;
+            }
+
+            Build();
+
+            // compile Game
+
+            var players = _playerDefinitions.Select(x => new Player(x.PlayerId));
+            var tiles = _tileDefinitions.Select(CreateTile).ToArray();
+            var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
+            var dice = _diceDefinitions.Select(CreateDice).ToArray();
+            var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
+            var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
+
+            var board = new Board(BoardId, relations);
+            var game = new Game(board, players, pieces.Concat(dice));
+
+            // compile Initial state
+
+            var pieceStates = _piecePositions
+                .Select(x => new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
+                .ToList();
+
+            var diceStates = _diceState
+                .Select(x => x.Value == null
+                    ? (IArtifactState)new NullDiceState<int>(game.GetArtifact<RegularDice>(x.Key))
+                    : (IArtifactState)new DiceState<int>(game.GetArtifact<RegularDice>(x.Key), x.Value.Value))
+                .ToList();
+
+            var initialGameState = GameState.New(game, pieceStates.Concat(diceStates).ToList());
+
+            // compile GamePhase root
+
+            var gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition());
+
+            // combine
+            _gameEngine = GameEngine.New(initialGameState, gamePhaseRoot);
+
+            return _gameEngine;
         }
     }
 }

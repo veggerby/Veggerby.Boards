@@ -38,15 +38,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_valid_all_rules()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid)
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid))
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Valid);
@@ -57,15 +56,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_valid_all_rules_when_one_ignore()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid)
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable))
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Valid);
@@ -76,15 +74,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_invalid_all_rules_when_one_fails()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid)
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason")))
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason")));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Invalid);
@@ -95,14 +92,13 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_invalid_all_rules_when_all_fail()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason"))
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason")));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Invalid);
@@ -113,15 +109,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_valid_any_rules()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid)
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid))
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Valid);
@@ -132,15 +127,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_valid_any_rules_when_one_fails()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid)
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason")))
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason")));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Valid);
@@ -151,14 +145,13 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_invalid_any_rules_when_all_fail()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("a reason") )
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Fail("yet another reason") ));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Invalid);
@@ -169,15 +162,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_ignore_when_all_rules_are_ignore_mode_all()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable)
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable))
                     .And(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Ignore);
@@ -188,15 +180,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_ignore_when_all_rules_are_ignore_mode_any()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var state = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable)
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable))
                     .Or(SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.NotApplicable));
 
                 // act
-                var actual = rule.Check(state, new NullGameEvent());
+                var actual = rule.Check(engine.GameState, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(RuleCheckResult.Ignore);
@@ -210,8 +201,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Sould_handle_simple_event_mode_all()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -233,8 +225,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Sould_handle_simple_event_mode_any()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -256,8 +249,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Sould_ignore_simple_event_mode_all()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -277,8 +271,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Sould_aggregate_game_states()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to1 = game.GetTile("tile-2");
@@ -308,8 +303,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Sould_throw_when_event_mode_all()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");

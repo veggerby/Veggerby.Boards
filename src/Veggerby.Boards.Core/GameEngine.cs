@@ -25,13 +25,13 @@ namespace Veggerby.Boards.Core
             if (ruleCheck.Result == RuleCheckResult.Valid)
             {
                 var newState = gamePhase.Rule.HandleEvent(GameState, @event);
+                _events.Add(@event);
+
                 if (newState.Equals(GameState))
                 {
-                    // NOOP, do not record event
+                    // NOOP, do not change state
                     return GameState;
                 }
-
-                _events.Add(@event);
 
                 GameState = newState;
             }

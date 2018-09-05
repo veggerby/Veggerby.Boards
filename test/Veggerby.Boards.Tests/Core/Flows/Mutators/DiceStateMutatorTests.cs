@@ -20,8 +20,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_update_state()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var mutator = new DiceStateMutator<int>();
                 var dice = game.GetArtifact<RegularDice>("dice");
                 var @event = new RollDiceGameEvent<int>(dice, 4);

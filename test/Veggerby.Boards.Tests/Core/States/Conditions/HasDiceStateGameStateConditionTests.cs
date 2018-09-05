@@ -70,7 +70,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
 
             public Evaluate()
             {
-                _game = new TestGameBuilder().Compile();
+                _game = new TestGameEngineBuilder().Compile().Game;
             }
 
             [Fact]

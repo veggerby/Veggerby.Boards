@@ -21,8 +21,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_update_state()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var mutator = new PieceStateMutator();
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
@@ -43,8 +44,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_throw_with_invalid_from_tile()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var mutator = new PieceStateMutator();
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);

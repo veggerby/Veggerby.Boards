@@ -74,7 +74,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
 
             public GetActiveGamePhase()
             {
-                _game = new TestGameBuilder().Compile();
+                _game = new TestGameEngineBuilder().Compile().Game;
                 _initialGameState = GameState.New(_game, null);
             }
 

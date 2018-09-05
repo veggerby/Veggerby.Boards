@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Chess;
@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess
 {
-    public class ChessGameBuilderTests
+    public class ChessGameEngineBuilderTests
     {
         private Tuple<string, string> Relation(string directionId, string tileId)
         {
@@ -20,72 +20,72 @@ namespace Veggerby.Boards.Tests.Chess
             // arrange
 
             // act
-            var actual = new ChessGameBuilder().Compile();
+            var actual = new ChessGameEngineBuilder().Compile();
 
             // assert
 
             // row 1
-            actual.ShouldHaveTileWithRelations("tile-a1",
+            actual.Game.ShouldHaveTileWithRelations("tile-a1",
                 Relation("east",       "tile-b1"),
                 Relation("south-east", "tile-b2"),
                 Relation("south",      "tile-a2"));
 
-            actual.ShouldHaveTileWithRelations("tile-b1",
+            actual.Game.ShouldHaveTileWithRelations("tile-b1",
                 Relation("east",       "tile-c1"),
                 Relation("south-east", "tile-c2"),
                 Relation("south",      "tile-b2"),
                 Relation("south-west", "tile-a2"),
                 Relation("west",       "tile-a1"));
 
-            actual.ShouldHaveTileWithRelations("tile-c1",
+            actual.Game.ShouldHaveTileWithRelations("tile-c1",
                 Relation("east",       "tile-d1"),
                 Relation("south-east", "tile-d2"),
                 Relation("south",      "tile-c2"),
                 Relation("south-west", "tile-b2"),
                 Relation("west",       "tile-b1"));
 
-            actual.ShouldHaveTileWithRelations("tile-d1",
+            actual.Game.ShouldHaveTileWithRelations("tile-d1",
                 Relation("east",       "tile-e1"),
                 Relation("south-east", "tile-e2"),
                 Relation("south",      "tile-d2"),
                 Relation("south-west", "tile-c2"),
                 Relation("west",       "tile-c1"));
 
-            actual.ShouldHaveTileWithRelations("tile-e1",
+            actual.Game.ShouldHaveTileWithRelations("tile-e1",
                 Relation("east",       "tile-f1"),
                 Relation("south-east", "tile-f2"),
                 Relation("south",      "tile-e2"),
                 Relation("south-west", "tile-d2"),
                 Relation("west",       "tile-d1"));
 
-            actual.ShouldHaveTileWithRelations("tile-f1",
+            actual.Game.ShouldHaveTileWithRelations("tile-f1",
                 Relation("east",       "tile-g1"),
                 Relation("south-east", "tile-g2"),
                 Relation("south",      "tile-f2"),
                 Relation("south-west", "tile-e2"),
                 Relation("west",       "tile-e1"));
 
-            actual.ShouldHaveTileWithRelations("tile-g1",
+            actual.Game.ShouldHaveTileWithRelations("tile-g1",
                 Relation("east",       "tile-h1"),
                 Relation("south-east", "tile-h2"),
                 Relation("south",      "tile-g2"),
                 Relation("south-west", "tile-f2"),
                 Relation("west",       "tile-f1"));
 
-            actual.ShouldHaveTileWithRelations("tile-h1",
+            actual.Game.ShouldHaveTileWithRelations("tile-h1",
                 Relation("south",      "tile-h2"),
                 Relation("south-west", "tile-g2"),
                 Relation("west",       "tile-g1"));
 
             // row 2
-            actual.ShouldHaveTileWithRelations("tile-a2",
+            actual.Game.ShouldHaveTileWithRelations("tile-a2",
                 Relation("north",      "tile-a1"),
                 Relation("north-east", "tile-b1"),
                 Relation("east",       "tile-b2"),
                 Relation("south-east", "tile-b3"),
                 Relation("south",      "tile-a3"));
 
-            actual.ShouldHaveTileWithRelations("tile-b2",
+            actual.Game.ShouldHaveTileWithRelations("tile-b2",
                 Relation("north",      "tile-b1"),
                 Relation("north-east", "tile-c1"),
                 Relation("east",       "tile-c2"),
@@ -95,7 +95,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a2"),
                 Relation("north-west", "tile-a1"));
 
-            actual.ShouldHaveTileWithRelations("tile-c2",
+            actual.Game.ShouldHaveTileWithRelations("tile-c2",
                 Relation("north",      "tile-c1"),
                 Relation("north-east", "tile-d1"),
                 Relation("east",       "tile-d2"),
@@ -105,7 +105,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b2"),
                 Relation("north-west", "tile-b1"));
 
-            actual.ShouldHaveTileWithRelations("tile-d2",
+            actual.Game.ShouldHaveTileWithRelations("tile-d2",
                 Relation("north",      "tile-d1"),
                 Relation("north-east", "tile-e1"),
                 Relation("east",       "tile-e2"),
@@ -115,7 +115,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c2"),
                 Relation("north-west", "tile-c1"));
 
-            actual.ShouldHaveTileWithRelations("tile-e2",
+            actual.Game.ShouldHaveTileWithRelations("tile-e2",
                 Relation("north",      "tile-e1"),
                 Relation("north-east", "tile-f1"),
                 Relation("east",       "tile-f2"),
@@ -125,7 +125,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d2"),
                 Relation("north-west", "tile-d1"));
 
-            actual.ShouldHaveTileWithRelations("tile-f2",
+            actual.Game.ShouldHaveTileWithRelations("tile-f2",
                 Relation("north",      "tile-f1"),
                 Relation("north-east", "tile-g1"),
                 Relation("east",       "tile-g2"),
@@ -135,7 +135,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e2"),
                 Relation("north-west", "tile-e1"));
 
-            actual.ShouldHaveTileWithRelations("tile-g2",
+            actual.Game.ShouldHaveTileWithRelations("tile-g2",
                 Relation("north",      "tile-g1"),
                 Relation("north-east", "tile-h1"),
                 Relation("east",       "tile-h2"),
@@ -145,7 +145,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f2"),
                 Relation("north-west", "tile-f1"));
 
-            actual.ShouldHaveTileWithRelations("tile-h2",
+            actual.Game.ShouldHaveTileWithRelations("tile-h2",
                 Relation("south",      "tile-h3"),
                 Relation("south-west", "tile-g3"),
                 Relation("west",       "tile-g2"),
@@ -153,14 +153,14 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h1"));
 
             // row 3
-            actual.ShouldHaveTileWithRelations("tile-a3",
+            actual.Game.ShouldHaveTileWithRelations("tile-a3",
                 Relation("north",      "tile-a2"),
                 Relation("north-east", "tile-b2"),
                 Relation("east",       "tile-b3"),
                 Relation("south-east", "tile-b4"),
                 Relation("south",      "tile-a4"));
 
-            actual.ShouldHaveTileWithRelations("tile-b3",
+            actual.Game.ShouldHaveTileWithRelations("tile-b3",
                 Relation("north",      "tile-b2"),
                 Relation("north-east", "tile-c2"),
                 Relation("east",       "tile-c3"),
@@ -170,7 +170,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a3"),
                 Relation("north-west", "tile-a2"));
 
-            actual.ShouldHaveTileWithRelations("tile-c3",
+            actual.Game.ShouldHaveTileWithRelations("tile-c3",
                 Relation("north",      "tile-c2"),
                 Relation("north-east", "tile-d2"),
                 Relation("east",       "tile-d3"),
@@ -180,7 +180,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b3"),
                 Relation("north-west", "tile-b2"));
 
-            actual.ShouldHaveTileWithRelations("tile-d3",
+            actual.Game.ShouldHaveTileWithRelations("tile-d3",
                 Relation("north",      "tile-d2"),
                 Relation("north-east", "tile-e2"),
                 Relation("east",       "tile-e3"),
@@ -190,7 +190,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c3"),
                 Relation("north-west", "tile-c2"));
 
-            actual.ShouldHaveTileWithRelations("tile-e3",
+            actual.Game.ShouldHaveTileWithRelations("tile-e3",
                 Relation("north",      "tile-e2"),
                 Relation("north-east", "tile-f2"),
                 Relation("east",       "tile-f3"),
@@ -200,7 +200,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d3"),
                 Relation("north-west", "tile-d2"));
 
-            actual.ShouldHaveTileWithRelations("tile-f3",
+            actual.Game.ShouldHaveTileWithRelations("tile-f3",
                 Relation("north",      "tile-f2"),
                 Relation("north-east", "tile-g2"),
                 Relation("east",       "tile-g3"),
@@ -210,7 +210,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e3"),
                 Relation("north-west", "tile-e2"));
 
-            actual.ShouldHaveTileWithRelations("tile-g3",
+            actual.Game.ShouldHaveTileWithRelations("tile-g3",
                 Relation("north",      "tile-g2"),
                 Relation("north-east", "tile-h2"),
                 Relation("east",       "tile-h3"),
@@ -220,7 +220,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f3"),
                 Relation("north-west", "tile-f2"));
 
-            actual.ShouldHaveTileWithRelations("tile-h3",
+            actual.Game.ShouldHaveTileWithRelations("tile-h3",
                 Relation("south",      "tile-h4"),
                 Relation("south-west", "tile-g4"),
                 Relation("west",       "tile-g3"),
@@ -228,14 +228,14 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h2"));
 
             // row 4
-            actual.ShouldHaveTileWithRelations("tile-a4",
+            actual.Game.ShouldHaveTileWithRelations("tile-a4",
                 Relation("north",      "tile-a3"),
                 Relation("north-east", "tile-b3"),
                 Relation("east",       "tile-b4"),
                 Relation("south-east", "tile-b5"),
                 Relation("south",      "tile-a5"));
 
-            actual.ShouldHaveTileWithRelations("tile-b4",
+            actual.Game.ShouldHaveTileWithRelations("tile-b4",
                 Relation("north",      "tile-b3"),
                 Relation("north-east", "tile-c3"),
                 Relation("east",       "tile-c4"),
@@ -245,7 +245,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a4"),
                 Relation("north-west", "tile-a3"));
 
-            actual.ShouldHaveTileWithRelations("tile-c4",
+            actual.Game.ShouldHaveTileWithRelations("tile-c4",
                 Relation("north",      "tile-c3"),
                 Relation("north-east", "tile-d3"),
                 Relation("east",       "tile-d4"),
@@ -255,7 +255,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b4"),
                 Relation("north-west", "tile-b3"));
 
-            actual.ShouldHaveTileWithRelations("tile-d4",
+            actual.Game.ShouldHaveTileWithRelations("tile-d4",
                 Relation("north",      "tile-d3"),
                 Relation("north-east", "tile-e3"),
                 Relation("east",       "tile-e4"),
@@ -265,7 +265,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c4"),
                 Relation("north-west", "tile-c3"));
 
-            actual.ShouldHaveTileWithRelations("tile-e4",
+            actual.Game.ShouldHaveTileWithRelations("tile-e4",
                 Relation("north",      "tile-e3"),
                 Relation("north-east", "tile-f3"),
                 Relation("east",       "tile-f4"),
@@ -275,7 +275,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d4"),
                 Relation("north-west", "tile-d3"));
 
-            actual.ShouldHaveTileWithRelations("tile-f4",
+            actual.Game.ShouldHaveTileWithRelations("tile-f4",
                 Relation("north",      "tile-f3"),
                 Relation("north-east", "tile-g3"),
                 Relation("east",       "tile-g4"),
@@ -285,7 +285,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e4"),
                 Relation("north-west", "tile-e3"));
 
-            actual.ShouldHaveTileWithRelations("tile-g4",
+            actual.Game.ShouldHaveTileWithRelations("tile-g4",
                 Relation("north",      "tile-g3"),
                 Relation("north-east", "tile-h3"),
                 Relation("east",       "tile-h4"),
@@ -295,7 +295,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f4"),
                 Relation("north-west", "tile-f3"));
 
-            actual.ShouldHaveTileWithRelations("tile-h4",
+            actual.Game.ShouldHaveTileWithRelations("tile-h4",
                 Relation("south",      "tile-h5"),
                 Relation("south-west", "tile-g5"),
                 Relation("west",       "tile-g4"),
@@ -303,14 +303,14 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h3"));
 
             // row 5
-            actual.ShouldHaveTileWithRelations("tile-a5",
+            actual.Game.ShouldHaveTileWithRelations("tile-a5",
                 Relation("north",      "tile-a4"),
                 Relation("north-east", "tile-b4"),
                 Relation("east",       "tile-b5"),
                 Relation("south-east", "tile-b6"),
                 Relation("south",      "tile-a6"));
 
-            actual.ShouldHaveTileWithRelations("tile-b5",
+            actual.Game.ShouldHaveTileWithRelations("tile-b5",
                 Relation("north",      "tile-b4"),
                 Relation("north-east", "tile-c4"),
                 Relation("east",       "tile-c5"),
@@ -320,7 +320,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a5"),
                 Relation("north-west", "tile-a4"));
 
-            actual.ShouldHaveTileWithRelations("tile-c5",
+            actual.Game.ShouldHaveTileWithRelations("tile-c5",
                 Relation("north",      "tile-c4"),
                 Relation("north-east", "tile-d4"),
                 Relation("east",       "tile-d5"),
@@ -330,7 +330,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b5"),
                 Relation("north-west", "tile-b4"));
 
-            actual.ShouldHaveTileWithRelations("tile-d5",
+            actual.Game.ShouldHaveTileWithRelations("tile-d5",
                 Relation("north",      "tile-d4"),
                 Relation("north-east", "tile-e4"),
                 Relation("east",       "tile-e5"),
@@ -340,7 +340,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c5"),
                 Relation("north-west", "tile-c4"));
 
-            actual.ShouldHaveTileWithRelations("tile-e5",
+            actual.Game.ShouldHaveTileWithRelations("tile-e5",
                 Relation("north",      "tile-e4"),
                 Relation("north-east", "tile-f4"),
                 Relation("east",       "tile-f5"),
@@ -350,7 +350,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d5"),
                 Relation("north-west", "tile-d4"));
 
-            actual.ShouldHaveTileWithRelations("tile-f5",
+            actual.Game.ShouldHaveTileWithRelations("tile-f5",
                 Relation("north",      "tile-f4"),
                 Relation("north-east", "tile-g4"),
                 Relation("east",       "tile-g5"),
@@ -360,7 +360,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e5"),
                 Relation("north-west", "tile-e4"));
 
-            actual.ShouldHaveTileWithRelations("tile-g5",
+            actual.Game.ShouldHaveTileWithRelations("tile-g5",
                 Relation("north",      "tile-g4"),
                 Relation("north-east", "tile-h4"),
                 Relation("east",       "tile-h5"),
@@ -370,7 +370,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f5"),
                 Relation("north-west", "tile-f4"));
 
-            actual.ShouldHaveTileWithRelations("tile-h5",
+            actual.Game.ShouldHaveTileWithRelations("tile-h5",
                 Relation("south",      "tile-h6"),
                 Relation("south-west", "tile-g6"),
                 Relation("west",       "tile-g5"),
@@ -378,14 +378,14 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h4"));
 
             // row 6
-            actual.ShouldHaveTileWithRelations("tile-a6",
+            actual.Game.ShouldHaveTileWithRelations("tile-a6",
                 Relation("north",      "tile-a5"),
                 Relation("north-east", "tile-b5"),
                 Relation("east",       "tile-b6"),
                 Relation("south-east", "tile-b7"),
                 Relation("south",      "tile-a7"));
 
-            actual.ShouldHaveTileWithRelations("tile-b6",
+            actual.Game.ShouldHaveTileWithRelations("tile-b6",
                 Relation("north",      "tile-b5"),
                 Relation("north-east", "tile-c5"),
                 Relation("east",       "tile-c6"),
@@ -395,7 +395,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a6"),
                 Relation("north-west", "tile-a5"));
 
-            actual.ShouldHaveTileWithRelations("tile-c6",
+            actual.Game.ShouldHaveTileWithRelations("tile-c6",
                 Relation("north",      "tile-c5"),
                 Relation("north-east", "tile-d5"),
                 Relation("east",       "tile-d6"),
@@ -405,7 +405,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b6"),
                 Relation("north-west", "tile-b5"));
 
-            actual.ShouldHaveTileWithRelations("tile-d6",
+            actual.Game.ShouldHaveTileWithRelations("tile-d6",
                 Relation("north",      "tile-d5"),
                 Relation("north-east", "tile-e5"),
                 Relation("east",       "tile-e6"),
@@ -415,7 +415,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c6"),
                 Relation("north-west", "tile-c5"));
 
-            actual.ShouldHaveTileWithRelations("tile-e6",
+            actual.Game.ShouldHaveTileWithRelations("tile-e6",
                 Relation("north",      "tile-e5"),
                 Relation("north-east", "tile-f5"),
                 Relation("east",       "tile-f6"),
@@ -425,7 +425,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d6"),
                 Relation("north-west", "tile-d5"));
 
-            actual.ShouldHaveTileWithRelations("tile-f6",
+            actual.Game.ShouldHaveTileWithRelations("tile-f6",
                 Relation("north",      "tile-f5"),
                 Relation("north-east", "tile-g5"),
                 Relation("east",       "tile-g6"),
@@ -435,7 +435,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e6"),
                 Relation("north-west", "tile-e5"));
 
-            actual.ShouldHaveTileWithRelations("tile-g6",
+            actual.Game.ShouldHaveTileWithRelations("tile-g6",
                 Relation("north",      "tile-g5"),
                 Relation("north-east", "tile-h5"),
                 Relation("east",       "tile-h6"),
@@ -445,7 +445,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f6"),
                 Relation("north-west", "tile-f5"));
 
-            actual.ShouldHaveTileWithRelations("tile-h6",
+            actual.Game.ShouldHaveTileWithRelations("tile-h6",
                 Relation("south",      "tile-h7"),
                 Relation("south-west", "tile-g7"),
                 Relation("west",       "tile-g6"),
@@ -453,14 +453,14 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h5"));
 
             // row 7
-            actual.ShouldHaveTileWithRelations("tile-a7",
+            actual.Game.ShouldHaveTileWithRelations("tile-a7",
                 Relation("north",      "tile-a6"),
                 Relation("north-east", "tile-b6"),
                 Relation("east",       "tile-b7"),
                 Relation("south-east", "tile-b8"),
                 Relation("south",      "tile-a8"));
 
-            actual.ShouldHaveTileWithRelations("tile-b7",
+            actual.Game.ShouldHaveTileWithRelations("tile-b7",
                 Relation("north",      "tile-b6"),
                 Relation("north-east", "tile-c6"),
                 Relation("east",       "tile-c7"),
@@ -470,7 +470,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-a7"),
                 Relation("north-west", "tile-a6"));
 
-            actual.ShouldHaveTileWithRelations("tile-c7",
+            actual.Game.ShouldHaveTileWithRelations("tile-c7",
                 Relation("north",      "tile-c6"),
                 Relation("north-east", "tile-d6"),
                 Relation("east",       "tile-d7"),
@@ -480,7 +480,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-b7"),
                 Relation("north-west", "tile-b6"));
 
-            actual.ShouldHaveTileWithRelations("tile-d7",
+            actual.Game.ShouldHaveTileWithRelations("tile-d7",
                 Relation("north",      "tile-d6"),
                 Relation("north-east", "tile-e6"),
                 Relation("east",       "tile-e7"),
@@ -490,7 +490,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-c7"),
                 Relation("north-west", "tile-c6"));
 
-            actual.ShouldHaveTileWithRelations("tile-e7",
+            actual.Game.ShouldHaveTileWithRelations("tile-e7",
                 Relation("north",      "tile-e6"),
                 Relation("north-east", "tile-f6"),
                 Relation("east",       "tile-f7"),
@@ -500,7 +500,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-d7"),
                 Relation("north-west", "tile-d6"));
 
-            actual.ShouldHaveTileWithRelations("tile-f7",
+            actual.Game.ShouldHaveTileWithRelations("tile-f7",
                 Relation("north",      "tile-f6"),
                 Relation("north-east", "tile-g6"),
                 Relation("east",       "tile-g7"),
@@ -510,7 +510,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-e7"),
                 Relation("north-west", "tile-e6"));
 
-            actual.ShouldHaveTileWithRelations("tile-g7",
+            actual.Game.ShouldHaveTileWithRelations("tile-g7",
                 Relation("north",      "tile-g6"),
                 Relation("north-east", "tile-h6"),
                 Relation("east",       "tile-h7"),
@@ -520,7 +520,7 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("west",       "tile-f7"),
                 Relation("north-west", "tile-f6"));
 
-            actual.ShouldHaveTileWithRelations("tile-h7",
+            actual.Game.ShouldHaveTileWithRelations("tile-h7",
                 Relation("south",      "tile-h8"),
                 Relation("south-west", "tile-g8"),
                 Relation("west",       "tile-g7"),
@@ -528,57 +528,94 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h6"));
 
             // row 8
-            actual.ShouldHaveTileWithRelations("tile-a8",
+            actual.Game.ShouldHaveTileWithRelations("tile-a8",
                 Relation("north",      "tile-a7"),
                 Relation("north-east", "tile-b7"),
                 Relation("east",       "tile-b8"));
 
-            actual.ShouldHaveTileWithRelations("tile-b8",
+            actual.Game.ShouldHaveTileWithRelations("tile-b8",
                 Relation("north",      "tile-b7"),
                 Relation("north-east", "tile-c7"),
                 Relation("east",       "tile-c8"),
                 Relation("west",       "tile-a8"),
                 Relation("north-west", "tile-a7"));
 
-            actual.ShouldHaveTileWithRelations("tile-c8",
+            actual.Game.ShouldHaveTileWithRelations("tile-c8",
                 Relation("north",      "tile-c7"),
                 Relation("north-east", "tile-d7"),
                 Relation("east",       "tile-d8"),
                 Relation("west",       "tile-b8"),
                 Relation("north-west", "tile-b7"));
 
-            actual.ShouldHaveTileWithRelations("tile-d8",
+            actual.Game.ShouldHaveTileWithRelations("tile-d8",
                 Relation("north",      "tile-d7"),
                 Relation("north-east", "tile-e7"),
                 Relation("east",       "tile-e8"),
                 Relation("west",       "tile-c8"),
                 Relation("north-west", "tile-c7"));
 
-            actual.ShouldHaveTileWithRelations("tile-e8",
+            actual.Game.ShouldHaveTileWithRelations("tile-e8",
                 Relation("north",      "tile-e7"),
                 Relation("north-east", "tile-f7"),
                 Relation("east",       "tile-f8"),
                 Relation("west",       "tile-d8"),
                 Relation("north-west", "tile-d7"));
 
-            actual.ShouldHaveTileWithRelations("tile-f8",
+            actual.Game.ShouldHaveTileWithRelations("tile-f8",
                 Relation("north",      "tile-f7"),
                 Relation("north-east", "tile-g7"),
                 Relation("east",       "tile-g8"),
                 Relation("west",       "tile-e8"),
                 Relation("north-west", "tile-e7"));
 
-            actual.ShouldHaveTileWithRelations("tile-g8",
+            actual.Game.ShouldHaveTileWithRelations("tile-g8",
                 Relation("north",      "tile-g7"),
                 Relation("north-east", "tile-h7"),
                 Relation("east",       "tile-h8"),
                 Relation("west",       "tile-f8"),
                 Relation("north-west", "tile-f7"));
 
-            actual.ShouldHaveTileWithRelations("tile-h8",
+            actual.Game.ShouldHaveTileWithRelations("tile-h8",
                 Relation("west",       "tile-g8"),
                 Relation("north-west", "tile-g7"),
                 Relation("north",      "tile-h7"));
+
+            // state
+            actual.GameState.ShouldHavePieceState("white-rook-1", "tile-a1");
+            actual.GameState.ShouldHavePieceState("white-knight-1", "tile-b1");
+            actual.GameState.ShouldHavePieceState("white-bishop-1", "tile-c1");
+            actual.GameState.ShouldHavePieceState("white-king", "tile-d1");
+            actual.GameState.ShouldHavePieceState("white-queen", "tile-e1");
+            actual.GameState.ShouldHavePieceState("white-bishop-2", "tile-f1");
+            actual.GameState.ShouldHavePieceState("white-knight-2", "tile-g1");
+            actual.GameState.ShouldHavePieceState("white-rook-2", "tile-h1");
+
+            actual.GameState.ShouldHavePieceState("white-pawn-1", "tile-a2");
+            actual.GameState.ShouldHavePieceState("white-pawn-2", "tile-b2");
+            actual.GameState.ShouldHavePieceState("white-pawn-3", "tile-c2");
+            actual.GameState.ShouldHavePieceState("white-pawn-4", "tile-d2");
+            actual.GameState.ShouldHavePieceState("white-pawn-5", "tile-e2");
+            actual.GameState.ShouldHavePieceState("white-pawn-6", "tile-f2");
+            actual.GameState.ShouldHavePieceState("white-pawn-7", "tile-g2");
+            actual.GameState.ShouldHavePieceState("white-pawn-8", "tile-h2");
+
+            actual.GameState.ShouldHavePieceState("black-pawn-1", "tile-a7");
+            actual.GameState.ShouldHavePieceState("black-pawn-2", "tile-b7");
+            actual.GameState.ShouldHavePieceState("black-pawn-3", "tile-c7");
+            actual.GameState.ShouldHavePieceState("black-pawn-4", "tile-d7");
+            actual.GameState.ShouldHavePieceState("black-pawn-5", "tile-e7");
+            actual.GameState.ShouldHavePieceState("black-pawn-6", "tile-f7");
+            actual.GameState.ShouldHavePieceState("black-pawn-7", "tile-g7");
+            actual.GameState.ShouldHavePieceState("black-pawn-8", "tile-h7");
+
+            actual.GameState.ShouldHavePieceState("black-rook-1", "tile-a8");
+            actual.GameState.ShouldHavePieceState("black-knight-1", "tile-b8");
+            actual.GameState.ShouldHavePieceState("black-bishop-1", "tile-c8");
+            actual.GameState.ShouldHavePieceState("black-king", "tile-d8");
+            actual.GameState.ShouldHavePieceState("black-queen", "tile-e8");
+            actual.GameState.ShouldHavePieceState("black-bishop-2", "tile-f8");
+            actual.GameState.ShouldHavePieceState("black-knight-2", "tile-g8");
+            actual.GameState.ShouldHavePieceState("black-rook-2", "tile-h8");
        }
     }
 }

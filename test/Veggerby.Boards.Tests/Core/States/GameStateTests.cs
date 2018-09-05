@@ -13,7 +13,7 @@ namespace Veggerby.Boards.Tests.Core.States
         public Game Game { get; }
         public GameStateTests()
         {
-            Game = new TestGameBuilder().Compile();
+            Game = new TestGameEngineBuilder().Compile().Game;
         }
 
         public class New : GameStateTests
@@ -186,8 +186,8 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_throw_comparing_different_games()
             {
                 // arrange
-                var game1 = new Boards.Backgammon.BackgammonGameBuilder().Compile();
-                var game2 = new Boards.Chess.ChessGameBuilder().Compile();
+                var game1 = new Boards.Backgammon.BackgammonGameEngineBuilder().Compile().Game;
+                var game2 = new Boards.Chess.ChessGameEngineBuilder().Compile().Game;
                 var gameState1 = GameState.New(game1, null);
                 var gameState2 = GameState.New(game2, null);
 
@@ -337,8 +337,8 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_when_game_is_different()
             {
                 // arrange
-                var game1 = new Boards.Backgammon.BackgammonGameBuilder().Compile();
-                var game2 = new Boards.Chess.ChessGameBuilder().Compile();
+                var game1 = new Boards.Backgammon.BackgammonGameEngineBuilder().Compile().Game;
+                var game2 = new Boards.Chess.ChessGameEngineBuilder().Compile().Game;
                 var gameState1 = GameState.New(game1, null);
                 var gameState2 = GameState.New(game2, null);
 
@@ -433,7 +433,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_self()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
+                var game = new TestGameEngineBuilder().Compile().Game;
                 var piece = game.GetPiece("piece-1");
                 var tile = game.GetTile("tile-1");
                 var dice = game.GetArtifact<RegularDice>("dice");

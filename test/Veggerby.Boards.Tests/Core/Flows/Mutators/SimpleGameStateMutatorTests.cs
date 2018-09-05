@@ -44,8 +44,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_mutate_simple_state()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
@@ -67,8 +68,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_return_original_when_null_artifactstate()
             {
                 // arrange
-                var game = new TestGameBuilder().Compile();
-                var initialState = new TestInitialGameStateBuilder().Compile(game);
+                var engine = new TestGameEngineBuilder().Compile();
+                var game = engine.Game;
+                var initialState = engine.GameState;
                 var @event = new NullGameEvent();
 
                 var mutator = new SimpleGameStateMutator<NullGameEvent>(e => null);

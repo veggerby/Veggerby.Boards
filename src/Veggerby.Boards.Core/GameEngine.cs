@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Core
         {
             var gamePhase = GamePhaseRoot.GetActiveGamePhase(GameState);
             var ruleCheck = gamePhase.Rule.Check(GameState, @event);
-            if (ruleCheck.Result == RuleCheckResult.Valid)
+            if (ruleCheck.Result == ConditionResult.Valid)
             {
                 var newState = gamePhase.Rule.HandleEvent(GameState, @event);
                 _events.Add(@event);
@@ -35,7 +35,7 @@ namespace Veggerby.Boards.Core
 
                 GameState = newState;
             }
-            else if (ruleCheck.Result == RuleCheckResult.Invalid)
+            else if (ruleCheck.Result == ConditionResult.Invalid)
             {
                 throw new InvalidGameEventException(@event, ruleCheck, Game, gamePhase, GameState);
             }

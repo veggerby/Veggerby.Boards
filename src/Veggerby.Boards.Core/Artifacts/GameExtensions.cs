@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Veggerby.Boards.Core.Artifacts
@@ -17,6 +18,11 @@ namespace Veggerby.Boards.Core.Artifacts
         public static T GetArtifact<T>(this Game game, string id) where T : Artifact
         {
             return game.Artifacts.OfType<T>().SingleOrDefault(x => x.Id.Equals(id));
+        }
+
+        public static IEnumerable<T> GetArtifacts<T>(this Game game) where T : Artifact
+        {
+            return game.Artifacts.OfType<T>().ToList();
         }
     }
 }

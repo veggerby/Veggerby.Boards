@@ -4,9 +4,12 @@ using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core
 {
@@ -363,11 +366,14 @@ namespace Veggerby.Boards.Core
         {
             public GamePhaseDefinitionSettings(GameEngineBuilder builder) : base(builder)
             {
+                RuleCompositeMode = CompositeMode.All;
+                ConditionFactory = game => null;
             }
 
             public int? Number { get; private set; }
-            public Func<IGameStateCondition> ConditionFactory { get; private set; }
-            public Func<IGameEventRule> RuleFactory { get; private set; }
+            public Func<Game, IGameStateCondition> ConditionFactory { get; private set; }
+            public IEnumerable<Func<Game, IGameEventRule>> RuleFactories { get; private set; }
+            public CompositeMode RuleCompositeMode { get; internal set; }
 
             public GamePhaseDefinitionSettings WithNumber(int number)
             {
@@ -377,25 +383,59 @@ namespace Veggerby.Boards.Core
 
             public GamePhaseDefinitionSettings WithCondition<T>() where T : IGameStateCondition, new()
             {
-                ConditionFactory = () => new T();
+                ConditionFactory = game => new T();
                 return this;
             }
 
-            public GamePhaseDefinitionSettings WithCondition(Func<IGameStateCondition> factory)
+            public GamePhaseDefinitionSettings WithCondition(Func<Game, IGameStateCondition> factory)
             {
                 ConditionFactory = factory ?? throw new ArgumentNullException(nameof(factory));
                 return this;
             }
 
+            private void AddRuleFactory(params Func<Game, IGameEventRule>[] factories)
+            {
+                RuleFactories = (RuleFactories ?? Enumerable.Empty<Func<Game, IGameEventRule>>()).Concat(factories).ToList();
+            }
+
             public GamePhaseDefinitionSettings WithRule<T>() where T : IGameEventRule, new()
             {
-                RuleFactory = () => new T();
+                AddRuleFactory(game => new T());
                 return this;
             }
 
-            public GamePhaseDefinitionSettings WithRule(Func<IGameEventRule> factory)
+            public GamePhaseDefinitionSettings WithRule(Func<Game, IGameEventRule> factory)
             {
-                RuleFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+                if (factory == null)
+                {
+                    throw new ArgumentNullException(nameof(factory));
+                }
+
+                AddRuleFactory(factory);
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithRule<T>(Func<GameState, T, ConditionResponse> ruleCheck, IStateMutator<T> onAfterEvent) where T : IGameEvent
+            {
+                AddRuleFactory(game => SimpleGameEventRule<T>.New(ruleCheck, null, onAfterEvent));
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithRule<T>(IStateMutator<T> onAfterEvent) where T : IGameEvent
+            {
+                WithRule((state, @event) => ConditionResponse.Valid, onAfterEvent);
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings AnyRule()
+            {
+                RuleCompositeMode = CompositeMode.Any;
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings AllRules()
+            {
+                RuleCompositeMode = CompositeMode.All;
                 return this;
             }
         }
@@ -469,12 +509,30 @@ namespace Veggerby.Boards.Core
             return artifactDefinitionSettings.Factory(artifactDefinitionSettings.ArtifactId);
         }
 
-        private GamePhase CreateGamePhase(int number, GamePhaseDefinitionSettings gamePhaseDefinitionSettings, CompositeGamePhase parent)
+        private GamePhase CreateGamePhase(int number, GamePhaseDefinitionSettings gamePhaseDefinitionSettings, CompositeGamePhase parent, Game game)
         {
+            IGameEventRule rule = null;
+
+            if (gamePhaseDefinitionSettings.RuleFactories == null || !gamePhaseDefinitionSettings.RuleFactories.Any())
+            {
+                throw new ArgumentException("There must be at least one rule defined", nameof(gamePhaseDefinitionSettings));
+            }
+
+            if (gamePhaseDefinitionSettings.RuleFactories.Count() == 1)
+            {
+                rule = gamePhaseDefinitionSettings.RuleFactories.Single()(game);
+            }
+            else
+            {
+                rule = CompositeGameEventRule.CreateCompositeRule(
+                    gamePhaseDefinitionSettings.RuleCompositeMode,
+                    gamePhaseDefinitionSettings.RuleFactories.Select(factory => factory(game)).ToArray());
+            }
+
             return GamePhase.New(
                 gamePhaseDefinitionSettings.Number ?? number,
-                gamePhaseDefinitionSettings.ConditionFactory(),
-                gamePhaseDefinitionSettings.RuleFactory(),
+                gamePhaseDefinitionSettings.ConditionFactory(game) ?? new NullGameStateCondition(),
+                rule,
                 parent);
         }
 
@@ -557,7 +615,7 @@ namespace Veggerby.Boards.Core
 
         #region GamePhase Root builder
 
-        protected GamePhaseDefinitionSettings AddGamePhase()
+        protected GamePhaseDefinitionSettings AddGamePhase(string label) // label not used for anything, just to document in builder
         {
             var gamePhase = new GamePhaseDefinitionSettings(this);
             _gamePhaseDefinitions.Add(gamePhase);
@@ -612,12 +670,12 @@ namespace Veggerby.Boards.Core
 
             if (_gamePhaseDefinitions.Any())
             {
-                var parent = GamePhase.NewParent(0, null, null);
+                var parent = GamePhase.NewParent(1, null, null);
 
                 var number = 1;
                 foreach (var gamePhaseDefinition in _gamePhaseDefinitions)
                 {
-                    var phase = CreateGamePhase(number, gamePhaseDefinition, parent);
+                    var phase = CreateGamePhase(number, gamePhaseDefinition, parent, game);
                     number = Math.Max(number, gamePhaseDefinition.Number ?? number) + 1;
                 }
 
@@ -625,7 +683,7 @@ namespace Veggerby.Boards.Core
             }
             else
             {
-                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition());
+                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.NotApplicable));
             }
 
             // combine

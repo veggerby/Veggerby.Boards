@@ -25,9 +25,14 @@ namespace Veggerby.Boards.Core.Flows.Phases
                 throw new ArgumentNullException(nameof(condition));
             }
 
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
+
             Number = number;
             Condition = condition;
-            Rule = rule ?? SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
+            Rule = rule;
 
             Parent = parent;
             parent?.Add(this);
@@ -35,10 +40,10 @@ namespace Veggerby.Boards.Core.Flows.Phases
 
         public virtual GamePhase GetActiveGamePhase(GameState gameState)
         {
-            return Condition.Evaluate(gameState) ? this : null;
+            return Condition.Evaluate(gameState).Equals(ConditionResponse.Valid) ? this : null;
         }
 
-        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule = null, CompositeGamePhase parent = null)
+        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null)
         {
             return new GamePhase(number, condition, rule, parent);
         }

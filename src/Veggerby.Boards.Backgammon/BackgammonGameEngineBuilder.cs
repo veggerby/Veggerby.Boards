@@ -1,4 +1,8 @@
 ﻿using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Mutators;
+using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Backgammon
@@ -96,6 +100,13 @@ namespace Veggerby.Boards.Backgammon
             WithPiece("black-13").OnTile("point-6");
             WithPiece("black-14").OnTile("point-6");
             WithPiece("black-15").OnTile("point-6");
+
+            AddGamePhase("dice has been rolled")
+                .WithCondition(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
+                .WithRule(new PieceStateMutator());
+
+            AddGamePhase("default => need to roll dice")
+                .WithRule(new DiceStateMutator<int>());
         }
     }
 }

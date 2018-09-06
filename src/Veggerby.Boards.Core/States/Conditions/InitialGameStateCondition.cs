@@ -2,9 +2,9 @@
 {
     public class InitialGameStateCondition : IGameStateCondition
     {
-        public bool Evaluate(GameState state)
+        public ConditionResponse Evaluate(GameState state)
         {
-            return state.IsInitialState;
+            return state.IsInitialState ? ConditionResponse.Valid : ConditionResponse.Invalid;
         }
     }
 }

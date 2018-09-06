@@ -1,7 +1,9 @@
 using Shouldly;
 using System;
 using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Phases;
+using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -20,7 +22,7 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
                 var state = GameState.New(game, null);
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition());
+                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), SimpleGameEventRule<IGameEvent>.New((s, e) => ConditionResponse.Valid));
 
                 // act
                 var actual = GameEngine.New(state, gamePhaseRoot);
@@ -37,7 +39,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_throw_with_null_state()
             {
                 // arrange
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition());
+                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), SimpleGameEventRule<IGameEvent>.New((s, e) => ConditionResponse.Valid));
 
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => GameEngine.New(null, gamePhaseRoot));
@@ -53,7 +55,7 @@ namespace Veggerby.Boards.Tests.Core
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
                 var state = GameState.New(game, null).Next(null);
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition());
+                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), SimpleGameEventRule<IGameEvent>.New((s, e) => ConditionResponse.Valid));
 
                 // act
                 var actual = Should.Throw<ArgumentException>(() => GameEngine.New(state, gamePhaseRoot));

@@ -1,55 +1,62 @@
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.Fakes
 {
     public class TestGameEngineBuilder : GameEngineBuilder
     {
+        private readonly bool _useSimpleGamePhase;
+
+        public TestGameEngineBuilder(bool useSimpleGamePhase = true)
+        {
+            _useSimpleGamePhase = useSimpleGamePhase;
+        }
+
         protected override void Build()
         {
-            // Game
+            // Game + state
+
             BoardId = "test";
 
-            AddDiceDefinition("dice");
-            AddDiceDefinition("dice-secondary");
+            AddDice("dice").HasNoValue();
+            AddDice("dice-secondary").HasValue(4);
 
-            AddPlayerDefinition("player-1");
-            AddPlayerDefinition("player-2");
+            AddPlayer("player-1");
+            AddPlayer("player-2");
 
-            AddTileDefinition("tile-1");
-            AddTileDefinition("tile-2");
-            AddTileDefinition("tile-3");
 
-            AddPieceDefinition("piece-1", "player-1");
-            AddPieceDefinition("piece-2", "player-2");
-            AddPieceDefinition("piece-n");
-            AddPieceDefinition("piece-x");
-            AddPieceDefinition("piece-y");
+            AddDirection("clockwise");
+            AddDirection("counterclockwise");
+            AddDirection("up");
 
-            AddDirectionDefinition("clockwise");
-            AddDirectionDefinition("counterclockwise");
-            AddDirectionDefinition("up");
+            AddTile("tile-1").WithRelationTo("tile-2").InDirection("clockwise");
+            AddTile("tile-2").WithRelationTo("tile-1").InDirection("counterclockwise");
+            AddTile("tile-3").WithRelationFrom("tile-1").InDirection("up");
 
-            AddTileRelationDefinition("tile-1", "tile-2", "clockwise");
-            AddTileRelationDefinition("tile-2", "tile-1", "counterclockwise");
-            AddTileRelationDefinition("tile-1", "tile-3", "up");
+            AddPiece("piece-1").WithOwner("player-1").HasDirection("clockwise").CanRepeat().OnTile("tile-1");
+            AddPiece("piece-2").WithOwner("player-2").HasDirection("counterclockwise").DoesNotRepeat().OnTile("tile-2");
+            AddPiece("piece-n").OnTile("tile-1");
+            AddPiece("piece-x")
+                .HasDirection("clockwise").CanRepeat()
+                .HasDirection("counterclockwise").CanRepeat();
+            AddPiece("piece-y")
+                .HasDirection("clockwise").DoesNotRepeat()
+                .HasDirection("counterclockwise").DoesNotRepeat();
 
-            AddPieceDirectionPatternDefinition("piece-1", true, "clockwise");
-            AddPieceDirectionPatternDefinition("piece-2", false, "counterclockwise");
-            AddPieceDirectionPatternDefinition("piece-n", true);
-            AddPieceDirectionPatternDefinition("piece-x", true, "clockwise", "counterclockwise");
-            AddPieceDirectionPatternDefinition("piece-y", false, "clockwise", "counterclockwise");
+            AddArtifact("artifact-x").WithFactory(id => new TestArtifact(id));
 
-            AddArtifactDefinition<TestArtifact>("artifact-x", id => new TestArtifact(id));
+            // game phase
 
-            // initial state state
-            AddNullDice("dice");
-            AddDiceValue("dice-secondary", 4);
-
-            AddPieceOnTile("piece-1", "tile-1");
-            AddPieceOnTile("piece-2", "tile-2");
-            AddPieceOnTile("piece-n", "tile-1");
+            if (!_useSimpleGamePhase)
+            {
+                AddGamePhase()
+                    .WithCondition<InitialGameStateCondition>()
+                    .WithRule(() => SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid));
+            }
         }
     }
 }

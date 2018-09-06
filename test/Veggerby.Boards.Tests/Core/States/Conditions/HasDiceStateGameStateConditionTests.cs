@@ -20,7 +20,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
 
                 // act
-                var actual = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var actual = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // assert
                 actual.Dice.ShouldBe(new[] { dice });
@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
 
                 // act
-                var actual = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice, dice });
+                var actual = new DiceGameStateCondition<RegularDice, int>(new[] { dice, dice });
 
                 // assert
                 actual.Dice.ShouldBe(new[] { dice });
@@ -46,7 +46,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new HasDiceStateGameStateCondition<RegularDice, int>(null));
+                var actual = Should.Throw<ArgumentNullException>(() => new DiceGameStateCondition<RegularDice, int>(null));
 
                 // assert
                 actual.ParamName.ShouldBe("dice");
@@ -57,7 +57,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new HasDiceStateGameStateCondition<RegularDice, int>(Enumerable.Empty<RegularDice>()));
+                var actual = Should.Throw<ArgumentException>(() => new DiceGameStateCondition<RegularDice, int>(Enumerable.Empty<RegularDice>()));
 
                 // assert
                 actual.ParamName.ShouldBe("dice");
@@ -80,7 +80,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var diceState = new DiceState<int>(dice, 5);
                 var gameState = GameState.New(_game, new [] { diceState });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -95,7 +95,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice = new RegularDice("dice");
                 var gameState = GameState.New(_game, null);
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -112,7 +112,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new RegularDice("dice2");
                 var diceState = new DiceState<int>(dice1, 5);
                 var gameState = GameState.New(_game, new [] { diceState });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice2 });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice2 });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -128,7 +128,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new RegularDice("dice");
                 var diceState = new NullDiceState<int>(dice);
                 var gameState = GameState.New(_game, new [] { diceState });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -146,7 +146,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var diceState1 = new DiceState<int>(dice1, 2);
                 var diceState2 = new DiceState<int>(dice2, 3);
                 var gameState = GameState.New(_game, new [] { diceState1, diceState2 });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -163,7 +163,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new RegularDice("dice2");
                 var diceState1 = new DiceState<int>(dice1, 2);
                 var gameState = GameState.New(_game, new [] { diceState1 });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -182,7 +182,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var diceState1 = new NullDiceState<int>(dice1);
                 var diceState2 = new NullDiceState<int>(dice2);
                 var gameState = GameState.New(_game, new [] { diceState1, diceState2 });
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
 
                 // act
                 var actual = condition.Evaluate(gameState);
@@ -198,7 +198,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new RegularDice("dice1");
                 var dice2 = new RegularDice("dice2");
                 var gameState = GameState.New(_game, null);
-                var condition = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
+                var condition = new DiceGameStateCondition<RegularDice, int>(new[] { dice1, dice2 });
 
                 // act
                 var actual = condition.Evaluate(gameState);

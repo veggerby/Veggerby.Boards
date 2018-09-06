@@ -154,7 +154,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var root = GamePhase.NewParent(1);
                 var group1 = GamePhase.NewParent(1, null, root);
                 var group2 = GamePhase.NewParent(2, new NullGameStateCondition(false), root);
-                var group3 = GamePhase.NewParent(3, new InitialStateGamePhaseCondition(), root);
+                var group3 = GamePhase.NewParent(3, new InitialGameStateCondition(), root);
 
                 var child11 = GamePhase.New(1, new NullGameStateCondition(false), null, group1);
                 var child12 = GamePhase.New(2, new NullGameStateCondition(false), null, group1);

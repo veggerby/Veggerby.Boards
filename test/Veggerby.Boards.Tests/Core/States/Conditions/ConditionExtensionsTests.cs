@@ -18,8 +18,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // act
                 var actual = condition1.And(condition2);
@@ -35,8 +35,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -53,8 +53,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -77,8 +77,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
 
                 // act
                 var actual = condition1.Or(condition2);
@@ -94,8 +94,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -112,8 +112,8 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new RegularDice("dice");
-                var condition1 = new InitialStateGamePhaseCondition();
-                var condition2 = new HasDiceStateGameStateCondition<RegularDice, int>(new[] { dice });
+                var condition1 = new InitialGameStateCondition();
+                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice });
                 var condition3 = new NullGameStateCondition();
 
                 // act

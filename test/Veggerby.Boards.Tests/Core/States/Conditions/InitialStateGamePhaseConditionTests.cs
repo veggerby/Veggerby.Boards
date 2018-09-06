@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var game = new TestGameEngineBuilder().Compile().Game;
                 var state = GameState.New(game, null);
 
-                var condition = new InitialStateGamePhaseCondition();
+                var condition = new InitialGameStateCondition();
 
                 // act
                 var actual = condition.Evaluate(state);
@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var game = new TestGameEngineBuilder().Compile().Game;
                 var state = GameState.New(game, null).Next(null);
 
-                var condition = new InitialStateGamePhaseCondition();
+                var condition = new InitialGameStateCondition();
 
                 // act
                 var actual = condition.Evaluate(state);

@@ -5,71 +5,400 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Phases;
+using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core
 {
     public abstract class GameEngineBuilder
     {
-        #region Game Builder
-        private class TileDefinitionSettings
+        public abstract class DefinitionSettingsBase
         {
-            public string TileId { get; set; }
-        }
+            protected GameEngineBuilder Builder { get; }
 
-        private class PlayerDefinitionSettings
-        {
-            public string PlayerId { get; set; }
-        }
-
-        private class DirectionDefinitionSettings
-        {
-            public string DirectionId { get; set; }
-        }
-
-        private class DiceDefinitionSettings
-        {
-            public string DiceId { get; set; }
-        }
-
-        private class TileRelationDefinitionSettings
-        {
-            public string SourceTileId { get; set; }
-            public string DestinationTileId { get; set; }
-            public string DirectionId { get; set; }
-        }
-
-        private class PieceDefinitionSettings
-        {
-            public string PieceId { get; set; }
-            public string PlayerId { get; set; }
-        }
-
-        private class PieceDirectionPatternDefinitionSettings
-        {
-            public string PieceId { get; set; }
-            public bool IsRepeatable { get; set; }
-            public string[] DirectionIds { get; set; }
-        }
-
-        private interface IArtifactDefinition
-        {
-            string ArtifactId { get; }
-            Artifact Create();
-        }
-
-        private class ArtifactDefinition<T> : IArtifactDefinition where T : Artifact
-        {
-            public string ArtifactId { get; set; }
-
-            public Func<string, T> New { get; set; }
-
-            public Artifact Create()
+            public DefinitionSettingsBase(GameEngineBuilder builder)
             {
-                return New(ArtifactId);
+                if (builder == null)
+                {
+                    throw new ArgumentNullException(nameof(builder));
+                }
+
+                Builder = builder;
             }
         }
 
+        #region Game Builder
+        public class TileDefinitionSettings : DefinitionSettingsBase
+        {
+            public TileDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string TileId { get; private set; }
+
+            public TileDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                TileId = id;
+                return this;
+            }
+
+            public TileRelationDefinitionSettings WithRelationTo(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                var relation = new TileRelationDefinitionSettings(Builder, this)
+                    .FromTile(this.TileId)
+                    .ToTile(id);
+
+                Builder._tileRelationDefinitions.Add(relation);
+                return relation;
+            }
+
+
+            public TileRelationDefinitionSettings WithRelationFrom(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                var relation = new TileRelationDefinitionSettings(Builder, this)
+                    .FromTile(id)
+                    .ToTile(this.TileId);
+
+                Builder._tileRelationDefinitions.Add(relation);
+                return relation;
+            }
+        }
+
+        public class PlayerDefinitionSettings : DefinitionSettingsBase
+        {
+            public PlayerDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string PlayerId { get; private set; }
+
+            public PlayerDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                PlayerId = id;
+                return this;
+            }
+        }
+
+        public class DirectionDefinitionSettings : DefinitionSettingsBase
+        {
+            public DirectionDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string DirectionId { get; private set; }
+
+            public DirectionDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                DirectionId = id;
+                return this;
+            }
+        }
+
+        public class DiceDefinitionSettings : DefinitionSettingsBase
+        {
+            public DiceDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string DiceId { get; private set; }
+
+            public DiceDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                DiceId = id;
+                return this;
+            }
+
+            public DiceDefinitionSettings HasNoValue()
+            {
+                Builder._diceState.Add(DiceId, null);
+                return this;
+            }
+
+            public DiceDefinitionSettings HasValue(int value)
+            {
+                Builder._diceState.Add(DiceId, value);
+                return this;
+            }
+        }
+
+        public class TileRelationDefinitionSettings : DefinitionSettingsBase
+        {
+            private readonly TileDefinitionSettings _tileDefintion;
+
+            public TileRelationDefinitionSettings(GameEngineBuilder builder, TileDefinitionSettings tileDefintion) : base(builder)
+            {
+                _tileDefintion = tileDefintion;
+            }
+
+            public string FromTileId { get; private set; }
+            public string ToTileId { get; private set; }
+            public string DirectionId { get; private set; }
+            public int Distance { get; private set; }
+
+            public TileRelationDefinitionSettings FromTile(string from)
+            {
+                if (string.IsNullOrEmpty(from))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(from));
+                }
+
+                FromTileId = from;
+                return this;
+            }
+
+            public TileRelationDefinitionSettings ToTile(string to)
+            {
+                if (string.IsNullOrEmpty(to))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(to));
+                }
+
+                ToTileId = to;
+                return this;
+            }
+
+            public TileRelationDefinitionSettings InDirection(string direction)
+            {
+                if (string.IsNullOrEmpty(direction))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(direction));
+                }
+
+                DirectionId = direction;
+                return this;
+            }
+
+            public TileRelationDefinitionSettings WithDistance(int distance)
+            {
+                Distance = distance;
+                return this;
+            }
+
+            public TileDefinitionSettings Done()
+            {
+                return _tileDefintion;
+            }
+        }
+
+        public class PieceDefinitionSettings : DefinitionSettingsBase
+        {
+            public PieceDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string PieceId { get; private set; }
+            public string PlayerId { get; private set; }
+
+            public PieceDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                PieceId = id;
+                return this;
+            }
+
+            public PieceDefinitionSettings WithOwner(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                PlayerId = id;
+                return this;
+            }
+
+            public PieceDefinitionSettings OnTile(string tileId)
+            {
+                if (string.IsNullOrEmpty(tileId))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(tileId));
+                }
+
+                Builder._piecePositions.Add(PieceId, tileId);
+                return this;
+            }
+
+            public PieceDirectionPatternDefinitionSettings HasDirection(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                var direction = new PieceDirectionPatternDefinitionSettings(Builder, this).WithDirection(id);
+                Builder._pieceDirectionPatternDefinitions.Add(direction);
+                return direction;
+            }
+
+            public PieceDefinitionSettings HasPattern(params string[] ids)
+            {
+                var direction = new PieceDirectionPatternDefinitionSettings(Builder, this).WithDirection(ids);
+                Builder._pieceDirectionPatternDefinitions.Add(direction);
+                return this;
+            }
+        }
+
+        public class PieceDirectionPatternDefinitionSettings : DefinitionSettingsBase
+        {
+            private readonly PieceDefinitionSettings _pieceDefinition;
+
+            public PieceDirectionPatternDefinitionSettings(GameEngineBuilder builder, PieceDefinitionSettings pieceDefinition) : base(builder)
+            {
+                _pieceDefinition = pieceDefinition;
+                IsRepeatable = false;
+            }
+
+            public string PieceId => _pieceDefinition.PieceId;
+            public bool IsRepeatable { get; private set; }
+            public IEnumerable<string> DirectionIds { get; private set; }
+
+            public PieceDefinitionSettings CanRepeat()
+            {
+                IsRepeatable = true;
+                return _pieceDefinition;
+            }
+
+            public PieceDefinitionSettings DoesNotRepeat()
+            {
+                IsRepeatable = false;
+                return _pieceDefinition;
+            }
+
+            public PieceDirectionPatternDefinitionSettings WithDirection(params string[] directions)
+            {
+                if (directions == null)
+                {
+                    throw new ArgumentNullException(nameof(directions));
+                }
+
+                if (!directions.Any())
+                {
+                    throw new ArgumentException("Must provide at least one direction", nameof(directions));
+                }
+
+                if (directions.Any(x => string.IsNullOrEmpty(x)))
+                {
+                    throw new ArgumentException("All directions must be non-null and non-empty", nameof(directions));
+                }
+
+                DirectionIds = (DirectionIds ?? Enumerable.Empty<string>()).Concat(directions).ToList();
+                return this;
+            }
+
+            public PieceDefinitionSettings Done()
+            {
+                return _pieceDefinition;
+            }
+        }
+
+        public class ArtifactDefinitionSettings : DefinitionSettingsBase
+        {
+            public ArtifactDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public string ArtifactId { get; private set; }
+
+            public Func<string, Artifact> Factory { get; private set; }
+
+            public ArtifactDefinitionSettings WithId(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Value cannot be null or empty", nameof(id));
+                }
+
+                ArtifactId = id;
+                return this;
+            }
+
+            public ArtifactDefinitionSettings OfType<T>() where T : Artifact, new()
+            {
+                Factory = id => new T();
+                return this;
+            }
+
+            public ArtifactDefinitionSettings WithFactory<T>(Func<string, T> factory) where T : Artifact
+            {
+                Factory = factory ?? throw new ArgumentNullException(nameof(factory));
+                return this;
+            }
+        }
+
+        public class GamePhaseDefinitionSettings : DefinitionSettingsBase
+        {
+            public GamePhaseDefinitionSettings(GameEngineBuilder builder) : base(builder)
+            {
+            }
+
+            public int? Number { get; private set; }
+            public Func<IGameStateCondition> ConditionFactory { get; private set; }
+            public Func<IGameEventRule> RuleFactory { get; private set; }
+
+            public GamePhaseDefinitionSettings WithNumber(int number)
+            {
+                Number = number;
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithCondition<T>() where T : IGameStateCondition, new()
+            {
+                ConditionFactory = () => new T();
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithCondition(Func<IGameStateCondition> factory)
+            {
+                ConditionFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithRule<T>() where T : IGameEventRule, new()
+            {
+                RuleFactory = () => new T();
+                return this;
+            }
+
+            public GamePhaseDefinitionSettings WithRule(Func<IGameEventRule> factory)
+            {
+                RuleFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+                return this;
+            }
+        }
 
         protected string BoardId { get; set; }
         private readonly IList<PlayerDefinitionSettings> _playerDefinitions = new List<PlayerDefinitionSettings>();
@@ -79,7 +408,8 @@ namespace Veggerby.Boards.Core
         private readonly IList<TileRelationDefinitionSettings> _tileRelationDefinitions = new List<TileRelationDefinitionSettings>();
         private readonly IList<PieceDefinitionSettings> _pieceDefinitions = new List<PieceDefinitionSettings>();
         private readonly IList<PieceDirectionPatternDefinitionSettings> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinitionSettings>();
-        private readonly IList<IArtifactDefinition> _artifactDefinitions = new List<IArtifactDefinition>();
+        private readonly IList<ArtifactDefinitionSettings> _artifactDefinitions = new List<ArtifactDefinitionSettings>();
+        private readonly IList<GamePhaseDefinitionSettings> _gamePhaseDefinitions = new List<GamePhaseDefinitionSettings>();
 
         private Tile CreateTile(TileDefinitionSettings tileDefinitionSettings)
         {
@@ -93,8 +423,8 @@ namespace Veggerby.Boards.Core
 
         private TileRelation CreateTileRelaton(TileRelationDefinitionSettings tileRelationDefinitionSettings, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
         {
-            var sourceTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.SourceTileId));
-            var destinationTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.DestinationTileId));
+            var sourceTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.FromTileId));
+            var destinationTile = tiles.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.ToTileId));
             var direction = directions.Single(x => string.Equals(x.Id, tileRelationDefinitionSettings.DirectionId));
             return new TileRelation(sourceTile, destinationTile, direction);
         }
@@ -134,43 +464,85 @@ namespace Veggerby.Boards.Core
                 : (IPattern)new FixedPattern(patternDirections);
         }
 
-        protected void AddPlayerDefinition(string playerId)
+        private Artifact CreateArtifact(ArtifactDefinitionSettings artifactDefinitionSettings)
         {
-            _playerDefinitions.Add(new PlayerDefinitionSettings { PlayerId = playerId });
+            return artifactDefinitionSettings.Factory(artifactDefinitionSettings.ArtifactId);
         }
 
-        protected void AddTileDefinition(string tileId)
+        private GamePhase CreateGamePhase(int number, GamePhaseDefinitionSettings gamePhaseDefinitionSettings, CompositeGamePhase parent)
         {
-            _tileDefinitions.Add(new TileDefinitionSettings { TileId = tileId });
-        }
-        protected void AddDirectionDefinition(string directionId)
-        {
-            _directionDefinitions.Add(new DirectionDefinitionSettings { DirectionId = directionId });
-        }
-
-        protected void AddTileRelationDefinition(string sourceTileId, string destinationTileId, string directionId)
-        {
-            _tileRelationDefinitions.Add(new TileRelationDefinitionSettings { SourceTileId = sourceTileId, DestinationTileId = destinationTileId, DirectionId = directionId });
+            return GamePhase.New(
+                gamePhaseDefinitionSettings.Number ?? number,
+                gamePhaseDefinitionSettings.ConditionFactory(),
+                gamePhaseDefinitionSettings.RuleFactory(),
+                parent);
         }
 
-        protected void AddDiceDefinition(string diceId)
+        protected PlayerDefinitionSettings AddPlayer(string playerId)
         {
-            _diceDefinitions.Add(new DiceDefinitionSettings { DiceId = diceId });
+            var player = new PlayerDefinitionSettings(this).WithId(playerId);
+            _playerDefinitions.Add(player);
+            return player;
         }
 
-        protected void AddPieceDirectionPatternDefinition(string pieceId, bool isRepeatable, params string[] directions)
+        protected PlayerDefinitionSettings WithPlayer(string playerId)
         {
-            _pieceDirectionPatternDefinitions.Add(new PieceDirectionPatternDefinitionSettings { PieceId = pieceId, IsRepeatable = isRepeatable, DirectionIds = directions });
+            return _playerDefinitions.Single(x => string.Equals(x.PlayerId, playerId));
         }
 
-        protected void AddPieceDefinition(string pieceId, string playerId = null)
+        protected TileDefinitionSettings AddTile(string tileId)
         {
-            _pieceDefinitions.Add(new PieceDefinitionSettings { PieceId = pieceId, PlayerId = playerId });
+            var tile = new TileDefinitionSettings(this).WithId(tileId);
+            _tileDefinitions.Add(tile);
+            return tile;
         }
 
-        protected void AddArtifactDefinition<T>(string artifactId, Func<string, T> ctor) where T : Artifact
+        protected TileDefinitionSettings WithTile(string tileId)
         {
-            _artifactDefinitions.Add(new ArtifactDefinition<T> { ArtifactId = artifactId, New = ctor });
+            return _tileDefinitions.Single(x => string.Equals(x.TileId, tileId));
+        }
+
+        protected DirectionDefinitionSettings AddDirection(string directionId)
+        {
+            var direction = new DirectionDefinitionSettings(this).WithId(directionId);
+            _directionDefinitions.Add(direction);
+            return direction;
+        }
+
+        protected DiceDefinitionSettings AddDice(string diceId)
+        {
+            var dice = new DiceDefinitionSettings(this).WithId(diceId);
+            _diceDefinitions.Add(dice);
+            return dice;
+        }
+
+        protected DiceDefinitionSettings WithDice(string diceId)
+        {
+            return _diceDefinitions.Single(x => string.Equals(x.DiceId, diceId));
+        }
+
+        protected PieceDefinitionSettings AddPiece(string pieceId)
+        {
+            var piece = new PieceDefinitionSettings(this).WithId(pieceId);
+            _pieceDefinitions.Add(piece);
+            return piece;
+        }
+
+        protected PieceDefinitionSettings WithPiece(string pieceId)
+        {
+            return _pieceDefinitions.Single(x => string.Equals(x.PieceId, pieceId));
+        }
+
+        protected ArtifactDefinitionSettings AddArtifact(string artifactId)
+        {
+            var artifact = new ArtifactDefinitionSettings(this).WithId(artifactId);
+            _artifactDefinitions.Add(artifact);
+            return artifact;
+        }
+
+        protected ArtifactDefinitionSettings WithArtifact(string artifactId)
+        {
+            return _artifactDefinitions.Single(x => string.Equals(x.ArtifactId, artifactId));
         }
 
         #endregion
@@ -181,19 +553,15 @@ namespace Veggerby.Boards.Core
 
         private IDictionary<string, string> _piecePositions = new Dictionary<string, string>();
 
-        protected void AddNullDice(string diceId)
-        {
-            _diceState.Add(diceId, null);
-        }
+        #endregion
 
-        protected void AddDiceValue(string diceId, int value)
-        {
-            _diceState.Add(diceId, value);
-        }
+        #region GamePhase Root builder
 
-        protected void AddPieceOnTile(string pieceId, string tileId)
+        protected GamePhaseDefinitionSettings AddGamePhase()
         {
-            _piecePositions.Add(pieceId, tileId);
+            var gamePhase = new GamePhaseDefinitionSettings(this);
+            _gamePhaseDefinitions.Add(gamePhase);
+            return gamePhase;
         }
 
         #endregion
@@ -219,7 +587,7 @@ namespace Veggerby.Boards.Core
             var dice = _diceDefinitions.Select(CreateDice).ToArray();
             var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
             var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
-            var artifacts = _artifactDefinitions.Select(x => x.Create()).ToArray();
+            var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToArray();
 
             var board = new Board(BoardId, relations);
             var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
@@ -240,7 +608,25 @@ namespace Veggerby.Boards.Core
 
             // compile GamePhase root
 
-            var gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition());
+            GamePhase gamePhaseRoot = null;
+
+            if (_gamePhaseDefinitions.Any())
+            {
+                var parent = GamePhase.NewParent(0, null, null);
+
+                var number = 1;
+                foreach (var gamePhaseDefinition in _gamePhaseDefinitions)
+                {
+                    var phase = CreateGamePhase(number, gamePhaseDefinition, parent);
+                    number = Math.Max(number, gamePhaseDefinition.Number ?? number) + 1;
+                }
+
+                gamePhaseRoot = parent;
+            }
+            else
+            {
+                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition());
+            }
 
             // combine
             _gameEngine = GameEngine.New(initialGameState, gamePhaseRoot);

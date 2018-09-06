@@ -31,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => SimpleGameEventRule<NullGameEvent>.New(null));
+                var actual = Should.Throw<ArgumentNullException>(() => SimpleGameEventRule<NullGameEvent>.New((Func<GameState, NullGameEvent, ConditionResponse>)null));
 
                 // assert
                 actual.ParamName.ShouldBe("handler");

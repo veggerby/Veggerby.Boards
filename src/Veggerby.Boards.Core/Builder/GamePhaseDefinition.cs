@@ -1,5 +1,6 @@
 ﻿using System;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Builder
@@ -8,11 +9,12 @@ namespace Veggerby.Boards.Core.Builder
     {
         public GamePhaseDefinition(GameEngineBuilder builder) : base(builder)
         {
+            RuleDefinitions = new GameEventRuleDefinitions(Builder, this);
         }
 
         public int? Number { get; private set; }
         public GamePhaseConditionDefinition ConditionDefinition { get; private set; }
-        public GameEventRuleDefinition RuleDefinition { get; private set; }
+        public GameEventRuleDefinitions RuleDefinitions { get; }
 
         public GamePhaseDefinition WithNumber(int number)
         {
@@ -26,10 +28,15 @@ namespace Veggerby.Boards.Core.Builder
             return ConditionDefinition;
         }
 
-        public GameEventRuleDefinition Then()
+        public GamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new()
         {
-            RuleDefinition = new GameEventRuleDefinition(Builder, this);
-            return RuleDefinition;
+            ConditionDefinition = new GamePhaseConditionDefinition(Builder, this).If<T>();
+            return ConditionDefinition;
+        }
+
+        public GameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent
+        {
+            return RuleDefinitions.ForEvent<T>();
         }
     }
 }

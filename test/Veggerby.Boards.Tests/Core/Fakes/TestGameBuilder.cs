@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States.Conditions;
 
@@ -54,8 +56,17 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             if (!_useSimpleGamePhase)
             {
                 AddGamePhase("just a simple phase")
-                    .WithCondition<InitialGameStateCondition>()
-                    .WithRule(game => SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid));
+                    .If<InitialGameStateCondition>()
+                    .And(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
+                    .ForEvent<RollDiceGameEvent<int>>()
+                        .If(() => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))
+                        .Or(() => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.NotApplicable))
+                        .DoBefore<DiceStateMutator<int>>()
+                        .Do<DiceStateMutator<int>>()
+                    .AndEvent<MovePieceGameEvent>()
+                        .If(() => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid))
+                        .Or(() => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable))
+                        .Do<PieceStateMutator>();
             }
         }
     }

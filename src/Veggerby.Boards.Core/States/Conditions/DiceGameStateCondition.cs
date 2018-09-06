@@ -23,6 +23,11 @@ namespace Veggerby.Boards.Core.States.Conditions
                 throw new ArgumentException("Dice list cannot be empty", nameof(dice));
             }
 
+            if (dice.Any(x => x == null))
+            {
+                throw new ArgumentException("All dice must be non null", nameof(dice));
+            }
+
             Dice = dice.Distinct().ToList().AsReadOnly();
         }
 

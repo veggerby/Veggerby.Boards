@@ -18,7 +18,7 @@ namespace Veggerby.Boards.Core
 
         private readonly IList<IGameEvent> _events = new List<IGameEvent>();
 
-/*        public GameState HandleEvent(IGameEvent @event)
+        public GameState HandleEvent(IGameEvent @event)
         {
             var gamePhase = GamePhaseRoot.GetActiveGamePhase(GameState);
             var ruleCheck = gamePhase.Rule.Check(GameState, @event);
@@ -35,9 +35,13 @@ namespace Veggerby.Boards.Core
 
                 GameState = newState;
             }
+            else if (ruleCheck.Result == RuleCheckResult.Invalid)
+            {
+                throw new InvalidGameEventException(@event, ruleCheck, Game, gamePhase, GameState);
+            }
 
             return GameState;
-        }*/
+        }
 
         private GameEngine(GameState initialState, GamePhase gamePhaseRoot)
         {

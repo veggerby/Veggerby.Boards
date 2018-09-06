@@ -18,30 +18,30 @@ namespace Veggerby.Boards.Core.Flows.Rules
             CompositeMode = compositeMode;
         }
 
-        private IDictionary<IGameEventRule, RuleCheckState> RunCompositeCheck(GameState gameState, IGameEvent @event)
+        private IDictionary<IGameEventRule, ConditionResponse> RunCompositeCheck(GameState gameState, IGameEvent @event)
         {
             return Rules.ToDictionary(x => x, x => x.Check(gameState, @event));
         }
 
-        private RuleCheckState GetCompositeRuleCheckState(IDictionary<IGameEventRule, RuleCheckState> results)
+        private ConditionResponse GetCompositeRuleCheckState(IDictionary<IGameEventRule, ConditionResponse> results)
         {
-            var ignoreAll = results.All(x => x.Value.Result == RuleCheckResult.Ignore);
+            var ignoreAll = results.All(x => x.Value.Result == ConditionResult.Ignore);
 
             if (ignoreAll)
             {
-                return RuleCheckState.NotApplicable;
+                return ConditionResponse.NotApplicable;
             }
 
             var compositionResult = CompositeMode == CompositeMode.All
-                ? results.All(x => x.Value.Result != RuleCheckResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
-                : results.Any(x => x.Value.Result == RuleCheckResult.Valid);
+                ? results.All(x => x.Value.Result != ConditionResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
+                : results.Any(x => x.Value.Result == ConditionResult.Valid);
 
             return compositionResult
-                ? RuleCheckState.Valid
-                : RuleCheckState.Fail(results.Select(x => x.Value).Where(x => x.Result == RuleCheckResult.Invalid));
+                ? ConditionResponse.Valid
+                : ConditionResponse.Fail(results.Select(x => x.Value).Where(x => x.Result == ConditionResult.Invalid));
         }
 
-        public RuleCheckState Check(GameState gameState, IGameEvent @event)
+        public ConditionResponse Check(GameState gameState, IGameEvent @event)
         {
             var results = RunCompositeCheck(gameState, @event);
             return GetCompositeRuleCheckState(results);
@@ -52,14 +52,14 @@ namespace Veggerby.Boards.Core.Flows.Rules
             var results = RunCompositeCheck(gameState, @event);
             var compositeResult = GetCompositeRuleCheckState(results);
 
-            if (compositeResult.Result == RuleCheckResult.Valid)
+            if (compositeResult.Result == ConditionResult.Valid)
             {
                 // if mode is "any" only mutate state from the FIRST valid rule (top-down)
 
                 if (CompositeMode == CompositeMode.Any)
                 {
                     return results
-                        .First(x => x.Value.Result == RuleCheckResult.Valid)
+                        .First(x => x.Value.Result == ConditionResult.Valid)
                         .Key
                         .HandleEvent(gameState, @event);
                 }
@@ -69,7 +69,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
                 return results
                     .Aggregate(gameState, (state, rule) => rule.Key.HandleEvent(state, @event));
             }
-            else if (compositeResult.Result == RuleCheckResult.Ignore)
+            else if (compositeResult.Result == ConditionResult.Ignore)
             {
                 return gameState;
             }

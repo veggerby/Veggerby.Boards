@@ -11,17 +11,17 @@ namespace Veggerby.Boards.Core
     [ExcludeFromCodeCoverage]
     public class InvalidGameEventException : Exception
     {
-        public InvalidGameEventException(IGameEvent @event, RuleCheckState ruleCheckState, Game game, GamePhase gamePhase, GameState gameState)
+        public InvalidGameEventException(IGameEvent @event, ConditionResponse conditionResponse, Game game, GamePhase gamePhase, GameState gameState)
         {
             GameEvent = @event;
-            RuleCheckState = ruleCheckState;
+            ConditionResponse = conditionResponse;
             Game = game;
             GamePhase = gamePhase;
             GameState = gameState;
         }
 
         public IGameEvent GameEvent { get; }
-        public RuleCheckState RuleCheckState { get; }
+        public ConditionResponse ConditionResponse { get; }
         public Game Game { get; }
         public GamePhase GamePhase { get; }
         public GameState GameState { get; }

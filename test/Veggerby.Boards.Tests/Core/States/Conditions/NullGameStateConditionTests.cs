@@ -1,4 +1,5 @@
 using Shouldly;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -24,7 +25,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(state);
 
                 // assert
-                actual.ShouldBe(defaultValue);
+                actual.Equals(ConditionResponse.Valid).ShouldBe(defaultValue);
             }
         }
     }

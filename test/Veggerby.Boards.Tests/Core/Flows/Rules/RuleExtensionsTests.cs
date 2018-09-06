@@ -18,8 +18,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_create_composition_with_type_all()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
 
                 // act
                 var actual = rule1.And(rule2);
@@ -34,9 +34,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_create_composition_with_type_all_when_chained()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
-                var rule3 = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
+                var rule3 = SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.Valid);
 
                 // act
                 var actual = rule1.And(rule2).And(rule3);
@@ -51,9 +51,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_chain_composition()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
-                var rule3 = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
+                var rule3 = SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.Valid);
 
                 // act
                 var actual = rule1.Or(rule2).And(rule3);
@@ -74,8 +74,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_create_composition_with_type_or()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
 
                 // act
                 var actual = rule1.Or(rule2);
@@ -90,9 +90,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_create_composition_with_type_any_when_chained()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
-                var rule3 = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
+                var rule3 = SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.Valid);
 
                 // act
                 var actual = rule1.Or(rule2).Or(rule3);
@@ -107,9 +107,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_chain_composition()
             {
                 // arrange
-                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(() => RuleCheckState.Valid, null, new PieceStateMutator());
-                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid, null, new DiceStateMutator<int>());
-                var rule3 = SimpleGameEventRule<IGameEvent>.New(() => RuleCheckState.Valid);
+                var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New((state, @event) => ConditionResponse.Valid, null, new PieceStateMutator());
+                var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid, null, new DiceStateMutator<int>());
+                var rule3 = SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.Valid);
 
                 // act
                 var actual = rule1.And(rule2).Or(rule3);

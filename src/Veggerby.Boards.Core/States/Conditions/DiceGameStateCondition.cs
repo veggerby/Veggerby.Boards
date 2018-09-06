@@ -10,8 +10,9 @@ namespace Veggerby.Boards.Core.States.Conditions
         where TDice : Dice<TValue>
     {
         public IEnumerable<TDice> Dice { get; }
+        public CompositeMode Mode { get; }
 
-        public DiceGameStateCondition(IEnumerable<TDice> dice)
+        public DiceGameStateCondition(IEnumerable<TDice> dice, CompositeMode mode)
         {
             if (dice == null)
             {
@@ -29,9 +30,10 @@ namespace Veggerby.Boards.Core.States.Conditions
             }
 
             Dice = dice.Distinct().ToList().AsReadOnly();
+            Mode = mode;
         }
 
-        public bool Evaluate(GameState state)
+        public ConditionResponse Evaluate(GameState state)
         {
             var rolledDice = Dice
                 .Select(x => state.GetState<DiceState<TValue>>(x))
@@ -39,7 +41,11 @@ namespace Veggerby.Boards.Core.States.Conditions
                 .Select(x => x.Artifact)
                 .ToList();
 
-            return !Dice.Except(rolledDice).Any();
+            var result = Mode == CompositeMode.All
+                ? Dice.All(x => rolledDice.Contains(x))
+                : Dice.Any(x => rolledDice.Contains(x));
+
+            return result ? ConditionResponse.Valid : ConditionResponse.Invalid;
         }
     }
 }

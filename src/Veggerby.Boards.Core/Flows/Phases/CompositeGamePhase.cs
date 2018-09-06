@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 
@@ -12,14 +13,15 @@ namespace Veggerby.Boards.Core.Flows.Phases
 
         public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
 
-        internal CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent) : base(number, condition, null, parent)
+        internal CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent)
+            : base(number, condition, SimpleGameEventRule<IGameEvent>.New((s, e) => ConditionResponse.Valid), parent)
         {
             _childPhases = new List<GamePhase>();
         }
 
         public override GamePhase GetActiveGamePhase(GameState gameState)
         {
-            if (!Condition.Evaluate(gameState))
+            if (!Condition.Evaluate(gameState).Equals(ConditionResponse.Valid))
             {
                 return null;
             }

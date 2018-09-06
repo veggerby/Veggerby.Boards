@@ -9,9 +9,9 @@
             _result = result;
         }
 
-        public bool Evaluate(GameState state)
+        public ConditionResponse Evaluate(GameState state)
         {
-            return _result;
+            return _result ? ConditionResponse.Valid : ConditionResponse.Invalid;
         }
     }
 }

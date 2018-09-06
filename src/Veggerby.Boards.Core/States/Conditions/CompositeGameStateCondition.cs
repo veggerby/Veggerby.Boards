@@ -20,11 +20,23 @@ namespace Veggerby.Boards.Core.States.Conditions
             CompositeMode = compositeMode;
         }
 
-        public bool Evaluate(GameState state)
+        public ConditionResponse Evaluate(GameState state)
         {
-            return CompositeMode == CompositeMode.All
-                ? ChildConditions.All(x => x.Evaluate(state))
-                : ChildConditions.Any(x => x.Evaluate(state));
+            var results = ChildConditions.Select(x => x.Evaluate(state));
+            var ignoreAll = results.All(x => x.Result == ConditionResult.Ignore);
+
+            if (ignoreAll)
+            {
+                return ConditionResponse.NotApplicable;
+            }
+
+            var compositionResult = CompositeMode == CompositeMode.All
+                ? results.All(x => x.Result != ConditionResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
+                : results.Any(x => x.Result == ConditionResult.Valid);
+
+            return compositionResult
+                ? ConditionResponse.Valid
+                : ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
         }
 
         internal static IGameStateCondition CreateCompositeCondition(CompositeMode mode, params IGameStateCondition[] conditions)

@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using Shouldly;
-using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core;
 using Xunit;
 
-namespace Veggerby.Boards.Tests.Core.Flows.Rules
+namespace Veggerby.Boards.Tests.Core
 {
-    public class RuleCheckStateTests
+    public class ConditionResultTests
     {
         public class Static
         {
@@ -17,17 +17,17 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // act
 
                 // assert
-                RuleCheckState.Valid.ShouldNotBeNull();
-                RuleCheckState.Valid.Result.ShouldBe(RuleCheckResult.Valid);
-                RuleCheckState.Valid.Reason.ShouldBeNull();
+                ConditionResponse.Valid.ShouldNotBeNull();
+                ConditionResponse.Valid.Result.ShouldBe(ConditionResult.Valid);
+                ConditionResponse.Valid.Reason.ShouldBeNull();
 
-                RuleCheckState.Invalid.ShouldNotBeNull();
-                RuleCheckState.Invalid.Result.ShouldBe(RuleCheckResult.Invalid);
-                RuleCheckState.Invalid.Reason.ShouldBeNull();
+                ConditionResponse.Invalid.ShouldNotBeNull();
+                ConditionResponse.Invalid.Result.ShouldBe(ConditionResult.Invalid);
+                ConditionResponse.Invalid.Reason.ShouldBeNull();
 
-                RuleCheckState.NotApplicable.ShouldNotBeNull();
-                RuleCheckState.NotApplicable.Result.ShouldBe(RuleCheckResult.Ignore);
-                RuleCheckState.NotApplicable.Reason.ShouldBeNull();
+                ConditionResponse.NotApplicable.ShouldNotBeNull();
+                ConditionResponse.NotApplicable.Result.ShouldBe(ConditionResult.Ignore);
+                ConditionResponse.NotApplicable.Reason.ShouldBeNull();
             }
 
             [Fact]
@@ -36,11 +36,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
 
                 // act
-                var actual = RuleCheckState.Success("it worked!");
+                var actual = ConditionResponse.Success("it worked!");
 
                 // assert
                 actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(RuleCheckResult.Valid);
+                actual.Result.ShouldBe(ConditionResult.Valid);
                 actual.Reason.ShouldBe("it worked!");
             }
 
@@ -50,11 +50,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
 
                 // act
-                var actual = RuleCheckState.Fail("it did not work!");
+                var actual = ConditionResponse.Fail("it did not work!");
 
                 // assert
                 actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(RuleCheckResult.Invalid);
+                actual.Result.ShouldBe(ConditionResult.Invalid);
                 actual.Reason.ShouldBe("it did not work!");
             }
 
@@ -64,11 +64,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
 
                 // act
-                var actual = RuleCheckState.Ignore("meh!");
+                var actual = ConditionResponse.Ignore("meh!");
 
                 // assert
                 actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(RuleCheckResult.Ignore);
+                actual.Result.ShouldBe(ConditionResult.Ignore);
                 actual.Reason.ShouldBe("meh!");
             }
 
@@ -76,16 +76,16 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_create_fails_state_composite()
             {
                 // arrange
-                var state1 = RuleCheckState.Fail("fail");
-                var state2 = RuleCheckState.Success("success");
-                var state3 = RuleCheckState.Ignore("ignore");
+                var state1 = ConditionResponse.Fail("fail");
+                var state2 = ConditionResponse.Success("success");
+                var state3 = ConditionResponse.Ignore("ignore");
 
                 // act
-                var actual = RuleCheckState.Fail(new [] { state1, state2, state3 });
+                var actual = ConditionResponse.Fail(new [] { state1, state2, state3 });
 
                 // assert
                 actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(RuleCheckResult.Invalid);
+                actual.Result.ShouldBe(ConditionResult.Invalid);
                 actual.Reason.ShouldBe("fail,success,ignore");
             }
         }
@@ -93,15 +93,15 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
         public class _ToString
         {
             [Theory]
-            [InlineData(RuleCheckResult.Valid, "success", "RuleCheckState Valid/success")]
-            [InlineData(RuleCheckResult.Valid, null, "RuleCheckState Valid/")]
-            [InlineData(RuleCheckResult.Valid, "", "RuleCheckState Valid/")]
-            [InlineData(RuleCheckResult.Ignore, "not relevant", "RuleCheckState Ignore/not relevant")]
-            [InlineData(RuleCheckResult.Invalid, "fail", "RuleCheckState Invalid/fail")]
-            public void Should_return_valid_string(RuleCheckResult result, string reason, string expected)
+            [InlineData(ConditionResult.Valid, "success", "ConditionResponse Valid/success")]
+            [InlineData(ConditionResult.Valid, null, "ConditionResponse Valid/")]
+            [InlineData(ConditionResult.Valid, "", "ConditionResponse Valid/")]
+            [InlineData(ConditionResult.Ignore, "not relevant", "ConditionResponse Ignore/not relevant")]
+            [InlineData(ConditionResult.Invalid, "fail", "ConditionResponse Invalid/fail")]
+            public void Should_return_valid_string(ConditionResult result, string reason, string expected)
             {
                 // arrange
-                var checkState = RuleCheckState.New(result, reason);
+                var checkState = ConditionResponse.New(result, reason);
 
                 // act
                 var actual = checkState.ToString();
@@ -117,8 +117,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_hashcode()
             {
                 // arrange
-                var expected = RuleCheckResult.Valid.GetHashCode();
-                var state = RuleCheckState.Success("woo hoo!");
+                var expected = ConditionResult.Valid.GetHashCode();
+                var state = ConditionResponse.Success("woo hoo!");
 
                 // act
                 var actual = state.GetHashCode();
@@ -134,7 +134,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_equal_same_object()
             {
                 // arrange
-                var state = RuleCheckState.Success("success");
+                var state = ConditionResponse.Success("success");
 
                 // act
                 var actual = state.Equals(state);
@@ -147,7 +147,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_equal_null()
             {
                 // arrange
-                var state = RuleCheckState.Success("success");
+                var state = ConditionResponse.Success("success");
 
                 // act
                 var actual = state.Equals(null);
@@ -160,8 +160,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_equal_same_result_different_reason()
             {
                 // arrange
-                var state1 = RuleCheckState.Success("success");
-                var state2 = RuleCheckState.Success("more success");
+                var state1 = ConditionResponse.Success("success");
+                var state2 = ConditionResponse.Success("more success");
 
                 // act
                 var actual = state1.Equals(state2);
@@ -174,8 +174,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_equal_different_result()
             {
                 // arrange
-                var state1 = RuleCheckState.Success("success");
-                var state2 = RuleCheckState.Fail("more success");
+                var state1 = ConditionResponse.Success("success");
+                var state2 = ConditionResponse.Fail("more success");
 
                 // act
                 var actual = state1.Equals(state2);
@@ -188,7 +188,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_equal_different_type()
             {
                 // arrange
-                var state = RuleCheckState.Success("success");
+                var state = ConditionResponse.Success("success");
 
                 // act
                 var actual = state.Equals("success");

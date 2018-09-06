@@ -53,9 +53,9 @@ namespace Veggerby.Boards.Tests.Core.Fakes
 
             if (!_useSimpleGamePhase)
             {
-                AddGamePhase()
+                AddGamePhase("just a simple phase")
                     .WithCondition<InitialGameStateCondition>()
-                    .WithRule(() => SimpleGameEventRule<RollDiceGameEvent<int>>.New(() => RuleCheckState.Valid));
+                    .WithRule(game => SimpleGameEventRule<RollDiceGameEvent<int>>.New((state, @event) => ConditionResponse.Valid));
             }
         }
     }

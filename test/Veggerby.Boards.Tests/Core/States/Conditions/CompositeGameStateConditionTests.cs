@@ -1,5 +1,6 @@
 using System;
 using Shouldly;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
@@ -65,7 +66,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.ShouldBe(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -79,7 +80,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.ShouldBe(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -93,7 +94,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.ShouldBe(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -107,7 +108,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.ShouldBe(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -121,7 +122,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.ShouldBe(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -135,7 +136,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.ShouldBe(ConditionResponse.Invalid);
             }
         }
     }

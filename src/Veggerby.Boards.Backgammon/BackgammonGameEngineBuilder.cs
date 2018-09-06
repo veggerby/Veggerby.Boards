@@ -103,12 +103,13 @@ namespace Veggerby.Boards.Backgammon
 
             AddGamePhase("dice has been rolled")
                 .If(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
-                .And(game => new InitialGameStateCondition())
-                .Then()
-                .WithRule(new PieceStateMutator());
+                .And<InitialGameStateCondition>()
+                .ForEvent<MovePieceGameEvent>()
+                    .Do<PieceStateMutator>();
 
             AddGamePhase("default => need to roll dice")
-                .WithRule(new DiceStateMutator<int>());
+                .ForEvent<RollDiceGameEvent<int>>()
+                    .Do<DiceStateMutator<int>>();
         }
     }
 }

@@ -16,9 +16,6 @@ namespace Veggerby.Boards.Core
 {
     public abstract class GameEngineBuilder
     {
-
-        #region Game Builder
-
         protected string BoardId { get; set; }
         private readonly IList<PlayerDefinition> _playerDefinitions = new List<PlayerDefinition>();
         private readonly IList<TileDefinition> _tileDefinitions = new List<TileDefinition>();
@@ -88,29 +85,49 @@ namespace Veggerby.Boards.Core
             return artifact.Factory(artifact.ArtifactId);
         }
 
+        private IGameStateCondition CreateGameStateCondition(GamePhaseConditionDefinition definition, Game game)
+        {
+            if (!(definition?.ConditionFactories?.Any() ?? false))
+            {
+                return null;
+            }
+
+            if (definition.ConditionFactories.Count() == 1)
+            {
+                return definition.ConditionFactories.Single()(game);
+            }
+
+            var conditions = definition.ConditionFactories.Select(x => x(game)).ToArray();
+            return CompositeGameStateCondition.CreateCompositeCondition(definition.ConditionCompositeMode.Value, conditions);
+        }
+
+        private IGameEventRule CreateGameEventRule(GameEventRuleDefinitions definition)
+        {
+            if (!(definition?.Definitions?.Any() ?? false))
+            {
+                return null;
+            }
+
+            if (definition.Definitions.Count() == 1)
+            {
+                return definition.Definitions.Single().Build();
+            }
+
+            var rules = definition.Definitions.Select(x => x.Build()).ToArray();
+            return CompositeGameEventRule.CreateCompositeRule(
+                definition.EventRuleCompositeMode.Value,
+                rules);
+        }
+
         private GamePhase CreateGamePhase(int number, GamePhaseDefinition gamePhase, CompositeGamePhase parent, Game game)
         {
-            IGameEventRule rule = null;
+            var condition = CreateGameStateCondition(gamePhase.ConditionDefinition, game);
 
-            if (gamePhase.RuleFactories == null || !gamePhase.RuleFactories.Any())
-            {
-                throw new ArgumentException("There must be at least one rule defined", nameof(gamePhase));
-            }
-
-            if (gamePhase.RuleFactories.Count() == 1)
-            {
-                rule = gamePhase.RuleFactories.Single()(game);
-            }
-            else
-            {
-                rule = CompositeGameEventRule.CreateCompositeRule(
-                    gamePhase.RuleCompositeMode,
-                    gamePhase.RuleFactories.Select(factory => factory(game)).ToArray());
-            }
+            var rule = CreateGameEventRule(gamePhase.RuleDefinitions);
 
             return GamePhase.New(
                 gamePhase.Number ?? number,
-                gamePhase.ConditionFactory(game) ?? new NullGameStateCondition(),
+                condition ?? new NullGameStateCondition(),
                 rule,
                 parent);
         }
@@ -192,10 +209,6 @@ namespace Veggerby.Boards.Core
             _tileRelationDefinitions.Add(relation);
         }
 
-        #endregion
-
-        #region Initial GameState builder
-
         private IDictionary<string, int?> _diceState = new Dictionary<string, int?>();
 
         private IDictionary<string, string> _piecePositions = new Dictionary<string, string>();
@@ -210,18 +223,12 @@ namespace Veggerby.Boards.Core
             _piecePositions.Add(pieceId, tileId);
         }
 
-        #endregion
-
-        #region GamePhase Root builder
-
         protected GamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
         {
             var gamePhase = new GamePhaseDefinition(this);
             _gamePhaseDefinitions.Add(gamePhase);
             return gamePhase;
         }
-
-        #endregion
 
         protected abstract void Build();
 

@@ -289,7 +289,7 @@ namespace Veggerby.Boards.Core
             }
             else
             {
-                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.NotApplicable));
+                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
             }
 
             // combine

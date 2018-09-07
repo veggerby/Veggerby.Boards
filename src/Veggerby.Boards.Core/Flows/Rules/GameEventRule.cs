@@ -8,6 +8,8 @@ namespace Veggerby.Boards.Core.Flows.Rules
 {
     public abstract class GameEventRule<T> : IGameEventRule where T : IGameEvent
     {
+        public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((s, e) => ConditionResponse.Valid));
+
         private readonly IStateMutator<T> _onBeforeEvent;
         private readonly IStateMutator<T> _onAfterEvent;
 

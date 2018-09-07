@@ -17,8 +17,8 @@ namespace Veggerby.Boards.Core.Builder
         public GameEventRuleDefinitions GameEventRuleDefinitions { get; }
         public IEnumerable<Func<IGameEventCondition<T>>> ConditionFactories { get; private set; }
         public CompositeMode? ConditionCompositeMode { get; private set; }
-        public Func<IStateMutator<T>> OnBeforeMutator { get; private set; }
-        public Func<IStateMutator<T>> OnAfterMutator { get; private set; }
+        public IEnumerable<Func<IStateMutator<T>>> OnBeforeMutators { get; private set; }
+        public IEnumerable<Func<IStateMutator<T>>> OnAfterMutators { get; private set; }
 
         private void AddConditionFactory(params Func<IGameEventCondition<T>>[] factories)
         {
@@ -96,6 +96,11 @@ namespace Veggerby.Boards.Core.Builder
             return this;
         }
 
+        private void AddOnBeforeMutator(Func<IStateMutator<T>> mutator)
+        {
+            OnBeforeMutators = (OnBeforeMutators ?? Enumerable.Empty<Func<IStateMutator<T>>>()).Concat(new [] { mutator });
+        }
+
         public GameEventRuleDefinition<T> DoBefore(Func<IStateMutator<T>> mutator)
         {
             if (mutator == null)
@@ -103,14 +108,37 @@ namespace Veggerby.Boards.Core.Builder
                 throw new ArgumentNullException(nameof(mutator));
             }
 
-            OnBeforeMutator = mutator;
+            OnBeforeMutators = new[] { mutator };
+            return this;
+        }
+
+        public GameEventRuleDefinition<T> ThenBefore<TMutator>() where TMutator : IStateMutator<T>, new()
+        {
+            AddOnAfterMutator(() => new TMutator());
+            return this;
+        }
+
+
+        public GameEventRuleDefinition<T> ThenBefore(Func<IStateMutator<T>> mutator)
+        {
+            if (mutator == null)
+            {
+                throw new ArgumentNullException(nameof(mutator));
+            }
+
+            AddOnBeforeMutator(mutator);
             return this;
         }
 
         public GameEventRuleDefinition<T> DoBefore<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            OnBeforeMutator = () => new TMutator();
+            OnBeforeMutators = new Func<IStateMutator<T>>[] { () => new TMutator() };
             return this;
+        }
+
+        private void AddOnAfterMutator(Func<IStateMutator<T>> mutator)
+        {
+            OnAfterMutators = (OnAfterMutators ?? Enumerable.Empty<Func<IStateMutator<T>>>()).Concat(new [] { mutator });
         }
 
         public GameEventRuleDefinition<T> Do(Func<IStateMutator<T>> mutator)
@@ -120,13 +148,29 @@ namespace Veggerby.Boards.Core.Builder
                 throw new ArgumentNullException(nameof(mutator));
             }
 
-            OnAfterMutator = mutator;
+            OnAfterMutators = new[] { mutator };
             return this;
         }
 
         public GameEventRuleDefinition<T> Do<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            OnAfterMutator = () => new TMutator();
+            OnAfterMutators = new Func<IStateMutator<T>>[] { () => new TMutator() };
+            return this;
+        }
+
+        public GameEventRuleDefinition<T> Then(Func<IStateMutator<T>> mutator)
+        {
+            if (mutator == null)
+            {
+                throw new ArgumentNullException(nameof(mutator));
+            }
+
+            AddOnAfterMutator(mutator);
+            return this;
+        }
+        public GameEventRuleDefinition<T> Then<TMutator>() where TMutator : IStateMutator<T>, new()
+        {
+            AddOnAfterMutator(() => new TMutator());
             return this;
         }
 
@@ -138,6 +182,22 @@ namespace Veggerby.Boards.Core.Builder
         public GameEventRuleDefinition<TNewEvent> OrEvent<TNewEvent>() where TNewEvent : IGameEvent
         {
             return GameEventRuleDefinitions.OrEvent<TNewEvent>();
+        }
+
+        private IStateMutator<T> BuildMutator(IEnumerable<Func<IStateMutator<T>>> mutatorFactories)
+        {
+            if (!(mutatorFactories?.Any() ?? false))
+            {
+                return null;
+            }
+
+            if (mutatorFactories.Count() == 1)
+            {
+                return mutatorFactories.Single()();
+            }
+
+            var mutators = mutatorFactories.Select(x => x()).ToArray();
+            return new CompositeStateMutator<T>(mutators);
         }
 
         public IGameEventRule Build()
@@ -153,8 +213,8 @@ namespace Veggerby.Boards.Core.Builder
                 condition = CompositeGameEventCondition<T>.CreateCompositeCondition(ConditionCompositeMode.Value, conditions);
             }
 
-            var onBefore = OnBeforeMutator != null ? OnBeforeMutator() : null;
-            var onAfter = OnAfterMutator != null ? OnAfterMutator() : null;
+            var onBefore = BuildMutator(OnBeforeMutators);
+            var onAfter = BuildMutator(OnAfterMutators);
 
             return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((s, e) => ConditionResponse.Valid), onBefore, onAfter);
         }

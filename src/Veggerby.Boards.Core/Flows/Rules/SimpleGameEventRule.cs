@@ -25,17 +25,6 @@ namespace Veggerby.Boards.Core.Flows.Rules
             return _condition.Evaluate(gameState, @event);
         }
 
-        [Obsolete("Use overload using IGameEventCondition instead")]
-        public static IGameEventRule New(Func<GameState, T, ConditionResponse> handler, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
-        {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            return SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>(handler), onBeforeEvent, onAfterEvent);
-        }
-
         public static IGameEventRule New(IGameEventCondition<T> condition, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
         {
             return new SimpleGameEventRule<T>(condition, onBeforeEvent, onAfterEvent ?? new NullStateMutator<T>());

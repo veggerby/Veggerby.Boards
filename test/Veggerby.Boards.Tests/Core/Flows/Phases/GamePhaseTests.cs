@@ -23,7 +23,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 // arrange
                 var condition = new NullGameStateCondition();
                 var parent = GamePhase.NewParent(1);
-                var rule = SimpleGameEventRule<IGameEvent>.New((state, @event) => ConditionResponse.Valid);
+                var rule = GameEventRule<IGameEvent>.Null;
 
                 // act
                 var actual = GamePhase.New(1, condition, rule, parent);
@@ -47,7 +47,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var parent = GamePhase.NewParent(1);
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => GamePhase.New(number, condition, SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent));
+                var actual = Should.Throw<ArgumentOutOfRangeException>(() => GamePhase.New(number, condition, GameEventRule<IGameEvent>.Null, parent));
 
                 // assert
                 actual.ParamName.ShouldBe("number");
@@ -60,7 +60,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var parent = GamePhase.NewParent(1);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => GamePhase.New(1, null, SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent));
+                var actual = Should.Throw<ArgumentNullException>(() => GamePhase.New(1, null, GameEventRule<IGameEvent>.Null, parent));
 
                 // assert
                 actual.ParamName.ShouldBe("condition");
@@ -96,7 +96,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
             public void Should_return_simple_gamephase()
             {
                 // arrange
-                var child = GamePhase.New(1, new NullGameStateCondition(true), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid));
+                var child = GamePhase.New(1, new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null);
 
                 // act
                 var actual = child.GetActiveGamePhase(_initialGameState);
@@ -109,7 +109,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
             public void Should_return_null_simple_gamephase_condition_false()
             {
                 // arrange
-                var child = GamePhase.New(1, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid));
+                var child = GamePhase.New(1, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null);
 
                 // act
                 var actual = child.GetActiveGamePhase(_initialGameState);
@@ -123,7 +123,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
             {
                 // arrange
                 var parent = GamePhase.NewParent(1);
-                var child = GamePhase.New(1, new NullGameStateCondition(true), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent);
+                var child = GamePhase.New(1, new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, parent);
 
                 // act
                 var actual = parent.GetActiveGamePhase(_initialGameState);
@@ -137,7 +137,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
             {
                 // arrange
                 var parent = GamePhase.NewParent(1);
-                var child = GamePhase.New(1, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent);
+                var child = GamePhase.New(1, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, parent);
 
                 // act
                 var actual = parent.GetActiveGamePhase(_initialGameState);
@@ -151,8 +151,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
             {
                 // arrange
                 var parent = GamePhase.NewParent(1);
-                var child1 = GamePhase.New(1, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent);
-                var child2 = GamePhase.New(2, new NullGameStateCondition(true), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), parent);
+                var child1 = GamePhase.New(1, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, parent);
+                var child2 = GamePhase.New(2, new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, parent);
 
                 // act
                 var actual = parent.GetActiveGamePhase(_initialGameState);
@@ -170,13 +170,13 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var group2 = GamePhase.NewParent(2, new NullGameStateCondition(false), root);
                 var group3 = GamePhase.NewParent(3, new InitialGameStateCondition(), root);
 
-                var child11 = GamePhase.New(1, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), group1);
-                var child12 = GamePhase.New(2, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), group1);
+                var child11 = GamePhase.New(1, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, group1);
+                var child12 = GamePhase.New(2, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, group1);
 
-                var child21 = GamePhase.New(1, new NullGameStateCondition(true), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), group2);
+                var child21 = GamePhase.New(1, new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, group2);
 
-                var child31 = GamePhase.New(1, new NullGameStateCondition(false), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), group3);
-                var child32 = GamePhase.New(1, new NullGameStateCondition(true), SimpleGameEventRule<IGameEvent>.New((game, @event) => ConditionResponse.Valid), group3);
+                var child31 = GamePhase.New(1, new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, group3);
+                var child32 = GamePhase.New(1, new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, group3);
 
                 // act
                 var actual = root.GetActiveGamePhase(_initialGameState);

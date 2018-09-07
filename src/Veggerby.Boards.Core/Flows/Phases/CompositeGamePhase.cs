@@ -14,7 +14,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
         public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
 
         internal CompositeGamePhase(int number, IGameStateCondition condition, CompositeGamePhase parent)
-            : base(number, condition, SimpleGameEventRule<IGameEvent>.New((s, e) => ConditionResponse.Valid), parent)
+            : base(number, condition, GameEventRule<IGameEvent>.Null, parent)
         {
             _childPhases = new List<GamePhase>();
         }

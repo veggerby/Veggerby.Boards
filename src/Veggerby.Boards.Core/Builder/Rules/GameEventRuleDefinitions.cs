@@ -8,69 +8,41 @@ using Veggerby.Boards.Core.Flows.Rules;
 
 namespace Veggerby.Boards.Core.Builder.Rules
 {
-    public class GameEventRuleDefinitions : DefinitionBase
+    internal class GameEventRuleDefinitions : DefinitionBase, IForGameEventRule
     {
-        public GameEventRuleDefinitions(GameEngineBuilder builder, GamePhaseDefinition gamePhaseDefinitionSettings) : base(builder)
+        public GameEventRuleDefinitions(GameEngineBuilder builder, GamePhaseDefinition parent) : base(builder)
         {
-            GamePhaseDefinitionSettings = gamePhaseDefinitionSettings;
+            _parent = parent;
         }
 
-        public GamePhaseDefinition GamePhaseDefinitionSettings { get; }
-
-        public IEnumerable<IGameEventRuleDefinition> Definitions { get; private set; }
-
-        public CompositeMode? EventRuleCompositeMode { get; private set; }
-
-        public GameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent
-        {
-            EventRuleCompositeMode = null;
-            var rule = new GameEventRuleDefinition<T>(Builder, this);
-            Definitions = new [] { rule };
-            return rule;
-        }
-
-        public GameEventRuleDefinition<T> AndEvent<T>() where T : IGameEvent
-        {
-            if ((EventRuleCompositeMode ?? CompositeMode.All) != CompositeMode.All)
-            {
-                throw new ArgumentException("Incorrect composition mode");
-            }
-
-            EventRuleCompositeMode = CompositeMode.All;
-            var rule = new GameEventRuleDefinition<T>(Builder, this);
-            Definitions = (Definitions ?? Enumerable.Empty<IGameEventRuleDefinition>()).Concat(new [] { rule });
-            return rule;
-        }
-
-        public GameEventRuleDefinition<T> OrEvent<T>() where T : IGameEvent
-        {
-            if ((EventRuleCompositeMode ?? CompositeMode.Any) != CompositeMode.Any)
-            {
-                throw new ArgumentException("Incorrect composition mode");
-            }
-
-            EventRuleCompositeMode = CompositeMode.Any;
-            var rule = new GameEventRuleDefinition<T>(Builder, this);
-            Definitions = (Definitions ?? Enumerable.Empty<IGameEventRuleDefinition>()).Concat(new [] { rule });
-            return rule;
-        }
+        private readonly GamePhaseDefinition _parent;
+        private IList<IGameEventRuleDefinition> _ruleDefinitions = new List<IGameEventRuleDefinition>();
+        private CompositeMode? _eventRuleCompositeMode;
 
         public IGameEventRule Build(Game game)
         {
-            if (!(Definitions?.Any() ?? false))
+            if (!(_ruleDefinitions?.Any() ?? false))
             {
                 return null;
             }
 
-            if (Definitions.Count() == 1)
+            if (_ruleDefinitions.Count() == 1)
             {
-                return Definitions.Single().Build(game);
+                return _ruleDefinitions.Single().Build(game);
             }
 
-            var rules = Definitions.Select(x => x.Build(game)).ToArray();
+            var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();
             return CompositeGameEventRule.CreateCompositeRule(
-                EventRuleCompositeMode.Value,
+                _eventRuleCompositeMode.Value,
                 rules);
+        }
+
+        IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
+        {
+             _eventRuleCompositeMode = null;
+            var rule = new GameEventRuleDefinition<T>(Builder, this);
+            _ruleDefinitions = new [] { rule };
+            return rule;
         }
     }
 }

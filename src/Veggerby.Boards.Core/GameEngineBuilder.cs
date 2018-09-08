@@ -179,7 +179,7 @@ namespace Veggerby.Boards.Core
             _piecePositions.Add(pieceId, tileId);
         }
 
-        protected GamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
+        protected IGamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
         {
             var gamePhase = new GamePhaseDefinition(this);
             _gamePhaseDefinitions.Add(gamePhase);
@@ -238,7 +238,7 @@ namespace Veggerby.Boards.Core
                 foreach (var gamePhaseDefinition in _gamePhaseDefinitions)
                 {
                     var phase = gamePhaseDefinition.Build(number, game, parent);
-                    number = Math.Max(number, gamePhaseDefinition.Number ?? number) + 1;
+                    number = Math.Max(number, phase.Number) + 1;
                 }
 
                 gamePhaseRoot = parent;

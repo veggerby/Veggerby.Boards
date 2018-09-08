@@ -45,7 +45,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new RollDiceGameEvent<string>());
+                var actual = Should.Throw<ArgumentException>(() => new RollDiceGameEvent<string>());
 
                 // assert
                 actual.ParamName.ShouldBe("states");

@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Core.Artifacts
         {
             return game
                 .Players
-                .Single(x => x.Id.Equals(id));
+                .SingleOrDefault(x => x.Id.Equals(id));
         }
 
         public static T GetArtifact<T>(this Game game, string id) where T : Artifact
@@ -30,7 +30,7 @@ namespace Veggerby.Boards.Core.Artifacts
             return game
                 .Artifacts
                 .OfType<T>()
-                .Single(x => x.Id.Equals(id));
+                .SingleOrDefault(x => x.Id.Equals(id));
         }
 
         public static IEnumerable<T> GetArtifacts<T>(this Game game, params string[] ids) where T : Artifact

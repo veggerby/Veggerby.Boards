@@ -88,53 +88,6 @@ namespace Veggerby.Boards.Core
             return artifact.Factory(artifact.ArtifactId);
         }
 
-        private IGameStateCondition CreateGameStateCondition(GamePhaseConditionDefinition definition, Game game)
-        {
-            if (!(definition?.ConditionFactories?.Any() ?? false))
-            {
-                return null;
-            }
-
-            if (definition.ConditionFactories.Count() == 1)
-            {
-                return definition.ConditionFactories.Single()(game);
-            }
-
-            var conditions = definition.ConditionFactories.Select(x => x(game)).ToArray();
-            return CompositeGameStateCondition.CreateCompositeCondition(definition.ConditionCompositeMode.Value, conditions);
-        }
-
-        private IGameEventRule CreateGameEventRule(GameEventRuleDefinitions definition, Game game)
-        {
-            if (!(definition?.Definitions?.Any() ?? false))
-            {
-                return null;
-            }
-
-            if (definition.Definitions.Count() == 1)
-            {
-                return definition.Definitions.Single().Build(game);
-            }
-
-            var rules = definition.Definitions.Select(x => x.Build(game)).ToArray();
-            return CompositeGameEventRule.CreateCompositeRule(
-                definition.EventRuleCompositeMode.Value,
-                rules);
-        }
-
-        private GamePhase CreateGamePhase(int number, GamePhaseDefinition gamePhase, CompositeGamePhase parent, Game game)
-        {
-            var condition = CreateGameStateCondition(gamePhase.ConditionDefinition, game);
-
-            var rule = CreateGameEventRule(gamePhase.RuleDefinitions, game);
-
-            return GamePhase.New(
-                gamePhase.Number ?? number,
-                condition ?? new NullGameStateCondition(),
-                rule,
-                parent);
-        }
-
         protected PlayerDefinition AddPlayer(string playerId)
         {
             var player = new PlayerDefinition(this).WithId(playerId);
@@ -284,7 +237,7 @@ namespace Veggerby.Boards.Core
                 var number = 1;
                 foreach (var gamePhaseDefinition in _gamePhaseDefinitions)
                 {
-                    var phase = CreateGamePhase(number, gamePhaseDefinition, parent, game);
+                    var phase = gamePhaseDefinition.Build(number, game, parent);
                     number = Math.Max(number, gamePhaseDefinition.Number ?? number) + 1;
                 }
 
@@ -292,7 +245,8 @@ namespace Veggerby.Boards.Core
             }
             else
             {
-                 gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+                // null pattern, no rules or event handlers
+                gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
             }
 
             // combine

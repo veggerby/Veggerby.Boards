@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Builder.Phases;
 using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Rules;
 
 namespace Veggerby.Boards.Core.Builder.Rules
 {
@@ -51,6 +53,24 @@ namespace Veggerby.Boards.Core.Builder.Rules
             var rule = new GameEventRuleDefinition<T>(Builder, this);
             Definitions = (Definitions ?? Enumerable.Empty<IGameEventRuleDefinition>()).Concat(new [] { rule });
             return rule;
+        }
+
+        public IGameEventRule Build(Game game)
+        {
+            if (!(Definitions?.Any() ?? false))
+            {
+                return null;
+            }
+
+            if (Definitions.Count() == 1)
+            {
+                return Definitions.Single().Build(game);
+            }
+
+            var rules = Definitions.Select(x => x.Build(game)).ToArray();
+            return CompositeGameEventRule.CreateCompositeRule(
+                EventRuleCompositeMode.Value,
+                rules);
         }
     }
 }

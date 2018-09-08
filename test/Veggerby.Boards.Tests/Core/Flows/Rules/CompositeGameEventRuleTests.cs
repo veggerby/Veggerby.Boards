@@ -6,6 +6,7 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
@@ -210,7 +211,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var @event = new MovePieceGameEvent(piece, from, to);
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((state, e) => ConditionResponse.Valid))
-                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((state, e) => ConditionResponse.Valid), null, new PieceStateMutator()));
+                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator()));
 
                 // act
                 var actual = rule.HandleEvent(initialState, @event);
@@ -234,7 +235,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var @event = new MovePieceGameEvent(piece, from, to);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((state, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>())
-                    .Or(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new PieceStateMutator()));
+                    .Or(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator()));
 
                 // act
                 var actual = rule.HandleEvent(initialState, @event);
@@ -258,7 +259,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var @event = new MovePieceGameEvent(piece, from, to);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((state, e) => ConditionResponse.NotApplicable), null, new DiceStateMutator<int>())
-                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.NotApplicable), null, new PieceStateMutator()));
+                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.NotApplicable), null, new MovePieceStateMutator()));
 
                 // act
                 var actual = rule.HandleEvent(initialState, @event);
@@ -281,7 +282,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var dice = game.GetArtifact<RegularDice>("dice");
                 var @event = new MovePieceGameEvent(piece, from, to1);
 
-                var rule = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new PieceStateMutator())
+                var rule = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator())
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new SimpleGameStateMutator<MovePieceGameEvent>(x => new DiceState<int>(dice, 3))))
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new SimpleGameStateMutator<MovePieceGameEvent>(x => new PieceState(piece, to2))));
 
@@ -312,7 +313,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var @event = new MovePieceGameEvent(piece, from, to);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((state, e) => ConditionResponse.NotApplicable), null, new DiceStateMutator<int>())
-                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Invalid), null, new PieceStateMutator()));
+                    .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Invalid), null, new MovePieceStateMutator()));
 
                 // act
                 var actual = Should.Throw<BoardException>(() => rule.HandleEvent(initialState, @event));

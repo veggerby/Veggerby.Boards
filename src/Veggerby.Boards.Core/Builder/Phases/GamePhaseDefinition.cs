@@ -1,9 +1,10 @@
 ﻿using System;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Phases
 {
     public class GamePhaseDefinition : DefinitionBase
     {
@@ -22,7 +23,7 @@ namespace Veggerby.Boards.Core.Builder
             return this;
         }
 
-        public GamePhaseConditionDefinition If(Func<Game, IGameStateCondition> factory)
+        public GamePhaseConditionDefinition If(GameStateConditionFactory factory)
         {
             ConditionDefinition = new GamePhaseConditionDefinition(Builder, this).If(factory);
             return ConditionDefinition;

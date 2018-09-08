@@ -5,6 +5,7 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
@@ -114,7 +115,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid),
                     null,
-                    new PieceStateMutator());
+                    new MovePieceStateMutator());
 
                 // act
                 var actual = rule.HandleEvent(initialState, @event);
@@ -138,7 +139,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable),
                     null,
-                    new PieceStateMutator());
+                    new MovePieceStateMutator());
 
                 // act
                 var actual = rule.HandleEvent(initialState, @event);
@@ -163,7 +164,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Invalid),
                     null,
-                    new PieceStateMutator());
+                    new MovePieceStateMutator());
 
                 // act
                 var actual = Should.Throw<BoardException>(() => rule.HandleEvent(initialState, @event));
@@ -186,7 +187,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Invalid),
                     null,
-                    new PieceStateMutator());
+                    new MovePieceStateMutator());
 
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(initialState, null));

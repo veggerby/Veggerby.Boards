@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Artifacts
 {
     public class PieceDirectionPatternDefinition : DefinitionBase
     {

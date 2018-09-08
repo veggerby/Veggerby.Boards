@@ -1,7 +1,7 @@
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules
+namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public interface IGameEventCondition<in T> where T : IGameEvent
     {

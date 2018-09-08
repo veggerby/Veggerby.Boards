@@ -1,4 +1,5 @@
-﻿using Veggerby.Boards.Core;
+﻿
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
@@ -101,11 +102,26 @@ namespace Veggerby.Boards.Backgammon
             WithPiece("black-14").OnTile("point-6");
             WithPiece("black-15").OnTile("point-6");
 
+            AddGamePhase("initial roll to determine starting player")
+                .IfIsInitialGameState()
+                .ForEvent<RollDiceGameEvent<int>>()
+                    .IfEventHasDice<int>("dice-1", "dice-2")
+                        .And<DiceValuesShouldBeDifferent>()
+                    .Do<SelectActivePlayerGameStateMutator>()
+                        .Then<DiceStateMutator<int>>();
+
             AddGamePhase("dice has been rolled")
-                .If(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
-                .And<InitialGameStateCondition>()
+                .IfAnyDiceIsRolled<int>("dice-1", "dice-2")
+                    .AndHasOneActivePlayer()
                 .ForEvent<MovePieceGameEvent>()
-                    .Do<PieceStateMutator>();
+                    .If<PieceIsActivePlayerGameEventCondition>()
+                        .And<DiceStateMatch<int>>()
+                        .AndTileIsNotBlocked()
+                        .AndTileIsNot("home-white", "black-white")
+                        .AndPlayerHasNoPiecesOn("bar")
+                    .Do<MovePieceStateMutator>()
+                        .Then<MovePieceToBarStateMutator>()
+                        .Then<ClearDiceStateMutator>();
 
             AddGamePhase("default => need to roll dice")
                 .ForEvent<RollDiceGameEvent<int>>()

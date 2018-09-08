@@ -32,6 +32,11 @@ namespace Veggerby.Boards.Core.States
             return _childStates.ContainsKey(artifact) && _childStates[artifact] is T ? (T)_childStates[artifact] : default(T);
         }
 
+        public IEnumerable<T> GetStates<T>() where T : IArtifactState
+        {
+            return _childStates.Values.OfType<T>().ToList();
+        }
+
         protected bool Equals(GameState other)
         {
             if (!Game.Equals(other.Game) || IsInitialState != other.IsInitialState)

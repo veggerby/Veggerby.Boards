@@ -109,7 +109,7 @@ namespace Veggerby.Boards.Backgammon
                         .And<DiceValuesShouldBeDifferent>()
                     .Do<SelectActivePlayerGameStateMutator>()
                         .Then<DiceStateMutator<int>>();
-
+/*
             AddGamePhase("dice has been rolled")
                 .IfAnyDiceIsRolled<int>("dice-1", "dice-2")
                     .AndHasOneActivePlayer()
@@ -121,7 +121,7 @@ namespace Veggerby.Boards.Backgammon
                         .AndPlayerHasNoPiecesOn("bar")
                     .Do<MovePieceStateMutator>()
                         .Then<MovePieceToBarStateMutator>()
-                        .Then<ClearDiceStateMutator>();
+                        .Then<ClearDiceStateMutator>(); */
 
             AddGamePhase("default => need to roll dice")
                 .ForEvent<RollDiceGameEvent<int>>()

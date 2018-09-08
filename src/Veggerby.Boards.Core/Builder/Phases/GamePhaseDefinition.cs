@@ -2,7 +2,9 @@
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core.Builder.Phases
 {
@@ -38,6 +40,13 @@ namespace Veggerby.Boards.Core.Builder.Phases
         public GameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent
         {
             return RuleDefinitions.ForEvent<T>();
+        }
+
+        public GamePhase Build(int number, Game game, CompositeGamePhase parent = null)
+        {
+            var condition = ConditionDefinition?.Build(game);
+            var rule = RuleDefinitions?.Build(game);
+            return GamePhase.New(Number ?? number, condition ?? new NullGameStateCondition(), rule, parent);
         }
     }
 }

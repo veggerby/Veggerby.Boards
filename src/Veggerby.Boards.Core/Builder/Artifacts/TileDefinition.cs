@@ -36,7 +36,6 @@ namespace Veggerby.Boards.Core.Builder.Artifacts
             return relation;
         }
 
-
         public TileRelationDefinition WithRelationFrom(string id)
         {
             if (string.IsNullOrEmpty(id))

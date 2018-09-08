@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Builder.Phases;
 using Veggerby.Boards.Core.Flows.Events;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Rules
 {
     public class GameEventRuleDefinitions : DefinitionBase
     {

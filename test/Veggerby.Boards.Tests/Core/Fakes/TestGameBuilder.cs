@@ -5,6 +5,7 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.Fakes
@@ -59,14 +60,14 @@ namespace Veggerby.Boards.Tests.Core.Fakes
                     .If<InitialGameStateCondition>()
                     .And(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
                     .ForEvent<RollDiceGameEvent<int>>()
-                        .If(() => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))
-                        .Or(() => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.NotApplicable))
+                        .If(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))
+                        .Or(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.NotApplicable))
                         .DoBefore<DiceStateMutator<int>>()
                         .Do<DiceStateMutator<int>>()
                     .AndEvent<MovePieceGameEvent>()
-                        .If(() => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid))
-                        .Or(() => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable))
-                        .Do<PieceStateMutator>();
+                        .If(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid))
+                        .Or(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable))
+                        .Do<MovePieceStateMutator>();
             }
         }
     }

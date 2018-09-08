@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Artifacts
 {
     public class TileRelationDefinition : DefinitionBase
     {

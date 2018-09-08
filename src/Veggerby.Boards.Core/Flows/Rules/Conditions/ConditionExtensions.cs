@@ -1,7 +1,7 @@
 using System.Linq;
 using Veggerby.Boards.Core.Flows.Events;
 
-namespace Veggerby.Boards.Core.Flows.Rules
+namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public static class ConditionExtensions
     {

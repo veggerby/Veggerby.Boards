@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Events
 {
     public class RollDiceGameEvent<T> : IGameEvent
     {
-        public Dice<T> Dice { get; }
-        public T NewDiceValue { get; }
+        public IEnumerable<DiceState<T>> NewDiceStates { get; }
 
-        public RollDiceGameEvent(Dice<T> dice, T newDiceValue)
+        public RollDiceGameEvent(params DiceState<T>[] states)
         {
-            if (dice == null)
+            if (states == null)
             {
-                throw new ArgumentNullException(nameof(dice));
+                throw new ArgumentNullException(nameof(states));
             }
 
-            if (newDiceValue == null)
+            if (!states.Any())
             {
-                throw new ArgumentNullException(nameof(newDiceValue));
+                throw new ArgumentException("Must provide at least one new state", nameof(states));
             }
 
-            Dice = dice;
-            NewDiceValue = newDiceValue;
+            NewDiceStates = states.ToList().AsReadOnly();
         }
     }
 }

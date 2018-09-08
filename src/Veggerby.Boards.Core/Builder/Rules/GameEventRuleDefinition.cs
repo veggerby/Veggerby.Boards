@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Rules
 {
     public class GameEventRuleDefinition<T> : DefinitionBase, IGameEventRuleDefinition where T : IGameEvent
     {
@@ -15,17 +17,17 @@ namespace Veggerby.Boards.Core.Builder
         }
 
         public GameEventRuleDefinitions GameEventRuleDefinitions { get; }
-        public IEnumerable<Func<IGameEventCondition<T>>> ConditionFactories { get; private set; }
+        public IEnumerable<GameEventConditionFactory<T>> ConditionFactories { get; private set; }
         public CompositeMode? ConditionCompositeMode { get; private set; }
-        public IEnumerable<Func<IStateMutator<T>>> OnBeforeMutators { get; private set; }
-        public IEnumerable<Func<IStateMutator<T>>> OnAfterMutators { get; private set; }
+        public IEnumerable<StateMutatorFactory<T>> OnBeforeMutators { get; private set; }
+        public IEnumerable<StateMutatorFactory<T>> OnAfterMutators { get; private set; }
 
-        private void AddConditionFactory(params Func<IGameEventCondition<T>>[] factories)
+        private void AddConditionFactory(params GameEventConditionFactory<T>[] factories)
         {
-            ConditionFactories = (ConditionFactories ?? Enumerable.Empty<Func<IGameEventCondition<T>>>()).Concat(factories).ToList();
+            ConditionFactories = (ConditionFactories ?? Enumerable.Empty<GameEventConditionFactory<T>>()).Concat(factories).ToList();
         }
 
-        public GameEventRuleDefinition<T> If(Func<IGameEventCondition<T>> factory)
+        public GameEventRuleDefinition<T> If(GameEventConditionFactory<T> factory)
         {
             if (factory == null)
             {
@@ -40,11 +42,11 @@ namespace Veggerby.Boards.Core.Builder
         public GameEventRuleDefinition<T> If<TCondition>() where TCondition : IGameEventCondition<T>, new()
         {
             ConditionCompositeMode = null;
-            ConditionFactories = new Func<IGameEventCondition<T>>[] { () => new TCondition() };
+            ConditionFactories = new GameEventConditionFactory<T>[] { game => new TCondition() };
             return this;
         }
 
-        public GameEventRuleDefinition<T> And(Func<IGameEventCondition<T>> factory)
+        public GameEventRuleDefinition<T> And(GameEventConditionFactory<T> factory)
         {
             if ((ConditionCompositeMode ?? CompositeMode.All) != CompositeMode.All)
             {
@@ -65,12 +67,12 @@ namespace Veggerby.Boards.Core.Builder
             }
 
             ConditionCompositeMode = CompositeMode.All;
-            AddConditionFactory(() => new TCondition());
+            AddConditionFactory(game => new TCondition());
 
             return this;
         }
 
-        public GameEventRuleDefinition<T> Or(Func<IGameEventCondition<T>> factory)
+        public GameEventRuleDefinition<T> Or(GameEventConditionFactory<T> factory)
         {
             if ((ConditionCompositeMode ?? CompositeMode.Any) != CompositeMode.Any)
             {
@@ -91,17 +93,17 @@ namespace Veggerby.Boards.Core.Builder
             }
 
             ConditionCompositeMode = CompositeMode.Any;
-            AddConditionFactory(() => new TCondition());
+            AddConditionFactory(game => new TCondition());
 
             return this;
         }
 
-        private void AddOnBeforeMutator(Func<IStateMutator<T>> mutator)
+        private void AddOnBeforeMutator(StateMutatorFactory<T> mutator)
         {
-            OnBeforeMutators = (OnBeforeMutators ?? Enumerable.Empty<Func<IStateMutator<T>>>()).Concat(new [] { mutator });
+            OnBeforeMutators = (OnBeforeMutators ?? Enumerable.Empty<StateMutatorFactory<T>>()).Concat(new [] { mutator });
         }
 
-        public GameEventRuleDefinition<T> DoBefore(Func<IStateMutator<T>> mutator)
+        public GameEventRuleDefinition<T> DoBefore(StateMutatorFactory<T> mutator)
         {
             if (mutator == null)
             {
@@ -114,12 +116,11 @@ namespace Veggerby.Boards.Core.Builder
 
         public GameEventRuleDefinition<T> ThenBefore<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            AddOnAfterMutator(() => new TMutator());
+            AddOnBeforeMutator(game => new TMutator());
             return this;
         }
 
-
-        public GameEventRuleDefinition<T> ThenBefore(Func<IStateMutator<T>> mutator)
+        public GameEventRuleDefinition<T> ThenBefore(StateMutatorFactory<T> mutator)
         {
             if (mutator == null)
             {
@@ -132,16 +133,16 @@ namespace Veggerby.Boards.Core.Builder
 
         public GameEventRuleDefinition<T> DoBefore<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            OnBeforeMutators = new Func<IStateMutator<T>>[] { () => new TMutator() };
+            OnBeforeMutators = new StateMutatorFactory<T>[] { game => new TMutator() };
             return this;
         }
 
-        private void AddOnAfterMutator(Func<IStateMutator<T>> mutator)
+        private void AddOnAfterMutator(StateMutatorFactory<T> mutator)
         {
-            OnAfterMutators = (OnAfterMutators ?? Enumerable.Empty<Func<IStateMutator<T>>>()).Concat(new [] { mutator });
+            OnAfterMutators = (OnAfterMutators ?? Enumerable.Empty<StateMutatorFactory<T>>()).Concat(new [] { mutator });
         }
 
-        public GameEventRuleDefinition<T> Do(Func<IStateMutator<T>> mutator)
+        public GameEventRuleDefinition<T> Do(StateMutatorFactory<T> mutator)
         {
             if (mutator == null)
             {
@@ -154,11 +155,11 @@ namespace Veggerby.Boards.Core.Builder
 
         public GameEventRuleDefinition<T> Do<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            OnAfterMutators = new Func<IStateMutator<T>>[] { () => new TMutator() };
+            OnAfterMutators = new StateMutatorFactory<T>[] { game => new TMutator() };
             return this;
         }
 
-        public GameEventRuleDefinition<T> Then(Func<IStateMutator<T>> mutator)
+        public GameEventRuleDefinition<T> Then(StateMutatorFactory<T> mutator)
         {
             if (mutator == null)
             {
@@ -170,7 +171,7 @@ namespace Veggerby.Boards.Core.Builder
         }
         public GameEventRuleDefinition<T> Then<TMutator>() where TMutator : IStateMutator<T>, new()
         {
-            AddOnAfterMutator(() => new TMutator());
+            AddOnAfterMutator(game => new TMutator());
             return this;
         }
 
@@ -184,7 +185,7 @@ namespace Veggerby.Boards.Core.Builder
             return GameEventRuleDefinitions.OrEvent<TNewEvent>();
         }
 
-        private IStateMutator<T> BuildMutator(IEnumerable<Func<IStateMutator<T>>> mutatorFactories)
+        private IStateMutator<T> BuildMutator(IEnumerable<StateMutatorFactory<T>> mutatorFactories, Game game)
         {
             if (!(mutatorFactories?.Any() ?? false))
             {
@@ -193,28 +194,28 @@ namespace Veggerby.Boards.Core.Builder
 
             if (mutatorFactories.Count() == 1)
             {
-                return mutatorFactories.Single()();
+                return mutatorFactories.Single()(game);
             }
 
-            var mutators = mutatorFactories.Select(x => x()).ToArray();
+            var mutators = mutatorFactories.Select(x => x(game)).ToArray();
             return new CompositeStateMutator<T>(mutators);
         }
 
-        public IGameEventRule Build()
+        public IGameEventRule Build(Game game)
         {
             IGameEventCondition<T> condition = null;
             if (ConditionFactories?.Count() == 1)
             {
-                condition = ConditionFactories.Single()();
+                condition = ConditionFactories.Single()(game);
             }
             else if (ConditionFactories?.Any() ?? false)
             {
-                var conditions = ConditionFactories.Select(x => x()).ToArray();
+                var conditions = ConditionFactories.Select(x => x(game)).ToArray();
                 condition = CompositeGameEventCondition<T>.CreateCompositeCondition(ConditionCompositeMode.Value, conditions);
             }
 
-            var onBefore = BuildMutator(OnBeforeMutators);
-            var onAfter = BuildMutator(OnAfterMutators);
+            var onBefore = BuildMutator(OnBeforeMutators, game);
+            var onAfter = BuildMutator(OnAfterMutators, game);
 
             return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((s, e) => ConditionResponse.Valid), onBefore, onAfter);
         }

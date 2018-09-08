@@ -5,6 +5,9 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Builder;
+using Veggerby.Boards.Core.Builder.Artifacts;
+using Veggerby.Boards.Core.Builder.Phases;
+using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Phases;
@@ -101,7 +104,7 @@ namespace Veggerby.Boards.Core
             return CompositeGameStateCondition.CreateCompositeCondition(definition.ConditionCompositeMode.Value, conditions);
         }
 
-        private IGameEventRule CreateGameEventRule(GameEventRuleDefinitions definition)
+        private IGameEventRule CreateGameEventRule(GameEventRuleDefinitions definition, Game game)
         {
             if (!(definition?.Definitions?.Any() ?? false))
             {
@@ -110,10 +113,10 @@ namespace Veggerby.Boards.Core
 
             if (definition.Definitions.Count() == 1)
             {
-                return definition.Definitions.Single().Build();
+                return definition.Definitions.Single().Build(game);
             }
 
-            var rules = definition.Definitions.Select(x => x.Build()).ToArray();
+            var rules = definition.Definitions.Select(x => x.Build(game)).ToArray();
             return CompositeGameEventRule.CreateCompositeRule(
                 definition.EventRuleCompositeMode.Value,
                 rules);
@@ -123,7 +126,7 @@ namespace Veggerby.Boards.Core
         {
             var condition = CreateGameStateCondition(gamePhase.ConditionDefinition, game);
 
-            var rule = CreateGameEventRule(gamePhase.RuleDefinitions);
+            var rule = CreateGameEventRule(gamePhase.RuleDefinitions, game);
 
             return GamePhase.New(
                 gamePhase.Number ?? number,

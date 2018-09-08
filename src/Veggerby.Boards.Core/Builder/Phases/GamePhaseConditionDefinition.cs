@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder.Phases
 {
     public class GamePhaseConditionDefinition : DefinitionBase
     {
@@ -16,15 +17,15 @@ namespace Veggerby.Boards.Core.Builder
         }
 
         public GamePhaseDefinition GamePhaseDefinition { get; }
-        public IEnumerable<Func<Game, IGameStateCondition>> ConditionFactories { get; private set; }
+        public IEnumerable<GameStateConditionFactory> ConditionFactories { get; private set; }
         public CompositeMode? ConditionCompositeMode { get; internal set; }
 
-        private void AddConditionFactory(params Func<Game, IGameStateCondition>[] factories)
+        private void AddConditionFactory(params GameStateConditionFactory[] factories)
         {
-            ConditionFactories = (ConditionFactories ?? Enumerable.Empty<Func<Game, IGameStateCondition>>()).Concat(factories).ToList();
+            ConditionFactories = (ConditionFactories ?? Enumerable.Empty<GameStateConditionFactory>()).Concat(factories).ToList();
         }
 
-        public GamePhaseConditionDefinition If(Func<Game, IGameStateCondition> factory)
+        public GamePhaseConditionDefinition If(GameStateConditionFactory factory)
         {
             if (factory == null)
             {
@@ -39,12 +40,12 @@ namespace Veggerby.Boards.Core.Builder
         public GamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new()
         {
             ConditionCompositeMode = null;
-            ConditionFactories = new Func<Game, IGameStateCondition>[] { x => new T() };
+            ConditionFactories = new GameStateConditionFactory[] { x => new T() };
             return this;
         }
 
 
-        public GamePhaseConditionDefinition And(Func<Game, IGameStateCondition> factory)
+        public GamePhaseConditionDefinition And(GameStateConditionFactory factory)
         {
             if ((ConditionCompositeMode ?? CompositeMode.All) != CompositeMode.All)
             {
@@ -70,7 +71,7 @@ namespace Veggerby.Boards.Core.Builder
             return this;
         }
 
-        public GamePhaseConditionDefinition Or(Func<Game, IGameStateCondition> factory)
+        public GamePhaseConditionDefinition Or(GameStateConditionFactory factory)
         {
             if ((ConditionCompositeMode ?? CompositeMode.Any) != CompositeMode.Any)
             {

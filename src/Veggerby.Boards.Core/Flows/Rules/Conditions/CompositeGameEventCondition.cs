@@ -4,7 +4,7 @@ using System.Linq;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules
+namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : IGameEvent
     {

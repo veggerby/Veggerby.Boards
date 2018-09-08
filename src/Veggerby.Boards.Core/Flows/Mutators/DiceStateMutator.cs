@@ -8,8 +8,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
     {
         public GameState MutateState(GameState gameState, RollDiceGameEvent<T> @event)
         {
-            var newState = new DiceState<T>(@event.Dice, @event.NewDiceValue);
-            return gameState.Next(new [] { newState });
+            return gameState.Next(@event.NewDiceStates);
         }
     }
 }

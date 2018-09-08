@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 
         private readonly GamePhaseDefinition _parent;
         private IList<IGameEventRuleDefinition> _ruleDefinitions = new List<IGameEventRuleDefinition>();
-        private CompositeMode? _eventRuleCompositeMode;
+        private CompositeMode _eventRuleCompositeMode;
 
         public IGameEventRule Build(Game game)
         {
@@ -33,15 +33,15 @@ namespace Veggerby.Boards.Core.Builder.Rules
 
             var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();
             return CompositeGameEventRule.CreateCompositeRule(
-                _eventRuleCompositeMode.Value,
+                _eventRuleCompositeMode,
                 rules);
         }
 
         IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
         {
-             _eventRuleCompositeMode = null;
+             _eventRuleCompositeMode = CompositeMode.Any;
             var rule = new GameEventRuleDefinition<T>(Builder, this);
-            _ruleDefinitions = new [] { rule };
+            _ruleDefinitions.Add(rule);
             return rule;
         }
     }

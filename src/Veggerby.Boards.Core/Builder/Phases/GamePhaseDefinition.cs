@@ -8,45 +8,45 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core.Builder.Phases
 {
-    public class GamePhaseDefinition : DefinitionBase
+    internal class GamePhaseDefinition : DefinitionBase, IGamePhaseDefinition
     {
         public GamePhaseDefinition(GameEngineBuilder builder) : base(builder)
         {
-            RuleDefinitions = new GameEventRuleDefinitions(Builder, this);
+            _ruleDefinitions = new GameEventRuleDefinitions(Builder, this);
         }
 
-        public int? Number { get; private set; }
-        public GamePhaseConditionDefinition ConditionDefinition { get; private set; }
-        public GameEventRuleDefinitions RuleDefinitions { get; }
+        private int? _number;
+        private CompositeGamePhaseConditionDefinition _conditionDefinition;
+        private GameEventRuleDefinitions _ruleDefinitions;
 
         public GamePhaseDefinition WithNumber(int number)
         {
-            Number = number;
+            _number = number;
             return this;
         }
 
-        public GamePhaseConditionDefinition If(GameStateConditionFactory factory)
+        IGamePhaseConditionDefinition IGamePhaseDefinition.If(GameStateConditionFactory factory)
         {
-            ConditionDefinition = new GamePhaseConditionDefinition(Builder, this).If(factory);
-            return ConditionDefinition;
+            _conditionDefinition = new CompositeGamePhaseConditionDefinition(Builder, this).Add(new GamePhaseConditionDefinition(Builder, factory, this), null);
+            return _conditionDefinition;
         }
 
-        public GamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new()
+        IGamePhaseConditionDefinition IGamePhaseDefinition.If<T>()
         {
-            ConditionDefinition = new GamePhaseConditionDefinition(Builder, this).If<T>();
-            return ConditionDefinition;
+            _conditionDefinition = new CompositeGamePhaseConditionDefinition(Builder, this).Add(new GamePhaseConditionDefinition(Builder, game => new T(), this), null);
+            return _conditionDefinition;
         }
 
-        public GameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent
+        IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
         {
-            return RuleDefinitions.ForEvent<T>();
+            return ((IForGameEventRule)_ruleDefinitions).ForEvent<T>();
         }
 
-        public GamePhase Build(int number, Game game, CompositeGamePhase parent = null)
+        internal GamePhase Build(int number, Game game, CompositeGamePhase parent = null)
         {
-            var condition = ConditionDefinition?.Build(game);
-            var rule = RuleDefinitions?.Build(game);
-            return GamePhase.New(Number ?? number, condition ?? new NullGameStateCondition(), rule, parent);
+            var condition = _conditionDefinition?.Build(game);
+            var rule = _ruleDefinitions?.Build(game);
+            return GamePhase.New(_number ?? number, condition ?? new NullGameStateCondition(), rule, parent);
         }
     }
 }

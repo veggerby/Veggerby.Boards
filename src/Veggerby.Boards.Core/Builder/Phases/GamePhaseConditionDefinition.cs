@@ -9,116 +9,23 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core.Builder.Phases
 {
-    public class GamePhaseConditionDefinition : DefinitionBase
+    internal class GamePhaseConditionDefinition : GamePhaseConditionDefinitionBase
     {
-        public GamePhaseConditionDefinition(GameEngineBuilder builder, GamePhaseDefinition gamePhaseDefinition) : base(builder)
+        public GamePhaseConditionDefinition(GameEngineBuilder builder, GameStateConditionFactory conditionFactory, IForGameEventRule parent) : base(builder, parent)
         {
-            GamePhaseDefinition = gamePhaseDefinition;
-            ConditionCompositeMode = null;
-        }
-
-        public GamePhaseDefinition GamePhaseDefinition { get; }
-        public IEnumerable<GameStateConditionFactory> ConditionFactories { get; private set; }
-        public CompositeMode? ConditionCompositeMode { get; internal set; }
-
-        private void AddConditionFactory(params GameStateConditionFactory[] factories)
-        {
-            ConditionFactories = (ConditionFactories ?? Enumerable.Empty<GameStateConditionFactory>()).Concat(factories).ToList();
-        }
-
-        public GamePhaseConditionDefinition If(GameStateConditionFactory factory)
-        {
-            if (factory == null)
+            if (conditionFactory == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(conditionFactory));
             }
 
-            ConditionCompositeMode = null;
-            ConditionFactories = new [] { factory };
-            return this;
+            ConditionFactory = conditionFactory;
         }
 
-        public GamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new()
+        public GameStateConditionFactory ConditionFactory { get; }
+
+        internal override IGameStateCondition Build(Game game)
         {
-            ConditionCompositeMode = null;
-            ConditionFactories = new GameStateConditionFactory[] { x => new T() };
-            return this;
+            return ConditionFactory(game);
         }
-
-
-        public GamePhaseConditionDefinition And(GameStateConditionFactory factory)
-        {
-            if ((ConditionCompositeMode ?? CompositeMode.All) != CompositeMode.All)
-            {
-                throw new ArgumentException("Incorrect composition mode", nameof(factory));
-            }
-
-            ConditionCompositeMode = CompositeMode.All;
-            AddConditionFactory(factory);
-
-            return this;
-        }
-
-        public GamePhaseConditionDefinition And<T>() where T : IGameStateCondition, new()
-        {
-            if ((ConditionCompositeMode ?? CompositeMode.All) != CompositeMode.All)
-            {
-                throw new ArgumentException("Incorrect composition mode");
-            }
-
-            ConditionCompositeMode = CompositeMode.All;
-            AddConditionFactory(x => new T());
-
-            return this;
-        }
-
-        public GamePhaseConditionDefinition Or(GameStateConditionFactory factory)
-        {
-            if ((ConditionCompositeMode ?? CompositeMode.Any) != CompositeMode.Any)
-            {
-                throw new ArgumentException("Incorrect composition mode", nameof(factory));
-            }
-
-            ConditionCompositeMode = CompositeMode.Any;
-            AddConditionFactory(factory);
-
-            return this;
-        }
-
-
-        public GamePhaseConditionDefinition Or<T>() where T : IGameStateCondition, new()
-        {
-            if ((ConditionCompositeMode ?? CompositeMode.Any) != CompositeMode.Any)
-            {
-                throw new ArgumentException("Incorrect composition mode");
-            }
-
-            ConditionCompositeMode = CompositeMode.Any;
-            AddConditionFactory(x => new T());
-
-            return this;
-        }
-
-        public GameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent
-        {
-            return GamePhaseDefinition.ForEvent<T>();
-        }
-
-        public IGameStateCondition Build(Game game)
-        {
-            if (!(ConditionFactories?.Any() ?? false))
-            {
-                return null;
-            }
-
-            if (ConditionFactories.Count() == 1)
-            {
-                return ConditionFactories.Single()(game);
-            }
-
-            var conditions = ConditionFactories.Select(factory => factory(game)).ToArray();
-            return CompositeGameStateCondition.CreateCompositeCondition(ConditionCompositeMode.Value, conditions);
-        }
-
     }
 }

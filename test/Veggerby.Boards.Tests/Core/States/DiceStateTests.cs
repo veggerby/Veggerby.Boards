@@ -16,7 +16,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_create_dice_state()
             {
                 // assert
-                var dice = new Dice<int>("dice");
+                var dice = new Dice("dice");
 
                 // act
                 var actual = new DiceState<int>(dice, 5);
@@ -42,7 +42,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_throw_when_null_value()
             {
                 // assert
-                var dice = new Dice<string>("dice");
+                var dice = new Dice("dice");
 
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => new DiceState<string>(dice, null));
@@ -58,7 +58,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_self()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state = new DiceState<int>(dice, 5);
 
                 // act
@@ -72,7 +72,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_not_equal_null()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state = new DiceState<int>(dice, 5);
 
                 // act
@@ -86,7 +86,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_other_dice_state_same_artifact_same_value()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state1 = new DiceState<int>(dice, 5);
                 var state2 = new DiceState<int>(dice, 5);
 
@@ -101,7 +101,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_other_dice_state_same_artifact_different_value()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state1 = new DiceState<int>(dice, 5);
                 var state2 = new DiceState<int>(dice, 3);
 
@@ -116,8 +116,8 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_not_equal_different_artifacts()
             {
                 // arrange
-                var dice1 = new RegularDice("dice-1");
-                var dice2 = new RegularDice("dice-2");
+                var dice1 = new Dice("dice-1");
+                var dice2 = new Dice("dice-2");
                 var state1 = new DiceState<int>(dice1, 5);
                 var state2 = new DiceState<int>(dice2, 5);
 
@@ -132,7 +132,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_not_equal_different_artifact_state_type()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var piece = new Piece("piece", null, null);
                 var tile = new Tile("tile");
                 var state1 = new DiceState<int>(dice, 5);
@@ -149,7 +149,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_not_equal_another_type()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state = new DiceState<int>(dice, 5);
 
                 // act
@@ -166,7 +166,7 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_self()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var expected = ((typeof(DiceState<int>).GetHashCode() * 397) ^ dice.GetHashCode()) * 397 ^ 3.GetHashCode();
                 var state = new DiceState<int>(dice, 3);
 

@@ -3,7 +3,7 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public class ActivePlayerState : ArtifactState
+    public class ActivePlayerState : ArtifactState<Player>
     {
         public bool IsActive { get; }
 

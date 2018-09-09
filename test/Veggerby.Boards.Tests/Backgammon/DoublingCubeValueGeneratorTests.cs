@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Tests.Backgammon
                 // arrange
 
                 // act
-                var actual = new DoublingCubeValueGenerator();
+                var actual = new DoublingDiceValueGenerator();
 
                 // assert
                 actual.MinValue.ShouldBe(1);
@@ -40,8 +40,8 @@ namespace Veggerby.Boards.Tests.Backgammon
             public void Should_return_doubling_value(int initialValue, int expected)
             {
                 // arrange
-                var generator = new DoublingCubeValueGenerator();
-                var currentState = new DiceState<int>(new RegularDice("dice"), initialValue);
+                var generator = new DoublingDiceValueGenerator();
+                var currentState = new DiceState<int>(new Dice("dice"), initialValue);
 
                 // act
                 var actual = generator.GetValue(currentState);
@@ -54,7 +54,7 @@ namespace Veggerby.Boards.Tests.Backgammon
             public void Should_throw_with_null_state()
             {
                 // arrange
-                var generator = new DoublingCubeValueGenerator();
+                var generator = new DoublingDiceValueGenerator();
 
                 // act
                 var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(null));
@@ -67,8 +67,8 @@ namespace Veggerby.Boards.Tests.Backgammon
             public void Should_throw_with_different_state_type()
             {
                 // arrange
-                var generator = new DoublingCubeValueGenerator();
-                var initialState = new NullDiceState<int>(new RegularDice("dice"));
+                var generator = new DoublingDiceValueGenerator();
+                var initialState = new NullDiceState(new Dice("dice"));
 
                 // act
                 var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));
@@ -81,8 +81,8 @@ namespace Veggerby.Boards.Tests.Backgammon
             public void Should_throw_with_value_below_min()
             {
                 // arrange
-                var generator = new DoublingCubeValueGenerator();
-                var initialState = new DiceState<int>(new RegularDice("dice"), -1);
+                var generator = new DoublingDiceValueGenerator();
+                var initialState = new DiceState<int>(new Dice("dice"), -1);
 
                 // act
                 var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));
@@ -95,8 +95,8 @@ namespace Veggerby.Boards.Tests.Backgammon
             public void Should_throw_not_a_factor_of_2()
             {
                 // arrange
-                var generator = new DoublingCubeValueGenerator();
-                var initialState = new DiceState<int>(new RegularDice("dice"), 15);
+                var generator = new DoublingDiceValueGenerator();
+                var initialState = new DiceState<int>(new Dice("dice"), 15);
 
                 // act
                 var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));

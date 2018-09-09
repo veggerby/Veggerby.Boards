@@ -279,7 +279,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var from = game.GetTile("tile-1");
                 var to1 = game.GetTile("tile-2");
                 var to2 = game.GetTile("tile-3");
-                var dice = game.GetArtifact<RegularDice>("dice");
+                var dice = game.GetArtifact<Dice>("dice");
                 var @event = new MovePieceGameEvent(piece, from, to1);
 
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator())

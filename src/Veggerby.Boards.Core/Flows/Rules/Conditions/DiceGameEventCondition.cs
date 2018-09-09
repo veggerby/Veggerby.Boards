@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public class DiceGameEventCondition<T> : IGameEventCondition<RollDiceGameEvent<T>>
     {
-        public DiceGameEventCondition(IEnumerable<Dice<T>> dice)
+        public DiceGameEventCondition(IEnumerable<Dice> dice)
         {
             if (dice == null)
             {
@@ -24,7 +24,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
             Dice = dice;
         }
 
-        public IEnumerable<Dice<T>> Dice { get; }
+        public IEnumerable<Dice> Dice { get; }
 
         public ConditionResponse Evaluate(GameState state, RollDiceGameEvent<T> @event)
         {

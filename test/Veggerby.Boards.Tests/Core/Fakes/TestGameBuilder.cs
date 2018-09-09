@@ -58,7 +58,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             {
                 AddGamePhase("just a simple phase")
                     .If<InitialGameStateCondition>()
-                        .And(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
+                        .And(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>(), CompositeMode.Any))
                     .Then()
                         .ForEvent<RollDiceGameEvent<int>>()
                             .If(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))

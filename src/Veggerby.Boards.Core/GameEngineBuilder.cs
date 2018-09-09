@@ -50,7 +50,7 @@ namespace Veggerby.Boards.Core
 
         private Artifact CreateDice(DiceDefinition dice)
         {
-            return new RegularDice(dice.DiceId);
+            return new Dice(dice.DiceId);
         }
 
         private Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
@@ -220,8 +220,8 @@ namespace Veggerby.Boards.Core
 
             var diceStates = _diceState
                 .Select(x => x.Value == null
-                    ? (IArtifactState)new NullDiceState<int>(game.GetArtifact<RegularDice>(x.Key))
-                    : (IArtifactState)new DiceState<int>(game.GetArtifact<RegularDice>(x.Key), x.Value.Value))
+                    ? (IArtifactState)new NullDiceState(game.GetArtifact<Dice>(x.Key))
+                    : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
                 .ToList();
 
             var initialGameState = GameState.New(game, pieceStates.Concat(diceStates).ToList());

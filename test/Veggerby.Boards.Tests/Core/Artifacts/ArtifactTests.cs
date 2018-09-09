@@ -96,7 +96,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
             {
                 // arrange
                 var player = new Player("id");
-                var dice = new RegularDice("id");
+                var dice = new Dice("id");
 
                 // act
                 var actual = player.Equals(dice);

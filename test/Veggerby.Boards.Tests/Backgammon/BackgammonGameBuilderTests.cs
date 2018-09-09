@@ -58,9 +58,9 @@ namespace Veggerby.Boards.Tests.Backgammon
 
             actual.Game.ShouldHaveTileWithRelations("bar", Clockwise("point-1"), CounterClockwise("point-24"));
 
-            actual.Game.GetArtifact<Dice<int>>("dice-1").ShouldNotBeNull();
-            actual.Game.GetArtifact<Dice<int>>("dice-2").ShouldNotBeNull();
-            actual.Game.GetArtifact<Dice<int>>("doubling-dice").ShouldNotBeNull();
+            actual.Game.GetArtifact<Dice>("dice-1").ShouldNotBeNull();
+            actual.Game.GetArtifact<Dice>("dice-2").ShouldNotBeNull();
+            actual.Game.GetArtifact<Dice>("doubling-dice").ShouldNotBeNull();
 
             // state
             actual.GameState.ShouldHavePieceState("white-1", "point-1");

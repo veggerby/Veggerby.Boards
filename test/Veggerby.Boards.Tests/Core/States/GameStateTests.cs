@@ -142,7 +142,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece = Game.GetPiece("piece-1");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece, tile1);
                 var pieceState2 = new PieceState(piece, tile2);
                 var diceState = new DiceState<int>(dice, 5);
@@ -169,7 +169,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 5);
@@ -206,7 +206,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 5);
@@ -230,7 +230,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState1 = new DiceState<int>(dice, 5);
@@ -256,7 +256,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceN = Game.GetPiece("piece-n");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState1 = new DiceState<int>(dice, 5);
@@ -285,7 +285,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = !string.IsNullOrEmpty(tileId1) ? Game.GetTile(tileId1) : null;
                 var tile2 = !string.IsNullOrEmpty(tileId2) ? Game.GetTile(tileId2) : null;
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = tile1 != null ? new PieceState(piece1, tile1) : null;
                 var pieceState2 = tile2 != null ? new PieceState(piece2, tile2) : null;
                 var diceState = new DiceState<int>(dice, diceValue);
@@ -412,7 +412,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 3);
@@ -436,7 +436,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var game = new TestGameEngineBuilder().Compile().Game;
                 var piece = game.GetPiece("piece-1");
                 var tile = game.GetTile("tile-1");
-                var dice = game.GetArtifact<RegularDice>("dice");
+                var dice = game.GetArtifact<Dice>("dice");
                 var state1 = new PieceState(piece, tile);
                 var state2 = new DiceState<int>(dice, 4);
                 var gameState = GameState.New(game, new IArtifactState[] { state1, state2 });
@@ -457,7 +457,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece2 = Game.GetPiece("piece-2");
                 var tile1 = Game.GetTile("tile-1");
                 var tile2 = Game.GetTile("tile-2");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 3);

@@ -8,11 +8,10 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core.Builder.Phases
 {
-    internal class GamePhaseDefinition : DefinitionBase, IGamePhaseDefinition
+    internal class GamePhaseDefinition : DefinitionBase, IGamePhaseDefinition, IThenGameEventRule
     {
         public GamePhaseDefinition(GameEngineBuilder builder) : base(builder)
         {
-            _ruleDefinitions = new GameEventRuleDefinitions(Builder, this);
         }
 
         private int? _number;
@@ -37,16 +36,22 @@ namespace Veggerby.Boards.Core.Builder.Phases
             return _conditionDefinition;
         }
 
-        IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
+        IGameEventRuleDefinitionsWithOption IThenGameEventRule.Then()
         {
-            return ((IForGameEventRule)_ruleDefinitions).ForEvent<T>();
+            _ruleDefinitions = new GameEventRuleDefinitions(Builder, this);
+            return _ruleDefinitions;
         }
 
         internal GamePhase Build(int number, Game game, CompositeGamePhase parent = null)
         {
-            var condition = _conditionDefinition?.Build(game);
-            var rule = _ruleDefinitions?.Build(game);
-            return GamePhase.New(_number ?? number, condition ?? new NullGameStateCondition(), rule, parent);
+            if (_conditionDefinition == null || _ruleDefinitions == null)
+            {
+                throw new BoardException("Incomplete game phase");
+            }
+
+            var condition = _conditionDefinition.Build(game);
+            var rule = _ruleDefinitions.Build(game);
+            return GamePhase.New(_number ?? number, condition, rule, parent);
         }
     }
 }

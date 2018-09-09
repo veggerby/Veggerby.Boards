@@ -8,9 +8,20 @@ using Veggerby.Boards.Core.Flows.Rules.Conditions;
 
 namespace Veggerby.Boards.Core.Builder.Rules
 {
-    public interface IGameEventRuleDefinition
+    internal interface IGameEventRuleDefinition
     {
         IGameEventRule Build(Game game);
+    }
+
+    public interface IGameEventRuleDefinitionsWithOption : IGameEventRuleDefinitions
+    {
+        IGameEventRuleDefinitions All();
+        IGameEventRuleDefinitions First();
+    }
+
+    public interface IGameEventRuleDefinitions
+    {
+        IGameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent;
     }
 
     public interface IThenStateMutator<T> where T : IGameEvent
@@ -42,9 +53,19 @@ namespace Veggerby.Boards.Core.Builder.Rules
         IGameEventConditionDefinitionAndOr<T> If<TCondition>() where TCondition : IGameEventCondition<T>, new();
     }
 
-    public interface IGameEventRuleStateMutatorDefinition<T> : IForGameEventRule where T : IGameEvent
+    public interface IGameEventRuleStateMutatorDefinitionBefore<T> : IGameEventRuleDefinitions where T : IGameEvent
     {
-        IGameEventRuleStateMutatorDefinition<T> Do(StateMutatorFactory<T> mutator);
-        IGameEventRuleStateMutatorDefinition<T> Do<TMutator>() where TMutator : IStateMutator<T>, new();
+        IGameEventRuleStateMutatorDefinition<T> Before(StateMutatorFactory<T> mutator);
+        IGameEventRuleStateMutatorDefinition<T> Before<TMutator>() where TMutator : IStateMutator<T>, new();
+    }
+
+    public interface IGameEventRuleStateMutatorDefinitionDo<T> : IGameEventRuleDefinitions where T : IGameEvent
+    {
+        IGameEventRuleStateMutatorDefinitionDo<T> Do(StateMutatorFactory<T> mutator);
+        IGameEventRuleStateMutatorDefinitionDo<T> Do<TMutator>() where TMutator : IStateMutator<T>, new();
+    }
+
+    public interface IGameEventRuleStateMutatorDefinition<T> : IGameEventRuleStateMutatorDefinitionBefore<T>, IGameEventRuleStateMutatorDefinitionDo<T> where T : IGameEvent
+    {
     }
 }

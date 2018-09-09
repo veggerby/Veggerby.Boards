@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEventRuleStateMutatorDefinition<T> where T : IGameEvent
     {
-        public GameEventRuleStateMutatorDefinition(GameEngineBuilder builder, IForGameEventRule parent) : base(builder)
+        public GameEventRuleStateMutatorDefinition(GameEngineBuilder builder, IGameEventRuleDefinitions parent) : base(builder)
         {
             if (parent == null)
             {
@@ -23,21 +23,33 @@ namespace Veggerby.Boards.Core.Builder.Rules
         private IList<StateMutatorFactory<T>> _onBeforeMutators = new List<StateMutatorFactory<T>>();
         private IList<StateMutatorFactory<T>> _onAfterMutators = new List<StateMutatorFactory<T>>();
 
-        public IForGameEventRule Parent { get; }
+        public IGameEventRuleDefinitions Parent { get; }
 
-        IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinition<T>.Do(StateMutatorFactory<T> mutator)
+        IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinitionBefore<T>.Before(StateMutatorFactory<T> mutator)
+        {
+            _onBeforeMutators.Add(mutator);
+            return this;
+        }
+
+        IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinitionBefore<T>.Before<TMutator>()
+        {
+            _onBeforeMutators.Add(game => new TMutator());
+            return this;
+        }
+
+        IGameEventRuleStateMutatorDefinitionDo<T> IGameEventRuleStateMutatorDefinitionDo<T>.Do(StateMutatorFactory<T> mutator)
         {
             _onAfterMutators.Add(mutator);
             return this;
         }
 
-        IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinition<T>.Do<TMutator>()
+        IGameEventRuleStateMutatorDefinitionDo<T> IGameEventRuleStateMutatorDefinitionDo<T>.Do<TMutator>()
         {
             _onAfterMutators.Add(game => new TMutator());
             return this;
         }
 
-        IGameEventRuleDefinition<TEvent> IForGameEventRule.ForEvent<TEvent>()
+        IGameEventRuleDefinition<TEvent> IGameEventRuleDefinitions.ForEvent<TEvent>()
         {
             return Parent.ForEvent<TEvent>();
         }

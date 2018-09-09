@@ -59,17 +59,18 @@ namespace Veggerby.Boards.Tests.Core.Fakes
                 AddGamePhase("just a simple phase")
                     .If<InitialGameStateCondition>()
                         .And(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>(), CompositeMode.Any))
-                    .ForEvent<RollDiceGameEvent<int>>()
-                        .If(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))
-                            .Or(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.NotApplicable))
-                        .Then()
-                            //.DoBefore<DiceStateMutator<int>>()
-                            .Do<DiceStateMutator<int>>()
-                    .ForEvent<MovePieceGameEvent>()
-                        .If(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid))
-                            .Or(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable))
-                        .Then()
-                            .Do<MovePieceStateMutator>();
+                    .Then()
+                        .ForEvent<RollDiceGameEvent<int>>()
+                            .If(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid))
+                                .Or(game => new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.NotApplicable))
+                            .Then()
+                                //.DoBefore<DiceStateMutator<int>>()
+                                .Do<DiceStateMutator<int>>()
+                        .ForEvent<MovePieceGameEvent>()
+                            .If(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid))
+                                .Or(game => new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable))
+                            .Then()
+                                .Do<MovePieceStateMutator>();
             }
         }
     }

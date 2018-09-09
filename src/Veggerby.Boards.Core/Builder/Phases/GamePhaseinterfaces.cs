@@ -5,30 +5,30 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Builder.Phases
 {
-    public interface IForGameEventRule
+    public interface IThenGameEventRule
     {
-        IGameEventRuleDefinition<T> ForEvent<T>() where T : IGameEvent;
+        IGameEventRuleDefinitionsWithOption Then();
     }
 
-    public interface IGamePhaseConditionDefinitionAnd : IForGameEventRule
+    public interface IGamePhaseConditionDefinitionAnd : IThenGameEventRule
     {
         IGamePhaseConditionDefinitionAnd And(GameStateConditionFactory factory);
         IGamePhaseConditionDefinitionAnd And<T>() where T : IGameStateCondition, new();
         IGamePhaseConditionDefinitionAnd And(Action<IGamePhaseConditionDefinitionOr> action);
     }
 
-    public interface IGamePhaseConditionDefinitionOr : IForGameEventRule
+    public interface IGamePhaseConditionDefinitionOr : IThenGameEventRule
     {
         IGamePhaseConditionDefinitionOr Or(GameStateConditionFactory factory);
         IGamePhaseConditionDefinitionOr Or<T>() where T : IGameStateCondition, new();
         IGamePhaseConditionDefinitionOr Or(Action<IGamePhaseConditionDefinitionAnd> action);
     }
 
-    public interface IGamePhaseConditionDefinition : IForGameEventRule, IGamePhaseConditionDefinitionAnd, IGamePhaseConditionDefinitionOr
+    public interface IGamePhaseConditionDefinition : IThenGameEventRule, IGamePhaseConditionDefinitionAnd, IGamePhaseConditionDefinitionOr
     {
     }
 
-    public interface IGamePhaseDefinition : IForGameEventRule
+    public interface IGamePhaseDefinition
     {
         IGamePhaseConditionDefinition If(GameStateConditionFactory factory);
         IGamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new();

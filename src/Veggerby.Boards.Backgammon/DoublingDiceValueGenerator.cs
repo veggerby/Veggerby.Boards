@@ -5,9 +5,9 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Backgammon
 {
-    public class DoublingCubeValueGenerator : NumericDiceValueGenerator
+    public class DoublingDiceValueGenerator : NumericDiceValueGenerator
     {
-        public DoublingCubeValueGenerator() : base(1, 64)
+        public DoublingDiceValueGenerator() : base(1, 64)
         {
         }
 

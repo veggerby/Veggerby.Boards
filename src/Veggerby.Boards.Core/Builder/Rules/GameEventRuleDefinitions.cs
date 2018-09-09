@@ -8,16 +8,27 @@ using Veggerby.Boards.Core.Flows.Rules;
 
 namespace Veggerby.Boards.Core.Builder.Rules
 {
-    internal class GameEventRuleDefinitions : DefinitionBase, IForGameEventRule
+    internal class GameEventRuleDefinitions : DefinitionBase, IGameEventRuleDefinitionsWithOption
     {
         public GameEventRuleDefinitions(GameEngineBuilder builder, GamePhaseDefinition parent) : base(builder)
         {
             _parent = parent;
+            _eventRuleCompositeMode = CompositeMode.Any;
         }
 
         private readonly GamePhaseDefinition _parent;
         private IList<IGameEventRuleDefinition> _ruleDefinitions = new List<IGameEventRuleDefinition>();
         private CompositeMode _eventRuleCompositeMode;
+
+        private void SetCompositeMode(CompositeMode mode)
+        {
+            if (_ruleDefinitions.Any())
+            {
+                throw new ArgumentException("Can only set composite mode when no rules are added");
+            }
+
+            _eventRuleCompositeMode = mode;
+        }
 
         public IGameEventRule Build(Game game)
         {
@@ -37,9 +48,20 @@ namespace Veggerby.Boards.Core.Builder.Rules
                 rules);
         }
 
-        IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
+        IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.All()
         {
-             _eventRuleCompositeMode = CompositeMode.Any;
+            SetCompositeMode(CompositeMode.All);
+            return this;
+        }
+
+        IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.First()
+        {
+            SetCompositeMode(CompositeMode.Any);
+            return this;
+        }
+
+        IGameEventRuleDefinition<T> IGameEventRuleDefinitions.ForEvent<T>()
+        {
             var rule = new GameEventRuleDefinition<T>(Builder, this);
             _ruleDefinitions.Add(rule);
             return rule;

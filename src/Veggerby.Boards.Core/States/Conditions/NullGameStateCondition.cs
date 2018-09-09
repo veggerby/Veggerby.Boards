@@ -4,7 +4,11 @@
     {
         private readonly bool _result;
 
-        public NullGameStateCondition(bool result = true)
+        public NullGameStateCondition() : this(true) // needed for initializer
+        {
+        }
+
+        public NullGameStateCondition(bool result)
         {
             _result = result;
         }

@@ -12,12 +12,12 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     internal class GameEventRuleDefinition<T> : DefinitionBase, IGameEventRuleDefinition, IGameEventRuleDefinition<T> where T : IGameEvent
     {
-        public GameEventRuleDefinition(GameEngineBuilder builder, IForGameEventRule parent) : base(builder)
+        public GameEventRuleDefinition(GameEngineBuilder builder, IGameEventRuleDefinitions parent) : base(builder)
         {
             _parent = parent;
         }
 
-        private readonly IForGameEventRule _parent;
+        private readonly IGameEventRuleDefinitions _parent;
         private CompositeGameEventConditionDefinition<T> _conditionDefinition;
         private GameEventRuleStateMutatorDefinition<T> _mutatorsDefinition;
 

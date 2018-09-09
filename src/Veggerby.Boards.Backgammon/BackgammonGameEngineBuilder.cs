@@ -106,30 +106,43 @@ namespace Veggerby.Boards.Backgammon
 
             AddGamePhase("initial roll to determine starting player")
                 .If<InitialGameStateCondition>()
-                .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2").ToArray()))
-                        .And<DiceValuesShouldBeDifferent>()
-                    .Then()
-                        .Do<SelectActivePlayerGameStateMutator>()
-                        .Do<DiceStateMutator<int>>();
-/*
+                .Then()
+                    .ForEvent<RollDiceGameEvent<int>>()
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2")))
+                            .And<DiceValuesShouldBeDifferent>()
+                        .Then()
+                            .Do<SelectActivePlayerGameStateMutator>()
+                            .Do<DiceStateMutator<int>>();
+
             AddGamePhase("dice has been rolled")
-                .IfAnyDiceIsRolled<int>("dice-1", "dice-2")
-                    .AndHasOneActivePlayer()
-                .ForEvent<MovePieceGameEvent>()
-                    .If<PieceIsActivePlayerGameEventCondition>()
-                        .And<DiceStateMatch<int>>()
-                        .AndTileIsNotBlocked()
-                        .AndTileIsNot("home-white", "black-white")
-                        .AndPlayerHasNoPiecesOn("bar")
-                    .Do<MovePieceStateMutator>()
-                        .Then<MovePieceToBarStateMutator>()
-                        .Then<ClearDiceStateMutator>(); */
+                .If(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2"), CompositeMode.Any))
+                    .And<SingleActivePlayerGameStateCondition>()
+                .Then()
+                    .All()
+                    .ForEvent<RollDiceGameEvent<int>>()
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("doubling-dice")))
+                            //.And<DoublingDiceWithActivePlayer>()
+                        .Then()
+                            //.Do<RollDoublingDice>()
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            //.And<DiceStateMatch<int>>()
+                            .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
+                            .And(game => new TileExceptionGameEventCondition(game.GetTile("home-white"), game.GetTile("home-black")))
+                            .And(game => new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(game.GetTile("bar")))
+                        .Then()
+                            .Before<MovePieceStateMutator>()
+                            .Do<MovePieceStateMutator>();
+    //                        .Do<MovePieceToBarStateMutator>()
+    //                        .Do<ClearDiceStateMutator>();
 
             AddGamePhase("default => need to roll dice")
-                .ForEvent<RollDiceGameEvent<int>>()
-                    .Then()
-                        .Do<DiceStateMutator<int>>();
+                .If<NullGameStateCondition>()
+                .Then()
+                    .ForEvent<RollDiceGameEvent<int>>()
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2").ToArray()))
+                        .Then()
+                            .Do<DiceStateMutator<int>>();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
 {
     internal class CompositeGamePhaseConditionDefinition : GamePhaseConditionDefinitionBase, IGamePhaseConditionDefinition
     {
-        public CompositeGamePhaseConditionDefinition(GameEngineBuilder builder, IForGameEventRule parent) : base(builder, parent)
+        public CompositeGamePhaseConditionDefinition(GameEngineBuilder builder, IThenGameEventRule parent) : base(builder, parent)
         {
             _conditionCompositeMode = null;
         }
@@ -88,9 +88,9 @@ namespace Veggerby.Boards.Core.Builder.Phases
             return this;
         }
 
-        IGameEventRuleDefinition<T> IForGameEventRule.ForEvent<T>()
+        IGameEventRuleDefinitionsWithOption IThenGameEventRule.Then()
         {
-            return Parent.ForEvent<T>();
+            return Parent.Then();
         }
     }
 }

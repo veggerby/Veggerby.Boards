@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
 {
     internal abstract class GamePhaseConditionDefinitionBase : DefinitionBase
     {
-        public GamePhaseConditionDefinitionBase(GameEngineBuilder builder, IForGameEventRule parent) : base(builder)
+        public GamePhaseConditionDefinitionBase(GameEngineBuilder builder, IThenGameEventRule parent) : base(builder)
         {
             if (parent == null)
             {
@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
             Parent = parent;
         }
 
-        public IForGameEventRule Parent { get; }
+        public IThenGameEventRule Parent { get; }
 
         internal abstract IGameStateCondition Build(Game game);
     }

@@ -2,7 +2,7 @@
 
 namespace Veggerby.Boards.Core.Artifacts
 {
-    public class Dice<T> : Artifact
+    public class Dice : Artifact
     {
         public Dice(string id) : base(id)
         {

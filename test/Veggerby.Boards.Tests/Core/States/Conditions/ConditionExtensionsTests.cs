@@ -17,9 +17,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_create_composition_with_type_all()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
 
                 // act
                 var actual = condition1.And(condition2);
@@ -34,9 +34,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_create_composition_with_type_all_when_chained()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -52,9 +52,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_not_chain_composition()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -76,9 +76,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_create_composition_with_type_or()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
 
                 // act
                 var actual = condition1.Or(condition2);
@@ -93,9 +93,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_create_composition_with_type_any_when_chained()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
                 var condition3 = new NullGameStateCondition();
 
                 // act
@@ -111,9 +111,9 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             public void Should_not_chain_composition()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var condition1 = new InitialGameStateCondition();
-                var condition2 = new DiceGameStateCondition<RegularDice, int>(new[] { dice }, CompositeMode.All);
+                var condition2 = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
                 var condition3 = new NullGameStateCondition();
 
                 // act

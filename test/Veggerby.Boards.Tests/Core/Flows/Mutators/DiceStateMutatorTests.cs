@@ -24,7 +24,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var game = engine.Game;
                 var initialState = engine.GameState;
                 var mutator = new DiceStateMutator<int>();
-                var dice = game.GetArtifact<RegularDice>("dice");
+                var dice = game.GetArtifact<Dice>("dice");
                 var @event = new RollDiceGameEvent<int>(new DiceState<int>(dice, 4));
 
                 // act

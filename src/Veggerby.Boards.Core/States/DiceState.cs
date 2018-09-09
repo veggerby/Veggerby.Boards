@@ -3,11 +3,11 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public class DiceState<T> : ArtifactState
+    public class DiceState<T> : ArtifactState<Dice>
     {
         public T CurrentValue { get; }
 
-        public DiceState(Dice<T> dice, T currentValue) : base(dice)
+        public DiceState(Dice dice, T currentValue) : base(dice)
         {
             if (currentValue == null)
             {

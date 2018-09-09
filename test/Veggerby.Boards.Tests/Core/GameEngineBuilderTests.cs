@@ -82,7 +82,7 @@ namespace Veggerby.Boards.Tests.Core
                 actual.GameState.IsInitialState.ShouldBeTrue();
                 actual.GameState.ChildStates.Count().ShouldBe(5);
                 actual.GameState.ChildStates.OfType<PieceState>().Count().ShouldBe(3);
-                actual.GameState.ChildStates.OfType<NullDiceState<int>>().Count().ShouldBe(1);
+                actual.GameState.ChildStates.OfType<NullDiceState>().Count().ShouldBe(1);
                 actual.GameState.ChildStates.OfType<DiceState<int>>().Count().ShouldBe(1);
 
                 var game = actual.Game;
@@ -93,8 +93,8 @@ namespace Veggerby.Boards.Tests.Core
                 var tile1 = game.GetTile("tile-1");
                 var tile2 = game.GetTile("tile-2");
 
-                var dice = game.GetArtifact<RegularDice>("dice");
-                var dice2 = game.GetArtifact<RegularDice>("dice-secondary");
+                var dice = game.GetArtifact<Dice>("dice");
+                var dice2 = game.GetArtifact<Dice>("dice-secondary");
 
 
                 var state1 = actual.GameState.GetState<PieceState>(piece1);

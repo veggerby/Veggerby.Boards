@@ -47,7 +47,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_return_random_value(Guid id)
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var state = new DiceState<int>(dice, 2);
                 var generator = new RandomDiceValueGenerator(1, 6);
 

@@ -141,10 +141,10 @@ namespace Veggerby.Boards.Tests.Core.States
             {
                 // arrange
                 var tile = new Tile("tile");
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var piece = new Piece("piece", null, null);
                 var state1 = new PieceState(piece, tile);
-                var state2 = new NullDiceState<int>(dice);
+                var state2 = new NullDiceState(dice);
 
                 // act
                 var actual = state1.Equals(state2);

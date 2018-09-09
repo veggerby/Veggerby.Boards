@@ -107,8 +107,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
                 var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
                 var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
-                var dice1 = new RegularDice("dice-1");
-                var dice2 = new RegularDice("dice-2");
+                var dice1 = new Dice("dice-1");
+                var dice2 = new Dice("dice-2");
 
                 var board = new TestBoard();
                 var game = new Game(
@@ -117,7 +117,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                     new Artifact[] { piece1, piece2, piece3, dice1, dice2 });
 
                 // act
-                var actual = game.GetArtifact<RegularDice>("dice-1");
+                var actual = game.GetArtifact<Dice>("dice-1");
 
                 // assert
                 actual.ShouldBe(dice1);
@@ -130,8 +130,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
                 var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
                 var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
-                var dice1 = new RegularDice("dice-1");
-                var dice2 = new RegularDice("dice-2");
+                var dice1 = new Dice("dice-1");
+                var dice2 = new Dice("dice-2");
 
                 var board = new TestBoard();
                 var game = new Game(
@@ -140,7 +140,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                     new Artifact[] { piece1, piece2, piece3, dice2 });
 
                 // act
-                var actual = game.GetArtifact<RegularDice>("dice-1");
+                var actual = game.GetArtifact<Dice>("dice-1");
 
                 // assert
                 actual.ShouldBeNull();
@@ -153,8 +153,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var piece1 = new Piece("piece-1", null, new [] { new NullPattern() });
                 var piece2 = new Piece("piece-2", null, new [] { new NullPattern() });
                 var piece3 = new Piece("piece-3", null, new [] { new NullPattern() });
-                var dice1 = new RegularDice("dice-1");
-                var dice2 = new RegularDice("dice-2");
+                var dice1 = new Dice("dice-1");
+                var dice2 = new Dice("dice-2");
 
                 var board = new TestBoard();
                 var game = new Game(

@@ -3,23 +3,23 @@ using Veggerby.Boards.Core.Artifacts;
 
 namespace Veggerby.Boards.Core.States
 {
-    public class NullDiceState<T> : ArtifactState
+    public class NullDiceState : ArtifactState<Dice>
     {
-        public NullDiceState(Dice<T> dice) : base(dice)
+        public NullDiceState(Dice dice) : base(dice)
         {
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as NullDiceState<T>);
+            return Equals(obj as NullDiceState);
         }
 
         public override bool Equals(IArtifactState other)
         {
-            return Equals(other as NullDiceState<T>);
+            return Equals(other as NullDiceState);
         }
 
-        public bool Equals(NullDiceState<T> other)
+        public bool Equals(NullDiceState other)
         {
             if (other == null)
             {

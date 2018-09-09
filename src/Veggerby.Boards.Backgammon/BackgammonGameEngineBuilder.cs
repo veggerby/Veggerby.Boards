@@ -108,19 +108,19 @@ namespace Veggerby.Boards.Backgammon
                 .If<InitialGameStateCondition>()
                 .Then()
                     .ForEvent<RollDiceGameEvent<int>>()
-                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2")))
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2")))
                             .And<DiceValuesShouldBeDifferent>()
                         .Then()
                             .Do<SelectActivePlayerGameStateMutator>()
                             .Do<DiceStateMutator<int>>();
 
             AddGamePhase("dice has been rolled")
-                .If(game => new DiceGameStateCondition<RegularDice, int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2"), CompositeMode.Any))
+                .If(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.Any))
                     .And<SingleActivePlayerGameStateCondition>()
                 .Then()
                     .All()
                     .ForEvent<RollDiceGameEvent<int>>()
-                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("doubling-dice")))
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("doubling-dice")))
                             //.And<DoublingDiceWithActivePlayer>()
                         .Then()
                             //.Do<RollDoublingDice>()
@@ -140,7 +140,7 @@ namespace Veggerby.Boards.Backgammon
                 .If<NullGameStateCondition>()
                 .Then()
                     .ForEvent<RollDiceGameEvent<int>>()
-                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<RegularDice>("dice-1", "dice-2").ToArray()))
+                        .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2").ToArray()))
                         .Then()
                             .Do<DiceStateMutator<int>>();
         }

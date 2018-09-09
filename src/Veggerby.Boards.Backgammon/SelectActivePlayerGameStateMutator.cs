@@ -14,8 +14,8 @@ namespace Veggerby.Boards.Backgammon
         {
             var white = gameState.Game.GetPlayer("white");
             var black = gameState.Game.GetPlayer("black");
-            var dice1 = gameState.Game.GetArtifact<RegularDice>("dice-1");
-            var dice2 = gameState.Game.GetArtifact<RegularDice>("dice-2");
+            var dice1 = gameState.Game.GetArtifact<Dice>("dice-1");
+            var dice2 = gameState.Game.GetArtifact<Dice>("dice-2");
             var diceState1 = @event.NewDiceStates.Single(x => x.Artifact.Equals(dice1));
             var diceState2 = @event.NewDiceStates.Single(x => x.Artifact.Equals(dice2));
 

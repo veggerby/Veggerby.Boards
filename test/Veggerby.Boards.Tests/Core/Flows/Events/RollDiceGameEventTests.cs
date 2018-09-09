@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
             public void Should_create_event()
             {
                 // arrange
-                var dice = new RegularDice("dice");
+                var dice = new Dice("dice");
                 var newState = new DiceState<int>(dice, 4);
 
                 // act

@@ -6,13 +6,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.States.Conditions
 {
-    public class DiceGameStateCondition<TDice, TValue> : IGameStateCondition
-        where TDice : Dice<TValue>
+    public class DiceGameStateCondition<TValue> : IGameStateCondition
     {
-        public IEnumerable<TDice> Dice { get; }
+        public IEnumerable<Dice> Dice { get; }
         public CompositeMode Mode { get; }
 
-        public DiceGameStateCondition(IEnumerable<TDice> dice, CompositeMode mode)
+        public DiceGameStateCondition(IEnumerable<Dice> dice, CompositeMode mode)
         {
             if (dice == null)
             {

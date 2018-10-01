@@ -116,7 +116,7 @@ namespace Veggerby.Boards.Backgammon
 
             AddGamePhase("dice has been rolled")
                 .If(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.Any))
-                    .And<SingleActivePlayerGameStateCondition>()
+                    //.And<SingleActivePlayerGameStateCondition>()
                 .Then()
                     .All()
                     .ForEvent<RollDiceGameEvent<int>>()
@@ -131,7 +131,7 @@ namespace Veggerby.Boards.Backgammon
                             .And(game => new TileExceptionGameEventCondition(game.GetTile("home-white"), game.GetTile("home-black")))
                             .And(game => new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(game.GetTile("bar")))
                         .Then()
-                            .Before<MovePieceStateMutator>()
+                            //.Before<MovePieceStateMutator>()
                             .Do<MovePieceStateMutator>();
     //                        .Do<MovePieceToBarStateMutator>()
     //                        .Do<ClearDiceStateMutator>();

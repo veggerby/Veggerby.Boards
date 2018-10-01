@@ -37,23 +37,26 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
                 .GroupBy(x => x.Owner.Equals(@event.Piece.Owner) ? PlayerOption.Self : PlayerOption.Opponent)
                 .ToDictionary(x => x.Key, x => x.ToList());
 
-            if ((OccupiedBy & PlayerOption.Any) != 0)
+            var selfCount = pieceStates.ContainsKey(PlayerOption.Self) ? pieceStates[PlayerOption.Self].Count() : 0;
+            var opponentCount = pieceStates.ContainsKey(PlayerOption.Opponent) ? pieceStates[PlayerOption.Opponent].Count() : 0;
+
+            if ((OccupiedBy & PlayerOption.Any) == PlayerOption.Any)
             {
-                return pieceStates[PlayerOption.Self].Count() + pieceStates[PlayerOption.Opponent].Count() >= NumberOfPiecesToBlock
+                return selfCount + opponentCount >= NumberOfPiecesToBlock
                     ? ConditionResponse.Invalid
                     : ConditionResponse.Valid;
             }
 
             if ((OccupiedBy & PlayerOption.Self) != 0)
             {
-                return pieceStates[PlayerOption.Self].Count() >= NumberOfPiecesToBlock
+                return selfCount >= NumberOfPiecesToBlock
                     ? ConditionResponse.Invalid
                     : ConditionResponse.Valid;
             }
 
             if ((OccupiedBy & PlayerOption.Opponent) != 0)
             {
-                return pieceStates[PlayerOption.Opponent].Count() >= NumberOfPiecesToBlock
+                return opponentCount >= NumberOfPiecesToBlock
                     ? ConditionResponse.Invalid
                     : ConditionResponse.Valid;
             }

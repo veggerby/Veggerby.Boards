@@ -1,5 +1,6 @@
 using System;
 using Shouldly;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;

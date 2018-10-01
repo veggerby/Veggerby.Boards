@@ -12,7 +12,7 @@ namespace Veggerby.Boards.Core
     public enum PlayerOption
     {
         Self = 0x1,
-        Opponent = 0x3,
-        Any = Self ^ Opponent
+        Opponent = 0x2,
+        Any = Self | Opponent
     }
 }

@@ -11,7 +11,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/test/Veggerby.Boards.Tests"
+                "${workspaceFolder}/src/Veggerby.Boards.Api"
             ],
             "problemMatcher": "$msCompile",
             "group": {

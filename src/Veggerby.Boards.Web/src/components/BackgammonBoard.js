@@ -1,13 +1,15 @@
 import React from 'react';
 
-const stroke = 2;
-const width = 800;
-const margin = 30;
-const barWidth = 50;
-const rowSpacing = 100;
-const tileWidth = (width - (2 * margin) - barWidth) / 12;
-const tileHeight = 5 * tileWidth;// (height - (2 * margin) - rowSpacing) / 2;
-const height = 2 * (margin + tileHeight) + rowSpacing;
+const stroke = 0.75;
+const margin = 10;
+const barWidth = 15;
+const tileWidth = 20;
+const pieceRadius = 8;
+const tileHeight = 80;
+const fontSize = 3;
+
+const width = 2 * margin + 12 * tileWidth + barWidth;
+const height = 2 * margin + 2 * tileHeight + 30;
 
 const getTileIxc = tile => tile.tileId.replace('point-', '') - 1;
 
@@ -34,25 +36,25 @@ const getDirection = tile => {
 const Piece = ({ tile, piece, number }) =>
     <g
         id={piece.pieceId}
-        transform={`translate(${Math.floor(number / 5) * 5}, ${getDirection(tile) * ((number % 5) + (getDirection(tile) < 0 ? 1 : 0)) * (tileWidth + stroke) + Math.floor(number / 5) * 5})`}
+        transform={`translate(${Math.floor(number / 5) * (pieceRadius / 5)}, ${getDirection(tile) * ((number % 5) + (getDirection(tile) < 0 ? 1 : 0)) * (2 * pieceRadius + stroke) + Math.floor(number / 5) * (pieceRadius / 5)})`}
     >
         <circle
             cx={tileWidth / 2}
-            cy={tileWidth / 2}
-            r={tileWidth / 2}
+            cy={pieceRadius}
+            r={pieceRadius}
             style={{
-                'stroke': piece.ownerId === 'white' ? '#000' : '#555',
-                'stroke-width': stroke,
-                'fill': piece.ownerId === 'white' ? '#fff' : '#000'
+                stroke: piece.ownerId === 'white' ? '#000' : '#555',
+                strokeWidth: stroke,
+                fill: piece.ownerId === 'white' ? '#fff' : '#000'
             }}/>
         <text
             x={tileWidth / 2}
-            y={tileWidth / 2}
+            y={pieceRadius}
             style={{
-                'font-size': 8,
-                'text-anchor': 'middle',
-                'alignment-baseline': 'middle',
-                'fill': piece.ownerId === 'black' ? '#fff' : '#000'
+                fontSize: fontSize,
+                textAnchor: 'middle',
+                alignmentBaseline: 'middle',
+                fill: piece.ownerId === 'black' ? '#fff' : '#000'
             }}>{piece.pieceId}</text>
     </g>;
 
@@ -63,53 +65,57 @@ const Tile = ({ tile  }) => {
         <polygon
             points={`0,0 ${tileWidth/2},${getDirection(tile) * tileHeight} ${tileWidth},0`}
             style={{
-                'fill': (getTileIxc(tile) % 2 === 0 ? '#ddd' : '#aaa'),
-                'stroke': 'black',
-                'stroke-width': stroke
+                fill: (getTileIxc(tile) % 2 === 0 ? '#ddd' : '#aaa'),
+                stroke: 'black',
+                strokeWidth: stroke
             }}
             id={tile.tileId} />
         {tile.pieces.map((piece, ixc) => <Piece key={ixc} piece={piece} tile={tile} number={ixc} />)}
         <text
             x={tileWidth / 2}
-            y={-1 * getDirection(tile) * 10}
+            y={-1 * getDirection(tile) * margin / 2}
             style={{
-                'font-size': 8,
-                'text-anchor': 'middle',
-                'alignment-baseline': 'middle'
+                fontSize: fontSize,
+                textAnchor: 'middle',
+                alignmentBaseline: 'middle'
             }}>{tile.tileId}</text>
     </g>;
 };
 
 const BackgammonBoard = ({ board }) => board ?
 <div>
-    <svg width={width} height={height}>
+    <svg
+        width={1024}
+        height={768}
+        viewBox={`0 0 ${width} ${height}`}
+    >
         <g
             id="board"
         >
-        <polygon
-            points={`${stroke / 2},${stroke / 2} ${width - stroke / 2},${stroke / 2} ${width - stroke / 2},${height - stroke / 2} ${stroke / 2},${height  - stroke / 2}`}
-            style={{
-                'fill': '#e8e8e8',
-                'stroke': 'black',
-                'stroke-width': stroke
-            }}
-        id="border-outer" />
-        <polygon
-            points={`${margin},${margin} ${(width - barWidth) / 2},${margin} ${(width - barWidth) / 2},${height - margin} ${margin},${height - margin}`}
-            style={{
-                'fill': '#ccc',
-                'stroke': 'black',
-                'stroke-width': stroke
-            }}
-            id="left-half"/>
-        <polygon
-            points={`${width - margin},${margin} ${(width + barWidth) / 2},${margin} ${(width + barWidth) / 2},${height - margin} ${width - margin},${height - margin}`}
-            style={{
-                'fill': '#ccc',
-                'stroke': 'black',
-                'stroke-width': stroke
-            }}
-            id="right-half"/>
+            <polygon
+                points={`${stroke / 2},${stroke / 2} ${width - stroke / 2},${stroke / 2} ${width - stroke / 2},${height - stroke / 2} ${stroke / 2},${height  - stroke / 2}`}
+                style={{
+                    fill: '#e8e8e8',
+                    stroke: 'black',
+                    strokeWidth: stroke
+                }}
+            id="border-outer" />
+            <polygon
+                points={`${margin},${margin} ${(width - barWidth) / 2},${margin} ${(width - barWidth) / 2},${height - margin} ${margin},${height - margin}`}
+                style={{
+                    fill: '#ccc',
+                    stroke: 'black',
+                    strokeWidth: stroke
+                }}
+                id="left-half"/>
+            <polygon
+                points={`${width - margin},${margin} ${(width + barWidth) / 2},${margin} ${(width + barWidth) / 2},${height - margin} ${width - margin},${height - margin}`}
+                style={{
+                    fill: '#ccc',
+                    stroke: 'black',
+                    strokeWidth: stroke
+                }}
+                id="right-half"/>
             {board.tiles.filter(x => x.tileId.startsWith('point-')).map((tile, ixc) => <Tile key={ixc} tile={tile} />)}
         </g>
     </svg>

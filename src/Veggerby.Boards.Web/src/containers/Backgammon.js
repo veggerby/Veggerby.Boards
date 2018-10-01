@@ -11,7 +11,7 @@ class Backgammon extends Component {
     }
 
     render() {
-        return <BackgammonBoard board={this.props.board} />;
+        return this.props.game ? <BackgammonBoard board={this.props.game.board} /> : null;
     }
 }
 
@@ -19,7 +19,7 @@ class Backgammon extends Component {
 * Map the state to props.
 */
 const mapStateToProps = (state) => ({
-    board: state.board
+    game: state.game
 });
 
 /**

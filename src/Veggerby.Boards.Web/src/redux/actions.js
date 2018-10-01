@@ -1,7 +1,7 @@
 export const FETCH_GAME_SUCCESS = 'FETCH_GAME_SUCCESS';
 export const FETCH_GAME_HAS_ERRORED = 'FETCH_GAME_HAS_ERRORED';
 
-export const fetchGameSuccess = board => ({ type: FETCH_GAME_SUCCESS, board });
+export const fetchGameSuccess = game => ({ type: FETCH_GAME_SUCCESS, game });
 export const fetchGameHasErrored = hasErrored => ({ type: FETCH_GAME_HAS_ERRORED, hasErrored });
 
 export const MOVE_PIECE_SUCCESS = 'MOVE_PIECE_SUCCESS';

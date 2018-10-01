@@ -7,7 +7,7 @@ export const fetchGame = (gameId) =>
             headers: { 'Content-Type': 'application/json' }
         })
             .then(result => result.json())
-            .then(board => dispatch(actions.fetchGameSuccess(board)))
+            .then(game => dispatch(actions.fetchGameSuccess(game)))
             .catch(e => dispatch(actions.fetchGameHasErrored(true)));
     };
 
@@ -21,6 +21,6 @@ export const movePiece = (gameId, pieceId, fromTileId, toTileId) =>
             body: JSON.stringify(body)
         })
             .then(result => result.json())
-            .then(board => dispatch(actions.movePieceSuccess(board)))
+            .then(game => dispatch(actions.movePieceSuccess(game)))
             .catch(e => dispatch(actions.movePieceHasErrored(true)));
     };

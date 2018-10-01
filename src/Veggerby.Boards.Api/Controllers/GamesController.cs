@@ -32,11 +32,7 @@ namespace Veggerby.Boards.Api.Controllers
         {
             var builder = new BackgammonGameEngineBuilder();
             var engine = builder.Compile();
-            engine.RollDice("dice-1", "dice-2");
-            engine.Move("black-1", "point-9");
-            engine.Move("black-2", "point-9");
-            engine.Move("black-3", "point-6");
-            var result = _mapper.Map<BoardModel>(engine);
+            var result = _mapper.Map<GameModel>(engine);
             return Ok(result);
         }
     }

@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Artifacts
+namespace Veggerby.Boards.Core
 {
     public static class GameExtensions
     {
@@ -38,8 +41,25 @@ namespace Veggerby.Boards.Core.Artifacts
             return game
                 .Artifacts
                 .OfType<T>()
-                .Where(x => (ids?.Any() ?? false) && ids.Contains(x.Id))
+                .Where(x => !(ids?.Any() ?? false) || ids.Contains(x.Id))
                 .ToList();
+        }
+
+        public static void RollDice(this GameEngine engine, params string[] ids)
+        {
+            var dice = engine.Game.GetArtifacts<Dice>(ids);
+            var states = dice.Select((x, i) => new DiceState<int>(x, i)).ToArray();
+            var @event = new RollDiceGameEvent<int>(states);
+            engine.HandleEvent(@event);
+        }
+
+        public static void Move(this GameEngine engine, string pieceId, string toTileId)
+        {
+            var piece = engine.Game.GetPiece(pieceId);
+            var tile = engine.Game.GetTile(toTileId);
+            var state = engine.GameState.GetState<PieceState>(piece);
+            var @event = new MovePieceGameEvent(piece, state.CurrentTile, tile);
+            engine.HandleEvent(@event);
         }
     }
 }

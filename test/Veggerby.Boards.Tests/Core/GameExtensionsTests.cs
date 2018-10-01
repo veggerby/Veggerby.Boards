@@ -1,10 +1,11 @@
 using Shouldly;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 
-namespace Veggerby.Boards.Tests.Core.Artifacts
+namespace Veggerby.Boards.Tests.Core
 {
     public class GameExtensionsTests
     {

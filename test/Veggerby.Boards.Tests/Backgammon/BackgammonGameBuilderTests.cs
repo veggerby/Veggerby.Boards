@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Backgammon;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Tests.Utils;
 using Xunit;

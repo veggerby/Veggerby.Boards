@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.States
             return gameState
                 .GetStates<ActivePlayerState>()
                 .Where(x => x.IsActive)
-                .Select(x => (Player)x.Artifact)
+                .Select(x => x.Artifact)
                 .Single();
         }
 
@@ -19,9 +19,8 @@ namespace Veggerby.Boards.Core.States
         {
             return gameState
                 .GetStates<PieceState>()
-                .Where(x => x.CurrentTile == tile && (owner == null || ((Piece)x.Artifact).Owner.Equals(owner)))
+                .Where(x => x.CurrentTile == tile && (owner == null || (x.Artifact).Owner.Equals(owner)))
                 .Select(x => x.Artifact)
-                .Cast<Piece>()
                 .ToList();
         }
     }

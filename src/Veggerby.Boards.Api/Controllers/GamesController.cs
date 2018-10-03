@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Veggerby.Boards.Api.Models;
 using Veggerby.Boards.Backgammon;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Core;
 
 namespace Veggerby.Boards.Api.Controllers
@@ -30,7 +31,9 @@ namespace Veggerby.Boards.Api.Controllers
         [HttpGet("{id}", Name = "GetGame")]
         public IActionResult Get(Guid id)
         {
-            var builder = new BackgammonGameEngineBuilder();
+            var builder = id.ToString().EndsWith("1")
+                ? new BackgammonGameEngineBuilder() as GameEngineBuilder
+                : new ChessGameEngineBuilder();
             var engine = builder.Compile();
             var result = _mapper.Map<GameModel>(engine);
             return Ok(result);

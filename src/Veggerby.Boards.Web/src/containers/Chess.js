@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { fetchGame } from '../redux/thunk';
-import BackgammonBoard from '../components/BackgammonBoard';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../redux/actions';
+import ChessBoard from '../components/ChessBoard';
 
-class Backgammon extends Component {
+class Chess extends Component {
     componentDidMount() {
-        this.props.fetchGame('00000000-0000-0000-0000-000000000001');
+        this.props.fetchGame('00000000-0000-0000-0000-000000000000');
     }
 
     render() {
-        return this.props.game ? <BackgammonBoard board={this.props.game.board} /> : null;
+        return this.props.game ? <ChessBoard board={this.props.game.board} /> : null;
     }
 }
 
@@ -33,4 +33,4 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Backgammon);
+)(Chess);

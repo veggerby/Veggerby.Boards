@@ -19,6 +19,7 @@ const Navigation = () =>
             </NavItem>
             <NavDropdown eventKey={2} title="Games" id="basic-nav-dropdown">
                 <MenuItem eventKey={2.1} href="/backgammon">Backgammon</MenuItem>
+                <MenuItem eventKey={2.2} href="/chess">Chess</MenuItem>
             </NavDropdown>
         </Nav>
     </Navbar>

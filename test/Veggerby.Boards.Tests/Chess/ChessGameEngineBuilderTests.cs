@@ -581,41 +581,41 @@ namespace Veggerby.Boards.Tests.Chess
                 Relation("north",      "tile-h7"));
 
             // state
-            actual.GameState.ShouldHavePieceState("white-rook-1", "tile-a1");
-            actual.GameState.ShouldHavePieceState("white-knight-1", "tile-b1");
-            actual.GameState.ShouldHavePieceState("white-bishop-1", "tile-c1");
-            actual.GameState.ShouldHavePieceState("white-king", "tile-d1");
-            actual.GameState.ShouldHavePieceState("white-queen", "tile-e1");
-            actual.GameState.ShouldHavePieceState("white-bishop-2", "tile-f1");
-            actual.GameState.ShouldHavePieceState("white-knight-2", "tile-g1");
-            actual.GameState.ShouldHavePieceState("white-rook-2", "tile-h1");
+            actual.State.ShouldHavePieceState("white-rook-1", "tile-a1");
+            actual.State.ShouldHavePieceState("white-knight-1", "tile-b1");
+            actual.State.ShouldHavePieceState("white-bishop-1", "tile-c1");
+            actual.State.ShouldHavePieceState("white-king", "tile-d1");
+            actual.State.ShouldHavePieceState("white-queen", "tile-e1");
+            actual.State.ShouldHavePieceState("white-bishop-2", "tile-f1");
+            actual.State.ShouldHavePieceState("white-knight-2", "tile-g1");
+            actual.State.ShouldHavePieceState("white-rook-2", "tile-h1");
 
-            actual.GameState.ShouldHavePieceState("white-pawn-1", "tile-a2");
-            actual.GameState.ShouldHavePieceState("white-pawn-2", "tile-b2");
-            actual.GameState.ShouldHavePieceState("white-pawn-3", "tile-c2");
-            actual.GameState.ShouldHavePieceState("white-pawn-4", "tile-d2");
-            actual.GameState.ShouldHavePieceState("white-pawn-5", "tile-e2");
-            actual.GameState.ShouldHavePieceState("white-pawn-6", "tile-f2");
-            actual.GameState.ShouldHavePieceState("white-pawn-7", "tile-g2");
-            actual.GameState.ShouldHavePieceState("white-pawn-8", "tile-h2");
+            actual.State.ShouldHavePieceState("white-pawn-1", "tile-a2");
+            actual.State.ShouldHavePieceState("white-pawn-2", "tile-b2");
+            actual.State.ShouldHavePieceState("white-pawn-3", "tile-c2");
+            actual.State.ShouldHavePieceState("white-pawn-4", "tile-d2");
+            actual.State.ShouldHavePieceState("white-pawn-5", "tile-e2");
+            actual.State.ShouldHavePieceState("white-pawn-6", "tile-f2");
+            actual.State.ShouldHavePieceState("white-pawn-7", "tile-g2");
+            actual.State.ShouldHavePieceState("white-pawn-8", "tile-h2");
 
-            actual.GameState.ShouldHavePieceState("black-pawn-1", "tile-a7");
-            actual.GameState.ShouldHavePieceState("black-pawn-2", "tile-b7");
-            actual.GameState.ShouldHavePieceState("black-pawn-3", "tile-c7");
-            actual.GameState.ShouldHavePieceState("black-pawn-4", "tile-d7");
-            actual.GameState.ShouldHavePieceState("black-pawn-5", "tile-e7");
-            actual.GameState.ShouldHavePieceState("black-pawn-6", "tile-f7");
-            actual.GameState.ShouldHavePieceState("black-pawn-7", "tile-g7");
-            actual.GameState.ShouldHavePieceState("black-pawn-8", "tile-h7");
+            actual.State.ShouldHavePieceState("black-pawn-1", "tile-a7");
+            actual.State.ShouldHavePieceState("black-pawn-2", "tile-b7");
+            actual.State.ShouldHavePieceState("black-pawn-3", "tile-c7");
+            actual.State.ShouldHavePieceState("black-pawn-4", "tile-d7");
+            actual.State.ShouldHavePieceState("black-pawn-5", "tile-e7");
+            actual.State.ShouldHavePieceState("black-pawn-6", "tile-f7");
+            actual.State.ShouldHavePieceState("black-pawn-7", "tile-g7");
+            actual.State.ShouldHavePieceState("black-pawn-8", "tile-h7");
 
-            actual.GameState.ShouldHavePieceState("black-rook-1", "tile-a8");
-            actual.GameState.ShouldHavePieceState("black-knight-1", "tile-b8");
-            actual.GameState.ShouldHavePieceState("black-bishop-1", "tile-c8");
-            actual.GameState.ShouldHavePieceState("black-king", "tile-d8");
-            actual.GameState.ShouldHavePieceState("black-queen", "tile-e8");
-            actual.GameState.ShouldHavePieceState("black-bishop-2", "tile-f8");
-            actual.GameState.ShouldHavePieceState("black-knight-2", "tile-g8");
-            actual.GameState.ShouldHavePieceState("black-rook-2", "tile-h8");
+            actual.State.ShouldHavePieceState("black-rook-1", "tile-a8");
+            actual.State.ShouldHavePieceState("black-knight-1", "tile-b8");
+            actual.State.ShouldHavePieceState("black-bishop-1", "tile-c8");
+            actual.State.ShouldHavePieceState("black-king", "tile-d8");
+            actual.State.ShouldHavePieceState("black-queen", "tile-e8");
+            actual.State.ShouldHavePieceState("black-bishop-2", "tile-f8");
+            actual.State.ShouldHavePieceState("black-knight-2", "tile-g8");
+            actual.State.ShouldHavePieceState("black-rook-2", "tile-h8");
        }
     }
 }

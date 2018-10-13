@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Api.Models.Mappings
 
         public TileModel Convert(GameProgress source, Tile tile, ResolutionContext context)
         {
-            var states = source.GameState.GetStates<PieceState>().Where(x => tile.Equals(x.CurrentTile));
+            var states = source.State.GetStates<PieceState>().Where(x => tile.Equals(x.CurrentTile));
             var result = new TileModel
             {
                 TileId = tile.Id,

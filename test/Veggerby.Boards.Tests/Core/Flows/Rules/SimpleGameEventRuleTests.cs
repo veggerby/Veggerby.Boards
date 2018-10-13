@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = GameEventRule<NullGameEvent>.Null;;
 
                 // act
-                var actual = rule.Check(engine.GameState, new NullGameEvent());
+                var actual = rule.Check(engine.State, new NullGameEvent());
 
                 // assert
                 actual.ShouldBe(ConditionResponse.Valid);
@@ -63,7 +63,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((s, e) => ConditionResponse.Ignore("just because")));
 
                 // act
-                var actual = rule.Check(engine.GameState, new NullGameEvent());
+                var actual = rule.Check(engine.State, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(ConditionResult.Ignore);
@@ -78,7 +78,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(engine.GameState, null));
+                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(engine.State, null));
 
                 // assert
                 actual.ParamName.ShouldBe("event");
@@ -92,7 +92,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = rule.Check(engine.GameState, new NullGameEvent());
+                var actual = rule.Check(engine.State, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(ConditionResult.Ignore);
@@ -107,7 +107,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -131,7 +131,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -156,7 +156,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
@@ -180,7 +180,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");

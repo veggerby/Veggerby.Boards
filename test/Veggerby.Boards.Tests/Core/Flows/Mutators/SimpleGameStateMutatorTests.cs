@@ -47,7 +47,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
@@ -71,7 +71,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var @event = new NullGameEvent();
 
                 var mutator = new SimpleGameStateMutator<NullGameEvent>(e => null);

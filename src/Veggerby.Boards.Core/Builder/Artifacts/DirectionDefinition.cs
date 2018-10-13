@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Core.Builder.Artifacts
 {
     public class DirectionDefinition : DefinitionBase
     {
-        public DirectionDefinition(GameEngineBuilder builder) : base(builder)
+        public DirectionDefinition(GameBuilder builder) : base(builder)
         {
         }
 

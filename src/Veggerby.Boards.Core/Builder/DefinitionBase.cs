@@ -4,9 +4,9 @@ namespace Veggerby.Boards.Core.Builder
 {
     public abstract class DefinitionBase
     {
-        protected GameEngineBuilder Builder { get; }
+        protected GameBuilder Builder { get; }
 
-        public DefinitionBase(GameEngineBuilder builder)
+        public DefinitionBase(GameBuilder builder)
         {
             if (builder == null)
             {

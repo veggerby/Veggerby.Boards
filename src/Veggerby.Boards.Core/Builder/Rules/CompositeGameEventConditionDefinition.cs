@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     internal class CompositeGameEventConditionDefinition<T> : GameEventConditionDefinitionBase<T>, IGameEventConditionDefinitionAndOr<T> where T : IGameEvent
     {
-        public CompositeGameEventConditionDefinition(GameEngineBuilder builder, IThenStateMutator<T> parent) : base(builder, parent)
+        public CompositeGameEventConditionDefinition(GameBuilder builder, IThenStateMutator<T> parent) : base(builder, parent)
         {
             _conditionCompositeMode = null;
         }

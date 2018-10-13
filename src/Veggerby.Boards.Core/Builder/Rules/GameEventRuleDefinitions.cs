@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     internal class GameEventRuleDefinitions : DefinitionBase, IGameEventRuleDefinitionsWithOption
     {
-        public GameEventRuleDefinitions(GameEngineBuilder builder, GamePhaseDefinition parent) : base(builder)
+        public GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition parent) : base(builder)
         {
             _parent = parent;
             _eventRuleCompositeMode = CompositeMode.Any;

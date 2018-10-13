@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Core.Builder.Artifacts
 {
     public class TileDefinition : DefinitionBase
     {
-        public TileDefinition(GameEngineBuilder builder) : base(builder)
+        public TileDefinition(GameBuilder builder) : base(builder)
         {
         }
 

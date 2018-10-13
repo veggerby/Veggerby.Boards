@@ -8,7 +8,7 @@ namespace Veggerby.Boards.Core.Builder.Artifacts
     {
         private readonly PieceDefinition _pieceDefinition;
 
-        public PieceDirectionPatternDefinition(GameEngineBuilder builder, PieceDefinition pieceDefinition) : base(builder)
+        public PieceDirectionPatternDefinition(GameBuilder builder, PieceDefinition pieceDefinition) : base(builder)
         {
             _pieceDefinition = pieceDefinition;
             IsRepeatable = false;

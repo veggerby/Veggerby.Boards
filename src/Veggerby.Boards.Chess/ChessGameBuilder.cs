@@ -7,7 +7,7 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Chess
 {
-    public class ChessGameEngineBuilder : GameEngineBuilder
+    public class ChessGameBuilder : GameBuilder
     {
         private string GetChar(int i)
         {

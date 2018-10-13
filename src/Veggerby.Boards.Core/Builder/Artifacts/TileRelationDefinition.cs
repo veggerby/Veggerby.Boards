@@ -6,7 +6,7 @@ namespace Veggerby.Boards.Core.Builder.Artifacts
     {
         private readonly TileDefinition _tileDefintion;
 
-        public TileRelationDefinition(GameEngineBuilder builder, TileDefinition tileDefintion) : base(builder)
+        public TileRelationDefinition(GameBuilder builder, TileDefinition tileDefintion) : base(builder)
         {
             _tileDefintion = tileDefintion;
         }

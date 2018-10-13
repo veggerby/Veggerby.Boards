@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEventRuleStateMutatorDefinition<T> where T : IGameEvent
     {
-        public GameEventRuleStateMutatorDefinition(GameEngineBuilder builder, IGameEventRuleDefinitions parent) : base(builder)
+        public GameEventRuleStateMutatorDefinition(GameBuilder builder, IGameEventRuleDefinitions parent) : base(builder)
         {
             if (parent == null)
             {

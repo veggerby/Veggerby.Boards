@@ -6,9 +6,9 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Api.Models.Mappings
 {
-    public class BoardModelTypeConverter : ITypeConverter<GameEngine, BoardModel>
+    public class BoardModelTypeConverter : ITypeConverter<GameProgress, BoardModel>
     {
-        public PieceModel Convert(GameEngine source, Piece piece, ResolutionContext context)
+        public PieceModel Convert(GameProgress source, Piece piece, ResolutionContext context)
         {
             return new PieceModel
             {
@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Api.Models.Mappings
             };
         }
 
-        public TileModel Convert(GameEngine source, Tile tile, ResolutionContext context)
+        public TileModel Convert(GameProgress source, Tile tile, ResolutionContext context)
         {
             var states = source.GameState.GetStates<PieceState>().Where(x => tile.Equals(x.CurrentTile));
             var result = new TileModel
@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Api.Models.Mappings
             return result;
         }
 
-        public BoardModel Convert(GameEngine source, BoardModel destination, ResolutionContext context)
+        public BoardModel Convert(GameProgress source, BoardModel destination, ResolutionContext context)
         {
             destination = destination ?? new BoardModel();
             destination.Id = source.Game.Board.Id;

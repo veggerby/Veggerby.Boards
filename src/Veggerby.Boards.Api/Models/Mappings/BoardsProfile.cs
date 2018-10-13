@@ -1,5 +1,6 @@
 using AutoMapper;
 using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Api.Models.Mappings
 {
@@ -7,10 +8,10 @@ namespace Veggerby.Boards.Api.Models.Mappings
     {
         public BoardsProfile()
         {
-            CreateMap<GameEngine, GameModel>()
+            CreateMap<GameProgress, GameModel>()
                 .ForMember(x => x.Board, o => o.ResolveUsing(x => x));
 
-            CreateMap<GameEngine, BoardModel>()
+            CreateMap<GameProgress, BoardModel>()
                 .ConvertUsing<BoardModelTypeConverter>();
         }
     }

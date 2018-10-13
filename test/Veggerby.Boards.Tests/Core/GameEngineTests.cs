@@ -19,20 +19,17 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_initialize_gameengine()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var game = engine.Game;
-                var state = GameState.New(game, null);
+                var builder = new TestGameEngineBuilder().Compile();
+                var game = builder.Game;
                 var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
                 // act
-                var actual = GameEngine.New(state, gamePhaseRoot);
+                var actual = new GameEngine(game, gamePhaseRoot);
 
                 // assert
                 actual.ShouldNotBeNull();
                 actual.Game.ShouldBe(game);
                 actual.GamePhaseRoot.ShouldBe(gamePhaseRoot);
-                actual.GameState.ShouldBe(state);
-                actual.Events.ShouldBeEmpty();
             }
 
             [Fact]
@@ -42,38 +39,21 @@ namespace Veggerby.Boards.Tests.Core
                 var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => GameEngine.New(null, gamePhaseRoot));
+                var actual = Should.Throw<ArgumentNullException>(() => new GameEngine(null, gamePhaseRoot));
 
                 // assert
-                actual.ParamName.ShouldBe("initialState");
-            }
-
-            [Fact]
-            public void Should_throw_with_non_initial_state()
-            {
-                // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var game = engine.Game;
-                var state = GameState.New(game, null).Next(null);
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
-
-                // act
-                var actual = Should.Throw<ArgumentException>(() => GameEngine.New(state, gamePhaseRoot));
-
-                // assert
-                actual.ParamName.ShouldBe("initialState");
+                actual.ParamName.ShouldBe("game");
             }
 
             [Fact]
             public void Should_throw_with_null_condition()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var game = engine.Game;
-                var state = GameState.New(game, null);
+                var builder = new TestGameEngineBuilder().Compile();
+                var game = builder.Game;
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => GameEngine.New(state, null));
+                var actual = Should.Throw<ArgumentNullException>(() => new GameEngine(game, null));
 
                 // assert
                 actual.ParamName.ShouldBe("gamePhaseRoot");

@@ -20,7 +20,7 @@ namespace Veggerby.Boards.Tests.Chess
             // arrange
 
             // act
-            var actual = new ChessGameEngineBuilder().Compile();
+            var actual = new ChessGameBuilder().Compile();
 
             // assert
 

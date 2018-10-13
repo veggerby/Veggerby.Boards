@@ -27,7 +27,7 @@ namespace Veggerby.Boards.Tests.Backgammon
             // arrange
 
             // act
-            var actual = new BackgammonGameEngineBuilder().Compile();
+            var actual = new BackgammonGameBuilder().Compile();
 
             // assert
 

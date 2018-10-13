@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
 {
     internal class GamePhaseDefinition : DefinitionBase, IGamePhaseDefinition, IThenGameEventRule
     {
-        public GamePhaseDefinition(GameEngineBuilder builder) : base(builder)
+        public GamePhaseDefinition(GameBuilder builder) : base(builder)
         {
         }
 

@@ -17,7 +17,7 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core
 {
-    public abstract class GameEngineBuilder
+    public abstract class GameBuilder
     {
         protected string BoardId { get; set; }
         private readonly IList<PlayerDefinition> _playerDefinitions = new List<PlayerDefinition>();
@@ -188,13 +188,13 @@ namespace Veggerby.Boards.Core
 
         protected abstract void Build();
 
-        private GameEngine _gameEngine;
+        private GameProgress _initialGameProgress;
 
-        public GameEngine Compile()
+        public GameProgress Compile()
         {
-            if (_gameEngine != null)
+            if (_initialGameProgress != null)
             {
-                return _gameEngine;
+                return _initialGameProgress;
             }
 
             Build();
@@ -250,9 +250,10 @@ namespace Veggerby.Boards.Core
             }
 
             // combine
-            _gameEngine = GameEngine.New(initialGameState, gamePhaseRoot);
+            var engine = new GameEngine(game, gamePhaseRoot);
+            _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
-            return _gameEngine;
+            return _initialGameProgress;
         }
     }
 }

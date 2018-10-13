@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Veggerby.Boards.Tests.Core
 {
-    public class GameEngineBuilderTests
+    public class GameBuilderTests
     {
         public class Game_Builder_Tests
         {
@@ -25,7 +25,7 @@ namespace Veggerby.Boards.Tests.Core
                 actual.ShouldNotBeNull();
                 actual.Game.ShouldNotBeNull();
                 actual.GameState.ShouldNotBeNull();
-                actual.GamePhaseRoot.ShouldNotBeNull();
+                actual.GameEngine.ShouldNotBeNull();
 
                 actual.Game.Artifacts.Count().ShouldBe(8);
                 actual.Game.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x" });

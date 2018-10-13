@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 {
     internal abstract class GameEventConditionDefinitionBase<T> : DefinitionBase where T : IGameEvent
     {
-        public GameEventConditionDefinitionBase(GameEngineBuilder builder, IThenStateMutator<T> parent) : base(builder)
+        public GameEventConditionDefinitionBase(GameBuilder builder, IThenStateMutator<T> parent) : base(builder)
         {
             if (parent == null)
             {

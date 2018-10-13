@@ -45,21 +45,21 @@ namespace Veggerby.Boards.Core
                 .ToList();
         }
 
-        public static void RollDice(this GameEngine engine, params string[] ids)
+        public static GameProgress RollDice(this GameProgress progress, params string[] ids)
         {
-            var dice = engine.Game.GetArtifacts<Dice>(ids);
+            var dice = progress.Game.GetArtifacts<Dice>(ids);
             var states = dice.Select((x, i) => new DiceState<int>(x, i)).ToArray();
             var @event = new RollDiceGameEvent<int>(states);
-            engine.HandleEvent(@event);
+            return progress.HandleEvent(@event);
         }
 
-        public static void Move(this GameEngine engine, string pieceId, string toTileId)
+        public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
         {
-            var piece = engine.Game.GetPiece(pieceId);
-            var tile = engine.Game.GetTile(toTileId);
-            var state = engine.GameState.GetState<PieceState>(piece);
+            var piece = progress.Game.GetPiece(pieceId);
+            var tile = progress.Game.GetTile(toTileId);
+            var state = progress.GameState.GetState<PieceState>(piece);
             var @event = new MovePieceGameEvent(piece, state.CurrentTile, tile);
-            engine.HandleEvent(@event);
+            return progress.HandleEvent(@event);
         }
     }
 }

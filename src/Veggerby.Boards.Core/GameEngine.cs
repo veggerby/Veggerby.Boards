@@ -12,47 +12,13 @@ namespace Veggerby.Boards.Core
     public class GameEngine
     {
         public Game Game { get; }
-        public GameState GameState { get; private set; }
         public GamePhase GamePhaseRoot { get; }
-        public IEnumerable<IGameEvent> Events => _events.ToList().AsReadOnly();
 
-        private readonly IList<IGameEvent> _events = new List<IGameEvent>();
-
-        public GameState HandleEvent(IGameEvent @event)
+        public GameEngine(Game game, GamePhase gamePhaseRoot)
         {
-            var gamePhase = GamePhaseRoot.GetActiveGamePhase(GameState);
-            var ruleCheck = gamePhase.Rule.Check(GameState, @event);
-            if (ruleCheck.Result == ConditionResult.Valid)
+            if (game == null)
             {
-                var newState = gamePhase.Rule.HandleEvent(GameState, @event);
-                _events.Add(@event);
-
-                if (newState.Equals(GameState))
-                {
-                    // NOOP, do not change state
-                    return GameState;
-                }
-
-                GameState = newState;
-            }
-            else if (ruleCheck.Result == ConditionResult.Invalid)
-            {
-                throw new InvalidGameEventException(@event, ruleCheck, Game, gamePhase, GameState);
-            }
-
-            return GameState;
-        }
-
-        private GameEngine(GameState initialState, GamePhase gamePhaseRoot)
-        {
-            if (initialState == null)
-            {
-                throw new ArgumentNullException(nameof(initialState));
-            }
-
-            if (!initialState.IsInitialState)
-            {
-                throw new ArgumentException("GameState is not initial state", nameof(initialState));
+                throw new ArgumentNullException(nameof(game));
             }
 
             if (gamePhaseRoot == null)
@@ -60,14 +26,8 @@ namespace Veggerby.Boards.Core
                 throw new ArgumentNullException(nameof(gamePhaseRoot));
             }
 
-            GameState = initialState;
+            Game = game;
             GamePhaseRoot = gamePhaseRoot;
-            Game = initialState.Game;
-        }
-
-        public static GameEngine New(GameState initialState, GamePhase gamePhaseRoot)
-        {
-            return new GameEngine(initialState, gamePhaseRoot);
         }
     }
 }

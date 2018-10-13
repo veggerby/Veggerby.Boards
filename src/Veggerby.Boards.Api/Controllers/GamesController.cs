@@ -32,8 +32,8 @@ namespace Veggerby.Boards.Api.Controllers
         public IActionResult Get(Guid id)
         {
             var builder = id.ToString().EndsWith("1")
-                ? new BackgammonGameEngineBuilder() as GameEngineBuilder
-                : new ChessGameEngineBuilder();
+                ? new BackgammonGameBuilder() as GameBuilder
+                : new ChessGameBuilder();
             var engine = builder.Compile();
             var result = _mapper.Map<GameModel>(engine);
             return Ok(result);

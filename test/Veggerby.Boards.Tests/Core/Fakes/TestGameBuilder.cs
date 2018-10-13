@@ -10,7 +10,7 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.Fakes
 {
-    public class TestGameEngineBuilder : GameEngineBuilder
+    public class TestGameEngineBuilder : GameBuilder
     {
         private readonly bool _useSimpleGamePhase;
 

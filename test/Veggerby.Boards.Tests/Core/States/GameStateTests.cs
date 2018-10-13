@@ -187,8 +187,8 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_throw_comparing_different_games()
             {
                 // arrange
-                var game1 = new Boards.Backgammon.BackgammonGameEngineBuilder().Compile().Game;
-                var game2 = new Boards.Chess.ChessGameEngineBuilder().Compile().Game;
+                var game1 = new Boards.Backgammon.BackgammonGameBuilder().Compile().Game;
+                var game2 = new Boards.Chess.ChessGameBuilder().Compile().Game;
                 var gameState1 = GameState.New(game1, null);
                 var gameState2 = GameState.New(game2, null);
 
@@ -338,8 +338,8 @@ namespace Veggerby.Boards.Tests.Core.States
             public void Should_equal_when_game_is_different()
             {
                 // arrange
-                var game1 = new Boards.Backgammon.BackgammonGameEngineBuilder().Compile().Game;
-                var game2 = new Boards.Chess.ChessGameEngineBuilder().Compile().Game;
+                var game1 = new Boards.Backgammon.BackgammonGameBuilder().Compile().Game;
+                var game2 = new Boards.Chess.ChessGameBuilder().Compile().Game;
                 var gameState1 = GameState.New(game1, null);
                 var gameState2 = GameState.New(game2, null);
 

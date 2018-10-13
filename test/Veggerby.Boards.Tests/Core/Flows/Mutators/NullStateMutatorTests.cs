@@ -22,7 +22,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 // arrange
                 var engine = new TestGameEngineBuilder().Compile();
                 var game = engine.Game;
-                var initialState = engine.GameState;
+                var initialState = engine.State;
                 var mutator = new NullStateMutator<NullGameEvent>();
                 var @event = new NullGameEvent();
 

@@ -8,40 +8,40 @@ namespace Veggerby.Boards.Core.States
 {
     public class GameProgress
     {
-        public GameProgress(GameEngine gameEngine, GameState gameState, IEnumerable<IGameEvent> gameEvents)
+        public GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events)
         {
-            if (gameEngine == null)
+            if (engine == null)
             {
-                throw new ArgumentNullException(nameof(gameEngine));
+                throw new ArgumentNullException(nameof(engine));
             }
 
-            if (gameState == null)
+            if (state == null)
             {
-                throw new ArgumentNullException(nameof(gameState));
+                throw new ArgumentNullException(nameof(state));
             }
 
-            GameEngine = gameEngine;
-            GameState = gameState;
-            GameEvents = (gameEvents ?? Enumerable.Empty<IGameEvent>()).ToList();
+            Engine = engine;
+            State = state;
+            Events = (events ?? Enumerable.Empty<IGameEvent>()).ToList();
         }
 
-        public GameEngine GameEngine { get; }
-        public GameState GameState { get; }
-        public IEnumerable<IGameEvent> GameEvents { get; }
-        public Game Game => GameState.Game;
+        public GameEngine Engine { get; }
+        public GameState State { get; }
+        public IEnumerable<IGameEvent> Events { get; }
+        public Game Game => State.Game;
 
         public GameProgress HandleEvent(IGameEvent @event)
         {
-            var gamePhase = GameEngine.GamePhaseRoot.GetActiveGamePhase(GameState);
-            var ruleCheck = gamePhase.Rule.Check(GameState, @event);
+            var gamePhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
+            var ruleCheck = gamePhase.Rule.Check(State, @event);
             if (ruleCheck.Result == ConditionResult.Valid)
             {
-                var newState = gamePhase.Rule.HandleEvent(GameState, @event);
-                return new GameProgress(GameEngine, newState, GameEvents.Concat(new [] { @event }));
+                var newState = gamePhase.Rule.HandleEvent(State, @event);
+                return new GameProgress(Engine, newState, Events.Concat(new [] { @event }));
             }
             else if (ruleCheck.Result == ConditionResult.Invalid)
             {
-                throw new InvalidGameEventException(@event, ruleCheck, GameEngine.Game, gamePhase, GameState);
+                throw new InvalidGameEventException(@event, ruleCheck, Engine.Game, gamePhase, State);
             }
 
             return this;

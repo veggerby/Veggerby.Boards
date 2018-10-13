@@ -57,7 +57,7 @@ namespace Veggerby.Boards.Core
         {
             var piece = progress.Game.GetPiece(pieceId);
             var tile = progress.Game.GetTile(toTileId);
-            var state = progress.GameState.GetState<PieceState>(piece);
+            var state = progress.State.GetState<PieceState>(piece);
             var @event = new MovePieceGameEvent(piece, state.CurrentTile, tile);
             return progress.HandleEvent(@event);
         }

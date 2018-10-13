@@ -1,5 +1,9 @@
 ﻿using System.Text;
 using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Mutators;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
+using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Chess
 {
@@ -247,6 +251,13 @@ namespace Veggerby.Boards.Chess
             WithPiece("black-bishop-2").OnTile("tile-f8");
             WithPiece("black-knight-2").OnTile("tile-g8");
             WithPiece("black-rook-2").OnTile("tile-h8");
+
+            AddGamePhase("move pieces")
+                .If<NullGameStateCondition>()
+                    .Then()
+                        .ForEvent<MovePieceGameEvent>()
+                        .Then()
+                            .Do<MovePieceStateMutator>();
         }
     }
 }

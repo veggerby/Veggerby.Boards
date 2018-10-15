@@ -12,6 +12,13 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
     {
         public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
         {
+            var pieceState = state.GetState<PieceState>(@event.Piece);
+
+            if (!pieceState.CurrentTile.Equals(@event.From))
+            {
+                return ConditionResponse.Invalid;
+            }
+
             var result = @event
                 .Piece
                 .Patterns
@@ -22,7 +29,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
                 })
                 .Any(x => x != null);
 
-            return result ? ConditionResponse.Valid : ConditionResponse.Invalid;
+            return result ? ConditionResponse.Valid : ConditionResponse.Fail("No path to destination tile");
         }
     }
 }

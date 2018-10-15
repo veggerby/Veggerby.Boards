@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_update_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var mutator = new DiceStateMutator<int>();
@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var @event = new RollDiceGameEvent<int>(new DiceState<int>(dice, 4));
 
                 // act
-                var actual = mutator.MutateState(initialState, @event);
+                var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
                 actual.ShouldNotBeSameAs(initialState);

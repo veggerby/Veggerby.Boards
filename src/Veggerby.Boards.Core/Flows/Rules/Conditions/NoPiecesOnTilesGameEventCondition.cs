@@ -28,7 +28,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 
         public Tile[] Tiles { get; }
 
-        public ConditionResponse Evaluate(GameState state, T @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
         {
             var player = state.GetActivePlayer();
             return Tiles.All(tile => !state.GetPiecesOnTile(tile, player).Any())

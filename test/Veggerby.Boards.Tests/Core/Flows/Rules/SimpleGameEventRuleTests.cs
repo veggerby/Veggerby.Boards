@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             {
                 // arrange
                 // act
-                var actual = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((s, e) => ConditionResponse.Valid));
+                var actual = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
 
                 // assert
                 actual.ShouldNotBeNull();
@@ -45,11 +45,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_valid_check_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var rule = GameEventRule<NullGameEvent>.Null;;
 
                 // act
-                var actual = rule.Check(engine.State, new NullGameEvent());
+                var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
                 actual.ShouldBe(ConditionResponse.Valid);
@@ -59,11 +59,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_ignore_check_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((s, e) => ConditionResponse.Ignore("just because")));
+                var engine = new TestGameBuilder().Compile();
+                var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Ignore("just because")));
 
                 // act
-                var actual = rule.Check(engine.State, new NullGameEvent());
+                var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(ConditionResult.Ignore);
@@ -74,11 +74,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_throw_with_null_event_on_explicit_interface()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+                var engine = new TestGameBuilder().Compile();
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(engine.State, null));
+                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(engine.Engine, engine.State, null));
 
                 // assert
                 actual.ParamName.ShouldBe("event");
@@ -88,11 +88,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+                var engine = new TestGameBuilder().Compile();
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = rule.Check(engine.State, new NullGameEvent());
+                var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
                 actual.Result.ShouldBe(ConditionResult.Ignore);
@@ -105,7 +105,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_update_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
@@ -113,12 +113,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var to = game.GetTile("tile-2");
                 var @event = new MovePieceGameEvent(piece, from, to);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
-                    new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Valid),
+                    new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Valid),
                     null,
                     new MovePieceStateMutator());
 
                 // act
-                var actual = rule.HandleEvent(initialState, @event);
+                var actual = rule.HandleEvent(null, initialState, @event);
 
                 // assert
                 var newPieceState = actual.GetState<PieceState>(piece);
@@ -129,7 +129,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_not_mutate_state_when_rule_result_is_ignore()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
@@ -137,12 +137,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var to = game.GetTile("tile-2");
                 var @event = new MovePieceGameEvent(piece, from, to);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
-                    new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.NotApplicable),
+                    new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.NotApplicable),
                     null,
                     new MovePieceStateMutator());
 
                 // act
-                var actual = rule.HandleEvent(initialState, @event);
+                var actual = rule.HandleEvent(null, initialState, @event);
 
                 // assert
                 actual.ShouldBe(initialState);
@@ -154,7 +154,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_throw_if_handle_event_called_with_invalid_rule_result()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
@@ -162,12 +162,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var to = game.GetTile("tile-2");
                 var @event = new MovePieceGameEvent(piece, from, to);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
-                    new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Invalid),
+                    new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Invalid),
                     null,
                     new MovePieceStateMutator());
 
                 // act
-                var actual = Should.Throw<BoardException>(() => rule.HandleEvent(initialState, @event));
+                var actual = Should.Throw<BoardException>(() => rule.HandleEvent(engine.Engine, initialState, @event));
 
                 // assert
                 actual.Message.ShouldBe("Invalid game event");
@@ -178,19 +178,19 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_throw_if_handle_null_event()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
-                    new SimpleGameEventCondition<MovePieceGameEvent>((s, e) => ConditionResponse.Invalid),
+                    new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Invalid),
                     null,
                     new MovePieceStateMutator());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(initialState, null));
+                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(engine.Engine, initialState, null));
 
                 // assert
                 actual.ParamName.ShouldBe("event");
@@ -200,12 +200,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_same_state()
             {
                 // arrange
-                var game = new TestGameEngineBuilder().Compile().Game;
-                var state = GameState.New(game, null);
-                var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((s, e) => ConditionResponse.Valid));
+                var state = GameState.New(null);
+                var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
 
                 // act
-                var actual = rule.HandleEvent(state, new NullGameEvent());
+                var actual = rule.HandleEvent(null, state, new NullGameEvent());
 
                 // assert
                 actual.ShouldBe(state);
@@ -215,12 +214,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_throw_with_null_event_on_explicit_interface()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var state = GameState.New(engine.Game, null);
-                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+                var state = GameState.New(null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(state, null));
+                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(null, state, null));
 
                 // assert
                 actual.ParamName.ShouldBe("event");
@@ -230,12 +228,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
-                var state = GameState.New(engine.Game, null);
-                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+                var state = GameState.New(null);
+                IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = rule.HandleEvent(state, new NullGameEvent());
+                var actual = rule.HandleEvent(null, state, new NullGameEvent());
 
                 // assert
                 actual.ShouldBeSameAs(state);

@@ -18,9 +18,9 @@ namespace Veggerby.Boards.Core.Flows.Rules
             CompositeMode = compositeMode;
         }
 
-        private IDictionary<IGameEventRule, ConditionResponse> RunCompositeCheck(GameState gameState, IGameEvent @event)
+        private IDictionary<IGameEventRule, ConditionResponse> RunCompositeCheck(GameEngine engine, GameState gameState, IGameEvent @event)
         {
-            return Rules.ToDictionary(x => x, x => x.Check(gameState, @event));
+            return Rules.ToDictionary(x => x, x => x.Check(engine, gameState, @event));
         }
 
         private ConditionResponse GetCompositeRuleCheckState(IDictionary<IGameEventRule, ConditionResponse> results)
@@ -41,15 +41,15 @@ namespace Veggerby.Boards.Core.Flows.Rules
                 : ConditionResponse.Fail(results.Select(x => x.Value).Where(x => x.Result == ConditionResult.Invalid));
         }
 
-        public ConditionResponse Check(GameState gameState, IGameEvent @event)
+        public ConditionResponse Check(GameEngine engine, GameState gameState, IGameEvent @event)
         {
-            var results = RunCompositeCheck(gameState, @event);
+            var results = RunCompositeCheck(engine, gameState, @event);
             return GetCompositeRuleCheckState(results);
         }
 
-        public GameState HandleEvent(GameState gameState, IGameEvent @event)
+        public GameState HandleEvent(GameEngine engine, GameState gameState, IGameEvent @event)
         {
-            var results = RunCompositeCheck(gameState, @event);
+            var results = RunCompositeCheck(engine, gameState, @event);
             var compositeResult = GetCompositeRuleCheckState(results);
 
             if (compositeResult.Result == ConditionResult.Valid)
@@ -61,13 +61,13 @@ namespace Veggerby.Boards.Core.Flows.Rules
                     return results
                         .First(x => x.Value.Result == ConditionResult.Valid)
                         .Key
-                        .HandleEvent(gameState, @event);
+                        .HandleEvent(engine, gameState, @event);
                 }
 
                 // mode is "all" and all rules are valid, chain state mutators in order
 
                 return results
-                    .Aggregate(gameState, (state, rule) => rule.Key.HandleEvent(state, @event));
+                    .Aggregate(gameState, (state, rule) => rule.Key.HandleEvent(engine, state, @event));
             }
             else if (compositeResult.Result == ConditionResult.Ignore)
             {

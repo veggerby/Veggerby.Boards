@@ -22,9 +22,9 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
             CompositeMode = compositeMode;
         }
 
-        public ConditionResponse Evaluate(GameState state, T @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
         {
-            var results = ChildConditions.Select(x => x.Evaluate(state, @event));
+            var results = ChildConditions.Select(x => x.Evaluate(engine, state, @event));
             var ignoreAll = results.All(x => x.Result == ConditionResult.Ignore);
 
             if (ignoreAll)

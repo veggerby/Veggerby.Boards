@@ -83,13 +83,11 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
 
         public class GetActiveGamePhase
         {
-            private readonly Game _game;
             private readonly GameState _initialGameState;
 
             public GetActiveGamePhase()
             {
-                _game = new TestGameEngineBuilder().Compile().Game;
-                _initialGameState = GameState.New(_game, null);
+                _initialGameState = GameState.New(null);
             }
 
             [Fact]

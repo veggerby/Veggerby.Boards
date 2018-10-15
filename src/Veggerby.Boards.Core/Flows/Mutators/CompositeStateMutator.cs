@@ -25,9 +25,9 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 
         public IEnumerable<IStateMutator<T>> ChildMutators { get; }
 
-        public GameState MutateState(GameState gameState, T @event)
+        public GameState MutateState(GameEngine engine, GameState gameState, T @event)
         {
-            return ChildMutators.Aggregate(gameState, (seed, mutator) => mutator.MutateState(seed, @event));
+            return ChildMutators.Aggregate(gameState, (seed, mutator) => mutator.MutateState(engine, seed, @event));
         }
     }
 }

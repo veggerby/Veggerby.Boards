@@ -18,7 +18,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
             _stateFunc = stateFunc;
         }
 
-        public GameState MutateState(GameState gameState, T @event)
+        public GameState MutateState(GameEngine engine, GameState gameState, T @event)
         {
             var artifactState = _stateFunc(@event);
             if (artifactState == null)

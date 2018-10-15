@@ -21,9 +21,9 @@ namespace Veggerby.Boards.Core.Flows.Rules
             _condition = condition;
         }
 
-        protected override ConditionResponse Check(GameState gameState, T @event)
+        protected override ConditionResponse Check(GameEngine engine, GameState state, T @event)
         {
-            return _condition.Evaluate(gameState, @event);
+            return _condition.Evaluate(engine, state, @event);
         }
 
         public static IGameEventRule New(IGameEventCondition<T> condition, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)

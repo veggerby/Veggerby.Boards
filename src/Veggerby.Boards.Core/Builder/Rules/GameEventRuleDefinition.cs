@@ -39,7 +39,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
             var onBefore = _mutatorsDefinition.BuildBefore(game);
             var onAfter = _mutatorsDefinition.BuildAfter(game);
 
-            return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((s, e) => ConditionResponse.Valid), onBefore, onAfter);
+            return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid), onBefore, onAfter);
         }
 
         IGameEventRuleStateMutatorDefinition<T> IThenStateMutator<T>.Then()

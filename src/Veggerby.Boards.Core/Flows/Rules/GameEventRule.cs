@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 {
     public abstract class GameEventRule<T> : IGameEventRule where T : IGameEvent
     {
-        public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((s, e) => ConditionResponse.Valid));
+        public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid));
 
         private readonly IStateMutator<T> _onBeforeEvent;
         private readonly IStateMutator<T> _onAfterEvent;
@@ -20,22 +20,22 @@ namespace Veggerby.Boards.Core.Flows.Rules
             _onAfterEvent = onAfterEvent;
         }
 
-        protected abstract ConditionResponse Check(GameState gameState, T @event);
+        protected abstract ConditionResponse Check(GameEngine engine, GameState gameState, T @event);
 
-        private GameState MutateState(IStateMutator<T> eventMutator, GameState gameState, T @event)
+        private GameState MutateState(IStateMutator<T> eventMutator, GameEngine engine, GameState gameState, T @event)
         {
-            return eventMutator != null ? eventMutator.MutateState(gameState, @event) : gameState;
+            return eventMutator != null ? eventMutator.MutateState(engine, gameState, @event) : gameState;
         }
 
-        protected GameState HandleEvent(GameState gameState, T @event)
+        protected GameState HandleEvent(GameEngine engine, GameState gameState, T @event)
         {
-            var newState = MutateState(_onBeforeEvent, gameState, @event);
+            var newState = MutateState(_onBeforeEvent, engine, gameState, @event);
 
-            var check = Check(newState, @event);
+            var check = Check(engine, newState, @event);
 
             if (check.Result == ConditionResult.Valid)
             {
-                return MutateState(_onAfterEvent, newState, @event);
+                return MutateState(_onAfterEvent, engine, newState, @event);
             }
             else if (check.Result == ConditionResult.Ignore)
             {
@@ -46,7 +46,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
             throw new BoardException("Invalid game event");
         }
 
-        ConditionResponse IGameEventRule.Check(GameState gameState, IGameEvent @event)
+        ConditionResponse IGameEventRule.Check(GameEngine engine, GameState gameState, IGameEvent @event)
         {
             if (@event == null)
             {
@@ -55,13 +55,13 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
             if (@event is T)
             {
-                return Check(gameState, (T)@event);
+                return Check(engine, gameState, (T)@event);
             }
 
             return ConditionResponse.NotApplicable;
         }
 
-        GameState IGameEventRule.HandleEvent(GameState gameState, IGameEvent @event)
+        GameState IGameEventRule.HandleEvent(GameEngine engine, GameState gameState, IGameEvent @event)
         {
             if (@event == null)
             {
@@ -70,7 +70,7 @@ namespace Veggerby.Boards.Core.Flows.Rules
 
             if (@event is T)
             {
-                return HandleEvent(gameState, (T)@event);
+                return HandleEvent(engine, gameState, (T)@event);
             }
 
             return gameState;

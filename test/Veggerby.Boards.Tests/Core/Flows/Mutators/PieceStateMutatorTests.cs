@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_update_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var mutator = new MovePieceStateMutator();
@@ -31,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var @event = new MovePieceGameEvent(piece, state.CurrentTile, toTile);
 
                 // act
-                var actual = mutator.MutateState(initialState, @event);
+                var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
                 actual.ShouldNotBeSameAs(initialState);
@@ -44,7 +44,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_throw_with_invalid_from_tile()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var mutator = new MovePieceStateMutator();
@@ -56,7 +56,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var @event = new MovePieceGameEvent(piece, fromTile, toTile);
 
                 // act
-                var actual = Should.Throw<BoardException>(() => mutator.MutateState(initialState, @event));
+                var actual = Should.Throw<BoardException>(() => mutator.MutateState(engine.Engine, initialState, @event));
 
                 // assert
                 actual.Message.ShouldBe("Invalid from tile on move piece event");

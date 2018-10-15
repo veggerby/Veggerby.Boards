@@ -31,7 +31,6 @@ namespace Veggerby.Boards.Tests.Core.Fakes
             AddPlayer("player-1");
             AddPlayer("player-2");
 
-
             AddDirection("clockwise");
             AddDirection("counterclockwise");
             AddDirection("up");

@@ -6,9 +6,9 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public class SimpleGameEventCondition<T> : IGameEventCondition<T> where T : IGameEvent
     {
-        private readonly Func<GameState, T, ConditionResponse> _handler;
+        private readonly Func<GameEngine, GameState, T, ConditionResponse> _handler;
 
-        public SimpleGameEventCondition(Func<GameState, T, ConditionResponse> handler)
+        public SimpleGameEventCondition(Func<GameEngine, GameState, T, ConditionResponse> handler)
         {
             if (handler == null)
             {
@@ -18,9 +18,9 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
             _handler = handler;
         }
 
-        public ConditionResponse Evaluate(GameState state, T @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
         {
-            return _handler(state, @event);
+            return _handler(engine, state, @event);
         }
     }
 }

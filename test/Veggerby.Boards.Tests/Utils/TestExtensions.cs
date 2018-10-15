@@ -10,15 +10,15 @@ namespace Veggerby.Boards.Tests.Utils
 {
     public static class TestExtensions
     {
-        public static void ShouldHavePieceState(this GameState gameState, string pieceId, string tileId)
+        public static void ShouldHavePieceState(this GameProgress progress, string pieceId, string tileId)
         {
-            var piece = gameState.Game.GetPiece(pieceId);
+            var piece = progress.Game.GetPiece(pieceId);
             piece.ShouldNotBeNull($"PieceState - piece {pieceId} not found");
 
-            var tile = gameState.Game.GetTile(tileId);
+            var tile = progress.Game.GetTile(tileId);
             tile.ShouldNotBeNull($"PieceState - tile {tileId} not found");
 
-            var state = gameState.GetState<PieceState>(piece);
+            var state = progress.State.GetState<PieceState>(piece);
 
             state.ShouldNotBeNull("PieceState not found");
             state.CurrentTile.ShouldBe(tile, "PieceState with wrong tile");

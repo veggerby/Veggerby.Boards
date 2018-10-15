@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_initialize_gameengine()
             {
                 // arrange
-                var builder = new TestGameEngineBuilder().Compile();
+                var builder = new TestGameBuilder().Compile();
                 var game = builder.Game;
                 var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
@@ -49,7 +49,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_throw_with_null_condition()
             {
                 // arrange
-                var builder = new TestGameEngineBuilder().Compile();
+                var builder = new TestGameBuilder().Compile();
                 var game = builder.Game;
 
                 // act

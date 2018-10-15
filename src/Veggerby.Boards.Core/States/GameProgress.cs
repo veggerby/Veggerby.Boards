@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Phases;
 
 namespace Veggerby.Boards.Core.States
 {
@@ -23,25 +24,26 @@ namespace Veggerby.Boards.Core.States
             Engine = engine;
             State = state;
             Events = (events ?? Enumerable.Empty<IGameEvent>()).ToList();
+            Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
         }
 
         public GameEngine Engine { get; }
         public GameState State { get; }
+        public GamePhase Phase { get; }
         public IEnumerable<IGameEvent> Events { get; }
-        public Game Game => State.Game;
+        public Game Game => Engine.Game;
 
         public GameProgress HandleEvent(IGameEvent @event)
         {
-            var gamePhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
-            var ruleCheck = gamePhase.Rule.Check(State, @event);
+            var ruleCheck = Phase.Rule.Check(Engine, State, @event);
             if (ruleCheck.Result == ConditionResult.Valid)
             {
-                var newState = gamePhase.Rule.HandleEvent(State, @event);
+                var newState = Phase.Rule.HandleEvent(Engine, State, @event);
                 return new GameProgress(Engine, newState, Events.Concat(new [] { @event }));
             }
             else if (ruleCheck.Result == ConditionResult.Invalid)
             {
-                throw new InvalidGameEventException(@event, ruleCheck, Engine.Game, gamePhase, State);
+                throw new InvalidGameEventException(@event, ruleCheck, Game, Phase, State);
             }
 
             return this;

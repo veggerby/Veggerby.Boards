@@ -21,9 +21,9 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 
         public IGameEventCondition<T> InnerCondition { get; }
 
-        public ConditionResponse Evaluate(GameState state, T @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
         {
-            var innerResult = InnerCondition.Evaluate(state, @event);
+            var innerResult = InnerCondition.Evaluate(engine, state, @event);
             switch (innerResult.Result)
             {
                 case ConditionResult.Valid:

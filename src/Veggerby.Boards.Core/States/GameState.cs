@@ -11,18 +11,11 @@ namespace Veggerby.Boards.Core.States
         private readonly IDictionary<Artifact, IArtifactState> _childStates;
         private readonly GameState _previousState;
 
-        public Game Game { get; }
         public IEnumerable<IArtifactState> ChildStates => _childStates.Values.ToList().AsReadOnly();
         public bool IsInitialState => _previousState == null;
 
-        private GameState(Game game, IEnumerable<IArtifactState> childStates = null, GameState previousState = null)
+        private GameState(IEnumerable<IArtifactState> childStates = null, GameState previousState = null)
         {
-            if (game == null)
-            {
-                throw new ArgumentNullException(nameof(game));
-            }
-
-            Game = game;
             _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
             _previousState = previousState;
         }
@@ -39,7 +32,7 @@ namespace Veggerby.Boards.Core.States
 
         protected bool Equals(GameState other)
         {
-            if (!Game.Equals(other.Game) || IsInitialState != other.IsInitialState)
+            if (IsInitialState != other.IsInitialState)
             {
                 return false;
             }
@@ -65,7 +58,6 @@ namespace Veggerby.Boards.Core.States
             unchecked
             {
                 var hashCode = this.GetType().GetHashCode();
-                hashCode = (hashCode*397) ^ Game.GetHashCode();
                 hashCode = (hashCode*397) ^ IsInitialState.GetHashCode();
                 return ChildStates.Aggregate(hashCode, (seed, state) => seed ^ state.GetHashCode());
             }
@@ -74,7 +66,6 @@ namespace Veggerby.Boards.Core.States
         public GameState Next(IEnumerable<IArtifactState> newStates)
         {
             return new GameState(
-                Game,
                 ChildStates
                     .Except(newStates ?? Enumerable.Empty<IArtifactState>(), new ArtifactStateEqualityComparer())
                     .Concat(newStates ?? Enumerable.Empty<IArtifactState>()),
@@ -83,11 +74,6 @@ namespace Veggerby.Boards.Core.States
 
         public IEnumerable<ArtifactStateChange> CompareTo(GameState state)
         {
-            if (!Game.Equals(state.Game))
-            {
-                throw new ArgumentException("Must compare GameState for the same game", nameof(state));
-            }
-
             if (Equals(state))
             {
                 return Enumerable.Empty<ArtifactStateChange>();
@@ -109,9 +95,9 @@ namespace Veggerby.Boards.Core.States
             return changes.Concat(additions).ToList();
         }
 
-        public static GameState New(Game game, IEnumerable<IArtifactState> initialStates)
+        public static GameState New(IEnumerable<IArtifactState> initialStates)
         {
-            return new GameState(game, initialStates, null);
+            return new GameState(initialStates, null);
         }
     }
 }

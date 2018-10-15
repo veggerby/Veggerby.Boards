@@ -67,20 +67,13 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
 
         public class Evaluate
         {
-            private readonly Game _game;
-
-            public Evaluate()
-            {
-                _game = new TestGameEngineBuilder().Compile().Game;
-            }
-
             [Fact]
             public void Should_evaluate_true_when_single_dice_has_state()
             {
                 // arrange
                 var dice = new Dice("dice");
                 var diceState = new DiceState<int>(dice, 5);
-                var gameState = GameState.New(_game, new [] { diceState });
+                var gameState = GameState.New(new [] { diceState });
                 var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
 
                 // act
@@ -95,7 +88,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 var dice = new Dice("dice");
-                var gameState = GameState.New(_game, null);
+                var gameState = GameState.New(null);
                 var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
 
                 // act
@@ -112,7 +105,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
                 var diceState = new DiceState<int>(dice1, 5);
-                var gameState = GameState.New(_game, new [] { diceState });
+                var gameState = GameState.New(new [] { diceState });
                 var condition = new DiceGameStateCondition<int>(new[] { dice2 }, CompositeMode.All);
 
                 // act
@@ -128,7 +121,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice = new Dice("dice");
                 var diceState = new NullDiceState(dice);
-                var gameState = GameState.New(_game, new [] { diceState });
+                var gameState = GameState.New(new [] { diceState });
                 var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
 
                 // act
@@ -146,7 +139,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new Dice("dice2");
                 var diceState1 = new DiceState<int>(dice1, 2);
                 var diceState2 = new DiceState<int>(dice2, 3);
-                var gameState = GameState.New(_game, new [] { diceState1, diceState2 });
+                var gameState = GameState.New(new [] { diceState1, diceState2 });
                 var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
 
                 // act
@@ -163,7 +156,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
                 var diceState1 = new DiceState<int>(dice1, 2);
-                var gameState = GameState.New(_game, new [] { diceState1 });
+                var gameState = GameState.New(new [] { diceState1 });
                 var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
 
                 // act
@@ -182,7 +175,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new Dice("dice2");
                 var diceState1 = new NullDiceState(dice1);
                 var diceState2 = new NullDiceState(dice2);
-                var gameState = GameState.New(_game, new [] { diceState1, diceState2 });
+                var gameState = GameState.New(new [] { diceState1, diceState2 });
                 var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
 
                 // act
@@ -198,7 +191,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
-                var gameState = GameState.New(_game, null);
+                var gameState = GameState.New(null);
                 var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
 
                 // act

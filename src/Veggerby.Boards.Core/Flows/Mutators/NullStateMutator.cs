@@ -5,7 +5,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public class NullStateMutator<T> : IStateMutator<T> where T : IGameEvent
     {
-        public GameState MutateState(GameState gameState, T @event)
+        public GameState MutateState(GameEngine engine, GameState gameState, T @event)
         {
             return gameState;
         }

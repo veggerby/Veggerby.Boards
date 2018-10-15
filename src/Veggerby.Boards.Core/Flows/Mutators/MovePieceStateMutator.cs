@@ -6,7 +6,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
 {
     public class MovePieceStateMutator : IStateMutator<MovePieceGameEvent>
     {
-        public GameState MutateState(GameState gameState, MovePieceGameEvent @event)
+        public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
         {
             var currentState = gameState.GetState<PieceState>(@event.Piece);
 

@@ -20,14 +20,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_return_same_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var mutator = new NullStateMutator<NullGameEvent>();
                 var @event = new NullGameEvent();
 
                 // act
-                var actual = mutator.MutateState(initialState, @event);
+                var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
                 actual.ShouldBeSameAs(initialState);

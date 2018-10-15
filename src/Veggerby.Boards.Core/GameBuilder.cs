@@ -224,7 +224,7 @@ namespace Veggerby.Boards.Core
                     : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
                 .ToList();
 
-            var initialGameState = GameState.New(game, pieceStates.Concat(diceStates).ToList());
+            var initialGameState = GameState.New(pieceStates.Concat(diceStates).ToList());
 
             // compile GamePhase root
 

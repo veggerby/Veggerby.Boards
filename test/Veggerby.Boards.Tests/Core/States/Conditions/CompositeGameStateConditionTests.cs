@@ -45,14 +45,11 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
 
         public class Evaluate
         {
-            private readonly Game _game;
             private readonly GameState _state;
 
             public Evaluate()
             {
-                var engine = new TestGameEngineBuilder().Compile();
-                _game = engine.Game;
-                _state = GameState.New(_game, null);
+                _state = GameState.New(null);
             }
 
             [Fact]

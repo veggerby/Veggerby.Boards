@@ -10,13 +10,13 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public class HasValidPathGameEventCondition : IGameEventCondition<MovePieceGameEvent>
     {
-        public ConditionResponse Evaluate(GameState state, MovePieceGameEvent @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
         {
             var result = @event
                 .Piece
                 .Patterns
                 .Select(pattern => {
-                    var visitor = new ResolveTilePathPatternVisitor(state.Game.Board, @event.From, @event.To);
+                    var visitor = new ResolveTilePathPatternVisitor(engine.Game.Board, @event.From, @event.To);
                     pattern.Accept(visitor);
                     return visitor.ResultPath;
                 })

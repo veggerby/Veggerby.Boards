@@ -26,7 +26,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 
         public IEnumerable<Dice> Dice { get; }
 
-        public ConditionResponse Evaluate(GameState state, RollDiceGameEvent<T> @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<T> @event)
         {
             return Dice.Join(@event.NewDiceStates, x => x, x => x.Artifact, (d, s) => s).All(s => s != null)
                 ? ConditionResponse.Valid

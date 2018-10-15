@@ -16,7 +16,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_build_game()
             {
                 // arrange
-                var builder = new TestGameEngineBuilder();
+                var builder = new TestGameBuilder();
 
                 // act
                 var actual = builder.Compile();
@@ -56,7 +56,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_not_build_game_twice()
             {
                 // arrange
-                var builder = new TestGameEngineBuilder();
+                var builder = new TestGameBuilder();
                 var engine = builder.Compile();
 
                 // act
@@ -73,7 +73,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_initialize_game_state()
             {
                 // arrange
-                var builder = new TestGameEngineBuilder();
+                var builder = new TestGameBuilder();
 
                 // act
                 var actual = builder.Compile();

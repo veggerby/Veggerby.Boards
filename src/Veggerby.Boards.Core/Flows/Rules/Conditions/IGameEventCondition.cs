@@ -5,6 +5,6 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 {
     public interface IGameEventCondition<in T> where T : IGameEvent
     {
-        ConditionResponse Evaluate(GameState state, T @event);
+        ConditionResponse Evaluate(GameEngine engine, GameState state, T @event);
     }
 }

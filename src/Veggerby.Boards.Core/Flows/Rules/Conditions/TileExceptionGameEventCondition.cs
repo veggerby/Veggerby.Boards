@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
 
         public Tile[] Tiles { get; }
 
-        public ConditionResponse Evaluate(GameState state, MovePieceGameEvent @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
         {
             return Tiles.Contains(@event.To) ? ConditionResponse.Invalid : ConditionResponse.Valid;
         }

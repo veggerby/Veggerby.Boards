@@ -30,7 +30,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
         public int NumberOfPiecesToBlock { get; }
         public PlayerOption OccupiedBy { get; }
 
-        public ConditionResponse Evaluate(GameState state, MovePieceGameEvent @event)
+        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
         {
             var pieceStates = state
                 .GetPiecesOnTile(@event.To)

@@ -45,7 +45,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_mutate_simple_state()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var piece = game.GetPiece("piece-1");
@@ -56,7 +56,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var mutator = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 
                 // act
-                var actual = mutator.MutateState(initialState, @event);
+                var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
                 actual.ShouldNotBeSameAs(initialState);
@@ -69,7 +69,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
             public void Should_return_original_when_null_artifactstate()
             {
                 // arrange
-                var engine = new TestGameEngineBuilder().Compile();
+                var engine = new TestGameBuilder().Compile();
                 var game = engine.Game;
                 var initialState = engine.State;
                 var @event = new NullGameEvent();
@@ -77,7 +77,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var mutator = new SimpleGameStateMutator<NullGameEvent>(e => null);
 
                 // act
-                var actual = mutator.MutateState(initialState, @event);
+                var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
                 actual.ShouldBeSameAs(initialState);

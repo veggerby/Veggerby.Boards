@@ -118,6 +118,7 @@ namespace Veggerby.Boards.Backgammon
                 .If(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.Any))
                     .And<SingleActivePlayerGameStateCondition>()
                 .Then()
+                    .PreProcessEvent(game => new SingleStepMovePieceGameEventPreProcessor(new TileBlockedGameEventCondition(2, PlayerOption.Opponent), game.GetArtifacts<Dice>("dice-1", "dice-2")))
                     .All()
                     .ForEvent<RollDiceGameEvent<int>>()
                         .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("doubling-dice")))
@@ -128,9 +129,7 @@ namespace Veggerby.Boards.Backgammon
                         .If<PieceIsActivePlayerGameEventCondition>()
                             .And(game => new TileExceptionGameEventCondition(game.GetTile("bar"), game.GetTile("home-white"), game.GetTile("home-black")))
                             .And(game => new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(game.GetTile("bar")))
-                            .And(game => new HasValidPathWithDiceStateGameEventCondition(
-                                new TileBlockedGameEventCondition(2, PlayerOption.Opponent),
-                                game.GetArtifact<Dice>("dice-1"), game.GetArtifact<Dice>("dice-2")))
+                            .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
                         .Then()
                             //.Before<MovePieceStateMutator>()
                             .Do<MovePieceStateMutator>();

@@ -33,7 +33,7 @@ namespace Veggerby.Boards.Core.States
         public IEnumerable<IGameEvent> Events { get; }
         public Game Game => Engine.Game;
 
-        public GameProgress HandleEvent(IGameEvent @event)
+        private GameProgress HandleSingleEvent(IGameEvent @event)
         {
             var ruleCheck = Phase.Rule.Check(Engine, State, @event);
             if (ruleCheck.Result == ConditionResult.Valid)
@@ -49,5 +49,10 @@ namespace Veggerby.Boards.Core.States
             return this;
         }
 
+        public GameProgress HandleEvent(IGameEvent @event)
+        {
+            var events = Phase.PreProcessEvent(this, @event);
+            return events.Aggregate(this, (seed, e) => seed.HandleSingleEvent(e));
+        }
     }
 }

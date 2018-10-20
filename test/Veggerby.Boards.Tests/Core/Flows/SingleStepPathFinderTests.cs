@@ -1,23 +1,26 @@
+﻿using System;
+using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Flows;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Xunit;
 
-namespace Veggerby.Boards.Tests.Core.Flows.Rules
+namespace Veggerby.Boards.Tests.Core.Flows
 {
-    public class HasValidPathWithDiceStateGameEventConditionTests
+    public class SingleStepPathFinderTests
     {
         [Theory]
-        [InlineData(2, 3, "tile-1", "tile-6", ConditionResult.Valid)]
-        [InlineData(2, 1, "tile-2", "tile-5", ConditionResult.Invalid)]
-        [InlineData(2, null, "tile-1", "tile-3", ConditionResult.Valid)]
-        [InlineData(2, 3, "tile-1", "tile-3", ConditionResult.Valid)]
-        [InlineData(1, 1, "tile-1", "tile-3", ConditionResult.Invalid)]
-        public void Should_validate_steps(int? diceValue1, int? diceValue2, string fromTileId, string toTileId, ConditionResult expectedResult)
+        [InlineData(2, 3, "tile-1", "tile-6", 2)]
+        [InlineData(2, 1, "tile-2", "tile-5", 0)] // piece is not on tile-2
+        [InlineData(2, null, "tile-1", "tile-3", 1)]
+        [InlineData(2, 3, "tile-1", "tile-3", 1)]
+        [InlineData(1, 1, "tile-1", "tile-3", 0)]
+        public void Should_validate_steps(int? diceValue1, int? diceValue2, string fromTileId, string toTileId, int expectedResult)
         {
             // arrange
             var progress = new TestForPathValidationGameBuilder(diceValue1, diceValue2).Compile();
@@ -26,17 +29,16 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             var toTile = progress.Game.GetTile(toTileId);
             var dice1 = progress.Game.GetArtifact<Dice>("dice-1");
             var dice2 = progress.Game.GetArtifact<Dice>("dice-2");
-            var @event = new MovePieceGameEvent(piece1, fromTile, toTile);
-            var condition = new HasValidPathWithDiceStateGameEventCondition(
+            var finder = new SingleStepPathFinder(
                 new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => e.To.Id.Equals("tile-2") ? ConditionResponse.Invalid : ConditionResponse.Valid),
                 dice1, dice2
             );
 
             // act
-            var actual = condition.Evaluate(progress.Engine, progress.State, @event);
+            var actual = finder.GetPaths(progress.Engine, progress.State, piece1, fromTile, toTile);
 
             // assert
-            actual.Result.ShouldBe(expectedResult);
+            actual.Count().ShouldBe(expectedResult);
         }
     }
 }

@@ -1,34 +1,31 @@
 using System;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Flows.Events
 {
     public class MovePieceGameEvent : IGameEvent
     {
         public Piece Piece { get; }
-        public Tile From { get; }
-        public Tile To { get; }
+        public TilePath Path { get; }
+        public Tile From => Path.From;
+        public Tile To => Path.To;
+        public int Distance => Path.Distance;
 
-        public MovePieceGameEvent(Piece piece, Tile from, Tile to)
+        public MovePieceGameEvent(Piece piece, TilePath path)
         {
             if (piece == null)
             {
                 throw new ArgumentNullException(nameof(piece));
             }
 
-            if (from == null)
+            if (path == null)
             {
-                throw new ArgumentNullException(nameof(from));
-            }
-
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(path));
             }
 
             Piece = piece;
-            From = from;
-            To = to;
+            Path = path;
         }
     }
 }

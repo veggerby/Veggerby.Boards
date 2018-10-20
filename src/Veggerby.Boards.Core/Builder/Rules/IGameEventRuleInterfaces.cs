@@ -15,6 +15,7 @@ namespace Veggerby.Boards.Core.Builder.Rules
 
     public interface IGameEventRuleDefinitionsWithOption : IGameEventRuleDefinitions
     {
+        IGameEventRuleDefinitionsWithOption PreProcessEvent(GameEventPreProcessorFactory factory);
         IGameEventRuleDefinitions All();
         IGameEventRuleDefinitions First();
     }

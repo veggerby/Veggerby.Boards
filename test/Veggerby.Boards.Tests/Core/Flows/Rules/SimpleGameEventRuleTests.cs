@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
@@ -111,7 +113,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Valid),
                     null,
@@ -135,7 +139,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.NotApplicable),
                     null,
@@ -160,7 +166,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                     new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Invalid),
                     null,

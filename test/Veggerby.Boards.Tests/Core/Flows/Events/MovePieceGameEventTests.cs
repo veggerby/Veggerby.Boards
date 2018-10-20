@@ -19,14 +19,17 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 var piece = new Piece("piece", null, new [] { new DirectionPattern(Direction.Clockwise, true) });
                 var from = new Tile("tile-1");
                 var to = new Tile("tile-2");
+                var path = new TilePath(new[] { new TileRelation(from, to, Direction.Clockwise )});
 
                 // act
-                var actual = new MovePieceGameEvent(piece, from, to);
+                var actual = new MovePieceGameEvent(piece, path);
 
                 // assert
                 actual.Piece.ShouldBe(piece);
                 actual.From.ShouldBe(from);
                 actual.To.ShouldBe(to);
+                actual.Distance.ShouldBe(1);
+                actual.Path.ShouldBe(path);
             }
 
             [Fact]
@@ -35,40 +38,26 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 // arrange
                 var from = new Tile("tile-1");
                 var to = new Tile("tile-2");
+                var path = new TilePath(new[] { new TileRelation(from, to, Direction.Clockwise )});
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(null, from, to));
+                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(null, path));
 
                 // assert
                 actual.ParamName.ShouldBe("piece");
             }
 
             [Fact]
-            public void Should_throw_with_null_from_tile()
+            public void Should_throw_with_null_path()
             {
                 // arrange
                 var piece = new Piece("piece", null, new [] { new DirectionPattern(Direction.Clockwise, true) });
-                var to = new Tile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(piece, null, to));
+                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(piece, null));
 
                 // assert
-                actual.ParamName.ShouldBe("from");
-            }
-
-            [Fact]
-            public void Should_throw_with_null_to_tile()
-            {
-                // arrange
-                var piece = new Piece("piece", null, new [] { new DirectionPattern(Direction.Clockwise, true) });
-                var from = new Tile("tile-1");
-
-                // act
-                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(piece, from, null));
-
-                // assert
-                actual.ParamName.ShouldBe("to");
+                actual.ParamName.ShouldBe("path");
             }
         }
     }

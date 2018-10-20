@@ -5,13 +5,14 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules.Conditions
+namespace Veggerby.Boards.Core.Flows
 {
-    public class HasValidPathWithDiceStateGameEventCondition : IGameEventCondition<MovePieceGameEvent>
+    public class SingleStepPathFinder
     {
-        public HasValidPathWithDiceStateGameEventCondition(IGameEventCondition<MovePieceGameEvent> stepMoveCondition, params Dice[] dice)
+        public SingleStepPathFinder(IGameEventCondition<MovePieceGameEvent> stepMoveCondition, params Dice[] dice)
         {
             if (stepMoveCondition == null)
             {
@@ -35,37 +36,6 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
         public IGameEventCondition<MovePieceGameEvent> StepMoveCondition { get; }
         public Dice[] Dice { get; }
 
-        private class SingleStepPath
-        {
-            public SingleStepPath(GameState state, DiceState<int> diceState, TilePath path, SingleStepPath previous = null)
-            {
-                if (state == null)
-                {
-                    throw new ArgumentNullException(nameof(state));
-                }
-
-                if (diceState == null)
-                {
-                    throw new ArgumentNullException(nameof(diceState));
-                }
-
-                if (path == null)
-                {
-                    throw new ArgumentNullException(nameof(path));
-                }
-
-                NewState = state;
-                DiceState = diceState;
-                Path = path;
-                Previous = previous;
-            }
-
-            public GameState NewState { get; }
-            public DiceState<int> DiceState { get; }
-            public TilePath Path { get; }
-            public SingleStepPath Previous { get; }
-        }
-
         private SingleStepPath GetSingleStep(GameEngine engine, PieceState pieceState, IPattern pattern, GameState state, DiceState<int> diceState, Tile to, SingleStepPath previousStep = null)
         {
             var visitor = new ResolveTilePathDistanceVisitor(engine.Game.Board, pieceState.CurrentTile, to, diceState.CurrentValue, false);
@@ -76,7 +46,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
                 return null;
             }
 
-            var step = StepMoveCondition.Evaluate(engine, state, new MovePieceGameEvent(pieceState.Artifact, pieceState.CurrentTile, visitor.ResultPath.To));
+            var step = StepMoveCondition.Evaluate(engine, state, new MovePieceGameEvent(pieceState.Artifact, visitor.ResultPath));
 
             if (step.Result != ConditionResult.Valid)
             {
@@ -119,24 +89,22 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
             return FindSingleSteps(engine, piece, step.NewState, to, step);
         }
 
-        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
+        public IEnumerable<SingleStepPath> GetPaths(GameEngine engine, GameState state, Piece piece, Tile from, Tile to)
         {
-            var pieceState = state.GetState<PieceState>(@event.Piece);
+            var pieceState = state.GetState<PieceState>(piece);
 
-            if (!pieceState.CurrentTile.Equals(@event.From))
+            if (!pieceState.CurrentTile.Equals(from))
             {
-                return ConditionResponse.Invalid;
+                return Enumerable.Empty<SingleStepPath>();
             }
 
-            var steps = FindSingleSteps(engine, @event.Piece, state, @event.To, null);
-            while (steps.Any() && !steps.Any(x => x.Path.To.Equals(@event.To)))
+            var steps = FindSingleSteps(engine, piece, state, to, null);
+            while (steps.Any() && !steps.Any(x => x.Path.To.Equals(to)))
             {
-                steps = steps.SelectMany(step => ContinueStep(engine, @event.Piece, @event.To, step)).ToList();
+                steps = steps.SelectMany(step => ContinueStep(engine, piece, to, step)).ToList();
             }
 
-            return steps.Any(x => x.Path.To.Equals(@event.To))
-                ? ConditionResponse.Valid
-                : ConditionResponse.Fail("No valid steps found to destination tile");
+            return steps.Where(x => x.Path.To.Equals(to)).ToList();
         }
     }
 }

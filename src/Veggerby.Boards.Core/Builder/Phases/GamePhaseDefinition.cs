@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
@@ -17,6 +19,12 @@ namespace Veggerby.Boards.Core.Builder.Phases
         private int? _number;
         private CompositeGamePhaseConditionDefinition _conditionDefinition;
         private GameEventRuleDefinitions _ruleDefinitions;
+        private IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = new List<GameEventPreProcessorDefinition>();
+
+        internal void Add(GameEventPreProcessorDefinition preProcessorDefinition)
+        {
+            _preProcessorDefinitions.Add(preProcessorDefinition);
+        }
 
         public GamePhaseDefinition WithNumber(int number)
         {
@@ -51,7 +59,8 @@ namespace Veggerby.Boards.Core.Builder.Phases
 
             var condition = _conditionDefinition.Build(game);
             var rule = _ruleDefinitions.Build(game);
-            return GamePhase.New(_number ?? number, condition, rule, parent);
+            var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game));
+            return GamePhase.New(_number ?? number, condition, rule, parent, preprocessors);
         }
     }
 }

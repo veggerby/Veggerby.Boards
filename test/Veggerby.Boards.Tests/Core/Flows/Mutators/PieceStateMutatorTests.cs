@@ -28,7 +28,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, state.CurrentTile, toTile);
+                var path = new TilePath(new [] { new TileRelation(state.CurrentTile, toTile, Direction.Clockwise) });
+                var @event = new MovePieceGameEvent(piece, path);
 
                 // act
                 var actual = mutator.MutateState(engine.Engine, initialState, @event);
@@ -53,7 +54,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
 
                 var fromTile = game.GetTile("tile-2");
                 var toTile = game.GetTile("tile-1");
-                var @event = new MovePieceGameEvent(piece, fromTile, toTile);
+
+                var path = new TilePath(new [] { new TileRelation(fromTile, toTile, Direction.CounterClockwise) });
+                var @event = new MovePieceGameEvent(piece, path);
 
                 // act
                 var actual = Should.Throw<BoardException>(() => mutator.MutateState(engine.Engine, initialState, @event));

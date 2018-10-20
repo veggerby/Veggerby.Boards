@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
@@ -56,9 +57,20 @@ namespace Veggerby.Boards.Core
         public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
         {
             var piece = progress.Game.GetPiece(pieceId);
-            var tile = progress.Game.GetTile(toTileId);
+            var toTile = progress.Game.GetTile(toTileId);
             var state = progress.State.GetState<PieceState>(piece);
-            var @event = new MovePieceGameEvent(piece, state.CurrentTile, tile);
+            var path = piece.Patterns.Select(pattern => {
+                var visitor = new ResolveTilePathPatternVisitor(progress.Engine.Game.Board, state.CurrentTile, toTile);
+                pattern.Accept(visitor);
+                return visitor.ResultPath;
+            }).Where(x => x != null).OrderBy(x => x.Distance).FirstOrDefault();
+
+            if (path == null)
+            {
+                return progress;
+            }
+
+            var @event = new MovePieceGameEvent(piece, path);
             return progress.HandleEvent(@event);
         }
     }

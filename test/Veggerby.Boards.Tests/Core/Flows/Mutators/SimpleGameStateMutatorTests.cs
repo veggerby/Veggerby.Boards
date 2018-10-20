@@ -2,6 +2,7 @@ using System;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.States;
@@ -51,7 +52,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, state.CurrentTile, toTile);
+
+                var path = new TilePath(new [] { new TileRelation(state.CurrentTile, toTile, Direction.Clockwise) });
+                var @event = new MovePieceGameEvent(piece, path);
 
                 var mutator = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 

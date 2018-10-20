@@ -66,5 +66,12 @@ namespace Veggerby.Boards.Core.Builder.Rules
             _ruleDefinitions.Add(rule);
             return rule;
         }
+
+        IGameEventRuleDefinitionsWithOption IGameEventRuleDefinitionsWithOption.PreProcessEvent(GameEventPreProcessorFactory factory)
+        {
+            var preprocessor = new GameEventPreProcessorDefinition(Builder, this, factory);
+            _parent.Add(preprocessor);
+            return this;
+        }
     }
 }

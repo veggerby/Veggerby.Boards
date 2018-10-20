@@ -10,4 +10,5 @@ namespace Veggerby.Boards.Core.Builder
     public delegate IGameStateCondition GameStateConditionFactory(Game game);
     public delegate IGameEventCondition<T> GameEventConditionFactory<T>(Game game) where T : IGameEvent;
     public delegate IStateMutator<T> StateMutatorFactory<T>(Game game) where T : IGameEvent;
+    public delegate IGameEventPreProcessor GameEventPreProcessorFactory(Game game);
 }

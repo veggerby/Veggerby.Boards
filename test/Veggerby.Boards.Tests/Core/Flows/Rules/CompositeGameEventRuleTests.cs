@@ -3,6 +3,7 @@ using System.Linq;
 using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
@@ -208,7 +209,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
 
                 var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, e) => ConditionResponse.Valid))
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator()));
@@ -232,7 +235,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>())
                     .Or(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator()));
@@ -256,7 +261,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, e) => ConditionResponse.NotApplicable), null, new DiceStateMutator<int>())
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, e) => ConditionResponse.NotApplicable), null, new MovePieceStateMutator()));
@@ -269,7 +276,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             }
 
             [Fact]
-            public void Sould_aggregate_game_states()
+            public void Should_aggregate_game_states()
             {
                 // arrange
                 var engine = new TestGameBuilder().Compile();
@@ -280,7 +287,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var to1 = game.GetTile("tile-2");
                 var to2 = game.GetTile("tile-3");
                 var dice = game.GetArtifact<Dice>("dice");
-                var @event = new MovePieceGameEvent(piece, from, to1);
+                var path = new TilePath(new [] { new TileRelation(from, to1, Direction.Clockwise), new TileRelation(to1, to2, Direction.Clockwise )});
+                var @event = new MovePieceGameEvent(piece, path);
 
                 var rule = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, e) => ConditionResponse.Valid), null, new MovePieceStateMutator())
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, e) => ConditionResponse.Valid), null, new SimpleGameStateMutator<MovePieceGameEvent>(x => new DiceState<int>(dice, 3))))
@@ -310,7 +318,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var piece = game.GetPiece("piece-1");
                 var from = game.GetTile("tile-1");
                 var to = game.GetTile("tile-2");
-                var @event = new MovePieceGameEvent(piece, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
+                piece.Patterns.Single().Accept(visitor);
+                var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
 
                 var rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, e) => ConditionResponse.NotApplicable), null, new DiceStateMutator<int>())
                     .And(SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, e) => ConditionResponse.Invalid), null, new MovePieceStateMutator()));

@@ -133,8 +133,8 @@ namespace Veggerby.Boards.Backgammon
                             .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
                         .Then()
                             //.Before<MovePieceStateMutator>()
+                            .Do(game => new ClearToTileStateMutator(game.GetTile("bar"), PlayerOption.Opponent, 1))
                             .Do<MovePieceStateMutator>()
-    //                        .Do<MovePieceToBarStateMutator>()
                             .Do(game => new ClearDiceStateMutator(game.GetArtifacts<Dice>("dice-1", "dice-2")));
 
             AddGamePhase("default => need to roll dice")

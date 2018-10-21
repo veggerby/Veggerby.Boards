@@ -40,9 +40,21 @@ namespace Veggerby.Boards.Core.States.Conditions
                 .Select(x => x.Artifact)
                 .ToList();
 
-            var result = Mode == CompositeMode.All
-                ? Dice.All(x => rolledDice.Contains(x))
-                : Dice.Any(x => rolledDice.Contains(x));
+            bool result;
+            switch (Mode) {
+                case CompositeMode.All:
+                    result = Dice.All(x => rolledDice.Contains(x));
+                    break;
+                case CompositeMode.Any:
+                    result = Dice.Any(x => rolledDice.Contains(x));
+                    break;
+                case CompositeMode.None:
+                    result = !Dice.Any(x => rolledDice.Contains(x));
+                    break;
+                default:
+                    result = false;
+                    break;
+            }
 
             return result ? ConditionResponse.Valid : ConditionResponse.Invalid;
         }

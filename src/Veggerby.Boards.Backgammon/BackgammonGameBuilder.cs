@@ -122,9 +122,9 @@ namespace Veggerby.Boards.Backgammon
                     .All()
                     .ForEvent<RollDiceGameEvent<int>>()
                         .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("doubling-dice")))
-                            //.And<DoublingDiceWithActivePlayer>()
+                            .And(game => new DoublingDiceWithActivePlayerGameEventCondition(game.GetArtifact<Dice>("doubling-dice")))
                         .Then()
-                            //.Do<RollDoublingDice>()
+                            .Do(game => new DoublingDiceStateMutator(game.GetArtifact<Dice>("doubling-dice")))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             .And(game => new HasDiceValueGameEventCondition(game.GetArtifacts<Dice>("dice-1", "dice-2")))
@@ -135,7 +135,9 @@ namespace Veggerby.Boards.Backgammon
                             //.Before<MovePieceStateMutator>()
                             .Do(game => new ClearToTileStateMutator(game.GetTile("bar"), PlayerOption.Opponent, 1))
                             .Do<MovePieceStateMutator>()
-                            .Do(game => new ClearDiceStateMutator(game.GetArtifacts<Dice>("dice-1", "dice-2")));
+                            .Do(game => new ClearDiceStateMutator(game.GetArtifacts<Dice>("dice-1", "dice-2")))
+                            .Do(game => new NextPlayerStateMutator(
+                                new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.None)));
 
             AddGamePhase("default => need to roll dice")
                 .If<NullGameStateCondition>()

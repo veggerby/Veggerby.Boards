@@ -59,7 +59,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
 
             var condition = _conditionDefinition.Build(game);
             var rule = _ruleDefinitions.Build(game);
-            var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game));
+            var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game)).ToList();
             return GamePhase.New(_number ?? number, condition, rule, parent, preprocessors);
         }
     }

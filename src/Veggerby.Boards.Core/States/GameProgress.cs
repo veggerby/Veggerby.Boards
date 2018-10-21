@@ -49,6 +49,15 @@ namespace Veggerby.Boards.Core.States
             return this;
         }
 
+        public GameProgress NewState(IEnumerable<IArtifactState> newStates)
+        {
+            return new GameProgress(
+                Engine,
+                State.Next(newStates),
+                Events
+            );
+        }
+
         public GameProgress HandleEvent(IGameEvent @event)
         {
             var events = Phase.PreProcessEvent(this, @event);

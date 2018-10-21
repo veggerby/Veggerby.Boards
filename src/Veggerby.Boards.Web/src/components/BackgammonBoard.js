@@ -6,7 +6,7 @@ const barWidth = 15;
 const tileWidth = 20;
 const pieceRadius = 8;
 const tileHeight = 80;
-//const fontSize = 3;
+const fontSize = 3;
 
 const width = 2 * margin + 12 * tileWidth + barWidth;
 const height = 2 * margin + 2 * tileHeight + 30;
@@ -47,7 +47,7 @@ const Piece = ({ tile, piece, number }) =>
                 strokeWidth: stroke,
                 fill: piece.ownerId === 'white' ? '#fff' : '#000'
             }}/>
-        {/*<text
+        <text
             x={tileWidth / 2}
             y={pieceRadius}
             style={{
@@ -55,7 +55,7 @@ const Piece = ({ tile, piece, number }) =>
                 textAnchor: 'middle',
                 alignmentBaseline: 'middle',
                 fill: piece.ownerId === 'black' ? '#fff' : '#000'
-            }}>{piece.pieceId}</text>*/}
+            }}>{piece.pieceId}</text>
     </g>;
 
 const Tile = ({ tile  }) => {
@@ -71,14 +71,14 @@ const Tile = ({ tile  }) => {
             }}
             id={tile.tileId} />
         {tile.pieces.map((piece, ixc) => <Piece key={ixc} piece={piece} tile={tile} number={ixc} />)}
-        {/*<text
+        <text
             x={tileWidth / 2}
             y={-1 * getDirection(tile) * margin / 2}
             style={{
                 fontSize: fontSize,
                 textAnchor: 'middle',
                 alignmentBaseline: 'middle'
-            }}>{tile.tileId}</text>*/}
+            }}>{tile.tileId}</text>
     </g>;
 };
 

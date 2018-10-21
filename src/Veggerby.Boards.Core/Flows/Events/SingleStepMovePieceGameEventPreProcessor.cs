@@ -45,9 +45,8 @@ namespace Veggerby.Boards.Core.Flows.Events
                 return Enumerable.Empty<IGameEvent>();
             }
 
-
             return paths
-                .Single()
+                .First()
                 .Paths
                 .Select(path => new MovePieceGameEvent(e.Piece, path))
                 .ToList();

@@ -49,17 +49,17 @@ namespace Veggerby.Boards.Core.Flows.Phases
 
         public IEnumerable<IGameEvent> PreProcessEvent(GameProgress progress, IGameEvent @event)
         {
+            if (!PreProcessors.Any())
+            {
+                return new [] { @event };
+            }
+
             var preProcessedEvents = PreProcessors
                 .SelectMany(x => x.ProcessEvent(progress, @event))
                 .Where(x => x != null)
                 .ToList();
 
-            if (preProcessedEvents.Any())
-            {
-                return preProcessedEvents;
-            }
-
-            return new [] { @event };
+            return preProcessedEvents;
         }
 
         public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)

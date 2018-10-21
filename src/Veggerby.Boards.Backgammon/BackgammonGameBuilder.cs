@@ -127,14 +127,15 @@ namespace Veggerby.Boards.Backgammon
                             //.Do<RollDoublingDice>()
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
+                            .And(game => new HasDiceValueGameEventCondition(game.GetArtifacts<Dice>("dice-1", "dice-2")))
                             .And(game => new TileExceptionGameEventCondition(game.GetTile("bar"), game.GetTile("home-white"), game.GetTile("home-black")))
                             .And(game => new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(game.GetTile("bar")))
                             .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
                         .Then()
                             //.Before<MovePieceStateMutator>()
-                            .Do<MovePieceStateMutator>();
+                            .Do<MovePieceStateMutator>()
     //                        .Do<MovePieceToBarStateMutator>()
-    //                        .Do<ClearDiceStateMutator>();
+                            .Do(game => new ClearDiceStateMutator(game.GetArtifacts<Dice>("dice-1", "dice-2")));
 
             AddGamePhase("default => need to roll dice")
                 .If<NullGameStateCondition>()

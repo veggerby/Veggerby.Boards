@@ -11,12 +11,13 @@ namespace Veggerby.Boards.Core.Flows.Phases
     public class GamePhase
     {
         public int Number { get; }
+        public string Label { get; }
         public CompositeGamePhase Parent { get; }
         public IEnumerable<IGameEventPreProcessor> PreProcessors { get; }
         public IGameStateCondition Condition { get; }
         public IGameEventRule Rule { get; }
 
-        protected GamePhase(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
+        protected GamePhase(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
         {
             if (number <= 0)
             {
@@ -34,6 +35,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
             }
 
             Number = number;
+            Label = label;
             Condition = condition;
             Rule = rule;
             PreProcessors = preProcessors;
@@ -62,14 +64,14 @@ namespace Veggerby.Boards.Core.Flows.Phases
             return preProcessedEvents;
         }
 
-        public static GamePhase New(int number, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)
+        public static GamePhase New(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)
         {
-            return new GamePhase(number, condition, rule, parent, preProcessors);
+            return new GamePhase(number, label, condition, rule, parent, preProcessors);
         }
 
-        public static CompositeGamePhase NewParent(int number, IGameStateCondition condition = null, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)
+        public static CompositeGamePhase NewParent(int number, string label = "n/a", IGameStateCondition condition = null, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)
         {
-            return new CompositeGamePhase(number, condition ?? new NullGameStateCondition(), parent, preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>());
+            return new CompositeGamePhase(number, label, condition ?? new NullGameStateCondition(), parent, preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>());
         }
     }
 }

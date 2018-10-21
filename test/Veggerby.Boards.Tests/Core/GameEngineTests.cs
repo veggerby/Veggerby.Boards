@@ -21,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core
                 // arrange
                 var builder = new TestGameBuilder().Compile();
                 var game = builder.Game;
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+                var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
                 // act
                 var actual = new GameEngine(game, gamePhaseRoot);
@@ -36,7 +36,7 @@ namespace Veggerby.Boards.Tests.Core
             public void Should_throw_with_null_state()
             {
                 // arrange
-                var gamePhaseRoot = GamePhase.New(1, new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+                var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
                 // act
                 var actual = Should.Throw<ArgumentNullException>(() => new GameEngine(null, gamePhaseRoot));

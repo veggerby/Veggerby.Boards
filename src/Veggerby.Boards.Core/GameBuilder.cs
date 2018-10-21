@@ -181,7 +181,7 @@ namespace Veggerby.Boards.Core
 
         protected IGamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
         {
-            var gamePhase = new GamePhaseDefinition(this);
+            var gamePhase = new GamePhaseDefinition(this, label);
             _gamePhaseDefinitions.Add(gamePhase);
             return gamePhase;
         }
@@ -246,7 +246,7 @@ namespace Veggerby.Boards.Core
             else
             {
                 // null pattern, no rules or event handlers
-                gamePhaseRoot = GamePhase.New(1, new States.Conditions.NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+                gamePhaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
             }
 
             // combine

@@ -12,14 +12,16 @@ namespace Veggerby.Boards.Core.Builder.Phases
 {
     internal class GamePhaseDefinition : DefinitionBase, IGamePhaseDefinition, IThenGameEventRule
     {
-        public GamePhaseDefinition(GameBuilder builder) : base(builder)
+        public GamePhaseDefinition(GameBuilder builder, string label) : base(builder)
         {
+            _label = label;
         }
 
         private int? _number;
         private CompositeGamePhaseConditionDefinition _conditionDefinition;
         private GameEventRuleDefinitions _ruleDefinitions;
         private IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = new List<GameEventPreProcessorDefinition>();
+        private readonly string _label;
 
         internal void Add(GameEventPreProcessorDefinition preProcessorDefinition)
         {
@@ -60,7 +62,7 @@ namespace Veggerby.Boards.Core.Builder.Phases
             var condition = _conditionDefinition.Build(game);
             var rule = _ruleDefinitions.Build(game);
             var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game)).ToList();
-            return GamePhase.New(_number ?? number, condition, rule, parent, preprocessors);
+            return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors);
         }
     }
 }

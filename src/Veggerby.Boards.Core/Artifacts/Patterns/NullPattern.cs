@@ -1,28 +1,24 @@
-namespace Veggerby.Boards.Core.Artifacts.Patterns
+namespace Veggerby.Boards.Core.Artifacts.Patterns;
+
+public class NullPattern : IPattern
 {
-    public class NullPattern : IPattern
+    public void Accept(IPatternVisitor visitor)
     {
-        public void Accept(IPatternVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        protected bool Equals(NullPattern other)
-        {
-            return other != null;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((NullPattern)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return typeof(NullPattern).GetHashCode();
-        }
+        visitor.Visit(this);
     }
+
+    public bool Equals(NullPattern other)
+    {
+        return other is not null;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((NullPattern)obj);
+    }
+
+    public override int GetHashCode() => typeof(NullPattern).GetHashCode();
 }

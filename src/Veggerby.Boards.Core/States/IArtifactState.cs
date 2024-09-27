@@ -1,9 +1,8 @@
 using Veggerby.Boards.Core.Artifacts;
 
-namespace Veggerby.Boards.Core.States
+namespace Veggerby.Boards.Core.States;
+
+public interface IArtifactState
 {
-    public interface IArtifactState
-    {
-        Artifact Artifact { get; }
-    }
+    Artifact Artifact { get; }
 }

@@ -7,72 +7,65 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Builder.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
 
-namespace Veggerby.Boards.Core.Builder.Rules
+namespace Veggerby.Boards.Core.Builder.Rules;
+
+internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition parent) : DefinitionBase(builder), IGameEventRuleDefinitionsWithOption
 {
-    internal class GameEventRuleDefinitions : DefinitionBase, IGameEventRuleDefinitionsWithOption
+    private readonly GamePhaseDefinition _parent = parent;
+    private readonly IList<IGameEventRuleDefinition> _ruleDefinitions = new List<IGameEventRuleDefinition>();
+    private CompositeMode _eventRuleCompositeMode = CompositeMode.Any;
+
+    private void SetCompositeMode(CompositeMode mode)
     {
-        public GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition parent) : base(builder)
+        if (_ruleDefinitions.Any())
         {
-            _parent = parent;
-            _eventRuleCompositeMode = CompositeMode.Any;
+            throw new ArgumentException("Can only set composite mode when no rules are added");
         }
 
-        private readonly GamePhaseDefinition _parent;
-        private IList<IGameEventRuleDefinition> _ruleDefinitions = new List<IGameEventRuleDefinition>();
-        private CompositeMode _eventRuleCompositeMode;
+        _eventRuleCompositeMode = mode;
+    }
 
-        private void SetCompositeMode(CompositeMode mode)
+    public IGameEventRule Build(Game game)
+    {
+        if (!(_ruleDefinitions?.Any() ?? false))
         {
-            if (_ruleDefinitions.Any())
-            {
-                throw new ArgumentException("Can only set composite mode when no rules are added");
-            }
-
-            _eventRuleCompositeMode = mode;
+            return null;
         }
 
-        public IGameEventRule Build(Game game)
+        if (_ruleDefinitions.Count() == 1)
         {
-            if (!(_ruleDefinitions?.Any() ?? false))
-            {
-                return null;
-            }
-
-            if (_ruleDefinitions.Count() == 1)
-            {
-                return _ruleDefinitions.Single().Build(game);
-            }
-
-            var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();
-            return CompositeGameEventRule.CreateCompositeRule(
-                _eventRuleCompositeMode,
-                rules);
+            return _ruleDefinitions.Single().Build(game);
         }
 
-        IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.All()
-        {
-            SetCompositeMode(CompositeMode.All);
-            return this;
-        }
+        var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();
+        return CompositeGameEventRule.CreateCompositeRule(
+            _eventRuleCompositeMode,
+            rules);
+    }
 
-        IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.First()
-        {
-            SetCompositeMode(CompositeMode.Any);
-            return this;
-        }
+    IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.All()
+    {
+        SetCompositeMode(CompositeMode.All);
+        return this;
+    }
 
-        IGameEventRuleDefinition<T> IGameEventRuleDefinitions.ForEvent<T>()
-        {
-            var rule = new GameEventRuleDefinition<T>(Builder, this);
-            _ruleDefinitions.Add(rule);
-            return rule;
-        }
+    IGameEventRuleDefinitions IGameEventRuleDefinitionsWithOption.First()
+    {
+        SetCompositeMode(CompositeMode.Any);
+        return this;
+    }
 
-        IGameEventRuleDefinitionsWithOption IGameEventRuleDefinitionsWithOption.PreProcessEvent(GameEventPreProcessorFactory factory)
-        {
-            var preprocessor = new GameEventPreProcessorDefinition(Builder, this, factory);
-            _parent.Add(preprocessor);
-            return this;
-        }
+    IGameEventRuleDefinition<T> IGameEventRuleDefinitions.ForEvent<T>()
+    {
+        var rule = new GameEventRuleDefinition<T>(Builder, this);
+        _ruleDefinitions.Add(rule);
+        return rule;
+    }
+
+    IGameEventRuleDefinitionsWithOption IGameEventRuleDefinitionsWithOption.PreProcessEvent(GameEventPreProcessorFactory factory)
+    {
+        var preprocessor = new GameEventPreProcessorDefinition(Builder, this, factory);
+        _parent.Add(preprocessor);
+        return this;
     }
 }

@@ -4,135 +4,134 @@ using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
 
-namespace Veggerby.Boards.Tests.Core.States.Conditions
+namespace Veggerby.Boards.Tests.Core.States.Conditions;
+
+public class CompositeGameStateConditionTests
 {
-    public class CompositeGameStateConditionTests
+    public class Create
     {
-        public class Create
+        // main ctor tested via ConditionExtensions
+
+        [Fact]
+        public void Should_throw_with_null_child_condition_and()
         {
-            // main ctor tested via ConditionExtensions
+            // arrange
+            IGameStateCondition condition1 = null;
+            IGameStateCondition condition2 = null;
 
-            [Fact]
-            public void Should_throw_with_null_child_condition_and()
-            {
-                // arrange
-                IGameStateCondition condition1 = null;
-                IGameStateCondition condition2 = null;
+            // act
+            var actual = () => condition1.And(condition2);
 
-                // act
-                var actual = () => condition1.And(condition2);
-
-                // assert
-                actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
-            }
-
-            [Fact]
-            public void Should_throw_with_null_child_condition_or()
-            {
-                // arrange
-                IGameStateCondition condition1 = null;
-                IGameStateCondition condition2 = null;
-
-                // act
-                var actual = () => condition1.Or(condition2);
-
-                // assert
-                actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
-            }
+            // assert
+            actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
         }
 
-        public class Evaluate
+        [Fact]
+        public void Should_throw_with_null_child_condition_or()
         {
-            private readonly GameState _state;
+            // arrange
+            IGameStateCondition condition1 = null;
+            IGameStateCondition condition2 = null;
 
-            public Evaluate()
-            {
-                _state = GameState.New(null);
-            }
+            // act
+            var actual = () => condition1.Or(condition2);
 
-            [Fact]
-            public void Should_evaluate_true_when_all_are_true_when_mode_all()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(true)
-                    .And(new NullGameStateCondition(true));
+            // assert
+            actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
+        }
+    }
 
-                // act
-                var actual = condition.Evaluate(_state);
+    public class Evaluate
+    {
+        private readonly GameState _state;
 
-                // assert
-                actual.Should().Be(ConditionResponse.Valid);
-            }
+        public Evaluate()
+        {
+            _state = GameState.New(null);
+        }
 
-            [Fact]
-            public void Should_evaluate_false_when_not_all_are_true_when_mode_all()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(true)
-                    .And(new NullGameStateCondition(false));
+        [Fact]
+        public void Should_evaluate_true_when_all_are_true_when_mode_all()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(true)
+                .And(new NullGameStateCondition(true));
 
-                // act
-                var actual = condition.Evaluate(_state);
+            // act
+            var actual = condition.Evaluate(_state);
 
-                // assert
-                actual.Should().Be(ConditionResponse.Invalid);
-            }
+            // assert
+            actual.Should().Be(ConditionResponse.Valid);
+        }
 
-            [Fact]
-            public void Should_evaluate_false_when_none_are_true_when_mode_all()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(false)
-                    .And(new NullGameStateCondition(false));
+        [Fact]
+        public void Should_evaluate_false_when_not_all_are_true_when_mode_all()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(true)
+                .And(new NullGameStateCondition(false));
 
-                // act
-                var actual = condition.Evaluate(_state);
+            // act
+            var actual = condition.Evaluate(_state);
 
-                // assert
-                actual.Should().Be(ConditionResponse.Invalid);
-            }
+            // assert
+            actual.Should().Be(ConditionResponse.Invalid);
+        }
 
-            [Fact]
-            public void Should_evaluate_true_when_all_are_true_when_mode_any()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(true)
-                    .Or(new NullGameStateCondition(true));
+        [Fact]
+        public void Should_evaluate_false_when_none_are_true_when_mode_all()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(false)
+                .And(new NullGameStateCondition(false));
 
-                // act
-                var actual = condition.Evaluate(_state);
+            // act
+            var actual = condition.Evaluate(_state);
 
-                // assert
-                actual.Should().Be(ConditionResponse.Valid);
-            }
+            // assert
+            actual.Should().Be(ConditionResponse.Invalid);
+        }
 
-            [Fact]
-            public void Should_evaluate_true_when_not_all_are_true_when_mode_any()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(true)
-                    .Or(new NullGameStateCondition(false));
+        [Fact]
+        public void Should_evaluate_true_when_all_are_true_when_mode_any()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(true)
+                .Or(new NullGameStateCondition(true));
 
-                // act
-                var actual = condition.Evaluate(_state);
+            // act
+            var actual = condition.Evaluate(_state);
 
-                // assert
-                actual.Should().Be(ConditionResponse.Valid);
-            }
+            // assert
+            actual.Should().Be(ConditionResponse.Valid);
+        }
 
-            [Fact]
-            public void Should_evaluate_false_when_none_are_true_when_mode_any()
-            {
-                // arrange
-                var condition = new NullGameStateCondition(false)
-                    .Or(new NullGameStateCondition(false));
+        [Fact]
+        public void Should_evaluate_true_when_not_all_are_true_when_mode_any()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(true)
+                .Or(new NullGameStateCondition(false));
 
-                // act
-                var actual = condition.Evaluate(_state);
+            // act
+            var actual = condition.Evaluate(_state);
 
-                // assert
-                actual.Should().Be(ConditionResponse.Invalid);
-            }
+            // assert
+            actual.Should().Be(ConditionResponse.Valid);
+        }
+
+        [Fact]
+        public void Should_evaluate_false_when_none_are_true_when_mode_any()
+        {
+            // arrange
+            var condition = new NullGameStateCondition(false)
+                .Or(new NullGameStateCondition(false));
+
+            // act
+            var actual = condition.Evaluate(_state);
+
+            // assert
+            actual.Should().Be(ConditionResponse.Invalid);
         }
     }
 }

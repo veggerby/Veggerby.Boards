@@ -4,22 +4,18 @@
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Builder.Phases
+namespace Veggerby.Boards.Core.Builder.Phases;
+
+internal abstract class GamePhaseConditionDefinitionBase : DefinitionBase
 {
-    internal abstract class GamePhaseConditionDefinitionBase : DefinitionBase
+    public GamePhaseConditionDefinitionBase(GameBuilder builder, IThenGameEventRule parent) : base(builder)
     {
-        public GamePhaseConditionDefinitionBase(GameBuilder builder, IThenGameEventRule parent) : base(builder)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException(nameof(parent));
-            }
+        ArgumentNullException.ThrowIfNull(parent);
 
-            Parent = parent;
-        }
-
-        public IThenGameEventRule Parent { get; }
-
-        internal abstract IGameStateCondition Build(Game game);
+        Parent = parent;
     }
+
+    public IThenGameEventRule Parent { get; }
+
+    internal abstract IGameStateCondition Build(Game game);
 }

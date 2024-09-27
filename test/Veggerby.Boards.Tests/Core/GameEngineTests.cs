@@ -8,55 +8,54 @@ using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States.Conditions;
 using Veggerby.Boards.Tests.Core.Fakes;
 
-namespace Veggerby.Boards.Tests.Core
+namespace Veggerby.Boards.Tests.Core;
+
+public class GameEngineTests
 {
-    public class GameEngineTests
+    public class New
     {
-        public class New
+        [Fact]
+        public void Should_initialize_gameengine()
         {
-            [Fact]
-            public void Should_initialize_gameengine()
-            {
-                // arrange
-                var builder = new TestGameBuilder().Compile();
-                var game = builder.Game;
-                var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+            // arrange
+            var builder = new TestGameBuilder().Compile();
+            var game = builder.Game;
+            var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
-                // act
-                var actual = new GameEngine(game, gamePhaseRoot);
+            // act
+            var actual = new GameEngine(game, gamePhaseRoot);
 
-                // assert
-                actual.Should().NotBeNull();
-                actual.Game.Should().Be(game);
-                actual.GamePhaseRoot.Should().Be(gamePhaseRoot);
-            }
+            // assert
+            actual.Should().NotBeNull();
+            actual.Game.Should().Be(game);
+            actual.GamePhaseRoot.Should().Be(gamePhaseRoot);
+        }
 
-            [Fact]
-            public void Should_throw_with_null_state()
-            {
-                // arrange
-                var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
+        [Fact]
+        public void Should_throw_with_null_state()
+        {
+            // arrange
+            var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
-                // act
-                var actual = () => new GameEngine(null, gamePhaseRoot);
+            // act
+            var actual = () => new GameEngine(null, gamePhaseRoot);
 
-                // assert
-                actual.Should().Throw<ArgumentNullException>().WithParameterName("game");
-            }
+            // assert
+            actual.Should().Throw<ArgumentNullException>().WithParameterName("game");
+        }
 
-            [Fact]
-            public void Should_throw_with_null_condition()
-            {
-                // arrange
-                var builder = new TestGameBuilder().Compile();
-                var game = builder.Game;
+        [Fact]
+        public void Should_throw_with_null_condition()
+        {
+            // arrange
+            var builder = new TestGameBuilder().Compile();
+            var game = builder.Game;
 
-                // act
-                var actual = () => new GameEngine(game, null);
+            // act
+            var actual = () => new GameEngine(game, null);
 
-                // assert
-                actual.Should().Throw<ArgumentNullException>().WithParameterName("gamePhaseRoot");
-            }
+            // assert
+            actual.Should().Throw<ArgumentNullException>().WithParameterName("gamePhaseRoot");
         }
     }
 }

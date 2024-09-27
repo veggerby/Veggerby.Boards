@@ -5,30 +5,30 @@ using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules.Conditions
+namespace Veggerby.Boards.Core.Flows.Rules.Conditions;
+
+public class HasValidPathGameEventCondition : IGameEventCondition<MovePieceGameEvent>
 {
-    public class HasValidPathGameEventCondition : IGameEventCondition<MovePieceGameEvent>
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
+        var pieceState = state.GetState<PieceState>(@event.Piece);
+
+        if (!pieceState.CurrentTile.Equals(@event.From))
         {
-            var pieceState = state.GetState<PieceState>(@event.Piece);
-
-            if (!pieceState.CurrentTile.Equals(@event.From))
-            {
-                return ConditionResponse.Invalid;
-            }
-
-            var result = @event
-                .Piece
-                .Patterns
-                .Select(pattern => {
-                    var visitor = new ResolveTilePathPatternVisitor(engine.Game.Board, @event.From, @event.To);
-                    pattern.Accept(visitor);
-                    return visitor.ResultPath;
-                })
-                .Any(x => x != null);
-
-            return result ? ConditionResponse.Valid : ConditionResponse.Fail("No path to destination tile");
+            return ConditionResponse.Invalid;
         }
+
+        var result = @event
+            .Piece
+            .Patterns
+            .Select(pattern =>
+            {
+                var visitor = new ResolveTilePathPatternVisitor(engine.Game.Board, @event.From, @event.To);
+                pattern.Accept(visitor);
+                return visitor.ResultPath;
+            })
+            .Any(x => x is not null);
+
+        return result ? ConditionResponse.Valid : ConditionResponse.Fail("No path to destination tile");
     }
 }

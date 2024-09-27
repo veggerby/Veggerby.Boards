@@ -6,35 +6,34 @@ using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Phases
+namespace Veggerby.Boards.Core.Flows.Phases;
+
+public class CompositeGamePhase : GamePhase
 {
-    public class CompositeGamePhase : GamePhase
+    private readonly IList<GamePhase> _childPhases;
+
+    public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
+
+    internal CompositeGamePhase(int number, string label, IGameStateCondition condition, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
+        : base(number, label, condition, GameEventRule<IGameEvent>.Null, parent, preProcessors)
     {
-        private readonly IList<GamePhase> _childPhases;
+        _childPhases = new List<GamePhase>();
+    }
 
-        public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
-
-        internal CompositeGamePhase(int number, string label, IGameStateCondition condition, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
-            : base(number, label, condition, GameEventRule<IGameEvent>.Null, parent, preProcessors)
+    public override GamePhase GetActiveGamePhase(GameState gameState)
+    {
+        if (!Condition.Evaluate(gameState).Equals(ConditionResponse.Valid))
         {
-            _childPhases = new List<GamePhase>();
+            return null;
         }
 
-        public override GamePhase GetActiveGamePhase(GameState gameState)
-        {
-            if (!Condition.Evaluate(gameState).Equals(ConditionResponse.Valid))
-            {
-                return null;
-            }
+        return _childPhases
+            .Select(x => x.GetActiveGamePhase(gameState))
+            .FirstOrDefault(x => x is not null);
+    }
 
-            return _childPhases
-                .Select(x => x.GetActiveGamePhase(gameState))
-                .FirstOrDefault(x => x != null);
-        }
-
-        internal void Add(GamePhase phase)
-        {
-            _childPhases.Add(phase);
-        }
+    internal void Add(GamePhase phase)
+    {
+        _childPhases.Add(phase);
     }
 }

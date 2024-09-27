@@ -1,198 +1,180 @@
 ﻿using Veggerby.Boards.Core;
 
-namespace Veggerby.Boards.Tests.Core
+namespace Veggerby.Boards.Tests.Core;
+
+public class ConditionResultTests
 {
-    public class ConditionResultTests
+    public class Static
     {
-        public class Static
+        [Fact]
+        public void Should_have_static_states()
         {
-            [Fact]
-            public void Should_have_static_states()
-            {
-                // arrange
+            // arrange
 
-                // act
+            // act
 
-                // assert
-                ConditionResponse.Valid.Should().NotBeNull();
-                ConditionResponse.Valid.Result.Should().Be(ConditionResult.Valid);
-                ConditionResponse.Valid.Reason.Should().BeNull();
+            // assert
+            ConditionResponse.Valid.Should().NotBeNull();
+            ConditionResponse.Valid.Result.Should().Be(ConditionResult.Valid);
+            ConditionResponse.Valid.Reason.Should().BeNull();
 
-                ConditionResponse.Invalid.Should().NotBeNull();
-                ConditionResponse.Invalid.Result.Should().Be(ConditionResult.Invalid);
-                ConditionResponse.Invalid.Reason.Should().BeNull();
+            ConditionResponse.Invalid.Should().NotBeNull();
+            ConditionResponse.Invalid.Result.Should().Be(ConditionResult.Invalid);
+            ConditionResponse.Invalid.Reason.Should().BeNull();
 
-                ConditionResponse.NotApplicable.Should().NotBeNull();
-                ConditionResponse.NotApplicable.Result.Should().Be(ConditionResult.Ignore);
-                ConditionResponse.NotApplicable.Reason.Should().BeNull();
-            }
-
-            [Fact]
-            public void Should_create_valid_state()
-            {
-                // arrange
-
-                // act
-                var actual = ConditionResponse.Success("it worked!");
-
-                // assert
-                actual.Should().NotBeNull();
-                actual.Result.Should().Be(ConditionResult.Valid);
-                actual.Reason.Should().Be("it worked!");
-            }
-
-            [Fact]
-            public void Should_create_invalid_state()
-            {
-                // arrange
-
-                // act
-                var actual = ConditionResponse.Fail("it did not work!");
-
-                // assert
-                actual.Should().NotBeNull();
-                actual.Result.Should().Be(ConditionResult.Invalid);
-                actual.Reason.Should().Be("it did not work!");
-            }
-
-            [Fact]
-            public void Should_create_ignore_state()
-            {
-                // arrange
-
-                // act
-                var actual = ConditionResponse.Ignore("meh!");
-
-                // assert
-                actual.Should().NotBeNull();
-                actual.Result.Should().Be(ConditionResult.Ignore);
-                actual.Reason.Should().Be("meh!");
-            }
-
-            [Fact]
-            public void Should_create_fails_state_composite()
-            {
-                // arrange
-                var state1 = ConditionResponse.Fail("fail");
-                var state2 = ConditionResponse.Success("success");
-                var state3 = ConditionResponse.Ignore("ignore");
-
-                // act
-                var actual = ConditionResponse.Fail([state1, state2, state3]);
-
-                // assert
-                actual.Should().NotBeNull();
-                actual.Result.Should().Be(ConditionResult.Invalid);
-                actual.Reason.Should().Be("fail,success,ignore");
-            }
+            ConditionResponse.NotApplicable.Should().NotBeNull();
+            ConditionResponse.NotApplicable.Result.Should().Be(ConditionResult.Ignore);
+            ConditionResponse.NotApplicable.Reason.Should().BeNull();
         }
 
-        public class _ToString
+        [Fact]
+        public void Should_create_valid_state()
         {
-            [Theory]
-            [InlineData(ConditionResult.Valid, "success", "ConditionResponse Valid/success")]
-            [InlineData(ConditionResult.Valid, null, "ConditionResponse Valid/")]
-            [InlineData(ConditionResult.Valid, "", "ConditionResponse Valid/")]
-            [InlineData(ConditionResult.Ignore, "not relevant", "ConditionResponse Ignore/not relevant")]
-            [InlineData(ConditionResult.Invalid, "fail", "ConditionResponse Invalid/fail")]
-            public void Should_return_valid_string(ConditionResult result, string reason, string expected)
-            {
-                // arrange
-                var checkState = ConditionResponse.New(result, reason);
+            // arrange
 
-                // act
-                var actual = checkState.ToString();
+            // act
+            var actual = ConditionResponse.Success("it worked!");
 
-                // assert
-                actual.Should().Be(expected);
-            }
+            // assert
+            actual.Should().NotBeNull();
+            actual.Result.Should().Be(ConditionResult.Valid);
+            actual.Reason.Should().Be("it worked!");
         }
 
-        public class _GetHashCode
+        [Fact]
+        public void Should_create_invalid_state()
         {
-            [Fact]
-            public void Should_return_hashcode()
-            {
-                // arrange
-                var expected = ConditionResult.Valid.GetHashCode();
-                var state = ConditionResponse.Success("woo hoo!");
+            // arrange
 
-                // act
-                var actual = state.GetHashCode();
+            // act
+            var actual = ConditionResponse.Fail("it did not work!");
 
-                // assert
-                actual.Should().Be(expected);
-            }
+            // assert
+            actual.Should().NotBeNull();
+            actual.Result.Should().Be(ConditionResult.Invalid);
+            actual.Reason.Should().Be("it did not work!");
         }
 
-        public class _Equals
+        [Fact]
+        public void Should_create_ignore_state()
         {
-            [Fact]
-            public void Should_equal_same_object()
-            {
-                // arrange
-                var state = ConditionResponse.Success("success");
+            // arrange
 
-                // act
-                var actual = state.Equals(state);
+            // act
+            var actual = ConditionResponse.Ignore("meh!");
 
-                // assert
-                actual.Should().BeTrue();
-            }
+            // assert
+            actual.Should().NotBeNull();
+            actual.Result.Should().Be(ConditionResult.Ignore);
+            actual.Reason.Should().Be("meh!");
+        }
 
-            [Fact]
-            public void Should_not_equal_null()
-            {
-                // arrange
-                var state = ConditionResponse.Success("success");
+        [Fact]
+        public void Should_create_fails_state_composite()
+        {
+            // arrange
+            var state1 = ConditionResponse.Fail("fail");
+            var state2 = ConditionResponse.Success("success");
+            var state3 = ConditionResponse.Ignore("ignore");
 
-                // act
-                var actual = state.Equals(null);
+            // act
+            var actual = ConditionResponse.Fail([state1, state2, state3]);
 
-                // assert
-                actual.Should().BeFalse();
-            }
+            // assert
+            actual.Should().NotBeNull();
+            actual.Result.Should().Be(ConditionResult.Invalid);
+            actual.Reason.Should().Be("fail,success,ignore");
+        }
+    }
 
-            [Fact]
-            public void Should_equal_same_result_different_reason()
-            {
-                // arrange
-                var state1 = ConditionResponse.Success("success");
-                var state2 = ConditionResponse.Success("more success");
+    public class _ToString
+    {
+        [Theory]
+        [InlineData(ConditionResult.Valid, "success", "ConditionResponse Valid/success")]
+        [InlineData(ConditionResult.Valid, null, "ConditionResponse Valid/")]
+        [InlineData(ConditionResult.Valid, "", "ConditionResponse Valid/")]
+        [InlineData(ConditionResult.Ignore, "not relevant", "ConditionResponse Ignore/not relevant")]
+        [InlineData(ConditionResult.Invalid, "fail", "ConditionResponse Invalid/fail")]
+        public void Should_return_valid_string(ConditionResult result, string reason, string expected)
+        {
+            // arrange
+            var checkState = ConditionResponse.New(result, reason);
 
-                // act
-                var actual = state1.Equals(state2);
+            // act
+            var actual = checkState.ToString();
 
-                // assert
-                actual.Should().BeTrue();
-            }
+            // assert
+            actual.Should().Be(expected);
+        }
+    }
 
-            [Fact]
-            public void Should_not_equal_different_result()
-            {
-                // arrange
-                var state1 = ConditionResponse.Success("success");
-                var state2 = ConditionResponse.Fail("more success");
+    public class _Equals
+    {
+        [Fact]
+        public void Should_equal_same_object()
+        {
+            // arrange
+            var state = ConditionResponse.Success("success");
 
-                // act
-                var actual = state1.Equals(state2);
+            // act
+            var actual = state.Equals(state);
 
-                // assert
-                actual.Should().BeFalse();
-            }
+            // assert
+            actual.Should().BeTrue();
+        }
 
-            [Fact]
-            public void Should_not_equal_different_type()
-            {
-                // arrange
-                var state = ConditionResponse.Success("success");
+        [Fact]
+        public void Should_not_equal_null()
+        {
+            // arrange
+            var state = ConditionResponse.Success("success");
 
-                // act
-                var actual = state.Equals("success");
+            // act
+            var actual = state.Equals(null);
 
-                // assert
-                actual.Should().BeFalse();
-            }
+            // assert
+            actual.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Should_equal_same_result_different_reason()
+        {
+            // arrange
+            var state1 = ConditionResponse.Success("success");
+            var state2 = ConditionResponse.Success("more success");
+
+            // act
+            var actual = state1.Equals(state2);
+
+            // assert
+            actual.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Should_not_equal_different_result()
+        {
+            // arrange
+            var state1 = ConditionResponse.Success("success");
+            var state2 = ConditionResponse.Fail("more success");
+
+            // act
+            var actual = state1.Equals(state2);
+
+            // assert
+            actual.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Should_not_equal_different_type()
+        {
+            // arrange
+            var state = ConditionResponse.Success("success");
+
+            // act
+            var actual = state.Equals("success");
+
+            // assert
+            actual.Should().BeFalse();
         }
     }
 }

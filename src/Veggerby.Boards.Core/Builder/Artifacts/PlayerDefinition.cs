@@ -1,24 +1,19 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder.Artifacts
+namespace Veggerby.Boards.Core.Builder.Artifacts;
+
+public class PlayerDefinition(GameBuilder builder) : DefinitionBase(builder)
 {
-    public class PlayerDefinition : DefinitionBase
+    public string PlayerId { get; private set; }
+
+    public PlayerDefinition WithId(string id)
     {
-        public PlayerDefinition(GameBuilder builder) : base(builder)
+        if (string.IsNullOrEmpty(id))
         {
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public string PlayerId { get; private set; }
-
-        public PlayerDefinition WithId(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
-
-            PlayerId = id;
-            return this;
-        }
+        PlayerId = id;
+        return this;
     }
 }

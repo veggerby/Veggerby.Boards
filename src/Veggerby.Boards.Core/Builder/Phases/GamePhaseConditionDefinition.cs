@@ -4,25 +4,21 @@
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Builder.Phases
+namespace Veggerby.Boards.Core.Builder.Phases;
+
+internal class GamePhaseConditionDefinition : GamePhaseConditionDefinitionBase
 {
-    internal class GamePhaseConditionDefinition : GamePhaseConditionDefinitionBase
+    public GamePhaseConditionDefinition(GameBuilder builder, GameStateConditionFactory conditionFactory, IThenGameEventRule parent) : base(builder, parent)
     {
-        public GamePhaseConditionDefinition(GameBuilder builder, GameStateConditionFactory conditionFactory, IThenGameEventRule parent) : base(builder, parent)
-        {
-            if (conditionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(conditionFactory));
-            }
+        ArgumentNullException.ThrowIfNull(conditionFactory);
 
-            ConditionFactory = conditionFactory;
-        }
+        ConditionFactory = conditionFactory;
+    }
 
-        public GameStateConditionFactory ConditionFactory { get; }
+    public GameStateConditionFactory ConditionFactory { get; }
 
-        internal override IGameStateCondition Build(Game game)
-        {
-            return ConditionFactory(game);
-        }
+    internal override IGameStateCondition Build(Game game)
+    {
+        return ConditionFactory(game);
     }
 }

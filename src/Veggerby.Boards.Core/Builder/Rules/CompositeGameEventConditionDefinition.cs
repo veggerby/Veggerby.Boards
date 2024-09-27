@@ -7,90 +7,84 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 
-namespace Veggerby.Boards.Core.Builder.Rules
+namespace Veggerby.Boards.Core.Builder.Rules;
+
+internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, IThenStateMutator<T> parent) : GameEventConditionDefinitionBase<T>(builder, parent), IGameEventConditionDefinitionAndOr<T> where T : IGameEvent
 {
-    internal class CompositeGameEventConditionDefinition<T> : GameEventConditionDefinitionBase<T>, IGameEventConditionDefinitionAndOr<T> where T : IGameEvent
+    private readonly IList<GameEventConditionDefinitionBase<T>> _childDefinitions = new List<GameEventConditionDefinitionBase<T>>();
+    private CompositeMode? _conditionCompositeMode = null;
+
+    internal CompositeGameEventConditionDefinition<T> Add(GameEventConditionDefinitionBase<T> conditionDefinition, CompositeMode? mode)
     {
-        public CompositeGameEventConditionDefinition(GameBuilder builder, IThenStateMutator<T> parent) : base(builder, parent)
+        if (mode is null && _childDefinitions.Any())
         {
-            _conditionCompositeMode = null;
+            throw new ArgumentException("Must provide mode for multiple conditions", nameof(mode));
         }
 
-        private IList<GameEventConditionDefinitionBase<T>> _childDefinitions = new List<GameEventConditionDefinitionBase<T>>();
-        private CompositeMode? _conditionCompositeMode;
-
-        internal CompositeGameEventConditionDefinition<T> Add(GameEventConditionDefinitionBase<T> conditionDefinition, CompositeMode? mode)
+        if (_conditionCompositeMode is not null && _conditionCompositeMode.Value != mode)
         {
-            if (mode == null && _childDefinitions.Any())
-            {
-                throw new ArgumentException("Must provide mode for multiple conditions", nameof(mode));
-            }
-
-            if (_conditionCompositeMode != null && _conditionCompositeMode.Value != mode)
-            {
-                throw new ArgumentException("Must be same composite mode", nameof(mode));
-            }
-
-            _conditionCompositeMode = mode;
-            _childDefinitions.Add(conditionDefinition);
-            return this;
+            throw new ArgumentException("Must be same composite mode", nameof(mode));
         }
 
-        internal override IGameEventCondition<T> Build(Game game)
+        _conditionCompositeMode = mode;
+        _childDefinitions.Add(conditionDefinition);
+        return this;
+    }
+
+    internal override IGameEventCondition<T> Build(Game game)
+    {
+        if (!(_childDefinitions.Any()))
         {
-            if (!(_childDefinitions.Any()))
-            {
-                return null;
-            }
-
-            if (_childDefinitions.Count() == 1)
-            {
-                return _childDefinitions.Single().Build(game);
-            }
-
-            var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-            return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+            return null;
         }
 
-        IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(GameEventConditionFactory<T> factory)
+        if (_childDefinitions.Count() == 1)
         {
-            return Add(new GameEventConditionDefinition<T>(Builder, factory, Parent), CompositeMode.All);
+            return _childDefinitions.Single().Build(game);
         }
 
-        IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And<TCondition>()
-        {
-            return Add(new GameEventConditionDefinition<T>(Builder, game => new TCondition(), Parent), CompositeMode.All);
-        }
+        var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
+        return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+    }
 
-        IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(Action<IGameEventConditionDefinitionOr<T>> action)
-        {
-            var composite = new CompositeGameEventConditionDefinition<T>(Builder, Parent);
-            action(composite);
-            Add(composite, CompositeMode.All);
-            return this;
-        }
+    IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(GameEventConditionFactory<T> factory)
+    {
+        return Add(new GameEventConditionDefinition<T>(Builder, factory, Parent), CompositeMode.All);
+    }
 
-        IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or(GameEventConditionFactory<T> factory)
-        {
-            return Add(new GameEventConditionDefinition<T>(Builder, factory, Parent), CompositeMode.Any);
-        }
+    IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And<TCondition>()
+    {
+        return Add(new GameEventConditionDefinition<T>(Builder, game => new TCondition(), Parent), CompositeMode.All);
+    }
 
-        IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or<TCondition>()
-        {
-            return Add(new GameEventConditionDefinition<T>(Builder, game => new TCondition(), Parent), CompositeMode.Any);
-        }
+    IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(Action<IGameEventConditionDefinitionOr<T>> action)
+    {
+        var composite = new CompositeGameEventConditionDefinition<T>(Builder, Parent);
+        action(composite);
+        Add(composite, CompositeMode.All);
+        return this;
+    }
 
-        IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or(Action<IGameEventConditionDefinitionAnd<T>> action)
-        {
-            var composite = new CompositeGameEventConditionDefinition<T>(Builder, Parent);
-            action(composite);
-            Add(composite, CompositeMode.Any);
-            return this;
-        }
+    IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or(GameEventConditionFactory<T> factory)
+    {
+        return Add(new GameEventConditionDefinition<T>(Builder, factory, Parent), CompositeMode.Any);
+    }
 
-        IGameEventRuleStateMutatorDefinition<T> IThenStateMutator<T>.Then()
-        {
-            return Parent.Then();
-        }
+    IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or<TCondition>()
+    {
+        return Add(new GameEventConditionDefinition<T>(Builder, game => new TCondition(), Parent), CompositeMode.Any);
+    }
+
+    IGameEventConditionDefinitionOr<T> IGameEventConditionDefinitionOr<T>.Or(Action<IGameEventConditionDefinitionAnd<T>> action)
+    {
+        var composite = new CompositeGameEventConditionDefinition<T>(Builder, Parent);
+        action(composite);
+        Add(composite, CompositeMode.Any);
+        return this;
+    }
+
+    IGameEventRuleStateMutatorDefinition<T> IThenStateMutator<T>.Then()
+    {
+        return Parent.Then();
     }
 }

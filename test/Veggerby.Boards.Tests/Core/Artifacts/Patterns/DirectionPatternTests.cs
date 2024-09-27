@@ -1,14 +1,13 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
 {
     public class DirectionPatternTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_from_constructor()
@@ -18,8 +17,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new DirectionPattern(Direction.Clockwise);
 
                 // assert
-                actual.Direction.ShouldBe(Direction.Clockwise);
-                actual.IsRepeatable.ShouldBeTrue();
+                actual.Direction.Should().Be(Direction.Clockwise);
+                actual.IsRepeatable.Should().BeTrue();
             }
 
             [Fact]
@@ -27,10 +26,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DirectionPattern(null));
+                var actual = () => new DirectionPattern(null);
 
                 // assert
-                actual.ParamName.ShouldBe("direction");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("direction");
             }
 
             [Theory]
@@ -43,8 +42,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new DirectionPattern(Direction.Clockwise, isRepeatable);
 
                 // assert
-                actual.Direction.ShouldBe(Direction.Clockwise);
-                actual.IsRepeatable.ShouldBe(isRepeatable);
+                actual.Direction.Should().Be(Direction.Clockwise);
+                actual.IsRepeatable.Should().Be(isRepeatable);
             }
         }
 
@@ -60,7 +59,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals(pattern);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -73,7 +72,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -87,7 +86,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -101,7 +100,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -115,7 +114,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -129,7 +128,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -142,7 +141,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals("some string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -159,7 +158,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
 

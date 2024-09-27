@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
 using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Veggerby.Boards.Api.Models;
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Chess;

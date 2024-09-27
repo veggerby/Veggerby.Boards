@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States
 {
@@ -20,7 +19,7 @@ namespace Veggerby.Boards.Tests.Core.States
         public class New : GameStateTests
         {
             [Fact]
-            public void Should_create_new_gamestate_with_empty()
+            public void Should_create_new_game_state_with_empty()
             {
                 // arrange
 
@@ -28,13 +27,13 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = GameState.New(null);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.IsInitialState.ShouldBeTrue();
-                actual.ChildStates.ShouldBeEmpty();
+                actual.Should().NotBeNull();
+                actual.IsInitialState.Should().BeTrue();
+                actual.ChildStates.Should().BeEmpty();
             }
 
             [Fact]
-            public void Should_create_new_gamestate_child_states()
+            public void Should_create_new_game_state_child_states()
             {
                 // arrange
                 var piece = Game.GetPiece("piece-1");
@@ -45,30 +44,30 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = GameState.New(null);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.IsInitialState.ShouldBeTrue();
-                actual.ChildStates.ShouldBeEmpty();
+                actual.Should().NotBeNull();
+                actual.IsInitialState.Should().BeTrue();
+                actual.ChildStates.Should().BeEmpty();
             }
         }
 
         public class GetState : GameStateTests
         {
             [Fact]
-            public void Should_return_artifact_getstate()
+            public void Should_return_artifact_get_state()
             {
                 // arrange
                 var piece = Game.GetPiece("piece-1");
                 var tile = Game.GetTile("tile-1");
                 var expected = new PieceState(piece, tile);
-                var gameState = GameState.New(new [] { expected });
+                var gameState = GameState.New([expected]);
 
                 // act
                 var actual = gameState.GetState<PieceState>(piece);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.ShouldBeOfType<PieceState>();
-                actual.Artifact.ShouldBe(piece);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<PieceState>();
+                actual.Artifact.Should().Be(piece);
             }
         }
 
@@ -81,13 +80,13 @@ namespace Veggerby.Boards.Tests.Core.States
                 var piece = Game.GetPiece("piece-1");
                 var tile = Game.GetTile("tile-1");
                 var expected = new PieceState(piece, tile);
-                var gameState = GameState.New(new [] { expected });
+                var gameState = GameState.New([expected]);
 
                 // act
                 var actual = gameState.IsInitialState;
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -98,13 +97,13 @@ namespace Veggerby.Boards.Tests.Core.States
                 var tile = Game.GetTile("tile-1");
                 var expected = new PieceState(piece, tile);
                 var gameState = GameState.New(null)
-                    .Next(new [] { expected });
+                    .Next([expected]);
 
                 // act
                 var actual = gameState.IsInitialState;
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -121,15 +120,15 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState1 = new PieceState(piece, tile1);
                 var pieceState2 = new PieceState(piece, tile2);
                 var diceState = new DiceState<int>(dice, 5);
-                var gameState = GameState.New(new IArtifactState[] { diceState, pieceState1 });
+                var gameState = GameState.New([diceState, pieceState1]);
 
                 // act
-                var actual = gameState.Next(new [] { pieceState2 });
+                var actual = gameState.Next([pieceState2]);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.IsInitialState.ShouldBeFalse();
-                actual.ChildStates.ShouldBe(new IArtifactState[] { diceState, pieceState2 });
+                actual.Should().NotBeNull();
+                actual.IsInitialState.Should().BeFalse();
+                actual.ChildStates.Should().Equal([diceState, pieceState2]);
             }
         }
 
@@ -147,13 +146,13 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 5);
-                var gameState = GameState.New(new IArtifactState[] { diceState, pieceState1, pieceState2 });
+                var gameState = GameState.New([diceState, pieceState1, pieceState2]);
 
                 // act
                 var actual = gameState.CompareTo(gameState);
 
                 // assert
-                actual.ShouldBeEmpty();
+                actual.Should().BeEmpty();
             }
 
             [Fact]
@@ -168,16 +167,16 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 5);
-                var gameState1 = GameState.New(new IArtifactState[] { diceState, pieceState1 });
-                var gameState2 = gameState1.Next(new [] { pieceState2 });
+                var gameState1 = GameState.New([diceState, pieceState1]);
+                var gameState2 = gameState1.Next([pieceState2]);
 
                 // act
                 var actual = gameState2.CompareTo(gameState1);
 
                 // assert
-                actual.Count().ShouldBe(1);
-                actual.Single().From.ShouldBe(null);
-                actual.Single().To.ShouldBe(pieceState2);
+                actual.Count().Should().Be(1);
+                actual.Single().From.Should().Be(null);
+                actual.Single().To.Should().Be(pieceState2);
             }
 
             [Fact]
@@ -193,16 +192,16 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState1 = new DiceState<int>(dice, 5);
                 var diceState2 = new DiceState<int>(dice, 3);
-                var gameState1 = GameState.New(new IArtifactState[] { diceState1, pieceState1, pieceState2 });
-                var gameState2 = gameState1.Next(new IArtifactState[] { pieceState2, diceState2, pieceState1 });
+                var gameState1 = GameState.New([diceState1, pieceState1, pieceState2]);
+                var gameState2 = gameState1.Next([pieceState2, diceState2, pieceState1]);
 
                 // act
                 var actual = gameState2.CompareTo(gameState1);
 
                 // assert
-                actual.Count().ShouldBe(1);
-                actual.Single().From.ShouldBe(diceState1);
-                actual.Single().To.ShouldBe(diceState2);
+                actual.Count().Should().Be(1);
+                actual.Single().From.Should().Be(diceState1);
+                actual.Single().To.Should().Be(diceState2);
             }
 
             [Fact]
@@ -221,17 +220,17 @@ namespace Veggerby.Boards.Tests.Core.States
                 var diceState2 = new DiceState<int>(dice, 3);
                 var pieceState1new = new PieceState(piece1, tile2);
                 var pieceStateN = new PieceState(pieceN, tile1);
-                var gameState1 = GameState.New(new IArtifactState[] { diceState1, pieceState1, pieceState2 });
-                var gameState2 = gameState1.Next(new IArtifactState[] { pieceState2, diceState2, pieceState1new, pieceStateN });
+                var gameState1 = GameState.New([diceState1, pieceState1, pieceState2]);
+                var gameState2 = gameState1.Next([pieceState2, diceState2, pieceState1new, pieceStateN]);
 
                 // act
                 var actual = gameState2.CompareTo(gameState1);
 
                 // assert
-                actual.Count().ShouldBe(3);
-                actual.Count(x => x.From == null && x.To.Equals(pieceStateN)).ShouldBe(1);
-                actual.Count(x => pieceState1.Equals(x.From) && pieceState1new.Equals(x.To)).ShouldBe(1);
-                actual.Count(x => diceState1.Equals(x.From) && diceState2.Equals(x.To)).ShouldBe(1);
+                actual.Count().Should().Be(3);
+                actual.Count(x => x.From == null && x.To.Equals(pieceStateN)).Should().Be(1);
+                actual.Count(x => pieceState1.Equals(x.From) && pieceState1new.Equals(x.To)).Should().Be(1);
+                actual.Count(x => diceState1.Equals(x.From) && diceState2.Equals(x.To)).Should().Be(1);
             }
         }
 
@@ -260,7 +259,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState.Equals(gameState);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -273,7 +272,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -287,8 +286,8 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState1.Equals(gameState2);
 
                 // assert
-                gameState1.ShouldNotBeSameAs(gameState2);
-                actual.ShouldBeTrue();
+                gameState1.Should().NotBe(gameState2);
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -302,7 +301,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState1.Equals(gameState2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -316,7 +315,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState1.Equals(gameState2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -330,7 +329,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState1.Equals(gameState2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -343,7 +342,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = gameState.Equals("a dumb string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -358,14 +357,14 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 3);
-                var gameState1 = GameState.New(new IArtifactState[] { diceState, pieceState1, pieceState2 });
-                var gameState2 = GameState.New(new IArtifactState[] { pieceState2, diceState, pieceState1 });
+                var gameState1 = GameState.New([diceState, pieceState1, pieceState2]);
+                var gameState2 = GameState.New([pieceState2, diceState, pieceState1]);
 
                 // act
                 var actual = gameState1.Equals(gameState2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
         }
 
@@ -381,18 +380,18 @@ namespace Veggerby.Boards.Tests.Core.States
                 var dice = game.GetArtifact<Dice>("dice");
                 var state1 = new PieceState(piece, tile);
                 var state2 = new DiceState<int>(dice, 4);
-                var gameState = GameState.New(new IArtifactState[] { state1, state2 });
+                var gameState = GameState.New([state1, state2]);
                 var expected = ((typeof(GameState).GetHashCode() * 397)) ^ true.GetHashCode() ^ state1.GetHashCode() ^ state2.GetHashCode();
 
                 // act
                 var actual = gameState.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
 
             [Fact]
-            public void Should_return_same_hashcode_different_order_states()
+            public void Should_return_same_hash_code_different_order_states()
             {
                 // arrange
                 var piece1 = Game.GetPiece("piece-1");
@@ -403,14 +402,14 @@ namespace Veggerby.Boards.Tests.Core.States
                 var pieceState1 = new PieceState(piece1, tile1);
                 var pieceState2 = new PieceState(piece2, tile2);
                 var diceState = new DiceState<int>(dice, 3);
-                var gameState1 = GameState.New(new IArtifactState[] { diceState, pieceState1, pieceState2 });
-                var gameState2 = GameState.New(new IArtifactState[] { pieceState2, diceState, pieceState1 });
+                var gameState1 = GameState.New([diceState, pieceState1, pieceState2]);
+                var gameState2 = GameState.New([pieceState2, diceState, pieceState1]);
 
                 // act
                 var actual = gameState1.GetHashCode() == gameState2.GetHashCode();
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
         }
     }

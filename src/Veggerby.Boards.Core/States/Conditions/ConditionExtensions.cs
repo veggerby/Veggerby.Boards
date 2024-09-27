@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Veggerby.Boards.Core.States.Conditions
 {
     public static class ConditionExtensions

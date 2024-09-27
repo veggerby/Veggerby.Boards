@@ -1,25 +1,24 @@
 using System;
 using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
 {
     public class FixedPatternTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_from_constructor()
             {
                 // arrange
                 // act
-                var actual = new FixedPattern(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Across });
+                var actual = new FixedPattern([Direction.Clockwise, Direction.Clockwise, Direction.Across]);
 
                 // assert
-                actual.Pattern.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise, Direction.Across });
+                actual.Pattern.Should().Equal([Direction.Clockwise, Direction.Clockwise, Direction.Across]);
             }
 
             [Fact]
@@ -27,10 +26,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new FixedPattern(null));
+                var actual = () => new FixedPattern(null);
 
                 // assert
-                 actual.ParamName.ShouldBe("pattern");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("pattern");
             }
 
             [Fact]
@@ -38,10 +37,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new FixedPattern(Enumerable.Empty<Direction>()));
+                var actual = () => new FixedPattern(Enumerable.Empty<Direction>());
 
                 // assert
-                actual.ParamName.ShouldBe("pattern");
+                actual.Should().Throw<ArgumentException>().WithParameterName("pattern");
             }
         }
 
@@ -51,81 +50,81 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
             public void Should_equal_same_object()
             {
                 // arrange
-                var pattern = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
+                var pattern = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
                 // act
                 var actual = pattern.Equals(pattern);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
             public void Should_not_equal_null()
             {
                 // arrange
-                var pattern = new FixedPattern(new[] { Direction.South });
+                var pattern = new FixedPattern([Direction.South]);
 
                 // act
                 var actual = pattern.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
             public void Should_equal_same_pattern()
             {
                 // arrange
-                var pattern1 = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
-                var pattern2 = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
+                var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
+                var pattern2 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
                 // act
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
             public void Should_not_equal_pattern_same_directions_different_order()
             {
                 // arrange
-                var pattern1 = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
-                var pattern2 = new FixedPattern(new [] { Direction.East, Direction.North, Direction.North });
+                var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
+                var pattern2 = new FixedPattern([Direction.East, Direction.North, Direction.North]);
 
                 // act
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
             public void Should_not_equal_another_pattern()
             {
                 // arrange
-                var pattern1 = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
+                var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
                 var pattern2 = new DirectionPattern(Direction.North, true);
 
                 // act
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
             public void Should_not_equal_other_type()
             {
                 // arrange
-                var pattern = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
+                var pattern = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
                 // act
                 var actual = pattern.Equals("some string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -140,21 +139,21 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                     (2 * Direction.North.GetHashCode()) ^
                     (3 * Direction.East.GetHashCode());
 
-                var pattern = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
+                var pattern = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
                 // act
                 var actual = pattern.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
 
             [Fact]
             public void Should_not_equal_hashcode_same_pattern_different_order()
             {
                 // arrange
-                var pattern1 = new FixedPattern(new [] { Direction.North, Direction.North, Direction.East });
-                var pattern2 = new FixedPattern(new [] { Direction.East, Direction.North, Direction.North });
+                var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
+                var pattern2 = new FixedPattern([Direction.East, Direction.North, Direction.North]);
 
                 // act
                 var h1 = pattern1.GetHashCode();
@@ -162,7 +161,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = h1 != h2;
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
         }
     }

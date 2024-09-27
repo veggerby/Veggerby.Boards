@@ -38,7 +38,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
             }
 
             var newState = new NullDiceState(diceState.Artifact);
-            return state.Next(new [] { newState });
+            return state.Next([newState]);
         }
     }
 }

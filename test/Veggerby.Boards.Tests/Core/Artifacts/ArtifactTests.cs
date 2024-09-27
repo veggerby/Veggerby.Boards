@@ -1,7 +1,6 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts
 {
@@ -19,7 +18,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Id;
 
                 // assert
-                actual.ShouldBe("player");
+                actual.Should().Be("player");
             }
 
             [Fact]
@@ -28,10 +27,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new Player(null));
+                var actual = () => new Player(null);
 
                 // assert
-                actual.ParamName.ShouldBe("id");
+                actual.Should().Throw<ArgumentException>().WithParameterName("id");
             }
         }
 
@@ -47,7 +46,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(player);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -60,7 +59,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -74,7 +73,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -88,7 +87,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player1.Equals(player2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -102,7 +101,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = player.Equals(dice);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
     }

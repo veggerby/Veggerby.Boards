@@ -1,11 +1,10 @@
 using System;
-using System.Linq;
-using Shouldly;
+
+
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Backgammon
 {
@@ -59,9 +58,9 @@ namespace Veggerby.Boards.Tests.Backgammon
 
             actual.Game.ShouldHaveTileWithRelations("bar", Clockwise("point-1"), CounterClockwise("point-24"));
 
-            actual.Game.GetArtifact<Dice>("dice-1").ShouldNotBeNull();
-            actual.Game.GetArtifact<Dice>("dice-2").ShouldNotBeNull();
-            actual.Game.GetArtifact<Dice>("doubling-dice").ShouldNotBeNull();
+            actual.Game.GetArtifact<Dice>("dice-1").Should().NotBeNull();
+            actual.Game.GetArtifact<Dice>("dice-2").Should().NotBeNull();
+            actual.Game.GetArtifact<Dice>("doubling-dice").Should().NotBeNull();
 
             // state
             actual.ShouldHavePieceState("white-1", "point-1");

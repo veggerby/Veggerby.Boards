@@ -1,7 +1,3 @@
-using System.Linq;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Rules;
-
 namespace Veggerby.Boards.Core.Flows.Rules
 {
     public static class RuleExtensions

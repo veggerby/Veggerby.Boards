@@ -1,14 +1,13 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States
 {
     public class ArtifactStateChangeTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initial_state_change()
@@ -24,8 +23,8 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = new ArtifactStateChange(stateFrom, stateTo);
 
                 // assert
-                actual.From.ShouldBe(stateFrom);
-                actual.To.ShouldBe(stateTo);
+                actual.From.Should().Be(stateFrom);
+                actual.To.Should().Be(stateTo);
             }
 
             [Fact]
@@ -34,10 +33,10 @@ namespace Veggerby.Boards.Tests.Core.States
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new ArtifactStateChange(null, null));
+                var actual = () => new ArtifactStateChange(null, null);
 
                 // assert
-                actual.ParamName.ShouldBe("to");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("from");
             }
 
             [Fact]
@@ -52,10 +51,10 @@ namespace Veggerby.Boards.Tests.Core.States
                 var stateTo = new PieceState(piece2, to);
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new ArtifactStateChange(stateFrom, stateTo));
+                var actual = () => new ArtifactStateChange(stateFrom, stateTo);
 
                 // assert
-                actual.ParamName.ShouldBe("to");
+                actual.Should().Throw<ArgumentException>().WithParameterName("to");
             }
         }
     }

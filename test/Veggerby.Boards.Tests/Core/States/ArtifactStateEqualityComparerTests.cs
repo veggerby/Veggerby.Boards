@@ -1,7 +1,5 @@
-using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States
 {
@@ -23,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(state1, state2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -39,7 +37,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(state1, state2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -56,7 +54,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(state1, state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -71,7 +69,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(null, state);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -86,7 +84,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(state, null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -99,7 +97,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(null, null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -116,7 +114,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.Equals(state1, state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -134,7 +132,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = comparer.GetHashCode(state);
 
                 // assert
-                actual.ShouldBe(artifact.GetHashCode());
+                actual.Should().Be(artifact.GetHashCode());
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
                 return gameState;
             }
 
-            return gameState.Next(new [] { artifactState });
+            return gameState.Next([artifactState]);
         }
     }
 }

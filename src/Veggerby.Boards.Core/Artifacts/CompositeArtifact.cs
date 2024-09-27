@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Veggerby.Boards.Core.Artifacts
 {
-    public class CompositeArtifact<T> : Artifact
+    public class CompositeArtifact<T> : Artifact, IEquatable<CompositeArtifact<T>>
         where T : Artifact
     {
         public IEnumerable<T> ChildArtifacts { get; }
@@ -23,5 +23,7 @@ namespace Veggerby.Boards.Core.Artifacts
 
             ChildArtifacts = childArtifacts.ToList().AsReadOnly();
         }
+
+        public bool Equals(CompositeArtifact<T> other) => base.Equals(other);
     }
 }

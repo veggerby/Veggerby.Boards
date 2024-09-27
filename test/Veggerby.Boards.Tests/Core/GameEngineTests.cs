@@ -1,13 +1,12 @@
-using Shouldly;
 using System;
+
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
-using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core
 {
@@ -27,9 +26,9 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = new GameEngine(game, gamePhaseRoot);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Game.ShouldBe(game);
-                actual.GamePhaseRoot.ShouldBe(gamePhaseRoot);
+                actual.Should().NotBeNull();
+                actual.Game.Should().Be(game);
+                actual.GamePhaseRoot.Should().Be(gamePhaseRoot);
             }
 
             [Fact]
@@ -39,10 +38,10 @@ namespace Veggerby.Boards.Tests.Core
                 var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new GameEngine(null, gamePhaseRoot));
+                var actual = () => new GameEngine(null, gamePhaseRoot);
 
                 // assert
-                actual.ParamName.ShouldBe("game");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("game");
             }
 
             [Fact]
@@ -53,10 +52,10 @@ namespace Veggerby.Boards.Tests.Core
                 var game = builder.Game;
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new GameEngine(game, null));
+                var actual = () => new GameEngine(game, null);
 
                 // assert
-                actual.ParamName.ShouldBe("gamePhaseRoot");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("gamePhaseRoot");
             }
         }
     }

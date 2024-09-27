@@ -1,6 +1,9 @@
 using System.Linq;
+
+
 using AutoMapper;
-using Veggerby.Boards.Core;
+
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 

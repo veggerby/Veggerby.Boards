@@ -1,8 +1,9 @@
 ﻿using System.Text;
+
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Chess
@@ -11,7 +12,7 @@ namespace Veggerby.Boards.Chess
     {
         private string GetChar(int i)
         {
-            var b = Encoding.UTF8.GetBytes(new [] { 'a' })[0] + i - 1;
+            var b = Encoding.UTF8.GetBytes(['a'])[0] + i - 1;
             return Encoding.UTF8.GetString(new [] { (byte)b });
         }
 

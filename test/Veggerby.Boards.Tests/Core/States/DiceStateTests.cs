@@ -1,16 +1,13 @@
-using Shouldly;
 using System;
+
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.States;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States
 {
     public class DiceStateTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_create_dice_state()
@@ -22,8 +19,8 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = new DiceState<int>(dice, 5);
 
                 // assert
-                actual.Artifact.ShouldBe(dice);
-                actual.CurrentValue.ShouldBe(5);
+                actual.Artifact.Should().Be(dice);
+                actual.CurrentValue.Should().Be(5);
             }
 
             [Fact]
@@ -32,10 +29,10 @@ namespace Veggerby.Boards.Tests.Core.States
                 // assert
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DiceState<int>(null, 5));
+                var actual = () => new DiceState<int>(null, 5);
 
                 // assert
-                actual.ParamName.ShouldBe("artifact");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("artifact");
             }
 
             [Fact]
@@ -45,10 +42,10 @@ namespace Veggerby.Boards.Tests.Core.States
                 var dice = new Dice("dice");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DiceState<string>(dice, null));
+                var actual = () => new DiceState<string>(dice, null);
 
                 // assert
-                actual.ParamName.ShouldBe("currentValue");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("currentValue");
             }
         }
 
@@ -65,7 +62,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state.Equals(state);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -79,7 +76,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -94,7 +91,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -109,7 +106,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -125,7 +122,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -142,7 +139,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -156,7 +153,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state.Equals("a string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -174,7 +171,7 @@ namespace Veggerby.Boards.Tests.Core.States
                 var actual = state.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
     }

@@ -1,14 +1,13 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 {
     public class TileRelationTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_from_constructor()
@@ -21,10 +20,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new TileRelation(from, to, Direction.Clockwise);
 
                 // assert
-                actual.From.ShouldBe(from);
-                actual.To.ShouldBe(to);
-                actual.Direction.ShouldBe(Direction.Clockwise);
-                actual.Distance.ShouldBe(1);
+                actual.From.Should().Be(from);
+                actual.To.Should().Be(to);
+                actual.Direction.Should().Be(Direction.Clockwise);
+                actual.Distance.Should().Be(1);
             }
 
             [Fact]
@@ -38,10 +37,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new TileRelation(from, to, Direction.CounterClockwise, 5);
 
                 // assert
-                actual.From.ShouldBe(from);
-                actual.To.ShouldBe(to);
-                actual.Direction.ShouldBe(Direction.CounterClockwise);
-                actual.Distance.ShouldBe(5);
+                actual.From.Should().Be(from);
+                actual.To.Should().Be(to);
+                actual.Direction.Should().Be(Direction.CounterClockwise);
+                actual.Distance.Should().Be(5);
             }
 
             [Fact]
@@ -50,10 +49,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = new Tile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new TileRelation(null, to, Direction.CounterClockwise, 5));
+                var actual = () => new TileRelation(null, to, Direction.CounterClockwise, 5);
 
                 // assert
-                actual.ParamName.ShouldBe("from");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("from");
             }
 
             [Fact]
@@ -62,10 +61,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = new Tile("tile-1");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new TileRelation(from, null, Direction.CounterClockwise, 5));
+                var actual = () => new TileRelation(from, null, Direction.CounterClockwise, 5);
 
                 // assert
-                actual.ParamName.ShouldBe("to");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("to");
             }
 
             [Fact]
@@ -75,10 +74,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = new Tile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new TileRelation(from, to, null, 5));
+                var actual = () => new TileRelation(from, to, null, 5);
 
                 // assert
-                actual.ParamName.ShouldBe("direction");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("direction");
             }
 
             [Fact]
@@ -88,10 +87,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = new Tile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => new TileRelation(from, to, Direction.Clockwise, 0));
+                var actual = () => new TileRelation(from, to, Direction.Clockwise, 0);
 
                 // assert
-                actual.ParamName.ShouldBe("distance");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("distance");
             }
 
             [Fact]
@@ -101,10 +100,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = new Tile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => new TileRelation(from, to, Direction.Clockwise, -1));
+                var actual = () => new TileRelation(from, to, Direction.Clockwise, -1);
 
                 // assert
-                actual.ParamName.ShouldBe("distance");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("distance");
             }
         }
 
@@ -122,7 +121,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = relation.ToString();
 
                 // assert
-                actual.ShouldBe("TileRelation Tile tile-1 1xDirection clockwise Tile tile-2");
+                actual.Should().Be("TileRelation Tile tile-1 1xDirection clockwise Tile tile-2");
             }
         }
     }

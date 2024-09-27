@@ -1,17 +1,14 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Events
 {
     public class RollDiceGameEventTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_create_event()
@@ -24,7 +21,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 var actual = new RollDiceGameEvent<int>(newState);
 
                 // assert
-                actual.NewDiceStates.ShouldBe(new [] { newState });
+                actual.NewDiceStates.Should().Equal([newState]);
             }
 
             [Fact]
@@ -33,10 +30,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new RollDiceGameEvent<int>(null));
+                var actual = () => new RollDiceGameEvent<int>(null);
 
                 // assert
-                actual.ParamName.ShouldBe("states");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("states");
             }
 
             [Fact]
@@ -45,10 +42,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new RollDiceGameEvent<string>());
+                var actual = () => new RollDiceGameEvent<string>();
 
                 // assert
-                actual.ParamName.ShouldBe("states");
+                actual.Should().Throw<ArgumentException>().WithParameterName("states");
             }
         }
     }

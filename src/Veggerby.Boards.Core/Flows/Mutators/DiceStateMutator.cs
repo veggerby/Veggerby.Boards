@@ -1,5 +1,4 @@
-﻿using System;
-using Veggerby.Boards.Core.Flows.Events;
+﻿using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Mutators

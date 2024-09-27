@@ -2,7 +2,7 @@ using System;
 
 namespace Veggerby.Boards.Core.Artifacts
 {
-    public abstract class Artifact
+    public abstract class Artifact : IEquatable<Artifact>
     {
         public string Id { get; }
 
@@ -16,7 +16,7 @@ namespace Veggerby.Boards.Core.Artifacts
             Id = id;
         }
 
-        protected bool Equals(Artifact other)
+        public bool Equals(Artifact other)
         {
             return string.Equals(Id, other.Id);
         }
@@ -29,14 +29,8 @@ namespace Veggerby.Boards.Core.Artifacts
             return Equals((Artifact)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => HashCode.Combine(Id);
 
-        public override string ToString()
-        {
-            return $"{GetType().Name} {Id}";
-        }
+        public override string ToString() => $"{GetType().Name} {Id}";
     }
 }

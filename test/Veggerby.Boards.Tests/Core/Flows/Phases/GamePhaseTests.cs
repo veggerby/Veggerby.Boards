@@ -1,14 +1,11 @@
 using System;
-using Shouldly;
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
+
+
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Phases
 {
@@ -29,12 +26,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = GamePhase.New(1, "test", condition, rule, parent);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Number.ShouldBe(1);
-                actual.Condition.ShouldBe(condition);
-                actual.Rule.ShouldBe(rule);
-                actual.Parent.ShouldBe(parent);
-                parent.ChildPhases.ShouldContain(actual);
+                actual.Should().NotBeNull();
+                actual.Number.Should().Be(1);
+                actual.Condition.Should().Be(condition);
+                actual.Rule.Should().Be(rule);
+                actual.Parent.Should().Be(parent);
+                parent.ChildPhases.Should().Contain(actual);
             }
 
             [Theory]
@@ -47,10 +44,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var parent = GamePhase.NewParent(1);
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => GamePhase.New(number, "test", condition, GameEventRule<IGameEvent>.Null, parent));
+                var actual = () => GamePhase.New(number, "test", condition, GameEventRule<IGameEvent>.Null, parent);
 
                 // assert
-                actual.ParamName.ShouldBe("number");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("number");
             }
 
             [Fact]
@@ -60,10 +57,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var parent = GamePhase.NewParent(1);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => GamePhase.New(1, "test", null, GameEventRule<IGameEvent>.Null, parent));
+                var actual = () => GamePhase.New(1, "test", null, GameEventRule<IGameEvent>.Null, parent);
 
                 // assert
-                actual.ParamName.ShouldBe("condition");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("condition");
             }
 
 
@@ -74,10 +71,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var parent = GamePhase.NewParent(1);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => GamePhase.New(1, "test", new NullGameStateCondition(), null, parent));
+                var actual = () => GamePhase.New(1, "test", new NullGameStateCondition(), null, parent);
 
                 // assert
-                actual.ParamName.ShouldBe("rule");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("rule");
             }
         }
 
@@ -100,7 +97,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = child.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBe(child);
+                actual.Should().Be(child);
             }
 
             [Fact]
@@ -113,7 +110,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = child.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBeNull();
+                actual.Should().BeNull();
             }
 
             [Fact]
@@ -127,7 +124,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = parent.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBe(child);
+                actual.Should().Be(child);
             }
 
             [Fact]
@@ -141,7 +138,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = parent.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBeNull();
+                actual.Should().BeNull();
             }
 
             [Fact]
@@ -156,7 +153,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = parent.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBe(child2);
+                actual.Should().Be(child2);
             }
 
             [Fact]
@@ -180,7 +177,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Phases
                 var actual = root.GetActiveGamePhase(_initialGameState);
 
                 // assert
-                actual.ShouldBe(child32);
+                actual.Should().Be(child32);
             }
         }
     }

@@ -1,13 +1,11 @@
 using System.Linq;
-using Shouldly;
+
+
 using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Rules
 {
@@ -26,9 +24,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.And(rule2);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.All);
-                (actual as CompositeGameEventRule).Rules.ShouldBe(new [] { rule1, rule2 });
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
+                (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2]);
             }
 
             [Fact]
@@ -43,9 +41,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.And(rule2).And(rule3);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.All);
-                (actual as CompositeGameEventRule).Rules.ShouldBe(new [] { rule1, rule2, rule3 });
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
+                (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2, rule3]);
             }
 
             [Fact]
@@ -60,12 +58,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.Or(rule2).And(rule3);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.All);
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
                 (actual as CompositeGameEventRule)
                     .Rules
                     .OfType<CompositeGameEventRule>()
-                    .ShouldAllBe(x => x.CompositeMode == CompositeMode.Any);
+                    .Should().OnlyContain(x => x.CompositeMode == CompositeMode.Any);
             }
         }
 
@@ -82,9 +80,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.Or(rule2);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.Any);
-                (actual as CompositeGameEventRule).Rules.ShouldBe(new [] { rule1, rule2 });
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
+                (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2]);
             }
 
             [Fact]
@@ -99,9 +97,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.Or(rule2).Or(rule3);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.Any);
-                (actual as CompositeGameEventRule).Rules.ShouldBe(new [] { rule1, rule2, rule3 });
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
+                (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2, rule3]);
             }
 
             [Fact]
@@ -116,12 +114,12 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule1.And(rule2).Or(rule3);
 
                 // assert
-                actual.ShouldBeOfType<CompositeGameEventRule>();
-                (actual as CompositeGameEventRule).CompositeMode.ShouldBe(CompositeMode.Any);
+                actual.Should().BeOfType<CompositeGameEventRule>();
+                (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
                 (actual as CompositeGameEventRule)
                     .Rules
                     .OfType<CompositeGameEventRule>()
-                    .ShouldAllBe(x => x.CompositeMode == CompositeMode.All);
+                    .Should().OnlyContain(x => x.CompositeMode == CompositeMode.All);
             }
         }
     }

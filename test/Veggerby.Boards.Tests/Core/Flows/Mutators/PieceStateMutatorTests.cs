@@ -1,15 +1,9 @@
-using System;
-using Shouldly;
 using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators
 {
@@ -28,17 +22,17 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var piece = game.GetPiece("piece-1");
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
-                var path = new TilePath(new [] { new TileRelation(state.CurrentTile, toTile, Direction.Clockwise) });
+                var path = new TilePath([new TileRelation(state.CurrentTile, toTile, Direction.Clockwise)]);
                 var @event = new MovePieceGameEvent(piece, path);
 
                 // act
                 var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
-                actual.ShouldNotBeSameAs(initialState);
-                actual.IsInitialState.ShouldBeFalse();
+                actual.Should().NotBe(initialState);
+                actual.IsInitialState.Should().BeFalse();
                 var pieceState = actual.GetState<PieceState>(piece);
-                pieceState.CurrentTile.ShouldBe(toTile);
+                pieceState.CurrentTile.Should().Be(toTile);
             }
 
             [Fact]
@@ -55,14 +49,14 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var fromTile = game.GetTile("tile-2");
                 var toTile = game.GetTile("tile-1");
 
-                var path = new TilePath(new [] { new TileRelation(fromTile, toTile, Direction.CounterClockwise) });
+                var path = new TilePath([new TileRelation(fromTile, toTile, Direction.CounterClockwise)]);
                 var @event = new MovePieceGameEvent(piece, path);
 
                 // act
-                var actual = Should.Throw<BoardException>(() => mutator.MutateState(engine.Engine, initialState, @event));
+                var actual = () => mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
-                actual.Message.ShouldBe("Invalid from tile on move piece event");
+                actual.Should().Throw<BoardException>().WithMessage("*Invalid from tile on move piece event*");
             }
         }
     }

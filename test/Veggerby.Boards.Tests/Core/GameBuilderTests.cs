@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core
 {
@@ -22,34 +21,34 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = builder.Compile();
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Game.ShouldNotBeNull();
-                actual.State.ShouldNotBeNull();
-                actual.Engine.ShouldNotBeNull();
+                actual.Should().NotBeNull();
+                actual.Game.Should().NotBeNull();
+                actual.State.Should().NotBeNull();
+                actual.Engine.Should().NotBeNull();
 
-                actual.Game.Artifacts.Count().ShouldBe(8);
-                actual.Game.Artifacts.Select(x => x.Id).ShouldBe(new [] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x" });
+                actual.Game.Artifacts.Count().Should().Be(8);
+                actual.Game.Artifacts.Select(x => x.Id).Should().Equal(["piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x"]);
 
-                actual.Game.Players.Count().ShouldBe(2);
-                actual.Game.Players.Select(x => x.Id).ShouldBe(new [] { "player-1", "player-2" });
+                actual.Game.Players.Count().Should().Be(2);
+                actual.Game.Players.Select(x => x.Id).Should().Equal(["player-1", "player-2"]);
 
-                actual.Game.Board.ShouldNotBeNull();
-                actual.Game.Board.Id.ShouldBe("test");
-                actual.Game.Board.Tiles.Count().ShouldBe(3);
-                actual.Game.Board.Tiles.Select(x => x.Id).ShouldBe(new [] { "tile-1", "tile-2", "tile-3" });
+                actual.Game.Board.Should().NotBeNull();
+                actual.Game.Board.Id.Should().Be("test");
+                actual.Game.Board.Tiles.Count().Should().Be(3);
+                actual.Game.Board.Tiles.Select(x => x.Id).Should().Equal(["tile-1", "tile-2", "tile-3"]);
 
-                actual.Game.Board.TileRelations.Count().ShouldBe(3);
-                actual.Game.Board.TileRelations.First().From.Id.ShouldBe("tile-1");
-                actual.Game.Board.TileRelations.First().To.Id.ShouldBe("tile-2");
-                actual.Game.Board.TileRelations.First().Direction.Id.ShouldBe("clockwise");
+                actual.Game.Board.TileRelations.Count().Should().Be(3);
+                actual.Game.Board.TileRelations.First().From.Id.Should().Be("tile-1");
+                actual.Game.Board.TileRelations.First().To.Id.Should().Be("tile-2");
+                actual.Game.Board.TileRelations.First().Direction.Id.Should().Be("clockwise");
 
-                actual.Game.Board.TileRelations.Skip(1).First().From.Id.ShouldBe("tile-2");
-                actual.Game.Board.TileRelations.Skip(1).First().To.Id.ShouldBe("tile-1");
-                actual.Game.Board.TileRelations.Skip(1).First().Direction.Id.ShouldBe("counterclockwise");
+                actual.Game.Board.TileRelations.Skip(1).First().From.Id.Should().Be("tile-2");
+                actual.Game.Board.TileRelations.Skip(1).First().To.Id.Should().Be("tile-1");
+                actual.Game.Board.TileRelations.Skip(1).First().Direction.Id.Should().Be("counterclockwise");
 
-                actual.Game.Board.TileRelations.Last().From.Id.ShouldBe("tile-1");
-                actual.Game.Board.TileRelations.Last().To.Id.ShouldBe("tile-3");
-                actual.Game.Board.TileRelations.Last().Direction.Id.ShouldBe("up");
+                actual.Game.Board.TileRelations.Last().From.Id.Should().Be("tile-1");
+                actual.Game.Board.TileRelations.Last().To.Id.Should().Be("tile-3");
+                actual.Game.Board.TileRelations.Last().Direction.Id.Should().Be("up");
             }
 
             [Fact]
@@ -63,7 +62,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = builder.Compile();
 
                 // assert
-                actual.ShouldBeSameAs(engine);
+                actual.Should().Be(engine);
             }
         }
 
@@ -79,12 +78,12 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = builder.Compile();
 
                 // assert
-                actual.State.ShouldNotBeNull();
-                actual.State.IsInitialState.ShouldBeTrue();
-                actual.State.ChildStates.Count().ShouldBe(5);
-                actual.State.ChildStates.OfType<PieceState>().Count().ShouldBe(3);
-                actual.State.ChildStates.OfType<NullDiceState>().Count().ShouldBe(1);
-                actual.State.ChildStates.OfType<DiceState<int>>().Count().ShouldBe(1);
+                actual.State.Should().NotBeNull();
+                actual.State.IsInitialState.Should().BeTrue();
+                actual.State.ChildStates.Count().Should().Be(5);
+                actual.State.ChildStates.OfType<PieceState>().Count().Should().Be(3);
+                actual.State.ChildStates.OfType<NullDiceState>().Count().Should().Be(1);
+                actual.State.ChildStates.OfType<DiceState<int>>().Count().Should().Be(1);
 
                 var game = actual.Game;
                 var piece1 = game.GetPiece("piece-1");
@@ -103,17 +102,17 @@ namespace Veggerby.Boards.Tests.Core
                 var stateN = actual.State.GetState<PieceState>(pieceN);
                 var stateDice2 = actual.State.GetState<DiceState<int>>(dice2);
 
-                state1.ShouldNotBeNull();
-                state1.CurrentTile.ShouldBe(tile1);
+                state1.Should().NotBeNull();
+                state1.CurrentTile.Should().Be(tile1);
 
-                state2.ShouldNotBeNull();
-                state2.CurrentTile.ShouldBe(tile2);
+                state2.Should().NotBeNull();
+                state2.CurrentTile.Should().Be(tile2);
 
-                stateN.ShouldNotBeNull();
-                stateN.CurrentTile.ShouldBe(tile1);
+                stateN.Should().NotBeNull();
+                stateN.CurrentTile.Should().Be(tile1);
 
-                stateDice2.ShouldNotBeNull();
-                stateDice2.CurrentValue.ShouldBe(4);
+                stateDice2.Should().NotBeNull();
+                stateDice2.CurrentValue.Should().Be(4);
             }
         }
     }

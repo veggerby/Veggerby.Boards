@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States.Conditions;
 

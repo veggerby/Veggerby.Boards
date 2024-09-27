@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States.Conditions
 {
     public class DiceGameStateConditionTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_create_with_dice()
@@ -21,10 +19,10 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new Dice("dice");
 
                 // act
-                var actual = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
+                var actual = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
                 // assert
-                actual.Dice.ShouldBe(new[] { dice });
+                actual.Dice.Should().Equal([dice]);
             }
 
             [Fact]
@@ -34,10 +32,10 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new Dice("dice");
 
                 // act
-                var actual = new DiceGameStateCondition<int>(new[] { dice, dice }, CompositeMode.All);
+                var actual = new DiceGameStateCondition<int>([dice, dice], CompositeMode.All);
 
                 // assert
-                actual.Dice.ShouldBe(new[] { dice });
+                actual.Dice.Should().Equal([dice]);
             }
 
             [Fact]
@@ -47,10 +45,10 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice = new Dice("dice");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new DiceGameStateCondition<int>(null, CompositeMode.All));
+                var actual = () => new DiceGameStateCondition<int>(null, CompositeMode.All);
 
                 // assert
-                actual.ParamName.ShouldBe("dice");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("dice");
             }
 
             [Fact]
@@ -58,10 +56,10 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new DiceGameStateCondition<int>(Enumerable.Empty<Dice>(), CompositeMode.All));
+                var actual = () => new DiceGameStateCondition<int>(Enumerable.Empty<Dice>(), CompositeMode.All);
 
                 // assert
-                actual.ParamName.ShouldBe("dice");
+                actual.Should().Throw<ArgumentException>().WithParameterName("dice");
             }
         }
 
@@ -73,14 +71,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice = new Dice("dice");
                 var diceState = new DiceState<int>(dice, 5);
-                var gameState = GameState.New(new [] { diceState });
-                var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
+                var gameState = GameState.New([diceState]);
+                var condition = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -89,13 +87,13 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice = new Dice("dice");
                 var gameState = GameState.New(null);
-                var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
+                var condition = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -105,14 +103,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
                 var diceState = new DiceState<int>(dice1, 5);
-                var gameState = GameState.New(new [] { diceState });
-                var condition = new DiceGameStateCondition<int>(new[] { dice2 }, CompositeMode.All);
+                var gameState = GameState.New([diceState]);
+                var condition = new DiceGameStateCondition<int>([dice2], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -121,14 +119,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 // arrange
                 var dice = new Dice("dice");
                 var diceState = new NullDiceState(dice);
-                var gameState = GameState.New(new [] { diceState });
-                var condition = new DiceGameStateCondition<int>(new[] { dice }, CompositeMode.All);
+                var gameState = GameState.New([diceState]);
+                var condition = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -139,14 +137,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new Dice("dice2");
                 var diceState1 = new DiceState<int>(dice1, 2);
                 var diceState2 = new DiceState<int>(dice2, 3);
-                var gameState = GameState.New(new [] { diceState1, diceState2 });
-                var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
+                var gameState = GameState.New([diceState1, diceState2]);
+                var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -156,14 +154,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
                 var diceState1 = new DiceState<int>(dice1, 2);
-                var gameState = GameState.New(new [] { diceState1 });
-                var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
+                var gameState = GameState.New([diceState1]);
+                var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
 
@@ -175,14 +173,14 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice2 = new Dice("dice2");
                 var diceState1 = new NullDiceState(dice1);
                 var diceState2 = new NullDiceState(dice2);
-                var gameState = GameState.New(new [] { diceState1, diceState2 });
-                var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
+                var gameState = GameState.New([diceState1, diceState2]);
+                var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -192,13 +190,13 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var dice1 = new Dice("dice1");
                 var dice2 = new Dice("dice2");
                 var gameState = GameState.New(null);
-                var condition = new DiceGameStateCondition<int>(new[] { dice1, dice2 }, CompositeMode.All);
+                var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
                 // act
                 var actual = condition.Evaluate(gameState);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
         }
     }

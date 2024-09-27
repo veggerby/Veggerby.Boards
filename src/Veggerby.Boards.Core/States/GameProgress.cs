@@ -39,7 +39,7 @@ namespace Veggerby.Boards.Core.States
             if (ruleCheck.Result == ConditionResult.Valid)
             {
                 var newState = Phase.Rule.HandleEvent(Engine, State, @event);
-                return new GameProgress(Engine, newState, Events.Concat(new [] { @event }));
+                return new GameProgress(Engine, newState, Events.Concat([@event]));
             }
             else if (ruleCheck.Result == ConditionResult.Invalid)
             {

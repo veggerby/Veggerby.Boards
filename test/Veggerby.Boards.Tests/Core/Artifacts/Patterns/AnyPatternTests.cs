@@ -1,14 +1,11 @@
-using System;
-using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
 {
     public class AnyPatternTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_from_constructor()
@@ -18,7 +15,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = new AnyPattern();
 
                 // assert
-                actual.ShouldNotBeNull();
+                actual.Should().NotBeNull();
             }
         }
 
@@ -34,7 +31,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals(pattern);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -47,7 +44,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -61,7 +58,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -75,7 +72,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern1.Equals(pattern2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -88,7 +85,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.Equals("some string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -105,7 +102,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 var actual = pattern.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
     }

@@ -53,7 +53,7 @@ namespace Veggerby.Boards.Core.Flows.Phases
         {
             if (!PreProcessors.Any())
             {
-                return new [] { @event };
+                return [@event];
             }
 
             var preProcessedEvents = PreProcessors

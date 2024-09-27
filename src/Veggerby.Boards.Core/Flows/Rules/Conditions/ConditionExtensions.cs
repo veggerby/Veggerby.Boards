@@ -1,4 +1,3 @@
-using System.Linq;
 using Veggerby.Boards.Core.Flows.Events;
 
 namespace Veggerby.Boards.Core.Flows.Rules.Conditions

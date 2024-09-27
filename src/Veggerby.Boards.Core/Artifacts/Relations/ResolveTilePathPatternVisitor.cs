@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+
 using Veggerby.Algorithm.Graphs;
-using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Artifacts.Relations
 {

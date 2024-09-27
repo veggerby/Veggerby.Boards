@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
-using Shouldly;
+
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows
 {
@@ -38,7 +37,7 @@ namespace Veggerby.Boards.Tests.Core.Flows
             var actual = finder.GetPaths(progress.Engine, progress.State, piece1, fromTile, toTile);
 
             // assert
-            actual.Count().ShouldBe(expectedResult);
+            actual.Count().Should().Be(expectedResult);
         }
     }
 }

@@ -1,19 +1,17 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators
 {
     public class SimpleGameStateMutatorTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_mutator()
@@ -24,7 +22,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 
                 // assert
-                actual.ShouldNotBeNull();
+                actual.Should().NotBeNull();
             }
 
             [Fact]
@@ -33,10 +31,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new SimpleGameStateMutator<NullGameEvent>(null));
+                var actual = () => new SimpleGameStateMutator<NullGameEvent>(null);
 
                 // assert
-                actual.ParamName.ShouldBe("stateFunc");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("stateFunc");
             }
         }
 
@@ -53,7 +51,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var state = initialState.GetState<PieceState>(piece);
                 var toTile = game.GetTile("tile-2");
 
-                var path = new TilePath(new [] { new TileRelation(state.CurrentTile, toTile, Direction.Clockwise) });
+                var path = new TilePath([new TileRelation(state.CurrentTile, toTile, Direction.Clockwise)]);
                 var @event = new MovePieceGameEvent(piece, path);
 
                 var mutator = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
@@ -62,10 +60,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
-                actual.ShouldNotBeSameAs(initialState);
-                actual.IsInitialState.ShouldBeFalse();
+                actual.Should().NotBe(initialState);
+                actual.IsInitialState.Should().BeFalse();
                 var pieceState = actual.GetState<PieceState>(piece);
-                pieceState.CurrentTile.ShouldBe(toTile);
+                pieceState.CurrentTile.Should().Be(toTile);
             }
 
             [Fact]
@@ -83,7 +81,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
-                actual.ShouldBeSameAs(initialState);
+                actual.Should().Be(initialState);
             }
         }
     }

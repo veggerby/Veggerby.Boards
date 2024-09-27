@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Veggerby.Algorithm" Version="1.0.1-CI-20180828-190611" />
+    <!-- <PackageReference Include="Veggerby.Algorithm" Version="1.0.1-CI-20180828-190611" /> -->
+    <ProjectReference Include="..\..\..\Veggerby.Algorithm\src\Veggerby.Algorithm\Veggerby.Algorithm.csproj" />
   </ItemGroup>
 
 </Project>

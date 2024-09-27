@@ -1,15 +1,9 @@
-using System;
-using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators
 {
@@ -32,10 +26,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = mutator.MutateState(engine.Engine, initialState, @event);
 
                 // assert
-                actual.ShouldNotBeSameAs(initialState);
-                actual.IsInitialState.ShouldBeFalse();
+                actual.Should().NotBe(initialState);
+                actual.IsInitialState.Should().BeFalse();
                 var diceState = actual.GetState<DiceState<int>>(dice);
-                diceState.CurrentValue.ShouldBe(4);
+                diceState.CurrentValue.Should().Be(4);
             }
         }
     }

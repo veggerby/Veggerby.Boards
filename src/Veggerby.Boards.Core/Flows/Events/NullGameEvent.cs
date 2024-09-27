@@ -1,6 +1,5 @@
-namespace Veggerby.Boards.Core.Flows.Events
+namespace Veggerby.Boards.Core.Flows.Events;
+
+public class NullGameEvent : IGameEvent
 {
-    public class NullGameEvent : IGameEvent
-    {
-    }
 }

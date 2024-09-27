@@ -1,7 +1,6 @@
-namespace Veggerby.Boards.Core.States
+namespace Veggerby.Boards.Core.States;
+
+public interface IGameStateCondition
 {
-    public interface IGameStateCondition
-    {
-        ConditionResponse Evaluate(GameState state);
-    }
+    ConditionResponse Evaluate(GameState state);
 }

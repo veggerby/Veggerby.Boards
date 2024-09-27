@@ -5,25 +5,21 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 
-namespace Veggerby.Boards.Core.Builder.Rules
+namespace Veggerby.Boards.Core.Builder.Rules;
+
+internal class GameEventConditionDefinition<T> : GameEventConditionDefinitionBase<T> where T : IGameEvent
 {
-    internal class GameEventConditionDefinition<T> : GameEventConditionDefinitionBase<T> where T : IGameEvent
+    public GameEventConditionDefinition(GameBuilder builder, GameEventConditionFactory<T> conditionFactory, IThenStateMutator<T> parent) : base(builder, parent)
     {
-        public GameEventConditionDefinition(GameBuilder builder, GameEventConditionFactory<T> conditionFactory, IThenStateMutator<T> parent) : base(builder, parent)
-        {
-            if (conditionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(conditionFactory));
-            }
+        ArgumentNullException.ThrowIfNull(conditionFactory);
 
-            ConditionFactory = conditionFactory;
-        }
+        ConditionFactory = conditionFactory;
+    }
 
-        public GameEventConditionFactory<T> ConditionFactory { get; }
+    public GameEventConditionFactory<T> ConditionFactory { get; }
 
-        internal override IGameEventCondition<T> Build(Game game)
-        {
-            return ConditionFactory(game);
-        }
+    internal override IGameEventCondition<T> Build(Game game)
+    {
+        return ConditionFactory(game);
     }
 }

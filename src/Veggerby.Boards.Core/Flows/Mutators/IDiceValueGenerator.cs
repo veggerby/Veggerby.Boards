@@ -1,9 +1,8 @@
 ﻿using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Mutators
+namespace Veggerby.Boards.Core.Flows.Mutators;
+
+public interface IDiceValueGenerator<T>
 {
-    public interface IDiceValueGenerator<T>
-    {
-        T GetValue(IArtifactState currentState);
-    }
+    T GetValue(IArtifactState currentState);
 }

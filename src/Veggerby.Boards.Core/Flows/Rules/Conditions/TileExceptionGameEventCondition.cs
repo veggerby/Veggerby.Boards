@@ -7,30 +7,26 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules.Conditions
+namespace Veggerby.Boards.Core.Flows.Rules.Conditions;
+
+public class TileExceptionGameEventCondition : IGameEventCondition<MovePieceGameEvent>
 {
-    public class TileExceptionGameEventCondition : IGameEventCondition<MovePieceGameEvent>
+    public TileExceptionGameEventCondition(params Tile[] tiles)
     {
-        public TileExceptionGameEventCondition(params Tile[] tiles)
+        ArgumentNullException.ThrowIfNull(tiles);
+
+        if (!tiles.Any())
         {
-            if (tiles == null)
-            {
-                throw new ArgumentNullException(nameof(tiles));
-            }
-
-            if (!tiles.Any())
-            {
-                throw new ArgumentException("Must provide at least one Tile", nameof(tiles));
-            }
-
-            Tiles = tiles;
+            throw new ArgumentException("Must provide at least one Tile", nameof(tiles));
         }
 
-        public Tile[] Tiles { get; }
+        Tiles = tiles;
+    }
 
-        public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
-        {
-            return Tiles.Contains(@event.To) ? ConditionResponse.Invalid : ConditionResponse.Valid;
-        }
+    public Tile[] Tiles { get; }
+
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
+    {
+        return Tiles.Contains(@event.To) ? ConditionResponse.Invalid : ConditionResponse.Valid;
     }
 }

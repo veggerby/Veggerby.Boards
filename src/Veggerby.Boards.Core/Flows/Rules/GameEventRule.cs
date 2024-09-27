@@ -6,75 +6,62 @@ using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Rules
+namespace Veggerby.Boards.Core.Flows.Rules;
+
+public abstract class GameEventRule<T>(IStateMutator<T> onBeforeEvent, IStateMutator<T> onAfterEvent) : IGameEventRule where T : IGameEvent
 {
-    public abstract class GameEventRule<T> : IGameEventRule where T : IGameEvent
+    public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid));
+
+    private readonly IStateMutator<T> _onBeforeEvent = onBeforeEvent;
+    private readonly IStateMutator<T> _onAfterEvent = onAfterEvent;
+
+    protected abstract ConditionResponse Check(GameEngine engine, GameState gameState, T @event);
+
+    private GameState MutateState(IStateMutator<T> eventMutator, GameEngine engine, GameState gameState, T @event)
     {
-        public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid));
+        return eventMutator is not null ? eventMutator.MutateState(engine, gameState, @event) : gameState;
+    }
 
-        private readonly IStateMutator<T> _onBeforeEvent;
-        private readonly IStateMutator<T> _onAfterEvent;
+    protected GameState HandleEvent(GameEngine engine, GameState gameState, T @event)
+    {
+        var newState = MutateState(_onBeforeEvent, engine, gameState, @event);
 
-        public GameEventRule(IStateMutator<T> onBeforeEvent, IStateMutator<T> onAfterEvent)
+        var check = Check(engine, newState, @event);
+
+        if (check.Result == ConditionResult.Valid)
         {
-            _onBeforeEvent = onBeforeEvent;
-            _onAfterEvent = onAfterEvent;
+            return MutateState(_onAfterEvent, engine, newState, @event);
         }
-
-        protected abstract ConditionResponse Check(GameEngine engine, GameState gameState, T @event);
-
-        private GameState MutateState(IStateMutator<T> eventMutator, GameEngine engine, GameState gameState, T @event)
+        else if (check.Result == ConditionResult.Ignore)
         {
-            return eventMutator != null ? eventMutator.MutateState(engine, gameState, @event) : gameState;
-        }
-
-        protected GameState HandleEvent(GameEngine engine, GameState gameState, T @event)
-        {
-            var newState = MutateState(_onBeforeEvent, engine, gameState, @event);
-
-            var check = Check(engine, newState, @event);
-
-            if (check.Result == ConditionResult.Valid)
-            {
-                return MutateState(_onAfterEvent, engine, newState, @event);
-            }
-            else if (check.Result == ConditionResult.Ignore)
-            {
-                // do nothing, return original state
-                return gameState;
-            }
-
-            throw new BoardException("Invalid game event");
-        }
-
-        ConditionResponse IGameEventRule.Check(GameEngine engine, GameState gameState, IGameEvent @event)
-        {
-            if (@event == null)
-            {
-                throw new ArgumentNullException(nameof(@event));
-            }
-
-            if (@event is T)
-            {
-                return Check(engine, gameState, (T)@event);
-            }
-
-            return ConditionResponse.NotApplicable;
-        }
-
-        GameState IGameEventRule.HandleEvent(GameEngine engine, GameState gameState, IGameEvent @event)
-        {
-            if (@event == null)
-            {
-                throw new ArgumentNullException(nameof(@event));
-            }
-
-            if (@event is T)
-            {
-                return HandleEvent(engine, gameState, (T)@event);
-            }
-
+            // do nothing, return original state
             return gameState;
         }
+
+        throw new BoardException("Invalid game event");
+    }
+
+    ConditionResponse IGameEventRule.Check(GameEngine engine, GameState gameState, IGameEvent @event)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+
+        if (@event is T)
+        {
+            return Check(engine, gameState, (T)@event);
+        }
+
+        return ConditionResponse.NotApplicable;
+    }
+
+    GameState IGameEventRule.HandleEvent(GameEngine engine, GameState gameState, IGameEvent @event)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+
+        if (@event is T)
+        {
+            return HandleEvent(engine, gameState, (T)@event);
+        }
+
+        return gameState;
     }
 }

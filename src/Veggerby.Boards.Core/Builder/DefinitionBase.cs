@@ -1,19 +1,15 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder
+namespace Veggerby.Boards.Core.Builder;
+
+public abstract class DefinitionBase
 {
-    public abstract class DefinitionBase
+    protected GameBuilder Builder { get; }
+
+    public DefinitionBase(GameBuilder builder)
     {
-        protected GameBuilder Builder { get; }
+        ArgumentNullException.ThrowIfNull(builder);
 
-        public DefinitionBase(GameBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            Builder = builder;
-        }
+        Builder = builder;
     }
 }

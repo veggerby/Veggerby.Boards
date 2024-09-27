@@ -1,33 +1,29 @@
 using System;
 
-namespace Veggerby.Boards.Core.Artifacts.Relations
+namespace Veggerby.Boards.Core.Artifacts.Relations;
+
+public class TileRelation : ArtifactRelation<Tile, Tile>
 {
-    public class TileRelation : ArtifactRelation<Tile, Tile>
+    public Direction Direction { get; }
+
+    public int Distance { get; }
+
+    public TileRelation(Tile from, Tile to, Direction direction, int distance = 1) : base(from, to)
     {
-        public Direction Direction { get; }
+        ArgumentNullException.ThrowIfNull(direction);
 
-        public int Distance { get; }
-
-        public TileRelation(Tile from, Tile to, Direction direction, int distance = 1) : base(from, to)
+        if (distance <= 0)
         {
-            if (direction == null)
-            {
-                throw new ArgumentNullException(nameof(direction));
-            }
-
-            if (distance <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(distance), "Distance must be positive and non-zero");
-            }
-
-            Direction = direction;
-            Distance = distance;
+            throw new ArgumentOutOfRangeException(nameof(distance), "Distance must be positive and non-zero");
         }
 
-        public override string ToString()
-        {
-            return $"{GetType().Name} {From} {Distance}x{Direction} {To}";
-        }
-
+        Direction = direction;
+        Distance = distance;
     }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name} {From} {Distance}x{Direction} {To}";
+    }
+
 }

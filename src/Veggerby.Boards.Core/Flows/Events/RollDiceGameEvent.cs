@@ -5,25 +5,21 @@ using System.Linq;
 
 using Veggerby.Boards.Core.States;
 
-namespace Veggerby.Boards.Core.Flows.Events
+namespace Veggerby.Boards.Core.Flows.Events;
+
+public class RollDiceGameEvent<T> : IGameEvent
 {
-    public class RollDiceGameEvent<T> : IGameEvent
+    public IEnumerable<DiceState<T>> NewDiceStates { get; }
+
+    public RollDiceGameEvent(params DiceState<T>[] states)
     {
-        public IEnumerable<DiceState<T>> NewDiceStates { get; }
+        ArgumentNullException.ThrowIfNull(states);
 
-        public RollDiceGameEvent(params DiceState<T>[] states)
+        if (!states.Any())
         {
-            if (states == null)
-            {
-                throw new ArgumentNullException(nameof(states));
-            }
-
-            if (!states.Any())
-            {
-                throw new ArgumentException("Must provide at least one new state", nameof(states));
-            }
-
-            NewDiceStates = states.ToList().AsReadOnly();
+            throw new ArgumentException("Must provide at least one new state", nameof(states));
         }
+
+        NewDiceStates = states.ToList().AsReadOnly();
     }
 }

@@ -1,8 +1,7 @@
-namespace Veggerby.Boards.Api.Models
+namespace Veggerby.Boards.Api.Models;
+
+public class BoardModel
 {
-    public class BoardModel
-    {
-        public string Id { get; set; }
-        public TileModel[] Tiles { get; set; }
-    }
+    public string Id { get; set; } = string.Empty;
+    public TileModel[] Tiles { get; set; } = [];
 }

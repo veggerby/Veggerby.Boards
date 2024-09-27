@@ -5,22 +5,18 @@ using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 
-namespace Veggerby.Boards.Core.Builder.Rules
+namespace Veggerby.Boards.Core.Builder.Rules;
+
+internal abstract class GameEventConditionDefinitionBase<T> : DefinitionBase where T : IGameEvent
 {
-    internal abstract class GameEventConditionDefinitionBase<T> : DefinitionBase where T : IGameEvent
+    public GameEventConditionDefinitionBase(GameBuilder builder, IThenStateMutator<T> parent) : base(builder)
     {
-        public GameEventConditionDefinitionBase(GameBuilder builder, IThenStateMutator<T> parent) : base(builder)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException(nameof(parent));
-            }
+        ArgumentNullException.ThrowIfNull(parent);
 
-            Parent = parent;
-        }
-
-        public IThenStateMutator<T> Parent { get; }
-
-        internal abstract IGameEventCondition<T> Build(Game game);
+        Parent = parent;
     }
+
+    public IThenStateMutator<T> Parent { get; }
+
+    internal abstract IGameEventCondition<T> Build(Game game);
 }

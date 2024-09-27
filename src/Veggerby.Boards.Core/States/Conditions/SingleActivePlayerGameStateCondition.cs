@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 
-namespace Veggerby.Boards.Core.States.Conditions
+namespace Veggerby.Boards.Core.States.Conditions;
+
+public class SingleActivePlayerGameStateCondition : IGameStateCondition
 {
-    public class SingleActivePlayerGameStateCondition : IGameStateCondition
+    public ConditionResponse Evaluate(GameState state)
     {
-        public ConditionResponse Evaluate(GameState state)
-        {
-            return state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive) != null
-                ? ConditionResponse.Valid
-                : ConditionResponse.Invalid;
-        }
+        return state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive) is not null
+            ? ConditionResponse.Valid
+            : ConditionResponse.Invalid;
     }
 }

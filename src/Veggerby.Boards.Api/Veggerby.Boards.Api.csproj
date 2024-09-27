@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.*" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.*" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.*" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,5 +19,4 @@
     <ProjectReference Include="..\Veggerby.Boards.Backgammon\Veggerby.Boards.Backgammon.csproj" />
     <ProjectReference Include="..\Veggerby.Boards.Chess\Veggerby.Boards.Chess.csproj" />
   </ItemGroup>
-
 </Project>

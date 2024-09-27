@@ -1,63 +1,57 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder.Artifacts
+namespace Veggerby.Boards.Core.Builder.Artifacts;
+
+public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefintion) : DefinitionBase(builder)
 {
-    public class TileRelationDefinition : DefinitionBase
+    private readonly TileDefinition _tileDefintion = tileDefintion;
+
+    public string FromTileId { get; private set; }
+    public string ToTileId { get; private set; }
+    public string DirectionId { get; private set; }
+    public int Distance { get; private set; }
+
+    public TileRelationDefinition FromTile(string from)
     {
-        private readonly TileDefinition _tileDefintion;
-
-        public TileRelationDefinition(GameBuilder builder, TileDefinition tileDefintion) : base(builder)
+        if (string.IsNullOrEmpty(from))
         {
-            _tileDefintion = tileDefintion;
+            throw new ArgumentException("Value cannot be null or empty", nameof(from));
         }
 
-        public string FromTileId { get; private set; }
-        public string ToTileId { get; private set; }
-        public string DirectionId { get; private set; }
-        public int Distance { get; private set; }
+        FromTileId = from;
+        return this;
+    }
 
-        public TileRelationDefinition FromTile(string from)
+    public TileRelationDefinition ToTile(string to)
+    {
+        if (string.IsNullOrEmpty(to))
         {
-            if (string.IsNullOrEmpty(from))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(from));
-            }
-
-            FromTileId = from;
-            return this;
+            throw new ArgumentException("Value cannot be null or empty", nameof(to));
         }
 
-        public TileRelationDefinition ToTile(string to)
-        {
-            if (string.IsNullOrEmpty(to))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(to));
-            }
+        ToTileId = to;
+        return this;
+    }
 
-            ToTileId = to;
-            return this;
+    public TileRelationDefinition InDirection(string direction)
+    {
+        if (string.IsNullOrEmpty(direction))
+        {
+            throw new ArgumentException("Value cannot be null or empty", nameof(direction));
         }
 
-        public TileRelationDefinition InDirection(string direction)
-        {
-            if (string.IsNullOrEmpty(direction))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(direction));
-            }
+        DirectionId = direction;
+        return this;
+    }
 
-            DirectionId = direction;
-            return this;
-        }
+    public TileRelationDefinition WithDistance(int distance)
+    {
+        Distance = distance;
+        return this;
+    }
 
-        public TileRelationDefinition WithDistance(int distance)
-        {
-            Distance = distance;
-            return this;
-        }
-
-        public TileDefinition Done()
-        {
-            return _tileDefintion;
-        }
+    public TileDefinition Done()
+    {
+        return _tileDefintion;
     }
 }

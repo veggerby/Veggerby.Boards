@@ -1,54 +1,49 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder.Artifacts
+namespace Veggerby.Boards.Core.Builder.Artifacts;
+
+public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
 {
-    public class TileDefinition : DefinitionBase
+    public string TileId { get; private set; }
+
+    public TileDefinition WithId(string id)
     {
-        public TileDefinition(GameBuilder builder) : base(builder)
+        if (string.IsNullOrEmpty(id))
         {
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public string TileId { get; private set; }
+        TileId = id;
+        return this;
+    }
 
-        public TileDefinition WithId(string id)
+    public TileRelationDefinition WithRelationTo(string id)
+    {
+        if (string.IsNullOrEmpty(id))
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
-
-            TileId = id;
-            return this;
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public TileRelationDefinition WithRelationTo(string id)
+        var relation = new TileRelationDefinition(Builder, this)
+            .FromTile(this.TileId)
+            .ToTile(id);
+
+        Builder.Add(relation);
+        return relation;
+    }
+
+    public TileRelationDefinition WithRelationFrom(string id)
+    {
+        if (string.IsNullOrEmpty(id))
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
-
-            var relation = new TileRelationDefinition(Builder, this)
-                .FromTile(this.TileId)
-                .ToTile(id);
-
-            Builder.Add(relation);
-            return relation;
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public TileRelationDefinition WithRelationFrom(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
+        var relation = new TileRelationDefinition(Builder, this)
+            .FromTile(id)
+            .ToTile(this.TileId);
 
-            var relation = new TileRelationDefinition(Builder, this)
-                .FromTile(id)
-                .ToTile(this.TileId);
-
-            Builder.Add(relation);
-            return relation;
-        }
+        Builder.Add(relation);
+        return relation;
     }
 }

@@ -1,36 +1,31 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder.Artifacts
+namespace Veggerby.Boards.Core.Builder.Artifacts;
+
+public class DiceDefinition(GameBuilder builder) : DefinitionBase(builder)
 {
-    public class DiceDefinition : DefinitionBase
+    public string DiceId { get; private set; }
+
+    public DiceDefinition WithId(string id)
     {
-        public DiceDefinition(GameBuilder builder) : base(builder)
+        if (string.IsNullOrEmpty(id))
         {
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public string DiceId { get; private set; }
+        DiceId = id;
+        return this;
+    }
 
-        public DiceDefinition WithId(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
+    public DiceDefinition HasNoValue()
+    {
+        Builder.AddDiceState(DiceId, null);
+        return this;
+    }
 
-            DiceId = id;
-            return this;
-        }
-
-        public DiceDefinition HasNoValue()
-        {
-            Builder.AddDiceState(DiceId, null);
-            return this;
-        }
-
-        public DiceDefinition HasValue(int value)
-        {
-            Builder.AddDiceState(DiceId, value);
-            return this;
-        }
+    public DiceDefinition HasValue(int value)
+    {
+        Builder.AddDiceState(DiceId, value);
+        return this;
     }
 }

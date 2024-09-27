@@ -1,24 +1,19 @@
 ﻿using System;
 
-namespace Veggerby.Boards.Core.Builder.Artifacts
+namespace Veggerby.Boards.Core.Builder.Artifacts;
+
+public class DirectionDefinition(GameBuilder builder) : DefinitionBase(builder)
 {
-    public class DirectionDefinition : DefinitionBase
+    public string DirectionId { get; private set; }
+
+    public DirectionDefinition WithId(string id)
     {
-        public DirectionDefinition(GameBuilder builder) : base(builder)
+        if (string.IsNullOrEmpty(id))
         {
+            throw new ArgumentException("Value cannot be null or empty", nameof(id));
         }
 
-        public string DirectionId { get; private set; }
-
-        public DirectionDefinition WithId(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(id));
-            }
-
-            DirectionId = id;
-            return this;
-        }
+        DirectionId = id;
+        return this;
     }
 }

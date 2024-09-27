@@ -1,28 +1,21 @@
 using System;
 
-namespace Veggerby.Boards.Core.Artifacts.Relations
+namespace Veggerby.Boards.Core.Artifacts.Relations;
+
+public abstract class ArtifactRelation<TFrom, TTo>
+    where TFrom : Artifact
+    where TTo : Artifact
 {
-    public abstract class ArtifactRelation<TFrom, TTo>
-        where TFrom : Artifact
-        where TTo : Artifact
+    public TFrom From { get; }
+    public TTo To { get; }
+
+    public ArtifactRelation(TFrom from, TTo to)
     {
-        public TFrom From { get; }
-        public TTo To { get; }
+        ArgumentNullException.ThrowIfNull(from);
 
-        public ArtifactRelation(TFrom from, TTo to)
-        {
-            if (from == null)
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
+        ArgumentNullException.ThrowIfNull(to);
 
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
-            }
-
-            From = from;
-            To = to;
-        }
+        From = from;
+        To = to;
     }
 }

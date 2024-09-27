@@ -1,52 +1,56 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Veggerby.Boards.Core.Artifacts.Relations;
 
-namespace Veggerby.Boards.Core.Artifacts.Patterns
+namespace Veggerby.Boards.Core.Artifacts.Patterns;
+
+public class MultiDirectionPattern : IPattern
 {
-    public class MultiDirectionPattern : IPattern
+    public IEnumerable<Direction> Directions { get; }
+    public bool IsRepeatable { get; }
+
+    public MultiDirectionPattern(IEnumerable<Direction> directions, bool isRepeatable = true)
     {
-        public IEnumerable<Direction> Directions { get; }
-        public bool IsRepeatable { get; }
+        ArgumentNullException.ThrowIfNull(directions);
 
-        public MultiDirectionPattern(IEnumerable<Direction> directions, bool isRepeatable = true)
+        if (!directions.Any())
         {
-            if (directions == null)
-            {
-                throw new ArgumentNullException(nameof(directions));
-            }
-
-            if (!directions.Any())
-            {
-                throw new ArgumentException("Empty directions list", nameof(directions));
-            }
-
-            Directions = directions.ToList();
-            IsRepeatable = isRepeatable;
+            throw new ArgumentException("Empty directions list", nameof(directions));
         }
 
-        public void Accept(IPatternVisitor visitor)
+        Directions = directions.ToList();
+        IsRepeatable = isRepeatable;
+    }
+
+    public void Accept(IPatternVisitor visitor)
+    {
+        visitor.Visit(this);
+    }
+
+    public bool Equals(MultiDirectionPattern other)
+    {
+        return other is not null && IsRepeatable == other.IsRepeatable && !Directions.Except(other.Directions).Any() && !other.Directions.Except(Directions).Any();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((MultiDirectionPattern)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        var code = new HashCode();
+        code.Add(IsRepeatable);
+        foreach (var direction in Directions)
         {
-            visitor.Visit(this);
+            code.Add(direction);
         }
 
-        protected bool Equals(MultiDirectionPattern other)
-        {
-            return IsRepeatable == other.IsRepeatable && !Directions.Except(other.Directions).Any() && !other.Directions.Except(Directions).Any();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((MultiDirectionPattern)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Directions.Aggregate(IsRepeatable.GetHashCode(), (seed, direction) => seed ^ direction.GetHashCode());
-        }
+        return code.ToHashCode();
     }
 }

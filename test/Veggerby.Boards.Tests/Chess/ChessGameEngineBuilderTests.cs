@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
-using Shouldly;
+
+
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess
 {

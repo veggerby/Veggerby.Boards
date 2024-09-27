@@ -1,17 +1,14 @@
 using System;
-using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Backgammon
 {
     public class DoublingCubeValueGeneratorTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize()
@@ -22,8 +19,8 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var actual = new DoublingDiceValueGenerator();
 
                 // assert
-                actual.MinValue.ShouldBe(1);
-                actual.MaxValue.ShouldBe(64);
+                actual.MinValue.Should().Be(1);
+                actual.MaxValue.Should().Be(64);
             }
         }
 
@@ -47,7 +44,7 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var actual = generator.GetValue(currentState);
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
 
             [Fact]
@@ -57,10 +54,10 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var generator = new DoublingDiceValueGenerator();
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(null));
+                var actual = () => generator.GetValue(null);
 
                 // assert
-                actual.ParamName.ShouldBe("currentState");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("currentState");
             }
 
             [Fact]
@@ -71,10 +68,10 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var initialState = new NullDiceState(new Dice("dice"));
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));
+                var actual = () => generator.GetValue(initialState);
 
                 // assert
-                actual.ParamName.ShouldBe("currentState");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("currentState");
             }
 
             [Fact]
@@ -85,10 +82,10 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var initialState = new DiceState<int>(new Dice("dice"), -1);
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));
+                var actual = () => generator.GetValue(initialState);
 
                 // assert
-                actual.ParamName.ShouldBe("currentState");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("currentState");
             }
 
             [Fact]
@@ -99,10 +96,10 @@ namespace Veggerby.Boards.Tests.Backgammon
                 var initialState = new DiceState<int>(new Dice("dice"), 15);
 
                 // act
-                var actual = Should.Throw<ArgumentOutOfRangeException>(() => generator.GetValue(initialState));
+                var actual = () => generator.GetValue(initialState);
 
                 // assert
-                actual.ParamName.ShouldBe("currentState");
+                actual.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("currentState");
             }
         }
     }

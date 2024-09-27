@@ -1,5 +1,6 @@
 using AutoMapper;
-using Veggerby.Boards.Core;
+
+
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Api.Models.Mappings

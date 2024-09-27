@@ -42,7 +42,7 @@ namespace Veggerby.Boards.Core.States.Conditions
         internal static IGameStateCondition CreateCompositeCondition(CompositeMode mode, params IGameStateCondition[] conditions)
         {
             return new CompositeGameStateCondition(
-                conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameStateCondition)x).ChildConditions : new [] { x }),
+                conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameStateCondition)x).ChildConditions : [x]),
                 mode
             );
         }

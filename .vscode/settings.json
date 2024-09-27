@@ -5,6 +5,5 @@
 		"**/.git": true,
 		"**/.DS_Store": true,
 		"**/project.lock.json": true
-	},
-	"dotnet-test-explorer.testProjectPath": "test/**/*.Tests.csproj"
+	}
 }

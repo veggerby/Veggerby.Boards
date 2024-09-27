@@ -1,7 +1,6 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 {
@@ -15,30 +14,30 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 // arrange
                 // act
                 // assert
-                Direction.Left.ShouldNotBeNull();
-                Direction.Right.ShouldNotBeNull();
-                Direction.Up.ShouldNotBeNull();
-                Direction.Down.ShouldNotBeNull();
-                Direction.Across.ShouldNotBeNull();
+                Direction.Left.Should().NotBeNull();
+                Direction.Right.Should().NotBeNull();
+                Direction.Up.Should().NotBeNull();
+                Direction.Down.Should().NotBeNull();
+                Direction.Across.Should().NotBeNull();
 
-                Direction.North.ShouldNotBeNull();
-                Direction.South.ShouldNotBeNull();
-                Direction.East.ShouldNotBeNull();
-                Direction.West.ShouldNotBeNull();
+                Direction.North.Should().NotBeNull();
+                Direction.South.Should().NotBeNull();
+                Direction.East.Should().NotBeNull();
+                Direction.West.Should().NotBeNull();
 
-                Direction.NorthWest.ShouldNotBeNull();
-                Direction.NorthEast.ShouldNotBeNull();
-                Direction.SouthWest.ShouldNotBeNull();
-                Direction.SouthEast.ShouldNotBeNull();
+                Direction.NorthWest.Should().NotBeNull();
+                Direction.NorthEast.Should().NotBeNull();
+                Direction.SouthWest.Should().NotBeNull();
+                Direction.SouthEast.Should().NotBeNull();
 
-                Direction.Clockwise.ShouldNotBeNull();
-                Direction.CounterClockwise.ShouldNotBeNull();
+                Direction.Clockwise.Should().NotBeNull();
+                Direction.CounterClockwise.Should().NotBeNull();
 
-                Direction.Any.ShouldBeOfType<AnyDirection>();
+                Direction.Any.Should().BeOfType<AnyDirection>();
             }
         }
 
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize_from_constructor()
@@ -48,7 +47,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new Direction("id");
 
                 // assert
-                actual.Id.ShouldBe("id");
+                actual.Id.Should().Be("id");
             }
 
             [Fact]
@@ -56,10 +55,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new Direction(string.Empty));
+                var actual = () => new Direction(string.Empty);
 
                 // assert
-                actual.ParamName.ShouldBe("id");
+                actual.Should().Throw<ArgumentException>().WithParameterName("id");
             }
         }
 
@@ -75,7 +74,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(direction);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -88,7 +87,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -102,7 +101,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -116,7 +115,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -129,7 +128,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals(Direction.Any);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -143,7 +142,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction1.Equals(direction2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -156,7 +155,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.Equals("some string");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
 
@@ -174,7 +173,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
 
@@ -190,7 +189,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = direction.ToString();
 
                 // assert
-                actual.ShouldBe("Direction south");
+                actual.Should().Be("Direction south");
             }
         }
     }

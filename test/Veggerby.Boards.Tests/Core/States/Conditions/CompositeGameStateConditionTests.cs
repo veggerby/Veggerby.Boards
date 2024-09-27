@@ -1,17 +1,14 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States.Conditions
 {
     public class CompositeGameStateConditionTests
     {
-        public class ctor
+        public class Create
         {
             // main ctor tested via ConditionExtensions
 
@@ -23,10 +20,10 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 IGameStateCondition condition2 = null;
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => condition1.And(condition2));
+                var actual = () => condition1.And(condition2);
 
                 // assert
-                actual.ParamName.ShouldBe("childConditions");
+                actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
             }
 
             [Fact]
@@ -37,11 +34,12 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 IGameStateCondition condition2 = null;
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => condition1.Or(condition2));
+                var actual = () => condition1.Or(condition2);
 
                 // assert
-                actual.ParamName.ShouldBe("childConditions");
-            }        }
+                actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
+            }
+        }
 
         public class Evaluate
         {
@@ -63,7 +61,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -77,7 +75,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -91,7 +89,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
 
             [Fact]
@@ -105,7 +103,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -119,7 +117,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -133,7 +131,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(_state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
         }
     }

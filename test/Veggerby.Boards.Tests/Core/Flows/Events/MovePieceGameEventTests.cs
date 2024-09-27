@@ -1,35 +1,34 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Events
 {
     public class MovePieceGameEventTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_create_event()
             {
                 // arrange
-                var piece = new Piece("piece", null, new [] { new DirectionPattern(Direction.Clockwise, true) });
+                var piece = new Piece("piece", null, [new DirectionPattern(Direction.Clockwise, true)]);
                 var from = new Tile("tile-1");
                 var to = new Tile("tile-2");
-                var path = new TilePath(new[] { new TileRelation(from, to, Direction.Clockwise )});
+                var path = new TilePath([new TileRelation(from, to, Direction.Clockwise )]);
 
                 // act
                 var actual = new MovePieceGameEvent(piece, path);
 
                 // assert
-                actual.Piece.ShouldBe(piece);
-                actual.From.ShouldBe(from);
-                actual.To.ShouldBe(to);
-                actual.Distance.ShouldBe(1);
-                actual.Path.ShouldBe(path);
+                actual.Piece.Should().Be(piece);
+                actual.From.Should().Be(from);
+                actual.To.Should().Be(to);
+                actual.Distance.Should().Be(1);
+                actual.Path.Should().Be(path);
             }
 
             [Fact]
@@ -38,26 +37,26 @@ namespace Veggerby.Boards.Tests.Core.Flows.Events
                 // arrange
                 var from = new Tile("tile-1");
                 var to = new Tile("tile-2");
-                var path = new TilePath(new[] { new TileRelation(from, to, Direction.Clockwise )});
+                var path = new TilePath([new TileRelation(from, to, Direction.Clockwise )]);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(null, path));
+                var actual = () => new MovePieceGameEvent(null, path);
 
                 // assert
-                actual.ParamName.ShouldBe("piece");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("piece");
             }
 
             [Fact]
             public void Should_throw_with_null_path()
             {
                 // arrange
-                var piece = new Piece("piece", null, new [] { new DirectionPattern(Direction.Clockwise, true) });
+                var piece = new Piece("piece", null, [new DirectionPattern(Direction.Clockwise, true)]);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new MovePieceGameEvent(piece, null));
+                var actual = () => new MovePieceGameEvent(piece, null);
 
                 // assert
-                actual.ParamName.ShouldBe("path");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("path");
             }
         }
     }

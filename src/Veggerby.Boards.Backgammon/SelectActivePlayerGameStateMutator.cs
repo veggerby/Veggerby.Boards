@@ -1,5 +1,6 @@
-using System;
 using System.Linq;
+
+
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Flows.Events;
@@ -21,11 +22,11 @@ namespace Veggerby.Boards.Backgammon
 
             if (diceState1.CurrentValue > diceState2.CurrentValue)
             {
-                return gameState.Next(new [] { new ActivePlayerState(white, true), new ActivePlayerState(black, false)  });
+                return gameState.Next([new ActivePlayerState(white, true), new ActivePlayerState(black, false)]);
             }
             else if (diceState1.CurrentValue < diceState2.CurrentValue)
             {
-                return gameState.Next(new [] { new ActivePlayerState(white, false), new ActivePlayerState(black, true)  });
+                return gameState.Next([new ActivePlayerState(white, false), new ActivePlayerState(black, true)]);
             }
 
             throw new InvalidGameEventException(@event, null, engine.Game, null, gameState);

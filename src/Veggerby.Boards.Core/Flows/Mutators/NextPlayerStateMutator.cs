@@ -42,7 +42,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
             var previousPlayerState = new ActivePlayerState(activePlayerState.Artifact, false);
             var nextPlayerState = new ActivePlayerState(nextPlayer, true);
 
-            return gameState.Next(new [] { previousPlayerState, nextPlayerState });
+            return gameState.Next([previousPlayerState, nextPlayerState]);
         }
     }
 }

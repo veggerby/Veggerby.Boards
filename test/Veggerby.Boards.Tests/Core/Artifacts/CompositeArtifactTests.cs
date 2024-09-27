@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using Shouldly;
+
+
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts
 {
@@ -24,8 +22,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = new CompositeArtifact<Tile>("combined", children);
 
                 // assert
-                actual.Id.ShouldBe("combined");
-                actual.ChildArtifacts.ShouldBe(children);
+                actual.Id.Should().Be("combined");
+                actual.ChildArtifacts.Should().Equal(children);
             }
 
             [Fact]
@@ -34,10 +32,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new CompositeArtifact<Tile>("combined", null));
+                var actual = () => new CompositeArtifact<Tile>("combined", null);
 
                 // assert
-                actual.ParamName.ShouldBe("childArtifacts");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("childArtifacts");
             }
 
             [Fact]
@@ -46,10 +44,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 // arrange
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new CompositeArtifact<Tile>("combined", Enumerable.Empty<Tile>()));
+                var actual = () => new CompositeArtifact<Tile>("combined", Enumerable.Empty<Tile>());
 
                 // assert
-                actual.ParamName.ShouldBe("childArtifacts");
+                actual.Should().Throw<ArgumentException>().WithParameterName("childArtifacts");
             }
         }
     }

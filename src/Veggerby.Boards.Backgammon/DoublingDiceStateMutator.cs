@@ -29,7 +29,7 @@ namespace Veggerby.Boards.Backgammon
             var generator = new DoublingDiceValueGenerator();
             var newValue = generator.GetValue(diceState);
             var newState = new DoublingDiceState(DoublingDice, newValue, nonActivePlayer.Artifact);
-            return state.Next(new [] { newState });
+            return state.Next([newState]);
         }
     }
 }

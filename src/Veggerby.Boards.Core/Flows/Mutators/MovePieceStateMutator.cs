@@ -1,5 +1,4 @@
-﻿using System;
-using Veggerby.Boards.Core.Flows.Events;
+﻿using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Mutators
@@ -16,7 +15,7 @@ namespace Veggerby.Boards.Core.Flows.Mutators
             }
 
             var newState = new PieceState(@event.Piece, @event.To);
-            return gameState.Next(new [] { newState });
+            return gameState.Next([newState]);
         }
     }
 }

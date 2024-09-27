@@ -1,15 +1,14 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
 {
     public class ResolveTilePathPatternVisitorTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_create()
@@ -23,11 +22,11 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var actual = new ResolveTilePathPatternVisitor(board, from, to);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Board.ShouldBe(board);
-                actual.From.ShouldBe(from);
-                actual.To.ShouldBe(to);
-                actual.ResultPath.ShouldBeNull();
+                actual.Should().NotBeNull();
+                actual.Board.Should().Be(board);
+                actual.From.Should().Be(from);
+                actual.To.Should().Be(to);
+                actual.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -39,10 +38,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = board.GetTile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new ResolveTilePathPatternVisitor(null, from, to));
+                var actual = () => new ResolveTilePathPatternVisitor(null, from, to);
 
                 // assert
-                actual.ParamName.ShouldBe("board");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("board");
             }
 
             [Fact]
@@ -53,10 +52,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var to = board.GetTile("tile-2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new ResolveTilePathPatternVisitor(board, null, to));
+                var actual = () => new ResolveTilePathPatternVisitor(board, null, to);
 
                 // assert
-                actual.ParamName.ShouldBe("from");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("from");
             }
 
             [Fact]
@@ -67,10 +66,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-1");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new ResolveTilePathPatternVisitor(board, from, null));
+                var actual = () => new ResolveTilePathPatternVisitor(board, from, null);
 
                 // assert
-                actual.ParamName.ShouldBe("to");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("to");
             }
 
             [Fact]
@@ -81,11 +80,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var tile = board.GetTile("tile-1");
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new ResolveTilePathPatternVisitor(board, tile, tile));
+                var actual = () => new ResolveTilePathPatternVisitor(board, tile, tile);
 
                 // assert
-                actual.Message.ShouldContain("To cannot be the same af From");
-                actual.ParamName.ShouldBe("to");
+                actual.Should().Throw<ArgumentException>().WithParameterName("to").WithMessage("*To cannot be the same af From*");
             }
         }
 
@@ -105,7 +103,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -122,11 +120,11 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldAllBe(x => Direction.Clockwise.Equals(x));
-                visitor.ResultPath.Distance.ShouldBe(21);
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().OnlyContain(x => Direction.Clockwise.Equals(x));
+                visitor.ResultPath.Distance.Should().Be(21);
             }
 
             [Fact]
@@ -143,7 +141,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -160,7 +158,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -177,7 +175,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -188,17 +186,17 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-0");
                 var to = board.GetTile("tile-14"); // should be across 0-12, and clockwise 12-13 and 13-14
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new FixedPattern(new [] { Direction.Across, Direction.Clockwise, Direction.Clockwise });
+                var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Clockwise]);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldBe(new [] { Direction.Across, Direction.Clockwise, Direction.Clockwise });
-                visitor.ResultPath.Distance.ShouldBe(8);
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().Equal([Direction.Across, Direction.Clockwise, Direction.Clockwise]);
+                visitor.ResultPath.Distance.Should().Be(8);
             }
 
             [Fact]
@@ -209,13 +207,13 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-0");
                 var to = board.GetTile("tile-8");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new FixedPattern(new [] { Direction.Across, Direction.Clockwise, Direction.Clockwise });
+                var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Clockwise]);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -226,13 +224,13 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-0");
                 var to = board.GetTile("tile-8");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new FixedPattern(new [] { Direction.Across, Direction.Clockwise, Direction.Across });
+                var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Across]);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -243,17 +241,17 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-1");
                 var to = board.GetTile("tile-8");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new MultiDirectionPattern(new [] { Direction.Clockwise, Direction.Across }, true);
+                var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldAllBe(x => Direction.Clockwise.Equals(x));
-                visitor.ResultPath.Distance.ShouldBe(21);
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().OnlyContain(x => Direction.Clockwise.Equals(x));
+                visitor.ResultPath.Distance.Should().Be(21);
             }
 
             [Fact]
@@ -264,17 +262,17 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-4");
                 var to = board.GetTile("tile-0");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new MultiDirectionPattern(new [] { Direction.Clockwise, Direction.Across }, true);
+                var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldAllBe(x => Direction.Across.Equals(x));
-                visitor.ResultPath.Distance.ShouldBe(2);
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().OnlyContain(x => Direction.Across.Equals(x));
+                visitor.ResultPath.Distance.Should().Be(2);
             }
 
             [Fact]
@@ -285,13 +283,13 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-1");
                 var to = board.GetTile("tile-8");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new MultiDirectionPattern(new [] { Direction.Clockwise, Direction.Across }, false);
+                var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], false);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -302,13 +300,13 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-1");
                 var to = board.GetTile("tile-8");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new MultiDirectionPattern(new [] { Direction.South, Direction.North }, true);
+                var pattern = new MultiDirectionPattern([Direction.South, Direction.North], true);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -319,13 +317,13 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 var from = board.GetTile("tile-1");
                 var to = board.GetTile("tile-x");
                 var visitor = new ResolveTilePathPatternVisitor(board, from, to);
-                var pattern = new MultiDirectionPattern(new [] { Direction.Clockwise, Direction.Across }, true);
+                var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
                 // act
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
 
             [Fact]
@@ -342,11 +340,11 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Clockwise });
-                visitor.ResultPath.Distance.ShouldBe(6);
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().Equal([Direction.Clockwise, Direction.Clockwise]);
+                visitor.ResultPath.Distance.Should().Be(6);
             }
 
             [Fact]
@@ -363,11 +361,11 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldNotBeNull();
-                visitor.ResultPath.From.ShouldBe(from);
-                visitor.ResultPath.To.ShouldBe(to);
-                visitor.ResultPath.Directions.ShouldBe(new [] { Direction.Clockwise, Direction.Up, Direction.Across, Direction.Clockwise });
-                visitor.ResultPath.Distance.ShouldBe(9); // 3-4-12-8-9
+                visitor.ResultPath.Should().NotBeNull();
+                visitor.ResultPath.From.Should().Be(from);
+                visitor.ResultPath.To.Should().Be(to);
+                visitor.ResultPath.Directions.Should().Equal([Direction.Clockwise, Direction.Up, Direction.Across, Direction.Clockwise]);
+                visitor.ResultPath.Distance.Should().Be(9); // 3-4-12-8-9
             }
 
             [Fact]
@@ -384,7 +382,7 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Relations
                 pattern.Accept(visitor);
 
                 // assert
-                visitor.ResultPath.ShouldBeNull();
+                visitor.ResultPath.Should().BeNull();
             }
         }
     }

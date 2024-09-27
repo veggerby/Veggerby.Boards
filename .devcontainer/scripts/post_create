@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Bash completion
+
+if [ -x "$(command -v aws)" ]; then
+    echo 'complete -C "/usr/local/bin/aws_completer" aws' >> /home/vscode/.bashrc
+fi
+
+if [ -x "$(command -v terraform)" ]; then
+    terraform -install-autocomplete
+fi
+
+
+if  [ -x "$(command -v pwsh)" ]; then
+    sudo chown --reference=$HOME/.config /home/vscode/.local -R
+fi
+
+if [ -x "$(command -v dotnet)" ]; then
+    echo "
+function _dotnet_bash_complete()
+{
+    local cur=\"\${COMP_WORDS[COMP_CWORD]}\" IFS=\$'\n'
+    local candidates
+    read -d '' -ra candidates < <(dotnet complete --position \"\${COMP_POINT}\" \"\${COMP_LINE}\" 2>/dev/null)
+    read -d '' -ra COMPREPLY < <(compgen -W \"\${candidates[*]:-}\" -- \"\$cur\")
+}
+
+complete -f -F _dotnet_bash_complete dotnet
+" >> ~/.bashrc
+fi
+
+# Install tools
+
+if [ -x "$(command -v dotnet)" ]; then
+    dotnet tool install --global dotnet-outdated-tool
+    dotnet tool install --global Nuke.GlobalTool
+    dotnet tool install --global GitVersion.Tool --prerelease
+    dotnet tool install --global Amazon.Lambda.Tools
+    dotnet tool install --global Amazon.Lambda.TestTool-6.0
+fi
+
+if [ -x "$(command -v az)" ] && [ -x "$(command -v pwsh)" ]; then
+    pwsh -Command '& { Install-Module -Name Az.Resources -Scope CurrentUser -Repository PSGallery -Force }'
+fi
+
+if [ -x "$(command -v aws)" ] && [ -x "$(command -v pwsh)" ]; then
+    pwsh -Command '& { Install-Module -Name @(' \
+        "'AWS.Tools.Common'," \
+        "'AWS.Tools.SecurityToken'," \
+        "'AWS.Tools.SimpleSystemsManagement'" \
+        ') -Scope CurrentUser -Repository PSGallery -Force }'
+fi
+
+if [ -x "$(command -v node)" ]; then
+    . ${NVM_DIR}/nvm.sh && nvm install --lts
+    npm install --global tsx@4
+fi
+
+check_packages() {
+    if ! dpkg -s "$@" > /dev/null 2>&1; then
+        sudo apt update
+        sudo apt-get -y install --no-install-recommends "$@"
+    fi
+}
+
+check_packages bash-completion xdg-utils pass

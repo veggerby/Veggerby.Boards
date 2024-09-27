@@ -42,10 +42,10 @@ namespace Veggerby.Boards.Core.Flows
             {
                 if (Previous == null)
                 {
-                    return new [] { Path };
+                    return [Path];
                 }
 
-                return Previous.Paths.Concat(new [] { Path }).ToList();
+                return Previous.Paths.Concat([Path]).ToList();
             }
         }
     }

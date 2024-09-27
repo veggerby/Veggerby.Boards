@@ -32,7 +32,7 @@ namespace Veggerby.Boards.Core.Flows.Events
         {
             if (!(@event is MovePieceGameEvent))
             {
-                return new [] { @event };
+                return [@event];
             }
 
             var e = (MovePieceGameEvent)@event;

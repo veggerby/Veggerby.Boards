@@ -1,8 +1,6 @@
-using Shouldly;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
 {
@@ -20,9 +18,9 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // act
                 pattern.Accept(visitor);
                 var actual = visitor.Type;
-                
+
                 // assert
-                actual.ShouldBe(typeof(AnyPattern));
+                actual.Should().Be(typeof(AnyPattern));
             }
 
             [Fact]
@@ -35,39 +33,39 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // act
                 pattern.Accept(visitor);
                 var actual = visitor.Type;
-                
+
                 // assert
-                actual.ShouldBe(typeof(DirectionPattern));
+                actual.Should().Be(typeof(DirectionPattern));
             }
 
             [Fact]
             public void Should_visit_fixed_pattern()
             {
                 // arrange
-                var pattern = new FixedPattern(new [] { Direction.Clockwise, Direction.North, Direction.Up });
+                var pattern = new FixedPattern([Direction.Clockwise, Direction.North, Direction.Up]);
                 var visitor = new SimplePatternVisitor();
 
                 // act
                 pattern.Accept(visitor);
                 var actual = visitor.Type;
-                
+
                 // assert
-                actual.ShouldBe(typeof(FixedPattern));
+                actual.Should().Be(typeof(FixedPattern));
             }
 
             [Fact]
             public void Should_visit_multidirection_pattern()
             {
                 // arrange
-                var pattern = new MultiDirectionPattern(new [] { Direction.Clockwise, Direction.North, Direction.Up });
+                var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.North, Direction.Up]);
                 var visitor = new SimplePatternVisitor();
 
                 // act
                 pattern.Accept(visitor);
                 var actual = visitor.Type;
-                
+
                 // assert
-                actual.ShouldBe(typeof(MultiDirectionPattern));
+                actual.Should().Be(typeof(MultiDirectionPattern));
             }
 
             [Fact]
@@ -80,9 +78,9 @@ namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns
                 // act
                 pattern.Accept(visitor);
                 var actual = visitor.Type;
-                
+
                 // assert
-                actual.ShouldBe(typeof(NullPattern));
+                actual.Should().Be(typeof(NullPattern));
             }
         }
     }

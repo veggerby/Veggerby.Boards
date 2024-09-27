@@ -53,10 +53,10 @@ namespace Veggerby.Boards.Core.Flows
                 return null;
             }
 
-            var newState = state.Next(new IArtifactState[] {
+            var newState = state.Next([
                 new PieceState(pieceState.Artifact, visitor.ResultPath.To),
                 new NullDiceState(diceState.Artifact)
-            });
+            ]);
 
             return new SingleStepPath(newState, diceState, visitor.ResultPath, previousStep);
         }

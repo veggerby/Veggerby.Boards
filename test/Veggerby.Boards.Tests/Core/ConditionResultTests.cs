@@ -1,7 +1,4 @@
-﻿using System;
-using Shouldly;
-using Veggerby.Boards.Core;
-using Xunit;
+﻿using Veggerby.Boards.Core;
 
 namespace Veggerby.Boards.Tests.Core
 {
@@ -17,17 +14,17 @@ namespace Veggerby.Boards.Tests.Core
                 // act
 
                 // assert
-                ConditionResponse.Valid.ShouldNotBeNull();
-                ConditionResponse.Valid.Result.ShouldBe(ConditionResult.Valid);
-                ConditionResponse.Valid.Reason.ShouldBeNull();
+                ConditionResponse.Valid.Should().NotBeNull();
+                ConditionResponse.Valid.Result.Should().Be(ConditionResult.Valid);
+                ConditionResponse.Valid.Reason.Should().BeNull();
 
-                ConditionResponse.Invalid.ShouldNotBeNull();
-                ConditionResponse.Invalid.Result.ShouldBe(ConditionResult.Invalid);
-                ConditionResponse.Invalid.Reason.ShouldBeNull();
+                ConditionResponse.Invalid.Should().NotBeNull();
+                ConditionResponse.Invalid.Result.Should().Be(ConditionResult.Invalid);
+                ConditionResponse.Invalid.Reason.Should().BeNull();
 
-                ConditionResponse.NotApplicable.ShouldNotBeNull();
-                ConditionResponse.NotApplicable.Result.ShouldBe(ConditionResult.Ignore);
-                ConditionResponse.NotApplicable.Reason.ShouldBeNull();
+                ConditionResponse.NotApplicable.Should().NotBeNull();
+                ConditionResponse.NotApplicable.Result.Should().Be(ConditionResult.Ignore);
+                ConditionResponse.NotApplicable.Reason.Should().BeNull();
             }
 
             [Fact]
@@ -39,9 +36,9 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = ConditionResponse.Success("it worked!");
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(ConditionResult.Valid);
-                actual.Reason.ShouldBe("it worked!");
+                actual.Should().NotBeNull();
+                actual.Result.Should().Be(ConditionResult.Valid);
+                actual.Reason.Should().Be("it worked!");
             }
 
             [Fact]
@@ -53,9 +50,9 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = ConditionResponse.Fail("it did not work!");
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(ConditionResult.Invalid);
-                actual.Reason.ShouldBe("it did not work!");
+                actual.Should().NotBeNull();
+                actual.Result.Should().Be(ConditionResult.Invalid);
+                actual.Reason.Should().Be("it did not work!");
             }
 
             [Fact]
@@ -67,9 +64,9 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = ConditionResponse.Ignore("meh!");
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(ConditionResult.Ignore);
-                actual.Reason.ShouldBe("meh!");
+                actual.Should().NotBeNull();
+                actual.Result.Should().Be(ConditionResult.Ignore);
+                actual.Reason.Should().Be("meh!");
             }
 
             [Fact]
@@ -81,12 +78,12 @@ namespace Veggerby.Boards.Tests.Core
                 var state3 = ConditionResponse.Ignore("ignore");
 
                 // act
-                var actual = ConditionResponse.Fail(new [] { state1, state2, state3 });
+                var actual = ConditionResponse.Fail([state1, state2, state3]);
 
                 // assert
-                actual.ShouldNotBeNull();
-                actual.Result.ShouldBe(ConditionResult.Invalid);
-                actual.Reason.ShouldBe("fail,success,ignore");
+                actual.Should().NotBeNull();
+                actual.Result.Should().Be(ConditionResult.Invalid);
+                actual.Reason.Should().Be("fail,success,ignore");
             }
         }
 
@@ -107,7 +104,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = checkState.ToString();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
 
@@ -124,7 +121,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state.GetHashCode();
 
                 // assert
-                actual.ShouldBe(expected);
+                actual.Should().Be(expected);
             }
         }
 
@@ -140,7 +137,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state.Equals(state);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -153,7 +150,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state.Equals(null);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -167,7 +164,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeTrue();
+                actual.Should().BeTrue();
             }
 
             [Fact]
@@ -181,7 +178,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state1.Equals(state2);
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
 
             [Fact]
@@ -194,7 +191,7 @@ namespace Veggerby.Boards.Tests.Core
                 var actual = state.Equals("success");
 
                 // assert
-                actual.ShouldBeFalse();
+                actual.Should().BeFalse();
             }
         }
     }

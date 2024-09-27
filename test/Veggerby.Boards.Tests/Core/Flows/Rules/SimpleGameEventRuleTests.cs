@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
@@ -10,13 +9,12 @@ using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.Flows.Rules.Conditions;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Rules
 {
     public class SimpleGameEventRuleTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize()
@@ -26,7 +24,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
 
                 // assert
-                actual.ShouldNotBeNull();
+                actual.Should().NotBeNull();
             }
 
             [Fact]
@@ -34,10 +32,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
             {
                 // arrange
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => SimpleGameEventRule<NullGameEvent>.New((IGameEventCondition<NullGameEvent>)null));
+                var actual = () => SimpleGameEventRule<NullGameEvent>.New((IGameEventCondition<NullGameEvent>)null);
 
                 // assert
-                actual.ParamName.ShouldBe("condition");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("condition");
             }
         }
 
@@ -54,7 +52,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -68,8 +66,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
-                actual.Result.ShouldBe(ConditionResult.Ignore);
-                actual.Reason.ShouldBe("just because");
+                actual.Result.Should().Be(ConditionResult.Ignore);
+                actual.Reason.Should().Be("just because");
             }
 
             [Fact]
@@ -80,10 +78,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.Check(engine.Engine, engine.State, null));
+                var actual = () => rule.Check(engine.Engine, engine.State, null);
 
                 // assert
-                actual.ParamName.ShouldBe("event");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("event");
             }
 
             [Fact]
@@ -97,7 +95,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());
 
                 // assert
-                actual.Result.ShouldBe(ConditionResult.Ignore);
+                actual.Result.Should().Be(ConditionResult.Ignore);
             }
         }
 
@@ -126,7 +124,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
 
                 // assert
                 var newPieceState = actual.GetState<PieceState>(piece);
-                newPieceState.CurrentTile.ShouldBe(to);
+                newPieceState.CurrentTile.Should().Be(to);
             }
 
             [Fact]
@@ -151,9 +149,9 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.HandleEvent(null, initialState, @event);
 
                 // assert
-                actual.ShouldBe(initialState);
+                actual.Should().Be(initialState);
                 var newPieceState = actual.GetState<PieceState>(piece);
-                newPieceState.CurrentTile.ShouldBe(from);
+                newPieceState.CurrentTile.Should().Be(from);
             }
 
             [Fact]
@@ -175,10 +173,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                     new MovePieceStateMutator());
 
                 // act
-                var actual = Should.Throw<BoardException>(() => rule.HandleEvent(engine.Engine, initialState, @event));
+                var actual = () => rule.HandleEvent(engine.Engine, initialState, @event);
 
                 // assert
-                actual.Message.ShouldBe("Invalid game event");
+                actual.Should().Throw<BoardException>().WithMessage("*Invalid game event*");
             }
 
 
@@ -198,10 +196,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                     new MovePieceStateMutator());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(engine.Engine, initialState, null));
+                var actual = () => rule.HandleEvent(engine.Engine, initialState, null);
 
                 // assert
-                actual.ParamName.ShouldBe("event");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("event");
             }
 
             [Fact]
@@ -215,7 +213,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.HandleEvent(null, state, new NullGameEvent());
 
                 // assert
-                actual.ShouldBe(state);
+                actual.Should().Be(state);
             }
 
             [Fact]
@@ -226,10 +224,10 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => rule.HandleEvent(null, state, null));
+                var actual = () => rule.HandleEvent(null, state, null);
 
                 // assert
-                actual.ParamName.ShouldBe("event");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("event");
             }
 
             [Fact]
@@ -243,7 +241,7 @@ namespace Veggerby.Boards.Tests.Core.Flows.Rules
                 var actual = rule.HandleEvent(null, state, new NullGameEvent());
 
                 // assert
-                actual.ShouldBeSameAs(state);
+                actual.Should().Be(state);
             }
         }
     }

@@ -44,7 +44,7 @@ namespace Veggerby.Boards.Core.Artifacts.Relations
 
         public static TilePath Create(TilePath path, TileRelation relation)
         {
-            return path != null ? path.Add(relation) : new TilePath(new [] { relation });
+            return path != null ? path.Add(relation) : new TilePath([relation]);
         }
 
         public override string ToString()

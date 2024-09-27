@@ -5,7 +5,7 @@ using Veggerby.Boards.Core.Artifacts.Relations;
 
 namespace Veggerby.Boards.Core.Artifacts
 {
-    public class Board : Artifact
+    public class Board : Artifact, IEquatable<Board>
     {
         public IEnumerable<Tile> Tiles { get; }
         public IEnumerable<TileRelation> TileRelations { get; }
@@ -65,5 +65,7 @@ namespace Veggerby.Boards.Core.Artifacts
 
             return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));
         }
+
+        public bool Equals(Board other) => base.Equals(other);
     }
 }

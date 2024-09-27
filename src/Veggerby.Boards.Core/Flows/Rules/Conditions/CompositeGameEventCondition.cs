@@ -44,7 +44,7 @@ namespace Veggerby.Boards.Core.Flows.Rules.Conditions
         internal static IGameEventCondition<T> CreateCompositeCondition(CompositeMode mode, params IGameEventCondition<T>[] conditions)
         {
             return new CompositeGameEventCondition<T>(
-                conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameEventCondition<T>)x).ChildConditions : new [] { x }),
+                conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameEventCondition<T>)x).ChildConditions : [x]),
                 mode
             );
         }

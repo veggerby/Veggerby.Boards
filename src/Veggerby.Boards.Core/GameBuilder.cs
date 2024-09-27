@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Builder;
 using Veggerby.Boards.Core.Builder.Artifacts;
 using Veggerby.Boards.Core.Builder.Phases;
-using Veggerby.Boards.Core.Builder.Rules;
 using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.Flows.Phases;
 using Veggerby.Boards.Core.Flows.Rules;
 using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Core
 {

@@ -1,11 +1,6 @@
-using System;
-using System.Linq;
-using Shouldly;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts
 {
@@ -20,11 +15,11 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var player = new Player("player");
 
                 // act
-                var actual = new Piece("piece", player, new [] { new DirectionPattern(Direction.North) });
+                var actual = new Piece("piece", player, [new DirectionPattern(Direction.North)]);
 
                 // assert
-                actual.Owner.ShouldBe(player);
-                actual.Patterns.ShouldBe(new [] { new DirectionPattern(Direction.North) });
+                actual.Owner.Should().Be(player);
+                actual.Patterns.Should().Equal([new DirectionPattern(Direction.North)]);
             }
 
             [Fact]
@@ -37,8 +32,8 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var actual = new Piece("piece", player, null);
 
                 // assert
-                actual.Owner.ShouldBe(player);
-                actual.Patterns.ShouldBeEmpty();
+                actual.Owner.Should().Be(player);
+                actual.Patterns.Should().BeEmpty();
             }
        }
     }

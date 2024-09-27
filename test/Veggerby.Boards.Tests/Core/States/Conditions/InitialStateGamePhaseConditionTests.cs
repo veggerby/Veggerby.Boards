@@ -1,9 +1,6 @@
-using Shouldly;
 using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Core.States.Conditions;
-using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.States.Conditions
 {
@@ -23,7 +20,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Valid);
+                actual.Should().Be(ConditionResponse.Valid);
             }
 
             [Fact]
@@ -38,7 +35,7 @@ namespace Veggerby.Boards.Tests.Core.States.Conditions
                 var actual = condition.Evaluate(state);
 
                 // assert
-                actual.ShouldBe(ConditionResponse.Invalid);
+                actual.Should().Be(ConditionResponse.Invalid);
             }
         }
     }

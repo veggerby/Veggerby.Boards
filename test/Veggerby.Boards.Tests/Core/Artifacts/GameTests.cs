@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts
 {
@@ -20,16 +19,16 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var board = new TestBoard();
                 var player1 = new Player("player1");
                 var player2 = new Player("player2");
-                var piece1 = new Piece("piece1", player1, new [] { new DirectionPattern(Direction.North) });
-                var piece2 = new Piece("piece2", player2, new [] { new DirectionPattern(Direction.North) });
+                var piece1 = new Piece("piece1", player1, [new DirectionPattern(Direction.North)]);
+                var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
                 // act
-                var actual = new Game(board, new [] { player1, player2 }, new [] { piece1, piece2 });
+                var actual = new Game(board, [player1, player2], [piece1, piece2]);
 
                 // assert
-                actual.Board.ShouldBe(board);
-                actual.Artifacts.ShouldBe(new [] { piece1, piece2 });
-                actual.Players.ShouldBe(new [] { player1, player2 });
+                actual.Board.Should().Be(board);
+                actual.Artifacts.Should().Equal([piece1, piece2]);
+                actual.Players.Should().Equal([player1, player2]);
             }
 
             [Fact]
@@ -38,14 +37,14 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 // arrange
                 var player1 = new Player("player1");
                 var player2 = new Player("player2");
-                var piece1 = new Piece("piece1", player1, new [] { new DirectionPattern(Direction.North) });
-                var piece2 = new Piece("piece2", player2, new [] { new DirectionPattern(Direction.North) });
+                var piece1 = new Piece("piece1", player1, [new DirectionPattern(Direction.North)]);
+                var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new Game(null, new [] { player1, player2 }, new [] { piece1, piece2 }));
+                var actual = () => new Game(null, [player1, player2], [piece1, piece2]);
 
                 // assert
-                actual.ParamName.ShouldBe("board");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("board");
             }
 
             [Fact]
@@ -55,14 +54,14 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var board = new TestBoard();
                 var player1 = new Player("player1");
                 var player2 = new Player("player2");
-                var piece1 = new Piece("piece1", player1, new [] { new DirectionPattern(Direction.North) });
-                var piece2 = new Piece("piece2", player2, new [] { new DirectionPattern(Direction.North) });
+                var piece1 = new Piece("piece1", player1, [new DirectionPattern(Direction.North)]);
+                var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new Game(board, null, new [] { piece1, piece2 }));
+                var actual = () => new Game(board, null, [piece1, piece2]);
 
                 // assert
-                actual.ParamName.ShouldBe("players");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("players");
             }
 
             [Fact]
@@ -72,14 +71,14 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var board = new TestBoard();
                 var player1 = new Player("player1");
                 var player2 = new Player("player2");
-                var piece1 = new Piece("piece1", player1, new [] { new DirectionPattern(Direction.North) });
-                var piece2 = new Piece("piece2", player2, new [] { new DirectionPattern(Direction.North) });
+                var piece1 = new Piece("piece1", player1, [new DirectionPattern(Direction.North)]);
+                var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new Game(board, Enumerable.Empty<Player>(), new [] { piece1, piece2 }));
+                var actual = () => new Game(board, Enumerable.Empty<Player>(), [piece1, piece2]);
 
                 // assert
-                actual.ParamName.ShouldBe("players");
+                actual.Should().Throw<ArgumentException>().WithParameterName("players");
             }
 
             [Fact]
@@ -91,10 +90,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var player2 = new Player("player2");
 
                 // act
-                var actual = Should.Throw<ArgumentNullException>(() => new Game(board, new [] { player1, player2 }, null));
+                var actual = () => new Game(board, [player1, player2], null);
 
                 // assert
-                actual.ParamName.ShouldBe("artifacts");
+                actual.Should().Throw<ArgumentNullException>().WithParameterName("artifacts");
             }
 
             [Fact]
@@ -106,10 +105,10 @@ namespace Veggerby.Boards.Tests.Core.Artifacts
                 var player2 = new Player("player2");
 
                 // act
-                var actual = Should.Throw<ArgumentException>(() => new Game(board, new [] { player1, player2 }, Enumerable.Empty<Piece>()));
+                var actual = () => new Game(board, [player1, player2], Enumerable.Empty<Piece>());
 
                 // assert
-                actual.ParamName.ShouldBe("artifacts");
+                actual.Should().Throw<ArgumentException>().WithParameterName("artifacts");
             }
         }
     }

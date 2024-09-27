@@ -1,19 +1,15 @@
 using System;
-using Shouldly;
+
 using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Flows.Events;
 using Veggerby.Boards.Core.Flows.Mutators;
 using Veggerby.Boards.Core.States;
 using Veggerby.Boards.Tests.Utils;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators
 {
     public class RandomDiceValueGeneratorTests
     {
-        public class ctor
+        public class Create
         {
             [Fact]
             public void Should_initialize()
@@ -23,8 +19,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = new RandomDiceValueGenerator(1, 6);
 
                 // assert
-                actual.MinValue.ShouldBe(1);
-                actual.MaxValue.ShouldBe(6);
+                actual.MinValue.Should().Be(1);
+                actual.MaxValue.Should().Be(6);
             }
 
             [Fact]
@@ -35,8 +31,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = new RandomDiceValueGenerator(6, 1);
 
                 // assert
-                actual.MinValue.ShouldBe(1);
-                actual.MaxValue.ShouldBe(6);
+                actual.MinValue.Should().Be(1);
+                actual.MaxValue.Should().Be(6);
             }
         }
 
@@ -55,8 +51,8 @@ namespace Veggerby.Boards.Tests.Core.Flows.Mutators
                 var actual = generator.GetValue(state);
 
                 // assert
-                actual.ShouldBeInRange(1, 6);
-                id.ShouldNotBeNull(); // dummy to avoid warning
+                actual.Should().BeInRange(1, 6);
+                id.Should().Be(id); // to avoid warning
             }
         }
     }

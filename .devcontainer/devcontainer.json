@@ -1,0 +1,88 @@
+{
+    "name": "Veggerby.Boards",
+    "service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+        "docker-compose.override.yml"
+    ],
+    "features": {
+        // common utils and git latest already provided by devcontainer base image
+        "ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "8.0"
+        },
+        // "ghcr.io/devcontainers/features/aws-cli:1": {},
+        // "ghcr.io/devcontainers/features/azure-cli:1": {},
+        // "ghcr.io/devcontainers/features/powershell:1": {
+        //     "version": "7.4.2" // Specific version until this is fixed: https://github.com/PowerShell/PowerShell/issues/23975
+        // },
+        // "ghcr.io/devcontainers/features/python:1": {
+        //     "version": "os-provided",
+        //     "installTools": false // Don't install pylint 'n stuff
+        // },
+        // "ghcr.io/dhoeric/features/oras:1": {},
+        "ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+            "packages": "bash-completion"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        // "ghcr.io/devcontainers/features/node:1": {},
+        "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
+            "jqVersion": "none",
+            "yqVersion": "latest"
+        }
+    },
+    // "overrideFeatureInstallOrder": [
+    //     "ghcr.io/devcontainers/features/python"
+    // ],
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [
+    //     5432,
+    //     "jaeger:16686",
+    //     "web:15432"
+    // ],
+    // "portsAttributes": {
+    //     "5432": {
+    //         "label": "PostgreSQL",
+    //         "requireLocalPort": true
+    //     },
+    //     "16686": {
+    //         "label": "Jaeger UI",
+    //         "protocol": "http",
+    //         "requireLocalPort": true
+    //     },
+    //     "15432": {
+    //         "label": "pgAdmin",
+    //         "protocol": "http",
+    //         "requireLocalPort": true
+    //     }
+    // },
+    "initializeCommand": "if [ ! -f \".devcontainer/docker-compose.override.yml\" ]; then echo \"version: '3.8'\" > .devcontainer/docker-compose.override.yml; fi",
+    "remoteEnv": {
+        // Use this environment variable if you need to bind mount your local source code into a new container.
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+        "PATH": "${containerEnv:PATH}:/home/vscode/.dotnet/tools/"
+    },
+    "postCreateCommand": ".devcontainer/scripts/post_create",
+    "mounts": [
+        // "source=${localEnv:HOME}/.nuget/NuGet,target=/home/vscode/.nuget/NuGet,type=bind",
+        "source=${localEnv:HOME}${localEnv:APPDATA}/.nuget,target=/home/vscode/.nuget,type=bind"
+        // "source=${env:HOME}/.aws,target=/home/vscode/.aws,type=bind"
+    ],
+    // "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+                "EditorConfig.EditorConfig",
+                "streetsidesoftware.code-spell-checker",
+                "redhat.vscode-yaml",
+                "HashiCorp.terraform",
+                "GitHub.vscode-github-actions",
+                "bierner.markdown-mermaid"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "shutdownAction": "stopCompose"
+}

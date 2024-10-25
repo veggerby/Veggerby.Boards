@@ -85,12 +85,11 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         var q = new Tile("q");
         var graph = new Graph<Tile>(Board.Tiles, Board.TileRelations.Select(x => new Edge<Tile>(x.From, x.To, x.Distance)));
 
-        var algorithm = new JohnsonsAlgorithm();
-        var paths = algorithm.GetShortestPath(graph, q);
+        var paths = JohnsonsAlgorithm.GetShortestPath(graph, q);
 
         var path = paths.SingleOrDefault(x => x.From.Equals(From) && x.To.Equals(To));
 
-        if (path is null)
+        if (path == default)
         {
             ResultPath = null;
             return;

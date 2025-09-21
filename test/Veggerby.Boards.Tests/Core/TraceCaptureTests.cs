@@ -74,5 +74,10 @@ public class TraceCaptureTests
         (phaseEnterIndex >= 0).Should().BeTrue();
         (ruleEvaluatedIndex > phaseEnterIndex).Should().BeTrue();
         (ruleAppliedIndex > ruleEvaluatedIndex).Should().BeTrue();
+
+        // and rule evaluation entries have a non-null RuleIndex (>=0)
+        var evaluated = progress.Engine.LastTrace!.Entries.First(e => e.Kind == "RuleEvaluated");
+        evaluated.RuleIndex.Should().NotBeNull();
+        evaluated.RuleIndex.Should().BeGreaterThanOrEqualTo(0);
     }
 }

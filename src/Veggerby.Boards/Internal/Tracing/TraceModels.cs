@@ -21,6 +21,8 @@ internal sealed record TraceEntry(
     string? Rule,
     string? EventType,
     string? ConditionResult,
+    string? ConditionReason,
+    int? RuleIndex,
     ulong? StateHash,
     ulong? StateHash128Low,
     ulong? StateHash128High
@@ -86,31 +88,31 @@ internal sealed class TraceCaptureObserver : IEvaluationObserver
 
     public void OnPhaseEnter(GamePhase phase, GameState state)
     {
-        _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnPhaseEnter(phase, state);
     }
 
-    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state)
+    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
     {
-        _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), state.Hash, state.Hash128?.Low, state.Hash128?.High));
-        _inner.OnRuleEvaluated(phase, rule, response, state);
+        _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), response.Reason, ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnRuleEvaluated(phase, rule, response, state, ruleIndex);
     }
 
-    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState)
+    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
     {
-        _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
-        _inner.OnRuleApplied(phase, rule, @event, beforeState, afterState);
+        _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, null, ruleIndex, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
+        _inner.OnRuleApplied(phase, rule, @event, beforeState, afterState, ruleIndex);
     }
 
     public void OnEventIgnored(IGameEvent @event, GameState state)
     {
-        _trace.Add(new TraceEntry(++_order, "EventIgnored", null, null, @event.GetType().Name, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "EventIgnored", null, null, @event.GetType().Name, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnEventIgnored(@event, state);
     }
 
     public void OnStateHashed(GameState state, ulong hash)
     {
-        _trace.Add(new TraceEntry(++_order, "StateHashed", null, null, null, null, hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "StateHashed", null, null, null, null, null, null, hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnStateHashed(state, hash);
     }
 }

@@ -106,11 +106,11 @@ public class GameProgress
                 // Local function replicating HandleSingleEvent but with dynamic phase
                 seed.Engine.Observer.OnPhaseEnter(phaseForEvent, seed.State);
                 var ruleCheckLocal = phaseForEvent.Rule.Check(seed.Engine, seed.State, e);
-                seed.Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheckLocal, seed.State);
+                seed.Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheckLocal, seed.State, 0);
                 if (ruleCheckLocal.Result == ConditionResult.Valid)
                 {
                     var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
-                    seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal);
+                    seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal, 0);
                     if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
                     {
                         seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
@@ -135,8 +135,9 @@ public class GameProgress
         foreach (var evt in preProcessed)
         {
             var handled = false;
-            foreach (var entry in Engine.DecisionPlan.Entries)
+            for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
             {
+                var entry = Engine.DecisionPlan.Entries[i];
                 if (!entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                 {
                     continue;
@@ -146,11 +147,11 @@ public class GameProgress
                 // Resolve phase by number for accurate observer attribution (depth-first traversal cost acceptable for V1).
                 var observedPhase = Flows.DecisionPlan.DecisionPlan.ResolvePhase(progress.Engine.GamePhaseRoot, entry.PhaseNumber) ?? progress.Engine.GamePhaseRoot;
                 progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State);
+                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
                 if (ruleCheck.Result == ConditionResult.Valid)
                 {
                     var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                    progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState);
+                    progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
                     if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
                     {
                         progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);

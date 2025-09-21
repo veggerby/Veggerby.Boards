@@ -28,7 +28,8 @@ public interface IEvaluationObserver
     /// <param name="rule">The evaluated rule.</param>
     /// <param name="response">Result of the condition evaluation.</param>
     /// <param name="state">The game state at evaluation time.</param>
-    void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state);
+    /// <param name="ruleIndex">Zero-based index of the rule within the evaluation ordering (DecisionPlan entry order or 0 for legacy single-rule phase).</param>
+    void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex);
 
     /// <summary>
     /// Called after a rule has been applied successfully producing a new game state.
@@ -38,7 +39,8 @@ public interface IEvaluationObserver
     /// <param name="event">The triggering event.</param>
     /// <param name="beforeState">State prior to application.</param>
     /// <param name="afterState">Resulting state after application.</param>
-    void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState);
+    /// <param name="ruleIndex">Zero-based index of the rule within the evaluation ordering (DecisionPlan entry order or 0 for legacy single-rule phase).</param>
+    void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex);
 
     /// <summary>
     /// Called when an event was ignored (no applicable rules in any active phase).
@@ -70,12 +72,12 @@ public sealed class NullEvaluationObserver : IEvaluationObserver
     }
 
     /// <inheritdoc />
-    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state)
+    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
     {
     }
 
     /// <inheritdoc />
-    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState)
+    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
     {
     }
 

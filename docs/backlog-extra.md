@@ -36,15 +36,15 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 
 ### DecisionPlan Optimization (Grouping & Masking) Tasks
 
-- Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PARTIAL (Grouping + EventFiltering flags added)**
+- Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PARTIAL (Grouping + EventFiltering + Masks flags added)**
 - Group compiler pass: identify contiguous identical predicate entries -> emit groups. **COMPLETED**
 - Group evaluation path + tests (gate evaluated once, skip when invalid). **COMPLETED (basic positive test; add invalid-gate test later)**
 - EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
 - Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + initial tests + baseline benchmark scaffold)**
   - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **PENDING**
-- Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **PENDING**
-- Mask table generation from exclusivity hints. **PENDING**
-- Evaluation mask application logic + tests (skip flagged entries). **PENDING**
+- Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **COMPLETED**
+- Mask table generation from exclusivity hints. **COMPLETED (ExclusivityGroups + ExclusivityGroupRoots compiled)**
+- Evaluation mask application logic + tests (skip flagged entries). **COMPLETED (feature-flagged; masking tests added)**
 - Debug parity dual-scan path + assertion (shadow linear evaluator). **PENDING**
 - Property-based randomized parity suite for grouping + masks. **PENDING**
 - Benchmarks: GroupingBaseline, EventFilteringBaseline, MaskingBaseline, DebugParityOverhead. **PENDING**

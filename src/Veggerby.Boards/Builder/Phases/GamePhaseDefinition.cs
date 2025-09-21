@@ -34,6 +34,11 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         return this;
     }
 
+    IGamePhaseDefinition IGamePhaseDefinition.Exclusive(string group)
+    {
+        return Exclusive(group);
+    }
+
     IGamePhaseConditionDefinition IGamePhaseDefinition.If(GameStateConditionFactory factory)
     {
         _conditionDefinition = new CompositeGamePhaseConditionDefinition(Builder, this).Add(new GamePhaseConditionDefinition(Builder, factory, this), null);

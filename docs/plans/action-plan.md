@@ -431,5 +431,6 @@ This action plan yields: faster deterministic evaluation, richer diagnostics, a 
 1. Capture current performance baselines (pre-DecisionPlan) in a new benchmark project.
 2. Implement DecisionPlan spike with parity tests.
 3. Introduce IRandomSource and integrate into GameState (no behavior change yet).
+4. (Update) Landing exclusivity mask scaffold (flag-gated) extends DecisionPlan optimization path – future steps: debug parity dual-run + masking benchmarks.
 
 -- End of Plan --

@@ -19,7 +19,6 @@ Deferred (later phases): short-circuit masks, predicate hoisting, caching.
 
 Disabling the flag reverts to legacy behavior with identical outcomes.
 
-
 ## Metrics
 
 Initial target: ≥30% p50 latency reduction on representative move scenarios (Chess opening, Backgammon entry) in Phase 1.

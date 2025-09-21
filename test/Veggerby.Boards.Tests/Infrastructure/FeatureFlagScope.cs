@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Tests.Infrastructure;
 /// </summary>
 public sealed class FeatureFlagScope : IDisposable
 {
-    private readonly (bool decisionPlan, bool grouping, bool filtering, bool debugParity, bool compiledPatterns, bool adjacencyCache, bool hashing, bool trace, bool timeline) _prior;
+    private readonly (bool decisionPlan, bool grouping, bool filtering, bool debugParity, bool compiledPatterns, bool adjacencyCache, bool hashing, bool trace, bool timeline, bool masks) _prior;
 
     public FeatureFlagScope(
         bool? decisionPlan = null,
@@ -21,7 +21,8 @@ public sealed class FeatureFlagScope : IDisposable
         bool? adjacencyCache = null,
         bool? hashing = null,
         bool? trace = null,
-        bool? timeline = null)
+        bool? timeline = null,
+        bool? decisionPlanMasks = null)
     {
         _prior = (
             FeatureFlags.EnableDecisionPlan,
@@ -32,7 +33,8 @@ public sealed class FeatureFlagScope : IDisposable
             FeatureFlags.EnableCompiledPatternsAdjacencyCache,
             FeatureFlags.EnableStateHashing,
             FeatureFlags.EnableTraceCapture,
-            FeatureFlags.EnableTimelineZipper);
+            FeatureFlags.EnableTimelineZipper,
+            FeatureFlags.EnableDecisionPlanMasks);
 
         if (decisionPlan.HasValue) { FeatureFlags.EnableDecisionPlan = decisionPlan.Value; }
         if (grouping.HasValue) { FeatureFlags.EnableDecisionPlanGrouping = grouping.Value; }
@@ -43,6 +45,7 @@ public sealed class FeatureFlagScope : IDisposable
         if (hashing.HasValue) { FeatureFlags.EnableStateHashing = hashing.Value; }
         if (trace.HasValue) { FeatureFlags.EnableTraceCapture = trace.Value; }
         if (timeline.HasValue) { FeatureFlags.EnableTimelineZipper = timeline.Value; }
+        if (decisionPlanMasks.HasValue) { FeatureFlags.EnableDecisionPlanMasks = decisionPlanMasks.Value; }
     }
 
     public void Dispose()
@@ -56,5 +59,6 @@ public sealed class FeatureFlagScope : IDisposable
         FeatureFlags.EnableStateHashing = _prior.hashing;
         FeatureFlags.EnableTraceCapture = _prior.trace;
         FeatureFlags.EnableTimelineZipper = _prior.timeline;
+        FeatureFlags.EnableDecisionPlanMasks = _prior.masks;
     }
 }

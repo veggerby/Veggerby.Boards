@@ -45,12 +45,19 @@ public sealed class DecisionPlan
     /// </summary>
     internal string[] ExclusivityGroups { get; }
 
+    /// <summary>
+    /// Gets an array mapping each entry index to the first index of its exclusivity group. When masks are enabled and an entry in a group succeeds,
+    /// subsequent entries whose group root has been applied are skipped. Entries without a group have value -1.
+    /// </summary>
+    internal int[] ExclusivityGroupRoots { get; }
+
     private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds, string[] exclusivityGroups)
     {
         Entries = entries.ToArray();
         Groups = groups?.ToArray() ?? Array.Empty<DecisionPlanGroup>();
         SupportedKinds = supportedKinds ?? Array.Empty<EventKind>();
         ExclusivityGroups = exclusivityGroups ?? Array.Empty<string>();
+        ExclusivityGroupRoots = BuildExclusivityRoots(ExclusivityGroups);
     }
 
     /// <summary>
@@ -69,6 +76,32 @@ public sealed class DecisionPlan
         // This avoids having to recompile the plan when flag toggles and keeps plan deterministic.
         var groups = BuildGroups(entries);
         return new DecisionPlan(entries, groups, kinds.ToArray(), exclusivity.ToArray());
+    }
+
+    private static int[] BuildExclusivityRoots(string[] exclusivity)
+    {
+        if (exclusivity is null || exclusivity.Length == 0)
+        {
+            return Array.Empty<int>();
+        }
+        var firstIndex = new Dictionary<string, int>();
+        var roots = new int[exclusivity.Length];
+        for (int i = 0; i < exclusivity.Length; i++)
+        {
+            var g = exclusivity[i];
+            if (string.IsNullOrEmpty(g))
+            {
+                roots[i] = -1;
+                continue;
+            }
+            if (!firstIndex.TryGetValue(g, out var root))
+            {
+                root = i;
+                firstIndex[g] = root;
+            }
+            roots[i] = root;
+        }
+        return roots;
     }
 
     private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries, IList<EventKind> kinds, IList<string> exclusivity)

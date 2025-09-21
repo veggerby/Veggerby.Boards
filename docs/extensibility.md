@@ -11,21 +11,28 @@ This guide walks through adding a new game or extending engine behavior.
    - Define players (`AddPlayer("p1")`).
    - Define directions (`AddDirection("north")`).
    - Define tiles + relations:
+
      ```csharp
      var tile = AddTile("tile-a1");
      tile.WithRelationTo("tile-a2").InDirection("north");
      ```
+
    - Define artifacts (pieces, dice, custom):
+
      ```csharp
      AddPiece("white-rook-1").WithOwner("white").HasDirection("north").CanRepeat();
      AddDice("d6").HasNoValue();
      ```
+
    - Set initial placements / dice values:
+
      ```csharp
      WithPiece("white-rook-1").OnTile("tile-a1");
      WithDice("d6").HasValue(3); // optional
      ```
+
    - Define phases with rules:
+
      ```csharp
      AddGamePhase("movement")
        .If<NullGameStateCondition>()
@@ -34,6 +41,7 @@ This guide walks through adding a new game or extending engine behavior.
          .Then()
            .Do<MovePieceStateMutator>();
      ```
+
 4. Call `Compile()` to obtain initial `GameProgress`.
 
 ## Creating Custom Movement Patterns
@@ -54,6 +62,7 @@ If a piece requires movement not representable by current direction or fixed seq
 ## Writing a State Mutator
 
 Implement:
+
 ```csharp
 public class HealPieceStateMutator : IStateMutator<HealPieceGameEvent>
 {
@@ -63,7 +72,9 @@ public class HealPieceStateMutator : IStateMutator<HealPieceGameEvent>
     }
 }
 ```
+
 Guidelines:
+
 - Do not mutate existing `IArtifactState` instances.
 - Return original `gameState` if no changes.
 - Validate invariants early; throw explicit exceptions on invalid conditions.
@@ -79,6 +90,7 @@ Guidelines:
 Use a root composite to model macro stages (e.g., Setup → Main → Resolution). Each child adds specialized rules.
 
 Example:
+
 ```csharp
 AddGamePhase("setup")
   .If<InitialGameStateCondition>()
@@ -113,6 +125,7 @@ If you need a new artifact kind (e.g., EnergyNode, TokenStack):
 ## When to Introduce New Abstractions
 
 Add new types ONLY if:
+
 - Multiple rules share logic that cannot be expressed with composition.
 - A new domain invariant emerges (e.g., stacking, capture zones).
 - Performance hotspots justify specialized structure.

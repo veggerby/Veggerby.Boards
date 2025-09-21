@@ -137,6 +137,9 @@ public class GameProgress
             var handled = false;
             var eventKindFiltering = Internal.FeatureFlags.EnableDecisionPlanEventFiltering;
             var currentEventKind = eventKindFiltering ? EventKindClassifier.Classify(evt) : EventKind.Any;
+            var masksEnabled = Internal.FeatureFlags.EnableDecisionPlanMasks && Engine.DecisionPlan.ExclusivityGroupRoots.Length == Engine.DecisionPlan.Entries.Count;
+            // Track which group roots have applied (per event) to skip remaining entries in same group when masking enabled.
+            var appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
             if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
                 // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
@@ -161,6 +164,14 @@ public class GameProgress
                     {
                         var index = group.StartIndex + offset;
                         var entry = Engine.DecisionPlan.Entries[index];
+                        if (masksEnabled)
+                        {
+                            var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
+                            if (root >= 0 && appliedGroupRoots.Contains(root))
+                            {
+                                continue; // another entry in this exclusivity group already applied
+                            }
+                        }
                         if (eventKindFiltering)
                         {
                             var ek = Engine.DecisionPlan.SupportedKinds.Length > index ? Engine.DecisionPlan.SupportedKinds[index] : EventKind.Any;
@@ -192,6 +203,14 @@ public class GameProgress
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
                             progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                            if (masksEnabled)
+                            {
+                                var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
+                                if (root >= 0)
+                                {
+                                    appliedGroupRoots.Add(root);
+                                }
+                            }
                             handled = true;
                             break;
                         }
@@ -211,6 +230,14 @@ public class GameProgress
                 for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
                 {
                     var entry = Engine.DecisionPlan.Entries[i];
+                    if (masksEnabled)
+                    {
+                        var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
+                        if (root >= 0 && appliedGroupRoots.Contains(root))
+                        {
+                            continue;
+                        }
+                    }
                     if (eventKindFiltering)
                     {
                         var ek = Engine.DecisionPlan.SupportedKinds.Length > i ? Engine.DecisionPlan.SupportedKinds[i] : EventKind.Any;
@@ -236,6 +263,14 @@ public class GameProgress
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
                         progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                        if (masksEnabled)
+                        {
+                            var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
+                            if (root >= 0)
+                            {
+                                appliedGroupRoots.Add(root);
+                            }
+                        }
                         handled = true;
                         break;
                     }

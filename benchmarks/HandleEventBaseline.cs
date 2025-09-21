@@ -1,11 +1,12 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core;
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core;
+using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Benchmarks;
 

@@ -1,18 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net9.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="FsCheck.Xunit" />
+    <PackageReference Include="FsCheck" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../../src/Veggerby.Boards.Core/Veggerby.Boards.Core.csproj" />
     <ProjectReference Include="../../src/Veggerby.Boards.Chess/Veggerby.Boards.Chess.csproj" />
     <ProjectReference Include="../../src/Veggerby.Boards.Backgammon/Veggerby.Boards.Backgammon.csproj" />
   </ItemGroup>
+
 </Project>

@@ -16,7 +16,7 @@
 
 ## Hash Payload (Summary)
 
-See canonical list in action plan (`docs/wip/2025-09-21-action-plan.md`) — game identity, decision plan version, phase/player ids, piece states, dice, module extensions.
+See canonical list in action plan (`docs/plans/action-plan.md`) — game identity, decision plan version, phase/player ids, piece states, dice, module extensions.
 
 ## Feature Flags
 

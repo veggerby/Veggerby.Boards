@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - README packaged as NuGet readme (PackageReadmeFile) and included in artifacts.
 - Initial CHANGELOG following Keep a Changelog format.
 - Comprehensive XML documentation across public APIs (removed CS1591 suppression and achieved clean build with warnings-as-errors).
-- Strategic architecture & DX action plan (`docs/wip/2025-09-21-action-plan.md`) outlining DecisionPlan, deterministic RNG, pattern compilation, observability, simulation, and versioning roadmap.
+- Strategic architecture & DX action plan (`docs/plans/action-plan.md`) outlining DecisionPlan, deterministic RNG, pattern compilation, observability, simulation, and versioning roadmap.
 - Internal feature flags scaffold (`FeatureFlags` class) to enable incremental rollout of upcoming engine subsystems.
 - Benchmark project scaffold (`Veggerby.Boards.Benchmarks`) with initial HandleEvent baseline harness.
 - Property tests project scaffold (`Veggerby.Boards.PropertyTests`) including first invariant placeholder.

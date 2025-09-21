@@ -24,10 +24,4 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- SourceLink reference (version managed centrally) -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    <None Include="README.md" Pack="true" PackagePath="/" Condition="Exists('README.md')" />
-  </ItemGroup>
-
 </Project>

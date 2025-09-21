@@ -1,6 +1,4 @@
-﻿using Veggerby.Boards;
-
-namespace Veggerby.Boards.Tests.Core;
+﻿namespace Veggerby.Boards.Tests.Core;
 
 public class ConditionResultTests
 {

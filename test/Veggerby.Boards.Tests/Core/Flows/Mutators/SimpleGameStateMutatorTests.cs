@@ -1,6 +1,5 @@
 using System;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;

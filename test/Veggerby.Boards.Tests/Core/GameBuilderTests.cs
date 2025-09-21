@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;

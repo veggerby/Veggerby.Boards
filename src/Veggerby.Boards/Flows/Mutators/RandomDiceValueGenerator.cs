@@ -1,6 +1,4 @@
-﻿using System;
-
-using Veggerby.Boards.States;
+﻿using Veggerby.Boards.States;
 
 using SystemRandom = System.Random;
 

@@ -1,9 +1,7 @@
 using System.Linq;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 using Veggerby.Boards.Tests.Utils;

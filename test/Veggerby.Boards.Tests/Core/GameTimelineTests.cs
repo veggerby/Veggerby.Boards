@@ -1,6 +1,5 @@
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
-using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Core;
 

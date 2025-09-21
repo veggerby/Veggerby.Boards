@@ -1,4 +1,3 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Tests.Core.Fakes;

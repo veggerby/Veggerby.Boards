@@ -1,5 +1,3 @@
-using System;
-
 namespace Veggerby.Boards.Internal;
 
 /// <summary>

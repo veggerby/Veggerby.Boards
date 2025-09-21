@@ -2,8 +2,6 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Random;
 using Veggerby.Boards.States;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Core.States;
 
 public class GameStateRandomTests

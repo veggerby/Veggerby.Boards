@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - 128-bit state hash (`Hash128`) computed alongside legacy 64-bit hash when hashing enabled (xxHash128 scaffold).
 - Hashing overhead benchmark (`HashingOverheadBenchmark`) comparing per-event cost with hashing disabled/enabled.
 - Pattern resolution benchmark scaffold (`PatternResolutionBaseline`) comparing legacy visitor vs (future) compiled resolver.
+- Initial populated pattern compiler mapping FixedPattern and MultiDirectionPattern to compiled IR (feature-flagged, parity with legacy visitor for fixed sequences).
 - Trace capture scaffold (feature-flagged) recording PhaseEnter, RuleEvaluated, RuleApplied, EventIgnored, StateHashed entries for last evaluation (now enriched with rule index + condition reason fields).
 
 ### Changed

@@ -29,7 +29,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 
 - Microbenchmark variant with observer enabled vs disabled to measure overhead delta.
 - Microbenchmark variant with trace capture enabled vs disabled (overhead quantification) **PENDING**
-- Pattern resolution benchmark scaffold (visitor vs compiled placeholder) **COMPLETED (awaiting compiler population for results)**
+- Pattern resolution benchmark scaffold (visitor vs compiled placeholder) **COMPLETED (compiler now populated for Fixed & MultiDirection)**
 - Allocation profiler script capturing top 10 hot allocations in `HandleEvent`.
 - Future: capture observer callback counts per benchmark iteration to detect silent regression.
 

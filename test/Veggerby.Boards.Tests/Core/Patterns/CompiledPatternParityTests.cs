@@ -24,7 +24,7 @@ public class CompiledPatternParityTests
         var legacy = legacyVisitor.ResultPath;
 
         // compiled (simulate by directly invoking resolver after manual compile)
-        var table = PatternCompiler.Compile(game); // currently emits empty table, so parity test guards for null
+        var table = PatternCompiler.Compile(game); // compiler now emits fixed + multi-direction patterns
         var resolver = new CompiledPatternResolver(table, game.Board);
         resolver.TryResolve(piece, from, to, out var compiled);
         return (legacy, compiled);
@@ -46,10 +46,13 @@ public class CompiledPatternParityTests
         // act
         var (legacy, compiled) = ResolveBoth(game, piece, from, to);
 
-        // assert (compiled currently null due to empty compiler; parity ensures legacy not broken)
         // assert
         legacy.Should().NotBeNull();
-        compiled.Should().BeNull();
+        compiled.Should().NotBeNull();
+        compiled.From.Should().Be(legacy.From);
+        compiled.To.Should().Be(legacy.To);
+        compiled.Distance.Should().Be(legacy.Distance);
+        compiled.Relations.Count().Should().Be(legacy.Relations.Count());
     }
 }
 

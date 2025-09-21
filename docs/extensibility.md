@@ -107,6 +107,38 @@ AddGamePhase("play")
         .Do<MovePieceStateMutator>();
 ```
 
+### Exclusivity Groups (Optional Optimization Hint)
+
+You can declare that a set of phases are mutually exclusive candidates using the fluent `.Exclusive("group-id")` marker before attaching conditions:
+
+```csharp
+AddGamePhase("movement-a")
+  .Exclusive("movement-cycle")
+  .If<NullGameStateCondition>()
+  .Then()
+    .ForEvent<MovePieceGameEvent>()
+    .Then()
+      .Do<MovePieceStateMutator>();
+
+AddGamePhase("movement-b")
+  .Exclusive("movement-cycle")
+  .If<NullGameStateCondition>()
+  .Then()
+    .ForEvent<MovePieceGameEvent>()
+    .Then()
+      .Do<MovePieceStateMutator>();
+```
+
+When the `FeatureFlags.EnableDecisionPlanMasks` flag is enabled, once a rule in a given exclusivity group applies (produces a state change) subsequent phases sharing the same group id are skipped for that event evaluation. This can reduce redundant predicate checks in families where only one rule should ever apply (e.g., mutually exclusive movement modes).
+
+Guidelines:
+
+- Use small, descriptive group ids (kebab-case or snake_case preferred for readability).
+- Only group phases where applying more than one in a single evaluation would be either impossible or undesirable.
+- If ordering matters, define the most common/widest predicate first so masking short-circuits earlier.
+
+Disabling the mask flag preserves legacy evaluation (groups are ignored at runtime).
+
 ## Custom Artifacts
 
 If you need a new artifact kind (e.g., EnergyNode, TokenStack):

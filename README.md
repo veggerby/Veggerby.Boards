@@ -1,82 +1,106 @@
 # Veggerby.Boards
 
-Veggerby.Boards is a generic framework for board games. E.g.
+Composable .NET board game engine: define boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases for turn progression. Current example modules: Backgammon & Chess.
 
-* Backgammon
-* Chess
-* Ludo
-* Monopoly
-* Risc
-* Tic-Tac-Toe
-* Go (probably/maybe)
+## Highlights
 
-Could potentially also be used for games like Kalaha.
+- Immutable structural model (Board, Tiles, Relations, Pieces, Dice, Players)
+- Pattern-based movement (directional, repeatable, fixed sequences)
+- Hierarchical phase system (finite-state style) with conditions and event pre-processing
+- Deterministic, persistent state transitions (history retained)
+- Extensible: add events, mutators, conditions, phases without modifying core
 
-## Components
+## Quick Start
 
-The following sections explain the different components of the framework.
+```csharp
+// Backgammon
+var builder = new BackgammonGameBuilder();
+var progress = builder.Compile(); // GameEngine + initial GameState
 
-### Concept
+// Roll dice (demo numbers)
+var d1 = progress.Game.GetArtifact<Dice>("dice-1");
+var d2 = progress.Game.GetArtifact<Dice>("dice-2");
+progress = progress.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(d1, 3), new DiceState<int>(d2, 1)));
 
-A board game consists of 3 pieces:
+// Move a piece using resolved path
+var piece = progress.Game.GetPiece("white-1");
+var from = progress.Game.GetTile("point-1");
+var to = progress.Game.GetTile("point-5");
+var resolver = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to);
+piece.Patterns.Single().Accept(resolver);
+progress = progress.HandleEvent(new MovePieceGameEvent(piece, resolver.ResultPath));
+```
 
-1. Artifacts - the individual pieces - physical or abstract - that makes up the game setup
-2. State - the progress of the game play
-3. Flows - the mechanisms - rules - that makes up the game play
+## Core Concepts
 
-So essentially the "what" (artifacts), the "where" (state) and the "how" (flows).
+| Concept | Summary |
+|---------|---------|
+| Artifact | Immutable identity object (Piece, Dice, Board, Player, Tile) |
+| Game | Structural aggregate (no mutable state) |
+| GameState | Snapshot of artifact states (piece positions, dice values) |
+| Event | Intent (MovePiece, RollDice, etc.) |
+| Mutator | Pure state transition logic |
+| Condition | Gate phase activation or event validity |
+| Rule | Binds event conditions + mutators |
+| Phase | Conditional scope with optional pre-processors |
+| Builder | Declarative compilation of structure + initial state + phases |
 
-These 3 components are controlled/combined by the GameEngine.
+See `docs/core-concepts.md` for details.
 
-Artifacts are independent of Flows and State. State is defining the state of Artifacts, and
-finally Flows control State changes (of Artifacts).
+## Architecture
 
-### Artifacts
+Layered solution:
 
-Artifacts are (semi-) physical entities of the board game, e.g. the board, the pieces, the
-dice, any cards or other elements.
+```txt
+Game Modules (Backgammon, Chess)
+                ↓
+            Core (artifacts • state • phases • rules)
+                ↓
+            API (demo HTTP exposure)
+```
 
-Players are also considered game Artifacts, but in a "static" sense, i.e. for Backgammon
-there are two players (black and white) - when playing/evaluating the game, a Person can
-then "play as e.g. black".
+More in `docs/architecture.md`.
 
-All Artifacts are immutable and statically defined.
+## Extending
 
-Artifacts are built using a GameBuilder.
+1. Create a new `GameBuilder` subclass.
+2. Define tiles + relations, directions, players, pieces (patterns), dice.
+3. Specify initial placements / dice states.
+4. Add phases and rules: `.ForEvent<MovePieceGameEvent>().Then().Do<MovePieceStateMutator>()`.
+5. Compile and handle events.
 
-#### Board and Tiles
+Step-by-step: `docs/extensibility.md`.
 
-Tiles on a Board are also Artifacts (albeit they are not physical entities themselves).
-A Board consists of Tiles and Pieces. Tiles have (static) relations to other Tiles, i.e.
-Tile B is connected to Tile C in a clockwise direction, but to Tile-A in a counter-clockwise
-direction. Relations also have Distance (default to 1), which can be used to specify
-relative weight between Relations.
+## API Demo
 
-#### Pieces
+`Veggerby.Boards.Api` exposes a sample endpoint:
 
-Pieces are the individual game pieces. They are (again) statically defined, e.g. in Chess
-there would be a White King, a White Queen, 2 White Rooks, 2 White Knights, 2 White Bishops
-and 8 White Pawns (and similarly for Black), i.e. a total of 32 pieces.
+```txt
+GET /api/games/{guid}
+    endsWith("1") => Backgammon (with simulated dice + move)
+    otherwise     => Chess initial state
+```
 
-Pieces have movement Patterns assigned, e.g. in Chess a Queen can move (linerarly) unbounded
-in any direction, a King can move 1 step in any direction, but a Knight can move in an L
-shaped pattern (e.g. 2 steps north and 1 step east).
+Models map engine objects to simple DTOs (tiles, pieces, dice values, active player, etc.).
 
-Patterns are used to evaluate if a given move ("move piece A from tile 1 to tile 2") is valid.
-This validity is evaluated via rules and can be subject to additional restrictions, e.g. in
-Chess the Queen can move in any (linear) direction as long as no tile is blocked, where as
-a knight can "jump over" other occupied tiles. In Backgammon the moves will be restricted by
-the valid dice roll.
+Details: `docs/api-layer.md`.
 
-### Flows
+## Development
 
-Any game consists of a set of phases, which essentially is a Finite State Machine acting on the
-state of the game. Examples of game phases could be:
+```bash
+dotnet restore
+dotnet build
+dotnet test
+```
 
-* A turn
-* Initial setup - e.g. placing armies in Risk
-* End-game - e.g. moving pieces of the board in Backgammon
+## Contributing
 
-### State
+Guidelines in `CONTRIBUTING.md` (focus on immutability, deterministic state, small mutators, full test coverage for new rule branches).
 
-A state applies to an artifact.
+## License
+
+MIT
+
+## Documentation Index
+
+See `docs/index.md` for full documentation set.

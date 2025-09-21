@@ -1,21 +1,32 @@
 ﻿using System.Text;
 
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.States.Conditions;
+using Veggerby.Boards;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
 
+/// <summary>
+/// Concrete <see cref="GameBuilder"/> defining a standard chess initial position including all piece
+/// movement patterns (directional + fixed sequences) and a single movement phase.
+/// </summary>
+/// <remarks>
+/// This module focuses on demonstrating complex pattern registration (e.g., knight L-shapes via fixed patterns)
+/// and reuse of directional repeatable patterns for sliding pieces (rook, bishop, queen).
+/// </remarks>
 public class ChessGameBuilder : GameBuilder
 {
-    private string GetChar(int i)
+    private static string GetChar(int i)
     {
         var b = Encoding.UTF8.GetBytes(['a'])[0] + i - 1;
         return Encoding.UTF8.GetString(new[] { (byte)b });
     }
 
+    /// <summary>
+    /// Configures the chess board tiles, relations, pieces, movement patterns and phases.
+    /// </summary>
     protected override void Build()
     {
         // Game

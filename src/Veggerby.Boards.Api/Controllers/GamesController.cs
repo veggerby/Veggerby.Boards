@@ -8,20 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 using Veggerby.Boards.Api.Models;
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Api.Controllers;
 
+/// <summary>
+/// HTTP API for accessing game projections (demo purposes only).
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class GamesController : ControllerBase
 {
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GamesController"/> class.
+    /// </summary>
     public GamesController(IMapper mapper)
     {
         if (mapper is null)
@@ -33,6 +39,11 @@ public class GamesController : ControllerBase
     }
 
     // GET api/games/{id}
+    /// <summary>
+    /// Gets a demo game instance (GUID ending with 1 selects Backgammon otherwise Chess).
+    /// </summary>
+    /// <param name="id">Game identifier (pattern-based demo selector).</param>
+    /// <returns>Serialized game projection.</returns>
     [HttpGet("{id}", Name = "GetGame")]
     public IActionResult Get(Guid id)
     {

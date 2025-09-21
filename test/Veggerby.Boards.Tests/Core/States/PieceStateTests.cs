@@ -1,8 +1,8 @@
 using System;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Patterns;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Core.States;
 

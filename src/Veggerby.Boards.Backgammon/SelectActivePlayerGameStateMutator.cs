@@ -1,16 +1,20 @@
 using System.Linq;
 
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Selects the starting active player based on initial dice roll comparison.
+/// </summary>
 public class SelectActivePlayerGameStateMutator : IStateMutator<RollDiceGameEvent<int>>
 {
+    /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, RollDiceGameEvent<int> @event)
     {
         var white = engine.Game.GetPlayer("white");

@@ -1,9 +1,9 @@
 using System;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Flows.Events;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Patterns;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Events;
 

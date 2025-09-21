@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsCheck.Xunit" />
+    <PackageReference Include="FsCheck" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Veggerby.Boards/Veggerby.Boards.csproj" />
+    <ProjectReference Include="../../src/Veggerby.Boards.Chess/Veggerby.Boards.Chess.csproj" />
+    <ProjectReference Include="../../src/Veggerby.Boards.Backgammon/Veggerby.Boards.Backgammon.csproj" />
+  </ItemGroup>
+
+</Project>

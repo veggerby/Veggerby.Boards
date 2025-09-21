@@ -40,6 +40,31 @@ Limitations / Next Steps:
 - Introduce `GameTimeline` zipper with undo/redo; hash becomes node identity key.
 - Add `BugReport` envelope capturing initial seed + event list + final hash.
 
+## Timeline Zipper (Experimental)
+
+When `FeatureFlags.EnableTimelineZipper` (naming placeholder) is activated, an immutable zipper structure (`GameTimeline`) can be used to navigate history:
+
+```csharp
+var initial = GameState.New(initialStates, rng);
+var timeline = GameTimeline.Create(initial);
+timeline = timeline.Push(nextState);      // advance
+timeline = timeline.Undo();               // step back
+timeline = timeline.Redo();               // step forward
+timeline = timeline.Push(branchState);    // creates new branch, clearing redo stack
+```
+
+Characteristics:
+
+1. Immutable: every operation returns a new `GameTimeline` reusing existing `GameState` instances.
+2. Deterministic: no mutation, states already hashable when hashing flag enabled.
+3. Branch Semantics: pushing after an `Undo` discards `Future` (redo) states.
+4. Memory Footprint: references only—no deep copies; `GameState` chain already shares structure.
+
+Future Enhancements:
+
+- Hash‑interning map keyed by 128-bit hash (post upgrade) to deduplicate identical states across divergent branches.
+- Timeline diff utilities (first divergence, merge attempt) for simulation tooling.
+
 ## Planned
 
-Timeline zipper, 128-bit hashing upgrade, bug report capture & replay harness.
+128-bit hashing upgrade (xxHash128), bug report capture & replay harness, hash interning, and timeline diff utilities.

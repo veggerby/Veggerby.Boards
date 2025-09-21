@@ -24,12 +24,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Documentation skeletons: `docs/decision-plan.md`, `docs/rng-and-timeline.md`.
 - Feature-flagged state hashing scaffold (FNV-1a 64-bit) computing deterministic hash per `GameState` when `EnableStateHashing` is active.
 - `IEvaluationObserver.OnStateHashed` callback invoked after successful rule application (hashing enabled only).
+- Experimental timeline zipper (`GameTimeline`) with immutable undo/redo (flag-gated).
+- 128-bit state hash (`Hash128`) computed alongside legacy 64-bit hash when hashing enabled (xxHash128 scaffold).
 
 ### Changed
 
 - Centralized all package versions via Directory.Packages.props (removed inline versions).
 - README updated with roadmap reference.
 - State hashing now uses canonical binary serialization (ordered public properties, typed tags) instead of transient ToString() output for stability.
+- Added xxHash128-based 128-bit hash (non-cryptographic) for future Merkle / interning work; legacy 64-bit retained for transition.
 
 ### Fixed
 

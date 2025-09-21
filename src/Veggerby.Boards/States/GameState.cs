@@ -22,6 +22,7 @@ public class GameState
     private readonly GameState _previousState;
     private readonly IRandomSource _random;
     private readonly ulong? _hash; // computed when hashing feature flag enabled
+    private readonly (ulong Low, ulong High)? _hash128; // upgraded 128-bit hash when enabled
 
     /// <summary>
     /// Gets the collection of artifact states contained in this snapshot.
@@ -32,6 +33,11 @@ public class GameState
     /// Gets the deterministic state hash (when hashing feature flag enabled); otherwise <c>null</c>.
     /// </summary>
     public ulong? Hash => _hash;
+
+    /// <summary>
+    /// Gets the 128-bit state hash (when hashing feature flag enabled); otherwise <c>null</c>.
+    /// </summary>
+    public (ulong Low, ulong High)? Hash128 => _hash128;
 
     /// <summary>
     /// Gets a value indicating whether this is the initial state (no prior state).
@@ -45,7 +51,9 @@ public class GameState
         _random = random;
         if (Internal.FeatureFlags.EnableStateHashing)
         {
+            // Compute legacy 64-bit and upgraded 128-bit hashes (128-bit built from canonical serialized buffer for now)
             _hash = ComputeHash();
+            _hash128 = ComputeHash128();
         }
     }
 
@@ -218,6 +226,51 @@ public class GameState
         }
 
         return h;
+    }
+
+    /// <summary>
+    /// Computes a 128-bit xxHash of the canonical serialized state (artifacts + RNG fingerprint).
+    /// </summary>
+    private (ulong Low, ulong High) ComputeHash128()
+    {
+        // Accumulate canonical bytes into a pooled buffer (bounded by typical small state footprint).
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>(1024);
+        void Write(ReadOnlySpan<byte> span)
+        {
+            var dest = buffer.GetSpan(span.Length);
+            span.CopyTo(dest);
+            buffer.Advance(span.Length);
+        }
+
+        foreach (var kvp in _childStates.OrderBy(x => x.Key.Id, StringComparer.Ordinal))
+        {
+            var idBytes = System.Text.Encoding.UTF8.GetBytes(kvp.Key.Id);
+            Write(idBytes);
+            var atBytes = System.Text.Encoding.UTF8.GetBytes(kvp.Key.GetType().FullName);
+            Write(atBytes);
+            var state = kvp.Value;
+            var stBytes = System.Text.Encoding.UTF8.GetBytes(state.GetType().FullName);
+            Write(stBytes);
+            var writer = new Internal.IncrementalHashWriter(0); // reuse canonical serializer into temp incremental hash then emit final bytes of 64-bit snapshot
+            Internal.CanonicalStateSerializer.WriteObject(state, ref writer);
+            var interim = BitConverter.GetBytes(writer.Hash);
+            Write(interim);
+        }
+        if (_random is not null)
+        {
+            var clone = _random.Clone();
+            Span<byte> seedBytes = stackalloc byte[8];
+            BitConverter.TryWriteBytes(seedBytes, clone.Seed);
+            Write(seedBytes);
+            var u1 = clone.NextUInt();
+            var u2 = clone.NextUInt();
+            Span<byte> peek = stackalloc byte[8];
+            BitConverter.TryWriteBytes(peek[..4], u1);
+            BitConverter.TryWriteBytes(peek[4..], u2);
+            Write(peek);
+        }
+        var (low, high) = Internal.Hash.XXHash128.Compute(buffer.WrittenSpan);
+        return (low, high);
     }
 
     private static ulong HashBytes(ulong seed, IEnumerable<byte> bytes)

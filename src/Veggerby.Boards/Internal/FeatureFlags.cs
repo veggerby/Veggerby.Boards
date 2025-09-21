@@ -41,4 +41,9 @@ internal static class FeatureFlags
     /// (Placeholder – not yet implemented)
     /// </summary>
     public static bool EnableTraceCapture { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the experimental timeline zipper (undo/redo structure) is active.
+    /// </summary>
+    public static bool EnableTimelineZipper { get; set; } = false;
 }

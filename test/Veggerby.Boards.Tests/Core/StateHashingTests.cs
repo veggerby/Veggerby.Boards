@@ -44,7 +44,7 @@ public class StateHashingTests
     [Fact]
     public void GivenSameSequence_WhenHashingEnabled_ThenFinalHashesMatch()
     {
-        // Arrange
+        using var scope = FeatureFlagScope.StateHashing(true);
         var a = Build(true);
         var b = Build(true);
 
@@ -66,7 +66,7 @@ public class StateHashingTests
     [Fact]
     public void GivenDifferentEvents_WhenHashingEnabled_ThenFinalHashesDiffer()
     {
-        // Arrange
+        using var scope = FeatureFlagScope.StateHashing(true);
         var a = Build(true);
         var b = Build(true);
 
@@ -83,5 +83,29 @@ public class StateHashingTests
 
         // Assert
         a.State.Hash.Should().NotBe(b.State.Hash);
+    }
+
+    [Fact]
+    public void GivenHashingEnabled_WhenBuildingState_ThenHash128HasValue()
+    {
+        var progress = Build(true);
+        progress.State.Hash128.HasValue.Should().BeTrue();
+    }
+
+    [Fact]
+    public void GivenSameSequence_WhenHashingEnabled_ThenFinalHash128Match()
+    {
+        using var scope = FeatureFlagScope.StateHashing(true);
+        var a = Build(true);
+        var b = Build(true);
+        var pieceId = "piece-1";
+        var from = a.Game.GetTile("tile-1");
+        var to = a.Game.GetTile("tile-2");
+        var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        var path = new TilePath([relation]);
+        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+        a = a.HandleEvent(move);
+        b = b.HandleEvent(move);
+        a.State.Hash128.Should().Be(b.State.Hash128);
     }
 }

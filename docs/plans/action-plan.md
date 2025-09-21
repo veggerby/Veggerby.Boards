@@ -283,6 +283,8 @@ Migration:
 
 Deliverables (Status annotations in brackets):
 
+> Note: The previous experimental ASP.NET API layer was intentionally removed to keep the core engine focused. Reintroduction (if desired) will happen as a separate optional package providing versioned DTOs after hashing & observer enhancements stabilize.
+
 - Separate package metadata for Chess/Backgammon (csproj adjustments, semantic version scheme). **[NOT STARTED]**
 - Versioned DTO namespaces: `Veggerby.Boards.Api.V1.Models`. **[NOT STARTED]**
 - Changelog & migration guide for introducing v1. **[NOT STARTED]**

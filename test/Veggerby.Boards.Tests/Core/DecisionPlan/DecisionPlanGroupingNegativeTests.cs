@@ -1,10 +1,9 @@
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
-using Veggerby.Boards.Internal;
-using Veggerby.Boards.Flows.Events;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 

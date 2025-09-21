@@ -38,6 +38,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Predicate hoisting (v1): `DecisionPlanEntry` now marks trivially valid `NullGameStateCondition` (true variant) entries with `ConditionIsAlwaysValid` to bypass runtime Evaluate calls (false variant no longer hoisted after refinement).
 - DecisionPlan grouping scaffold (G1): plan now precompiles contiguous identical-condition entries into groups and adds `EnableDecisionPlanGrouping` feature flag with grouped evaluation path (gate evaluated once per group).
 - DecisionPlan: EventKind filtering (experimental, flag `EnableDecisionPlanEventFiltering`) with initial Move vs Roll classification and tests (`DecisionPlanEventFilteringTests`).
+- EventFiltering baseline benchmark scaffold (`EventFilteringBaseline`) measuring Move vs Roll evaluation paths (initial; tagging breadth expansion pending).
+- Restored and extended compiled pattern parity tests (expanded edge coverage) with adjustments for legacy visitor null path handling.
 
 ### Changed
 

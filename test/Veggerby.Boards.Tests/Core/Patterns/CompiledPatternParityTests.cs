@@ -4,12 +4,7 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
-using Veggerby.Boards.Builder.Artifacts; // Added import for PieceDefinition
 using Veggerby.Boards.Flows.Patterns; // for PatternCompiler + CompiledPatternResolver
-using Veggerby.Boards.Internal;
-
-using Xunit;
-// using FluentAssertions; (not used – project leverages AwesomeAssertions extensions already)
 
 namespace Veggerby.Boards.Tests.Core.Patterns;
 

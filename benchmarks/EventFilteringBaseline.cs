@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Benchmarks;
@@ -37,8 +37,8 @@ public class EventFilteringBaseline
         var from = _chess.Game.GetTile("e2");
         var to = _chess.Game.GetTile("e4");
         _whitePawn = _chess.Game.GetPiece("white-pawn-2");
-    _pawnPath = new ResolveTilePathPatternVisitor(_chess.Game.Board, from, to).ResultPath!;
-    _die1 = _backgammon.Game.GetArtifact<Dice>("dice-1");
+        _pawnPath = new ResolveTilePathPatternVisitor(_chess.Game.Board, from, to).ResultPath!;
+        _die1 = _backgammon.Game.GetArtifact<Dice>("dice-1");
     }
 
     [Benchmark(Description = "Handle Move (Chess)")]

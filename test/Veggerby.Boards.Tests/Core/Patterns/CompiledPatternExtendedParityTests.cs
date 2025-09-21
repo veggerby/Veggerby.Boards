@@ -5,8 +5,6 @@ using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Core.Patterns;
 
 /// <summary>

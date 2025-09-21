@@ -1,14 +1,12 @@
 using System.Linq;
+
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Flows.Phases;
-using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
-using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.Artifacts.Relations;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
@@ -38,15 +36,15 @@ public class DecisionPlanEventFilteringTests
     public void GivenMoveEvent_WhenFilteringEnabled_ThenRollRuleSkipped()
     {
         // arrange
-    var moveCond = new RecordingCondition<MovePieceGameEvent>();
-    var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
-    var progress = BuildProgressWithPhases(moveCond, rollCond);
-    var piece = progress.Game.GetArtifacts<Piece>().First();
-    // Build a trivial path (single relation) from tile A to tile A (self-loop) using existing board relation.
-    var from = progress.Game.Board.Tiles.First();
-    var relation = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == from) ?? progress.Game.Board.TileRelations.First();
-    var path = new TilePath(new [] { relation });
-    var evt = new MovePieceGameEvent(piece, path);
+        var moveCond = new RecordingCondition<MovePieceGameEvent>();
+        var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
+        var progress = BuildProgressWithPhases(moveCond, rollCond);
+        var piece = progress.Game.GetArtifacts<Piece>().First();
+        // Build a trivial path (single relation) from tile A to tile A (self-loop) using existing board relation.
+        var from = progress.Game.Board.Tiles.First();
+        var relation = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == from) ?? progress.Game.Board.TileRelations.First();
+        var path = new TilePath(new[] { relation });
+        var evt = new MovePieceGameEvent(piece, path);
 
         // act
         progress.HandleEvent(evt);
@@ -60,11 +58,11 @@ public class DecisionPlanEventFilteringTests
     public void GivenRollEvent_WhenFilteringEnabled_ThenMoveRuleSkipped()
     {
         // arrange
-    var moveCond = new RecordingCondition<MovePieceGameEvent>();
-    var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
-    var progress = BuildProgressWithPhases(moveCond, rollCond);
-    var diceStates = progress.Game.GetArtifacts<Dice>().Select(d => new DiceState<int>(d, 1)).ToArray();
-    var evt = new RollDiceGameEvent<int>(diceStates);
+        var moveCond = new RecordingCondition<MovePieceGameEvent>();
+        var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
+        var progress = BuildProgressWithPhases(moveCond, rollCond);
+        var diceStates = progress.Game.GetArtifacts<Dice>().Select(d => new DiceState<int>(d, 1)).ToArray();
+        var evt = new RollDiceGameEvent<int>(diceStates);
 
         // act
         progress.HandleEvent(evt);

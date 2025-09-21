@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Flows.DecisionPlan;
 
@@ -54,9 +54,9 @@ public sealed class DecisionPlan
     {
         ArgumentNullException.ThrowIfNull(root);
 
-    var entries = new List<DecisionPlanEntry>();
-    var kinds = new List<EventKind>();
-    Traverse(root, entries, kinds);
+        var entries = new List<DecisionPlanEntry>();
+        var kinds = new List<EventKind>();
+        Traverse(root, entries, kinds);
 
         // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
         // This avoids having to recompile the plan when flag toggles and keeps plan deterministic.

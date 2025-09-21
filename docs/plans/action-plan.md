@@ -14,7 +14,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
-| 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
+| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler emits empty tables (population pending) |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
@@ -173,7 +173,7 @@ Deliverables (Status annotations in brackets):
 Acceptance Criteria:
 - No functional behavior change vs legacy path (golden test suite). **[PENDING – parity tests not yet added]**
 - Benchmark: `HandleEvent` median latency reduced ≥30% on sample scenarios (Chess opening moves, Backgammon entry moves). **[PENDING – only baseline harness exists]**
-- Trace includes rule index + failing predicate reason. **[NOT STARTED – tracing/observer missing]**
+- Trace includes rule index + failing predicate reason. **[COMPLETED – enriched trace entries]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).
 - Debug difficulty: include verbose validator to cross-check results in tests.
@@ -203,15 +203,19 @@ Migration:
 
 Deliverables (Status annotations in brackets):
 
-- Pattern IR: normalized representation (directions, repeats, terminals). **[NOT STARTED]**
-- Compiler: pattern set per piece → DFA/NFA structure (arrays of transitions, acceptance flags). **[NOT STARTED]**
-- Runtime: path resolution via integer indices + bitsets, no interface dispatch in hot loop. **[NOT STARTED]**
-- Fallback to existing visitor system for non-compiled patterns until parity confirmed. **[NOT STARTED]**
+- Pattern IR: normalized representation (directions, repeats, terminals). **[COMPLETED – `CompiledPatternKind`, `CompiledPattern`]**
+- Compiler scaffold: per-piece table generation + service registration (emits empty lists). **[COMPLETED – population pending]**
+- Resolver: compiled attempt with visitor fallback. **[COMPLETED – behind `EnableCompiledPatterns`]**
+- Compiler population (translate existing `IPattern` instances to IR). **[PENDING]**
+- Performance benchmarks (visitor vs compiled). **[PENDING]**
+- Parity test suite (legacy vs compiled). **[IN PROGRESS – initial scaffold added]**
 Acceptance Criteria:
-- All existing movement tests green under compiled engine. **[NOT STARTED]**
-- Benchmark: pattern resolution ≥5x faster on 1000 random moves sample. **[NOT STARTED]**
+- All movement tests + parity suite green under compiled engine once populated. **[PENDING]**
+- ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
+Current Status:
+- Infra merged; feature off by default; parity scaffold guards legacy correctness prior to enabling compiled resolution.
 Risks:
-- Over-optimizing rare patterns; limit scope to current patterns first.
+- Premature optimization without representative workloads.
 Migration:
 - `CompilePatterns()` invoked during game build; toggle to disable for troubleshooting.
 
@@ -375,11 +379,11 @@ Versioning: Each phase increments minor version; breaking changes require major 
    - Story: merkle hash function & tests
    -- Story: (Removed) internal bug report capture + replay (externalized)
 3. EPIC: Pattern Compilation
-   - Spike: IR representation
-   - Story: direction adjacency bitsets
-   - Story: repeat pattern expansion
-   - Story: DFA executor + benchmarks
-   - Story: parity tests vs visitor
+   - Spike: IR representation **(DONE)**
+   - Story: direction adjacency bitsets **(PENDING)**
+   - Story: repeat pattern expansion **(PENDING)**
+   - Story: DFA executor + benchmarks **(PENDING)**
+   - Story: parity tests vs visitor **(IN PROGRESS)**
 4. EPIC: Performance Layout
    - Spike: BoardShape arrays
    - Story: PieceMap structure

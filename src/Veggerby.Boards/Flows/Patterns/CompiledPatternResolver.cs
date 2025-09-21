@@ -1,15 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Internal.Compiled;
 
 namespace Veggerby.Boards.Flows.Patterns;
 
 /// <summary>
 /// Resolves a path using compiled patterns for a piece if available; returns null when no pattern matches.
 /// </summary>
-internal sealed class CompiledPatternResolver
+internal sealed class CompiledPatternResolver : ICompiledPatternResolver
 {
     private readonly CompiledPatternTable _table;
     private readonly Board _board;
@@ -20,11 +18,12 @@ internal sealed class CompiledPatternResolver
         _board = board;
     }
 
-    public TilePath Resolve(Piece piece, Tile from, Tile to)
+    public bool TryResolve(Piece piece, Tile from, Tile to, out TilePath path)
     {
+        path = null;
         if (!_table.ByPiece.TryGetValue(piece.Id, out var piecePatterns) || piecePatterns.Patterns.Count == 0)
         {
-            return null; // fallback to legacy expected
+            return false; // fallback to legacy expected
         }
 
         TilePath best = null;
@@ -35,7 +34,7 @@ internal sealed class CompiledPatternResolver
                 case CompiledPatternKind.Fixed:
                     {
                         var current = from;
-                        TilePath path = null;
+                        TilePath localPath = null;
                         var ok = true;
                         foreach (var dir in pattern.Directions)
                         {
@@ -44,12 +43,12 @@ internal sealed class CompiledPatternResolver
                             {
                                 ok = false; break;
                             }
-                            path = TilePath.Create(path, rel);
+                            localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
                         }
-                        if (ok && path is not null && path.To.Equals(to))
+                        if (ok && localPath is not null && localPath.To.Equals(to))
                         {
-                            best = SelectShortest(best, path);
+                            best = SelectShortest(best, localPath);
                         }
                     }
                     break;
@@ -57,16 +56,16 @@ internal sealed class CompiledPatternResolver
                     {
                         var dir = pattern.Directions[0];
                         var current = from;
-                        TilePath path = null;
+                        TilePath localPath = null;
                         while (true)
                         {
                             var rel = _board.GetTileRelation(current, dir);
                             if (rel is null) break;
-                            path = TilePath.Create(path, rel);
+                            localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
                             if (current.Equals(to))
                             {
-                                best = SelectShortest(best, path);
+                                best = SelectShortest(best, localPath);
                                 break;
                             }
                             if (!pattern.IsRepeatable) break;
@@ -77,16 +76,16 @@ internal sealed class CompiledPatternResolver
                     foreach (var dir in pattern.Directions)
                     {
                         var current = from;
-                        TilePath path = null;
+                        TilePath localPath = null;
                         while (true)
                         {
                             var rel = _board.GetTileRelation(current, dir);
                             if (rel is null) break;
-                            path = TilePath.Create(path, rel);
+                            localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
                             if (current.Equals(to))
                             {
-                                best = SelectShortest(best, path);
+                                best = SelectShortest(best, localPath);
                                 break; // found path for this direction
                             }
                             if (!pattern.IsRepeatable) break;
@@ -95,7 +94,8 @@ internal sealed class CompiledPatternResolver
                     break;
             }
         }
-        return best;
+        path = best;
+        return path is not null;
     }
 
     private static TilePath SelectShortest(TilePath currentBest, TilePath candidate)

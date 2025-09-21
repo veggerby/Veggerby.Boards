@@ -369,7 +369,16 @@ public abstract class GameBuilder
             decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
         }
 
-        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer);
+        EngineServices services = EngineServices.Empty;
+        if (FeatureFlags.EnableCompiledPatterns)
+        {
+            var table = Flows.Patterns.PatternCompiler.Compile(game);
+            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board);
+            services = new EngineServices();
+            services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver));
+        }
+
+        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.DecisionPlan;
@@ -39,6 +40,7 @@ public class GameEngine
     internal IEvaluationObserver Observer { get; }
 
     private readonly Veggerby.Boards.Internal.Tracing.EvaluationTrace _lastTrace;
+    private readonly EngineServices _services;
 
     /// <summary>
     /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
@@ -53,7 +55,8 @@ public class GameEngine
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> or <paramref name="gamePhaseRoot"/> is null.</exception>
     /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
     /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
-    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null)
+    /// <param name="services">Optional internal service container (compiled patterns, etc.).</param>
+    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null, EngineServices services = null)
     {
         ArgumentNullException.ThrowIfNull(game);
 
@@ -62,6 +65,7 @@ public class GameEngine
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
         DecisionPlan = decisionPlan; // may be null (feature flag disabled)
+        _services = services ?? EngineServices.Empty;
         var baseObserver = observer ?? NullEvaluationObserver.Instance;
         if (Internal.FeatureFlags.EnableTraceCapture)
         {

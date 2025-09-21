@@ -14,7 +14,7 @@ namespace Veggerby.Boards;
 /// <summary>
 /// Convenience helpers for artifact and event operations on <see cref="Game"/> and <see cref="GameProgress"/>.
 /// </summary>
-public static class GameExtensions
+public static partial class GameExtensions
 {
     /// <summary>
     /// Retrieves a piece by identifier.

@@ -45,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Adjacency cache scaffold for compiled patterns (`BoardAdjacencyCache`) + feature flag `EnableCompiledPatternsAdjacencyCache` integrated into `CompiledPatternResolver` (lookup fast-path when enabled).
 - Test utility `FeatureFlagScope` (disposable) for deterministic flag toggling in parity and optimization tests.
 - DecisionPlan parity test harness (`DecisionPlanParityTests`) validating identical resulting piece positions for a deterministic opening sequence.
+- DecisionPlan parity test harnesses: renamed chess-specific class to `ChessDecisionPlanParityTests` for clarity and added randomized short-sequence parity scaffold (`DecisionPlanRandomizedParityTests`) generating pawn advance sequences to assert evaluator parity.
 
 ### Changed
 

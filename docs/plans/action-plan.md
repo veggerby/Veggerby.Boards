@@ -12,7 +12,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
-| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering + exclusivity metadata scaffold + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
+| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); adjacency cache scaffold + flag; direct-construction parity test added for Fixed pattern clarity |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
@@ -180,9 +180,9 @@ Acceptance Criteria:
 Upcoming / In-Progress Optimizations (Design Drafted in `decision-plan-optimizations.md`):
 
 - G1 Grouping: compile contiguous identical predicate phases into gated groups (feature flag `EnableDecisionPlanGrouping`). **[COMPLETED – gate evaluated once; no behavior drift; test added]**
-- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[IN-PROGRESS – classifier + filtering path + initial tests added; expanded tagging & benchmarks pending]**
-- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[PENDING]**
-- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[PENDING]**
+-- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[IN-PROGRESS – classifier + filtering path + initial tests added; expanded tagging & benchmarks pending]**
+-- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[COMPLETED – runtime masking + tests]**
+-- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[COMPLETED – dual-run comparison + mismatch diagnostics + tests]**
 - M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[PENDING]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).

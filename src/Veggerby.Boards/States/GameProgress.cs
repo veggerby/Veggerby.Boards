@@ -82,6 +82,8 @@ public class GameProgress
     /// <returns>The resulting progress.</returns>
     public GameProgress HandleEvent(IGameEvent @event)
     {
+        var debugParityEnabled = Internal.FeatureFlags.EnableDecisionPlan && Internal.FeatureFlags.EnableDecisionPlanDebugParity;
+        var originalProgress = this; // capture starting snapshot for shadow evaluation
         // Legacy path retains phase resolution per event when DecisionPlan feature flag is disabled or plan absent.
         if (Engine.DecisionPlan is null || !Internal.FeatureFlags.EnableDecisionPlan)
         {
@@ -246,6 +248,23 @@ public class GameProgress
             if (!handled)
             {
                 progress.Engine.Observer.OnEventIgnored(evt, progress.State);
+            }
+        }
+        // Debug parity (dual-run) – shadow legacy evaluation and compare resulting state snapshots.
+        if (debugParityEnabled)
+        {
+            var legacy = originalProgress.HandleEventLegacy(@event);
+            var forceMismatch = Internal.Debug.DebugParityTestHooks.ForceMismatch; // test hook
+            var equal = progress.State.Equals(legacy.State);
+            if (!equal || forceMismatch)
+            {
+                // Compute simple diff summary (counts) for diagnostic clarity.
+                var legacyStates = legacy.State.ChildStates.ToDictionary(s => s.Artifact.Id, s => s);
+                var planStates = progress.State.ChildStates.ToDictionary(s => s.Artifact.Id, s => s);
+                var mismatching = planStates.Keys.Union(legacyStates.Keys)
+                    .Where(k => !legacyStates.ContainsKey(k) || !planStates.ContainsKey(k) || !legacyStates[k].Equals(planStates[k]))
+                    .ToList();
+                throw new BoardException($"DecisionPlan debug parity divergence detected (mismatched artifacts: {string.Join(", ", mismatching)}). ForceMismatch={(forceMismatch ? "true" : "false")}");
             }
         }
         return progress;

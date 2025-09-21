@@ -45,7 +45,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **COMPLETED**
 - Mask table generation from exclusivity hints. **COMPLETED (ExclusivityGroups + ExclusivityGroupRoots compiled)**
 - Evaluation mask application logic + tests (skip flagged entries). **COMPLETED (feature-flagged; masking tests added)**
-- Debug parity dual-scan path + assertion (shadow linear evaluator). **PENDING**
+- Debug parity dual-scan path + assertion (shadow linear evaluator). **COMPLETED**
 - Property-based randomized parity suite for grouping + masks. **PENDING**
 - Benchmarks: GroupingBaseline, EventFilteringBaseline, MaskingBaseline, DebugParityOverhead. **PENDING**
 - Static exclusivity inference attribute + analyzer (optional). **PENDING**

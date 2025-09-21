@@ -27,6 +27,7 @@ All optimizations are opt-in via discrete feature flags to preserve deterministi
 | Grouping | `EnableDecisionPlanGrouping` | Collapses contiguous identical state predicate entries; evaluates predicate once per group |
 | Event Filtering | `EnableDecisionPlanEventFiltering` | Pre-classifies rules by coarse `EventKind` (e.g., Move, Roll) to skip non-relevant entries early |
 | Exclusivity Masks | `EnableDecisionPlanMasks` | Skips later entries whose exclusivity group root already produced an applied rule (mutual exclusion hint) |
+| Debug Parity | `EnableDecisionPlanDebugParity` | Dual-run: executes legacy evaluator in shadow; compares resulting state; throws on divergence (safety harness) |
 
 ### Exclusivity Groups & Masks
 
@@ -64,6 +65,12 @@ Observability:
 - Future work will surface the optimization stage (and masking decisions) via observer trace entries when debug parity mode is introduced.
 
 Disabling the flag reverts to legacy behavior with identical outcomes.
+
+### Debug Parity (Dual-Run Safety Harness)
+
+When `EnableDecisionPlanDebugParity` is active, every handled event is also evaluated through the legacy traversal path (extracted as `HandleEventLegacy`). The resulting `GameState` instances are compared for structural equality. A mismatch raises a `BoardException` summarizing divergent artifact ids. A test-only hook `DebugParityTestHooks.ForceMismatch` can simulate a divergence to assert the safety net. This mode is intended for incremental rollout of additional optimizations (filtering, masking, hoisting) and should remain enabled in CI until all DecisionPlan stages have stable parity metrics.
+
+Overhead: Expected marginally higher due to duplicate evaluation; benchmarks to be added before graduating new optimization stages.
 
 ## Metrics
 

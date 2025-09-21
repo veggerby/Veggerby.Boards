@@ -47,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - DecisionPlan parity test harness (`DecisionPlanParityTests`) validating identical resulting piece positions for a deterministic opening sequence.
 - DecisionPlan parity test harnesses: renamed chess-specific class to `ChessDecisionPlanParityTests` for clarity and added randomized short-sequence parity scaffold (`DecisionPlanRandomizedParityTests`) generating pawn advance sequences to assert evaluator parity.
 - DecisionPlan exclusivity mask runtime scaffold: feature flag `EnableDecisionPlanMasks`, builder API `.Exclusive(group)`, plan compilation of `ExclusivityGroups` + `ExclusivityGroupRoots`, and mask-based skip logic (skips subsequent exclusive phases sharing a group once one applies) with initial tests (`DecisionPlanMaskingTests`). (Flag gated; parity expected when disabled.)
+- DecisionPlan debug parity dual-run scaffold: feature flag `EnableDecisionPlanDebugParity` executes legacy evaluator in shadow, compares resulting `GameState`, and throws detailed `BoardException` on divergence (includes mismatched artifact ids). Includes forced mismatch test hook (`DebugParityTestHooks.ForceMismatch`) and parity tests (`DecisionPlanDebugParityTests`).
 
 ### Changed
 

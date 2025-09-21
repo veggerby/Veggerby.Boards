@@ -12,7 +12,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
-| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering (taxonomy expanded for future: State/Phase) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
+| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); adjacency cache scaffold + flag; direct-construction parity test added for Fixed pattern clarity |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
@@ -28,7 +28,7 @@ Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 
 | Stage | Theme | Status | Notes |
 |-------|-------|--------|-------|
-| 2.5 | EventKind taxonomy activation | IN PROGRESS | Concrete `SelectActivePlayerGameEvent` (State) + rule; marker interfaces now public; initial roll phase refactored to emit state event internally. Filtering tests + potential Phase/Control events next. |
+| 2.5 | EventKind taxonomy activation | COMPLETED | Concrete `SelectActivePlayerGameEvent` (State) + rule; marker interfaces public; roll phase refactored to emit state event; filtering tests cover Move/Roll/State/Phase (test-only phase control event). Benchmarks deferred until final perf pass. |
 
 ## Guiding Principles
 

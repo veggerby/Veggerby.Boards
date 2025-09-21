@@ -39,9 +39,9 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PARTIAL (Grouping + EventFiltering + Masks flags added)**
 - Group compiler pass: identify contiguous identical predicate entries -> emit groups. **COMPLETED**
 - Group evaluation path + tests (gate evaluated once, skip when invalid). **COMPLETED (basic positive test; add invalid-gate test later)**
-- EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
-- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + initial tests + baseline benchmark scaffold)**
-  - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **PARTIAL – taxonomy expanded (State/Phase) awaiting event mappings & benchmarks**
+-- EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
+-- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + initial tests + baseline benchmark scaffold)**
+  - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **IN PROGRESS – taxonomy expanded (State/Phase), marker interfaces now public, concrete `SelectActivePlayerGameEvent` added; filtering tests & benchmarks pending**
 - Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **COMPLETED**
 - Mask table generation from exclusivity hints. **COMPLETED (ExclusivityGroups + ExclusivityGroupRoots compiled)**
 - Evaluation mask application logic + tests (skip flagged entries). **COMPLETED (feature-flagged; masking tests added)**

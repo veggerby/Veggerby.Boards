@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Added
+- Backgammon: Introduced `SelectActivePlayerGameEvent` (classified as `EventKind.State`) and corresponding `SelectActivePlayerGameStateMutator` + `SelectActivePlayerRule` to exercise new event kind taxonomy. No functional change to gameplay semantics (still derives starter from opening distinct dice) but now surfaces a concrete state mutation event for DecisionPlan filtering experiments.
+
+- Public exposure of marker interfaces `IStateMutationGameEvent` and `IPhaseControlGameEvent` (previously internal) enabling module-level event classification.
+
 
 - Package metadata (Description, PackageTags) for Core, Backgammon, and Chess projects. (API layer temporarily removed)
 - README packaged as NuGet readme (PackageReadmeFile) and included in artifacts.
@@ -56,6 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - README updated with roadmap reference.
 - State hashing now uses canonical binary serialization (ordered public properties, typed tags) instead of transient ToString() output for stability.
 - Added xxHash128-based 128-bit hash (non-cryptographic) for future Merkle / interning work; legacy 64-bit retained for transition.
+- Backgammon opening phase: removed direct `SelectActivePlayerGameStateMutator` invocation from initial roll rule chain (selection now occurs via dedicated state event in follow-up rule logic), preserving original semantics while isolating state mutation classification.
 - DecisionPlan evaluation now uses cached phase reference (no functional change expected).
 
 ### Fixed

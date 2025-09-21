@@ -122,7 +122,6 @@ public class BackgammonGameBuilder : GameBuilder
                     .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2")))
                         .And<DiceValuesShouldBeDifferent>()
                     .Then()
-                        .Do<SelectActivePlayerGameStateMutator>()
                         .Do<DiceStateMutator<int>>();
 
         AddGamePhase("dice has been rolled")

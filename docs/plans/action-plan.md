@@ -24,6 +24,12 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 
 Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 
+### Intermediate Stage Tracking
+
+| Stage | Theme | Status | Notes |
+|-------|-------|--------|-------|
+| 2.5 | EventKind taxonomy activation | IN PROGRESS | Concrete `SelectActivePlayerGameEvent` (State) + rule; marker interfaces now public; initial roll phase refactored to emit state event internally. Filtering tests + potential Phase/Control events next. |
+
 ## Guiding Principles
 
 - Determinism and Immutability are non‑negotiable invariants.

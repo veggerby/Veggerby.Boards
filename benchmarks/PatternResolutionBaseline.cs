@@ -5,6 +5,7 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
+using Veggerby.Boards.Internal.Compiled;
 
 namespace Veggerby.Boards.Benchmarks;
 
@@ -50,7 +51,8 @@ public class PatternResolutionBaseline
 
         // Pre-create compiled resolver (currently empty table -> always miss)
         var table = PatternCompiler.Compile(_game);
-        _compiledResolver = new CompiledPatternResolver(table, _game.Board);
+        var adjacency = BoardAdjacencyCache.Build(_game.Board);
+        _compiledResolver = new CompiledPatternResolver(table, _game.Board, adjacency);
     }
 
     [Benchmark(Baseline = true)]

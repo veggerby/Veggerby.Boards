@@ -41,6 +41,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - EventFiltering baseline benchmark scaffold (`EventFilteringBaseline`) measuring Move vs Roll evaluation paths (initial; tagging breadth expansion pending).
 - Restored and extended compiled pattern parity tests (expanded edge coverage) with adjustments for legacy visitor null path handling.
 - Simplified core compiled pattern parity test now constructs artifacts directly (no builder indirection) for fixed pattern validation, improving test clarity and isolation.
+- Exclusivity metadata scaffold: `GamePhaseDefinition.Exclusive(string)` and `GamePhase.ExclusivityGroup` now compiled into `DecisionPlan` (`ExclusivityGroups[]`) – no runtime masking yet (future skip masks stage).
+- Adjacency cache scaffold for compiled patterns (`BoardAdjacencyCache`) + feature flag `EnableCompiledPatternsAdjacencyCache` integrated into `CompiledPatternResolver` (lookup fast-path when enabled).
+- Test utility `FeatureFlagScope` (disposable) for deterministic flag toggling in parity and optimization tests.
 
 ### Changed
 

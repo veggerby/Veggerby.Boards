@@ -12,9 +12,9 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
-| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering + flag merged; EventResult placeholder added; observer + perf targets pending |
+| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering + exclusivity metadata scaffold; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
-| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); direct-construction parity test added for Fixed pattern clarity |
+| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); adjacency cache scaffold + flag; direct-construction parity test added for Fixed pattern clarity |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
@@ -322,7 +322,7 @@ Deliverables (Status annotations in brackets):
 
 - Replace LINQ in hot spots (profile-guided list). **[NOT STARTED]**
 - Introduce `record struct` wrappers: `TileIndex`, `PlayerId` (implicit conversions avoided for clarity). **[NOT STARTED]**
-- Adjacency cache keyed by board hash (dictionary or ConcurrentDictionary) with size cap. **[NOT STARTED]**
+- Adjacency cache keyed by board hash (dictionary or ConcurrentDictionary) with size cap. **[PARTIAL – basic per-board cache integrated behind feature flag]**
 - Audit for hidden globals; enforce analyzer rule if necessary. **[NOT STARTED]**
 Acceptance Criteria:
 - Analyzer or code review checklist updated. **[NOT STARTED]**
@@ -392,7 +392,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
    -- Story: (Removed) internal bug report capture + replay (externalized)
 3. EPIC: Pattern Compilation
    - Spike: IR representation **(DONE)** (trace overhead benchmark added separately for observability cost tracking)
-   - Story: direction adjacency bitsets **(PENDING)**
+      - Story: direction adjacency bitsets **(PENDING – initial adjacency cache scaffold complete)**
    - Story: repeat pattern expansion **(PENDING)**
    - Story: DFA executor + benchmarks **(PENDING)** (benchmark scaffold + compiler emits Fixed & MultiDirection patterns; doc added `compiled-patterns.md`)
    - Story: parity tests vs visitor **(IN PROGRESS)**

@@ -180,7 +180,7 @@ Acceptance Criteria:
 Upcoming / In-Progress Optimizations (Design Drafted in `decision-plan-optimizations.md`):
 
 - G1 Grouping: compile contiguous identical predicate phases into gated groups (feature flag `EnableDecisionPlanGrouping`). **[COMPLETED – gate evaluated once; no behavior drift; test added]**
-- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[PENDING]**
+- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[IN-PROGRESS – classifier + filtering path + initial tests added; expanded tagging & benchmarks pending]**
 - M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[PENDING]**
 - D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[PENDING]**
 - M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[PENDING]**

@@ -5,6 +5,7 @@ using System.Linq;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Flows.DecisionPlan;
 
@@ -34,10 +35,16 @@ public sealed class DecisionPlan
     /// </summary>
     internal IReadOnlyList<DecisionPlanGroup> Groups { get; }
 
-    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups)
+    /// <summary>
+    /// Gets the supported event kinds per entry (index aligned with <see cref="Entries"/>). Internal experimental.
+    /// </summary>
+    internal EventKind[] SupportedKinds { get; }
+
+    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds)
     {
         Entries = entries.ToArray();
         Groups = groups?.ToArray() ?? Array.Empty<DecisionPlanGroup>();
+        SupportedKinds = supportedKinds ?? Array.Empty<EventKind>();
     }
 
     /// <summary>
@@ -47,22 +54,23 @@ public sealed class DecisionPlan
     {
         ArgumentNullException.ThrowIfNull(root);
 
-        var entries = new List<DecisionPlanEntry>();
-        Traverse(root, entries);
+    var entries = new List<DecisionPlanEntry>();
+    var kinds = new List<EventKind>();
+    Traverse(root, entries, kinds);
 
         // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
         // This avoids having to recompile the plan when flag toggles and keeps plan deterministic.
         var groups = BuildGroups(entries);
-        return new DecisionPlan(entries, groups);
+        return new DecisionPlan(entries, groups, kinds.ToArray());
     }
 
-    private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries)
+    private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries, IList<EventKind> kinds)
     {
         if (phase is CompositeGamePhase composite)
         {
             foreach (var child in composite.ChildPhases)
             {
-                Traverse(child, entries);
+                Traverse(child, entries, kinds);
             }
         }
         else
@@ -77,6 +85,7 @@ public sealed class DecisionPlan
                 alwaysValid = ReferenceEquals(result, ConditionResponse.Valid);
             }
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
+            kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
         }
     }
 

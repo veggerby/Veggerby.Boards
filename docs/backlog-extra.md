@@ -36,11 +36,12 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 
 ### DecisionPlan Optimization (Grouping & Masking) Tasks
 
-- Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PARTIAL (Grouping flag added)**
+- Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PARTIAL (Grouping + EventFiltering flags added)**
 - Group compiler pass: identify contiguous identical predicate entries -> emit groups. **COMPLETED**
 - Group evaluation path + tests (gate evaluated once, skip when invalid). **COMPLETED (basic positive test; add invalid-gate test later)**
-- EventKind enum & tagging of existing rules (Move/Roll). **PENDING**
-- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **PENDING**
+- EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
+- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + initial tests)**
+  - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark. **PENDING**
 - Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **PENDING**
 - Mask table generation from exclusivity hints. **PENDING**
 - Evaluation mask application logic + tests (skip flagged entries). **PENDING**

@@ -135,12 +135,22 @@ public class GameProgress
         foreach (var evt in preProcessed)
         {
             var handled = false;
+            var eventKindFiltering = Internal.FeatureFlags.EnableDecisionPlanEventFiltering;
+            var currentEventKind = eventKindFiltering ? EventKindClassifier.Classify(evt) : EventKind.Any;
             if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
                 // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
                 foreach (var group in Engine.DecisionPlan.Groups)
                 {
                     var gateEntry = Engine.DecisionPlan.Entries[group.StartIndex];
+                    if (eventKindFiltering)
+                    {
+                        var groupKind = Engine.DecisionPlan.SupportedKinds.Length > group.StartIndex ? Engine.DecisionPlan.SupportedKinds[group.StartIndex] : EventKind.Any;
+                        if (groupKind != EventKind.Any && (groupKind & currentEventKind) == 0)
+                        {
+                            continue; // skip group
+                        }
+                    }
                     bool gateValid = gateEntry.ConditionIsAlwaysValid || gateEntry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid);
                     if (!gateValid)
                     {
@@ -151,6 +161,14 @@ public class GameProgress
                     {
                         var index = group.StartIndex + offset;
                         var entry = Engine.DecisionPlan.Entries[index];
+                        if (eventKindFiltering)
+                        {
+                            var ek = Engine.DecisionPlan.SupportedKinds.Length > index ? Engine.DecisionPlan.SupportedKinds[index] : EventKind.Any;
+                            if (ek != EventKind.Any && (ek & currentEventKind) == 0)
+                            {
+                                continue;
+                            }
+                        }
                         // For first entry we've already evaluated the condition (unless always-valid); others share same reference so skip Evaluate.
                         if (offset > 0 && !entry.ConditionIsAlwaysValid)
                         {
@@ -193,6 +211,14 @@ public class GameProgress
                 for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
                 {
                     var entry = Engine.DecisionPlan.Entries[i];
+                    if (eventKindFiltering)
+                    {
+                        var ek = Engine.DecisionPlan.SupportedKinds.Length > i ? Engine.DecisionPlan.SupportedKinds[i] : EventKind.Any;
+                        if (ek != EventKind.Any && (ek & currentEventKind) == 0)
+                        {
+                            continue;
+                        }
+                    }
                     if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                     {
                         continue;

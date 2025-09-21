@@ -50,4 +50,16 @@ internal static class FeatureFlags
     /// When disabled, plan evaluation performs a simple linear scan of entries.
     /// </summary>
     public static bool EnableDecisionPlanGrouping { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether DecisionPlan event kind filtering is enabled (pre-filter entries by EventKind before predicate evaluation).
+    /// (Future – scaffolding only)
+    /// </summary>
+    public static bool EnableDecisionPlanEventFiltering { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether DecisionPlan debug parity (shadow linear evaluation for verification) is enabled.
+    /// (Future – scaffolding only)
+    /// </summary>
+    public static bool EnableDecisionPlanDebugParity { get; set; } = false;
 }

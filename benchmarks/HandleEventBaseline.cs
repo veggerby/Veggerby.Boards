@@ -58,10 +58,10 @@ public class HandleEventBaseline
 public static class Program
 {
     /// <summary>
-    /// Main entry point launching the benchmark suite for the current assembly.
+    /// Main entry point launching all benchmarks in the current assembly.
     /// </summary>
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<HandleEventBaseline>();
+        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
     }
 }

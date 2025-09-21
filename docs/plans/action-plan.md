@@ -11,7 +11,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | RNG + feature-flagged state hashing (FNV-1a 64-bit) implemented; timeline zipper & BugReport not started |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold (no replay yet) |
 | 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |

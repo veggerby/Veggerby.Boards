@@ -29,11 +29,13 @@ public class ObserverOverheadBenchmark
         public int RuleEvaluatedCount;
         public int RuleAppliedCount;
         public int EventIgnoredCount;
+        public int StateHashedCount;
 
         public void OnPhaseEnter(GamePhase phase, GameState state) => PhaseEnterCount++;
         public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state) => RuleEvaluatedCount++;
         public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState) => RuleAppliedCount++;
         public void OnEventIgnored(IGameEvent @event, GameState state) => EventIgnoredCount++;
+        public void OnStateHashed(GameState state, ulong hash) => StateHashedCount++;
     }
 
     [Params(false, true)]

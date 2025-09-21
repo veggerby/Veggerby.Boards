@@ -26,6 +26,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `IEvaluationObserver.OnStateHashed` callback invoked after successful rule application (hashing enabled only).
 - Experimental timeline zipper (`GameTimeline`) with immutable undo/redo (flag-gated).
 - 128-bit state hash (`Hash128`) computed alongside legacy 64-bit hash when hashing enabled (xxHash128 scaffold).
+- BugReport capture scaffold (internal) capturing seed, feature flags, event types, final hashes (replay deferred).
+- Hashing overhead benchmark (`HashingOverheadBenchmark`) comparing per-event cost with hashing disabled/enabled.
+
 
 ### Changed
 
@@ -46,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Established groundwork for completing remaining public XML docs.
 - Removed temporary CS1591 suppression after completing full XML documentation coverage.
 - Added initial scaffolds for performance benchmarking and property-based invariant testing.
+- Fixed malformed XML documentation in `XXHash128` (removed CS1570 warnings) and enriched algorithm remarks.
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

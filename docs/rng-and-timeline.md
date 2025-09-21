@@ -68,3 +68,52 @@ Future Enhancements:
 ## Planned
 
 128-bit hashing upgrade (xxHash128), bug report capture & replay harness, hash interning, and timeline diff utilities.
+
+## BugReport Capture (Scaffold)
+
+Phase 1 introduces a minimal `BugReport` capture (internal) to snapshot:
+
+- Seed (or 0 if RNG not initialized)
+- Feature flags (DecisionPlan, StateHashing, Timeline)
+- Event type names (no payload serialization yet)
+- Final state hash (64-bit) and Hash128 (if enabled)
+
+Usage (internal API – surface may change):
+
+```csharp
+var report = progress.CaptureBugReport();
+```
+
+Replay is deferred until payload schema and event argument canonical serialization are specified. Future steps:
+
+1. Canonical event serialization (type id + ordered field values)
+2. Replay harness verifying final Hash128 equality
+3. Optional compression / chunking for large sequences
+4. Cross-platform hash parity validation
+
+## Hashing Overhead (Benchmark Reference)
+
+The relative runtime impact of enabling `EnableStateHashing` (computing both 64-bit FNV-1a and 128-bit xxHash
+over the canonical serialized state) is measured via a dedicated BenchmarkDotNet suite:
+
+`HashingOverheadBenchmark` (in `benchmarks/HashingOverheadBenchmark.cs`)
+
+Scenario: standard chess pawn double advance (e2 -> e4) executed with hashing disabled (baseline) and enabled.
+
+Interpretation Guidance:
+
+1. The delta reflects per-event hashing cost (canonical reflection + hashing) for a modest state size.
+2. Larger or more complex states (e.g., Backgammon mid-game, Chess with many captured pieces) may shift the ratio slightly.
+3. Improvements under consideration: property metadata caching, source-generated serializer, span-based struct reflection avoidance.
+4. If overhead remains within acceptable bounds (< ~10% for representative events) extensive optimization may be deferred.
+
+Future Optimization Hooks:
+
+- Metadata precomputation per artifact state type.
+- Pooled scratch buffers for flattened property traversal (avoiding reflection per event).
+- Optional opt-in switch for 128-bit only (dropping 64-bit) if dual hash maintenance shows negligible benefit.
+
+Benchmark Execution:
+
+Run the benchmark project selecting either `HandleEventBaseline` or `HashingOverheadBenchmark` entry points.
+Results should be captured and summarized in future documentation once performance stabilization phase begins.

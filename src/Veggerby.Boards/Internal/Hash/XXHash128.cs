@@ -7,8 +7,15 @@ namespace Veggerby.Boards.Internal.Hash;
 
 /// <summary>
 /// Minimal managed xxHash128 implementation (little-endian) for deterministic, non-cryptographic hashing.
-/// Based on public domain xxHash specification. Optimized for small-to-medium state payloads (<4KB).
 /// </summary>
+/// <remarks>
+/// This is a compact, allocation-free implementation adapted from the public domain xxHash specification.
+/// It is intentionally simplified for engine state hashing: it favors clarity and a small surface over
+/// exhaustive micro-optimizations and does not attempt to exactly replicate every mixing nuance of the
+/// full 128-bit reference (the high 64-bit part is derived via a reduced mixing sequence). Good collision
+/// resistance for small/medium (&lt; 4 KB) canonical state payloads is sufficient for our timeline integrity
+/// checks and bug report fingerprints. It MUST NOT be used for security purposes.
+/// </remarks>
 internal static class XXHash128
 {
     private const ulong Prime64_1 = 11400714785074694791UL;
@@ -18,8 +25,17 @@ internal static class XXHash128
     private const ulong Prime64_5 = 2870177450012600261UL;
 
     /// <summary>
-    /// Computes xxHash128 over the provided bytes with the given seed, returning low/high 64-bit parts.
+    /// Computes an xxHash128 over the provided data span using optional low/high 64-bit seeds.
     /// </summary>
+    /// <param name="data">The input bytes to hash (little-endian interpretation for lane loads).</param>
+    /// <param name="seedLow">Optional low 64 bits of the seed (default: 0).</param>
+    /// <param name="seedHigh">Optional high 64 bits of the seed (default: 0).</param>
+    /// <returns>A tuple containing the low and high 64-bit parts of the 128-bit hash.</returns>
+    /// <remarks>
+    /// The returned (Low, High) pair is stable across platforms and runtime versions provided the
+    /// canonical state serialization feeding it is stable. This method performs no allocations and
+    /// is safe to call within tight loops.
+    /// </remarks>
     public static (ulong Low, ulong High) Compute(ReadOnlySpan<byte> data, ulong seedLow = 0UL, ulong seedHigh = 0UL)
     {
         var acc1 = seedLow + Prime64_1 + Prime64_2;

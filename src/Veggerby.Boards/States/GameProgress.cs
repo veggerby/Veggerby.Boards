@@ -200,4 +200,13 @@ public class GameProgress
         }
         return progress;
     }
+
+    /// <summary>
+    /// Captures a bug report (seed, feature flags, event types, final hashes) for diagnostic purposes.
+    /// </summary>
+    /// <returns>Captured bug report.</returns>
+    internal Internal.BugReport CaptureBugReport()
+    {
+        return Internal.BugReport.Capture(this);
+    }
 }

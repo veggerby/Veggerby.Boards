@@ -3,8 +3,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules.Conditions;
 
+/// <summary>
+/// Validates that the moving piece belongs to the currently active player.
+/// </summary>
 public class PieceIsActivePlayerGameEventCondition : IGameEventCondition<MovePieceGameEvent>
 {
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var activePlayer = state.GetActivePlayer();

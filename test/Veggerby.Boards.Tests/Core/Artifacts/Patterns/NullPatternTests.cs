@@ -28,7 +28,7 @@ public class NullPatternTests
             var pattern = new NullPattern();
 
             // act
-            var actual = pattern.Equals(pattern);
+            var actual = NullPattern.Equals(pattern);
 
             // assert
             actual.Should().BeTrue();
@@ -41,7 +41,7 @@ public class NullPatternTests
             var pattern = new NullPattern();
 
             // act
-            var actual = pattern.Equals(null);
+            var actual = NullPattern.Equals(null);
 
             // assert
             actual.Should().BeFalse();
@@ -55,7 +55,7 @@ public class NullPatternTests
             var pattern2 = new NullPattern();
 
             // act
-            var actual = pattern1.Equals(pattern2);
+            var actual = NullPattern.Equals(pattern2);
 
             // assert
             actual.Should().BeTrue();

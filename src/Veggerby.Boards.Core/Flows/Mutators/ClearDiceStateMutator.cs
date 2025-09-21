@@ -8,8 +8,15 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Mutators;
 
+/// <summary>
+/// Consumes a dice matching the distance of the executed move (sets it to null state).
+/// </summary>
 public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClearDiceStateMutator"/> class.
+    /// </summary>
+    /// <param name="dice">Candidate dice collection.</param>
     public ClearDiceStateMutator(IEnumerable<Dice> dice)
     {
         ArgumentNullException.ThrowIfNull(dice);
@@ -22,8 +29,12 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
         Dice = dice;
     }
 
+    /// <summary>
+    /// Gets the dice considered for clearing.
+    /// </summary>
     public IEnumerable<Dice> Dice { get; }
 
+    /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var diceState = Dice

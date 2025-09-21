@@ -24,11 +24,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Temporarily suppress missing XML comment warnings to restore build; follow-up task will document public API -->
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <!-- SourceLink reference (version managed centrally) -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />

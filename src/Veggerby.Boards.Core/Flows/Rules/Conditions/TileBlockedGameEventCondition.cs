@@ -7,8 +7,16 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules.Conditions;
 
+/// <summary>
+/// Invalidates moves to tiles containing a threshold number of pieces owned by selected players (self/opponent/any).
+/// </summary>
 public class TileBlockedGameEventCondition : IGameEventCondition<MovePieceGameEvent>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TileBlockedGameEventCondition"/> class.
+    /// </summary>
+    /// <param name="numberOfPiecesToBlock">Minimum piece count to block.</param>
+    /// <param name="occupiedBy">Which players' pieces are counted.</param>
     public TileBlockedGameEventCondition(int numberOfPiecesToBlock = 2, PlayerOption occupiedBy = PlayerOption.Opponent)
     {
         if (numberOfPiecesToBlock < 1)
@@ -25,9 +33,17 @@ public class TileBlockedGameEventCondition : IGameEventCondition<MovePieceGameEv
         OccupiedBy = occupiedBy;
     }
 
+    /// <summary>
+    /// Gets the blocking threshold.
+    /// </summary>
     public int NumberOfPiecesToBlock { get; }
+
+    /// <summary>
+    /// Gets the player selection included in the count.
+    /// </summary>
     public PlayerOption OccupiedBy { get; }
 
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var pieceStates = state

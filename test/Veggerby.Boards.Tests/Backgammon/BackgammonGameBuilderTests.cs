@@ -10,12 +10,12 @@ namespace Veggerby.Boards.Tests.Backgammon;
 
 public class BackgammonGameBuilderTests
 {
-    private Tuple<string, string> Clockwise(string tileId)
+    private static Tuple<string, string> Clockwise(string tileId)
     {
         return new Tuple<string, string>("clockwise", tileId);
     }
 
-    private Tuple<string, string> CounterClockwise(string tileId)
+    private static Tuple<string, string> CounterClockwise(string tileId)
     {
         return new Tuple<string, string>("counterclockwise", tileId);
     }

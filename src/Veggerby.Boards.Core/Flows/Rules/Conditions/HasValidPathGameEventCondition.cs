@@ -7,8 +7,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules.Conditions;
 
+/// <summary>
+/// Validates that a movement event follows at least one legal pattern-defined path.
+/// </summary>
 public class HasValidPathGameEventCondition : IGameEventCondition<MovePieceGameEvent>
 {
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var pieceState = state.GetState<PieceState>(@event.Piece);

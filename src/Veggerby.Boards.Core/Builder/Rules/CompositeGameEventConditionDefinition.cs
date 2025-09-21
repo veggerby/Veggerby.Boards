@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Core.Builder.Rules;
 
 internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, IThenStateMutator<T> parent) : GameEventConditionDefinitionBase<T>(builder, parent), IGameEventConditionDefinitionAndOr<T> where T : IGameEvent
 {
-    private readonly IList<GameEventConditionDefinitionBase<T>> _childDefinitions = new List<GameEventConditionDefinitionBase<T>>();
+    private readonly IList<GameEventConditionDefinitionBase<T>> _childDefinitions = [];
     private CompositeMode? _conditionCompositeMode = null;
 
     internal CompositeGameEventConditionDefinition<T> Add(GameEventConditionDefinitionBase<T> conditionDefinition, CompositeMode? mode)

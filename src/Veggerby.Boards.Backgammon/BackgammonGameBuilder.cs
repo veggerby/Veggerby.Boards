@@ -20,6 +20,9 @@ namespace Veggerby.Boards.Backgammon;
 /// </remarks>
 public class BackgammonGameBuilder : GameBuilder
 {
+    /// <summary>
+    /// Configures the Backgammon game artifacts, initial state and rule/phase flow.
+    /// </summary>
     protected override void Build()
     {
         // Game
@@ -151,7 +154,7 @@ public class BackgammonGameBuilder : GameBuilder
             .If<NullGameStateCondition>()
             .Then()
                 .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2").ToArray()))
+                    .If(game => new DiceGameEventCondition<int>([.. game.GetArtifacts<Dice>("dice-1", "dice-2")]))
                     .Then()
                         .Do<DiceStateMutator<int>>();
     }

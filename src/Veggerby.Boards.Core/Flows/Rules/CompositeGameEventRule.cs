@@ -7,14 +7,28 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules;
 
+/// <summary>
+/// Represents a composite rule aggregating multiple child <see cref="IGameEventRule"/> instances using a <see cref="CompositeMode"/> policy.
+/// </summary>
+/// <remarks>
+/// Composition flattens nested composites of the same mode to reduce depth and evaluation overhead.
+/// In ANY mode only the first valid rule mutates state; in ALL mode each valid rule mutates state in sequence.
+/// </remarks>
 public class CompositeGameEventRule : IGameEventRule
 {
+    /// <summary>
+    /// Gets the child rules participating in this composite.
+    /// </summary>
     public IEnumerable<IGameEventRule> Rules { get; }
+
+    /// <summary>
+    /// Gets the composition mode.
+    /// </summary>
     public CompositeMode CompositeMode { get; }
 
     private CompositeGameEventRule(IEnumerable<IGameEventRule> rules, CompositeMode compositeMode)
     {
-        Rules = rules.ToList();
+        Rules = [.. rules];
         CompositeMode = compositeMode;
     }
 
@@ -33,7 +47,7 @@ public class CompositeGameEventRule : IGameEventRule
         }
 
         var compositionResult = CompositeMode == CompositeMode.All
-            ? results.All(x => x.Value.Result != ConditionResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
+            ? results.All(x => x.Value.Result != ConditionResult.Invalid)
             : results.Any(x => x.Value.Result == ConditionResult.Valid);
 
         return compositionResult
@@ -41,12 +55,14 @@ public class CompositeGameEventRule : IGameEventRule
             : ConditionResponse.Fail(results.Select(x => x.Value).Where(x => x.Result == ConditionResult.Invalid));
     }
 
+    /// <inheritdoc />
     public ConditionResponse Check(GameEngine engine, GameState gameState, IGameEvent @event)
     {
         var results = RunCompositeCheck(engine, gameState, @event);
         return GetCompositeRuleCheckState(results);
     }
 
+    /// <inheritdoc />
     public GameState HandleEvent(GameEngine engine, GameState gameState, IGameEvent @event)
     {
         var results = RunCompositeCheck(engine, gameState, @event);
@@ -54,8 +70,6 @@ public class CompositeGameEventRule : IGameEventRule
 
         if (compositeResult.Result == ConditionResult.Valid)
         {
-            // if mode is "any" only mutate state from the FIRST valid rule (top-down)
-
             if (CompositeMode == CompositeMode.Any)
             {
                 return results
@@ -63,8 +77,6 @@ public class CompositeGameEventRule : IGameEventRule
                     .Key
                     .HandleEvent(engine, gameState, @event);
             }
-
-            // mode is "all" and all rules are valid, chain state mutators in order
 
             return results
                 .Aggregate(gameState, (state, rule) => rule.Key.HandleEvent(engine, state, @event));

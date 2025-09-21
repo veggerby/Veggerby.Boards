@@ -9,8 +9,14 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Mutator that updates the doubling cube value transferring ownership to the opponent.
+/// </summary>
 public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoublingDiceStateMutator"/> class.
+    /// </summary>
     public DoublingDiceStateMutator(Dice doublingDice)
     {
         ArgumentNullException.ThrowIfNull(doublingDice);
@@ -18,8 +24,12 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
         DoublingDice = doublingDice;
     }
 
+    /// <summary>
+    /// Gets the doubling dice artifact.
+    /// </summary>
     public Dice DoublingDice { get; }
 
+    /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
         var diceState = state.GetState<DoublingDiceState>(DoublingDice);

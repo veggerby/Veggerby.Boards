@@ -9,8 +9,15 @@ using Veggerby.Boards.Core.Flows.Mutators;
 
 namespace Veggerby.Boards.Core.Builder.Rules;
 
+/// <summary>
+/// Fluent builder component for configuring before and after state mutators on a game event rule.
+/// </summary>
+/// <typeparam name="T">Event type the rule handles.</typeparam>
 public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEventRuleStateMutatorDefinition<T> where T : IGameEvent
 {
+    /// <summary>
+    /// Initializes a new instance linking to the parent rule definitions collection.
+    /// </summary>
     public GameEventRuleStateMutatorDefinition(GameBuilder builder, IGameEventRuleDefinitions parent) : base(builder)
     {
         ArgumentNullException.ThrowIfNull(parent);
@@ -18,9 +25,12 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
         Parent = parent;
     }
 
-    private readonly IList<StateMutatorFactory<T>> _onBeforeMutators = new List<StateMutatorFactory<T>>();
-    private readonly IList<StateMutatorFactory<T>> _onAfterMutators = new List<StateMutatorFactory<T>>();
+    private readonly IList<StateMutatorFactory<T>> _onBeforeMutators = [];
+    private readonly IList<StateMutatorFactory<T>> _onAfterMutators = [];
 
+    /// <summary>
+    /// Gets the parent rule definitions to allow chaining additional event specific rules.
+    /// </summary>
     public IGameEventRuleDefinitions Parent { get; }
 
     IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinitionBefore<T>.Before(StateMutatorFactory<T> mutator)
@@ -52,7 +62,10 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
         return Parent.ForEvent<TEvent>();
     }
 
-    private IStateMutator<T> BuildMutator(IEnumerable<StateMutatorFactory<T>> mutatorFactories, Game game)
+    /// <summary>
+    /// Builds a composite mutator or single mutator from the registered factories.
+    /// </summary>
+    private static IStateMutator<T> BuildMutator(IEnumerable<StateMutatorFactory<T>> mutatorFactories, Game game)
     {
         if (!(mutatorFactories?.Any() ?? false))
         {
@@ -68,11 +81,17 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
         return new CompositeStateMutator<T>(mutators);
     }
 
+    /// <summary>
+    /// Builds the before mutator chain.
+    /// </summary>
     internal IStateMutator<T> BuildBefore(Game game)
     {
         return BuildMutator(_onBeforeMutators, game); ;
     }
 
+    /// <summary>
+    /// Builds the after mutator chain.
+    /// </summary>
     internal IStateMutator<T> BuildAfter(Game game)
     {
         return BuildMutator(_onAfterMutators, game); ;

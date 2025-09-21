@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 using Veggerby.Boards.Core.Artifacts;
 using Veggerby.Boards.Core.Artifacts.Patterns;
 using Veggerby.Boards.Core.Artifacts.Relations;
@@ -26,16 +25,19 @@ namespace Veggerby.Boards.Core;
 /// </remarks>
 public abstract class GameBuilder
 {
+    /// <summary>
+    /// Gets or sets the identifier of the board to create. Must be assigned during <see cref="Build"/>.
+    /// </summary>
     protected string BoardId { get; set; }
-    private readonly IList<PlayerDefinition> _playerDefinitions = new List<PlayerDefinition>();
-    private readonly IList<TileDefinition> _tileDefinitions = new List<TileDefinition>();
-    private readonly IList<DirectionDefinition> _directionDefinitions = new List<DirectionDefinition>();
-    private readonly IList<DiceDefinition> _diceDefinitions = new List<DiceDefinition>();
-    private readonly IList<TileRelationDefinition> _tileRelationDefinitions = new List<TileRelationDefinition>();
-    private readonly IList<PieceDefinition> _pieceDefinitions = new List<PieceDefinition>();
-    private readonly IList<PieceDirectionPatternDefinition> _pieceDirectionPatternDefinitions = new List<PieceDirectionPatternDefinition>();
-    private readonly IList<ArtifactDefinition> _artifactDefinitions = new List<ArtifactDefinition>();
-    private readonly IList<GamePhaseDefinition> _gamePhaseDefinitions = new List<GamePhaseDefinition>();
+    private readonly IList<PlayerDefinition> _playerDefinitions = [];
+    private readonly IList<TileDefinition> _tileDefinitions = [];
+    private readonly IList<DirectionDefinition> _directionDefinitions = [];
+    private readonly IList<DiceDefinition> _diceDefinitions = [];
+    private readonly IList<TileRelationDefinition> _tileRelationDefinitions = [];
+    private readonly IList<PieceDefinition> _pieceDefinitions = [];
+    private readonly IList<PieceDirectionPatternDefinition> _pieceDirectionPatternDefinitions = [];
+    private readonly IList<ArtifactDefinition> _artifactDefinitions = [];
+    private readonly IList<GamePhaseDefinition> _gamePhaseDefinitions = [];
 
     private Tile CreateTile(TileDefinition tile)
     {
@@ -47,7 +49,7 @@ public abstract class GameBuilder
         return new Direction(direction.DirectionId);
     }
 
-    private TileRelation CreateTileRelaton(TileRelationDefinition relation, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
+    private static TileRelation CreateTileRelation(TileRelationDefinition relation, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
     {
         var sourceTile = tiles.Single(x => string.Equals(x.Id, relation.FromTileId));
         var destinationTile = tiles.Single(x => string.Equals(x.Id, relation.ToTileId));
@@ -71,7 +73,7 @@ public abstract class GameBuilder
         return new Piece(piece.PieceId, player, patterns.Select(x => CreatePattern(x, directions)));
     }
 
-    private IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)
+    private static IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)
     {
         var patternDirections = piece.DirectionIds.Select(directionId => directions.Single(x => string.Equals(x.Id, directionId))).ToList();
 
@@ -90,11 +92,16 @@ public abstract class GameBuilder
             : (IPattern)new FixedPattern(patternDirections);
     }
 
-    private Artifact CreateArtifact(ArtifactDefinition artifact)
+    private static Artifact CreateArtifact(ArtifactDefinition artifact)
     {
         return artifact.Factory(artifact.ArtifactId);
     }
 
+    /// <summary>
+    /// Adds a new player definition.
+    /// </summary>
+    /// <param name="playerId">Unique player identifier.</param>
+    /// <returns>Fluent player definition.</returns>
     protected PlayerDefinition AddPlayer(string playerId)
     {
         var player = new PlayerDefinition(this).WithId(playerId);
@@ -102,11 +109,21 @@ public abstract class GameBuilder
         return player;
     }
 
+    /// <summary>
+    /// Gets an existing player definition for further configuration.
+    /// </summary>
+    /// <param name="playerId">Identifier of the previously added player.</param>
+    /// <returns>Player definition.</returns>
     protected PlayerDefinition WithPlayer(string playerId)
     {
         return _playerDefinitions.Single(x => string.Equals(x.PlayerId, playerId));
     }
 
+    /// <summary>
+    /// Adds a new tile definition.
+    /// </summary>
+    /// <param name="tileId">Tile identifier.</param>
+    /// <returns>Tile definition.</returns>
     protected TileDefinition AddTile(string tileId)
     {
         var tile = new TileDefinition(this).WithId(tileId);
@@ -114,11 +131,21 @@ public abstract class GameBuilder
         return tile;
     }
 
+    /// <summary>
+    /// Gets an existing tile definition for additional configuration.
+    /// </summary>
+    /// <param name="tileId">Tile identifier.</param>
+    /// <returns>Tile definition.</returns>
     protected TileDefinition WithTile(string tileId)
     {
         return _tileDefinitions.Single(x => string.Equals(x.TileId, tileId));
     }
 
+    /// <summary>
+    /// Adds a direction definition.
+    /// </summary>
+    /// <param name="directionId">Direction identifier.</param>
+    /// <returns>Direction definition.</returns>
     protected DirectionDefinition AddDirection(string directionId)
     {
         var direction = new DirectionDefinition(this).WithId(directionId);
@@ -126,6 +153,11 @@ public abstract class GameBuilder
         return direction;
     }
 
+    /// <summary>
+    /// Adds a dice definition.
+    /// </summary>
+    /// <param name="diceId">Dice identifier.</param>
+    /// <returns>Dice definition.</returns>
     protected DiceDefinition AddDice(string diceId)
     {
         var dice = new DiceDefinition(this).WithId(diceId);
@@ -133,11 +165,21 @@ public abstract class GameBuilder
         return dice;
     }
 
+    /// <summary>
+    /// Gets an existing dice definition.
+    /// </summary>
+    /// <param name="diceId">Dice identifier.</param>
+    /// <returns>Dice definition.</returns>
     protected DiceDefinition WithDice(string diceId)
     {
         return _diceDefinitions.Single(x => string.Equals(x.DiceId, diceId));
     }
 
+    /// <summary>
+    /// Adds a piece definition.
+    /// </summary>
+    /// <param name="pieceId">Piece identifier.</param>
+    /// <returns>Piece definition.</returns>
     protected PieceDefinition AddPiece(string pieceId)
     {
         var piece = new PieceDefinition(this).WithId(pieceId);
@@ -145,11 +187,21 @@ public abstract class GameBuilder
         return piece;
     }
 
+    /// <summary>
+    /// Gets an existing piece definition.
+    /// </summary>
+    /// <param name="pieceId">Piece identifier.</param>
+    /// <returns>Piece definition.</returns>
     protected PieceDefinition WithPiece(string pieceId)
     {
         return _pieceDefinitions.Single(x => string.Equals(x.PieceId, pieceId));
     }
 
+    /// <summary>
+    /// Adds a generic artifact definition (custom runtime component backed by an <see cref="Artifact"/> subtype).
+    /// </summary>
+    /// <param name="artifactId">Artifact identifier.</param>
+    /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition AddArtifact(string artifactId)
     {
         var artifact = new ArtifactDefinition(this).WithId(artifactId);
@@ -157,6 +209,11 @@ public abstract class GameBuilder
         return artifact;
     }
 
+    /// <summary>
+    /// Gets an existing artifact definition.
+    /// </summary>
+    /// <param name="artifactId">Artifact identifier.</param>
+    /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition WithArtifact(string artifactId)
     {
         return _artifactDefinitions.Single(x => string.Equals(x.ArtifactId, artifactId));
@@ -186,6 +243,11 @@ public abstract class GameBuilder
         _piecePositions.Add(pieceId, tileId);
     }
 
+    /// <summary>
+    /// Adds a game phase definition which can attach rules, conditions and event handlers.
+    /// </summary>
+    /// <param name="label">Human readable label (not used functionally).</param>
+    /// <returns>Phase definition fluent object.</returns>
     protected IGamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
     {
         var gamePhase = new GamePhaseDefinition(this, label);
@@ -193,10 +255,20 @@ public abstract class GameBuilder
         return gamePhase;
     }
 
+    /// <summary>
+    /// Override to register all static game definitions (board id, tiles, relations, players, pieces, dice, artifacts, phases, initial placements) using the provided <c>Add*</c> helpers.
+    /// </summary>
     protected abstract void Build();
 
     private GameProgress _initialGameProgress;
 
+    /// <summary>
+    /// Compiles the game definition into an executable <see cref="GameEngine"/> + initial <see cref="GameState"/>.
+    /// </summary>
+    /// <remarks>
+    /// Invocation is idempotent; the first call performs compilation and caches the resulting <see cref="GameProgress"/> which is returned on subsequent calls.
+    /// </remarks>
+    /// <returns>Initial game progress containing engine and initial state.</returns>
     public GameProgress Compile()
     {
         if (_initialGameProgress is not null)
@@ -212,7 +284,7 @@ public abstract class GameBuilder
         var tiles = _tileDefinitions.Select(CreateTile).ToArray();
         var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
         var dice = _diceDefinitions.Select(CreateDice).ToArray();
-        var relations = _tileRelationDefinitions.Select(x => CreateTileRelaton(x, tiles, directions)).ToArray();
+        var relations = _tileRelationDefinitions.Select(x => CreateTileRelation(x, tiles, directions)).ToArray();
         var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToArray();
 
@@ -231,7 +303,7 @@ public abstract class GameBuilder
                 : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
             .ToList();
 
-        var initialGameState = GameState.New(pieceStates.Concat(diceStates).ToList());
+        var initialGameState = GameState.New([.. pieceStates, .. diceStates]);
 
         // compile GamePhase root
 

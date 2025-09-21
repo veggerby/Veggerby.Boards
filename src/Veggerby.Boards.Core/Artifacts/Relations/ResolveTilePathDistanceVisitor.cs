@@ -7,15 +7,50 @@ using Veggerby.Boards.Core.Artifacts.Patterns;
 
 namespace Veggerby.Boards.Core.Artifacts.Relations;
 
+/// <summary>
+/// Resolves a tile path between two tiles constrained by an exact distance using pattern semantics.
+/// </summary>
 public class ResolveTilePathDistanceVisitor : IPatternVisitor
 {
+    /// <summary>
+    /// Gets the board on which resolution occurs.
+    /// </summary>
     public Board Board { get; }
+
+    /// <summary>
+    /// Gets the origin tile.
+    /// </summary>
     public Tile From { get; }
+
+    /// <summary>
+    /// Gets the destination tile.
+    /// </summary>
     public Tile To { get; }
+
+    /// <summary>
+    /// Gets the target distance that a resolved path must satisfy.
+    /// </summary>
     public int Distance { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether paths shorter than <see cref="Distance"/> may be accepted when the target tile is reached early.
+    /// </summary>
     public bool AllowOvershootDistance { get; }
+
+    /// <summary>
+    /// Gets the resulting path (or null if none matched).
+    /// </summary>
     public TilePath ResultPath { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ResolveTilePathDistanceVisitor"/> class.
+    /// </summary>
+    /// <param name="board">Game board instance.</param>
+    /// <param name="from">Start tile.</param>
+    /// <param name="to">Destination tile.</param>
+    /// <param name="distance">Exact path distance to evaluate (must be positive).</param>
+    /// <param name="allowOvershootDistance">If true allows reaching <paramref name="to"/> earlier than <paramref name="distance"/> then continuing until distance is met.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="distance"/> is not positive.</exception>
     public ResolveTilePathDistanceVisitor(Board board, Tile from, Tile to, int distance, bool allowOvershootDistance = false)
     {
         ArgumentNullException.ThrowIfNull(board);
@@ -36,6 +71,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         AllowOvershootDistance = allowOvershootDistance;
     }
 
+    /// <inheritdoc />
     public void Visit(MultiDirectionPattern pattern)
     {
         var paths = new List<TilePath>();
@@ -51,11 +87,13 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
     }
 
+    /// <inheritdoc />
     public void Visit(NullPattern pattern)
     {
         ResultPath = null;
     }
 
+    /// <inheritdoc />
     public void Visit(FixedPattern pattern)
     {
         var from = From;
@@ -77,11 +115,13 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         ResultPath = path.Distance == Distance ? path : null;
     }
 
+    /// <inheritdoc />
     public void Visit(DirectionPattern pattern)
     {
         ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
     }
 
+    /// <inheritdoc />
     public void Visit(AnyPattern pattern)
     {
         throw new NotImplementedException();

@@ -10,14 +10,23 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core;
 
+/// <summary>
+/// Convenience helpers for artifact and event operations on <see cref="Game"/> and <see cref="GameProgress"/>.
+/// </summary>
 public static class GameExtensions
 {
+    /// <summary>
+    /// Retrieves a piece by identifier.
+    /// </summary>
     public static Piece GetPiece(this Game game, string id)
     {
         return game
             .GetArtifact<Piece>(id);
     }
 
+    /// <summary>
+    /// Retrieves a tile by identifier.
+    /// </summary>
     public static Tile GetTile(this Game game, string id)
     {
         return game
@@ -25,6 +34,9 @@ public static class GameExtensions
             .GetTile(id);
     }
 
+    /// <summary>
+    /// Retrieves a player by identifier.
+    /// </summary>
     public static Player GetPlayer(this Game game, string id)
     {
         return game
@@ -32,6 +44,9 @@ public static class GameExtensions
             .SingleOrDefault(x => x.Id.Equals(id));
     }
 
+    /// <summary>
+    /// Retrieves an artifact by identifier and type.
+    /// </summary>
     public static T GetArtifact<T>(this Game game, string id) where T : Artifact
     {
         return game
@@ -40,15 +55,20 @@ public static class GameExtensions
             .SingleOrDefault(x => x.Id.Equals(id));
     }
 
+    /// <summary>
+    /// Retrieves all artifacts of type (optionally filtered by identifiers).
+    /// </summary>
     public static IEnumerable<T> GetArtifacts<T>(this Game game, params string[] ids) where T : Artifact
     {
-        return game
+        return [.. game
             .Artifacts
             .OfType<T>()
-            .Where(x => !(ids?.Any() ?? false) || ids.Contains(x.Id))
-            .ToList();
+            .Where(x => !(ids?.Any() ?? false) || ids.Contains(x.Id))];
     }
 
+    /// <summary>
+    /// Issues a roll event assigning sequential values (index based) to specified dice.
+    /// </summary>
     public static GameProgress RollDice(this GameProgress progress, params string[] ids)
     {
         var dice = progress.Game.GetArtifacts<Dice>(ids);
@@ -57,6 +77,9 @@ public static class GameExtensions
         return progress.HandleEvent(@event);
     }
 
+    /// <summary>
+    /// Attempts to move a piece along the shortest matching pattern path to the target tile.
+    /// </summary>
     public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
     {
         var piece = progress.Game.GetPiece(pieceId);

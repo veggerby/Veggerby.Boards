@@ -13,7 +13,7 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
     private int? _number;
     private CompositeGamePhaseConditionDefinition _conditionDefinition;
     private GameEventRuleDefinitions _ruleDefinitions;
-    private readonly IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = new List<GameEventPreProcessorDefinition>();
+    private readonly IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = [];
     private readonly string _label = label;
 
     internal void Add(GameEventPreProcessorDefinition preProcessorDefinition)

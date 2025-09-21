@@ -8,18 +8,25 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Phases;
 
+/// <summary>
+/// A phase that delegates activity to one of its child phases based on their individual conditions.
+/// </summary>
 public class CompositeGamePhase : GamePhase
 {
     private readonly IList<GamePhase> _childPhases;
 
+    /// <summary>
+    /// Gets an immutable snapshot of configured child phases.
+    /// </summary>
     public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
 
     internal CompositeGamePhase(int number, string label, IGameStateCondition condition, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
         : base(number, label, condition, GameEventRule<IGameEvent>.Null, parent, preProcessors)
     {
-        _childPhases = new List<GamePhase>();
+        _childPhases = [];
     }
 
+    /// <inheritdoc />
     public override GamePhase GetActiveGamePhase(GameState gameState)
     {
         if (!Condition.Evaluate(gameState).Equals(ConditionResponse.Valid))

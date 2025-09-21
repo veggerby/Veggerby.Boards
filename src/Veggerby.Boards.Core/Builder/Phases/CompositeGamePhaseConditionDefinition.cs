@@ -12,7 +12,7 @@ namespace Veggerby.Boards.Core.Builder.Phases;
 
 internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenGameEventRule parent) : GamePhaseConditionDefinitionBase(builder, parent), IGamePhaseConditionDefinition
 {
-    private readonly IList<GamePhaseConditionDefinitionBase> _childDefinitions = new List<GamePhaseConditionDefinitionBase>();
+    private readonly IList<GamePhaseConditionDefinitionBase> _childDefinitions = [];
     private CompositeMode? _conditionCompositeMode = null;
 
     internal CompositeGamePhaseConditionDefinition Add(GamePhaseConditionDefinitionBase conditionDefinition, CompositeMode? mode)

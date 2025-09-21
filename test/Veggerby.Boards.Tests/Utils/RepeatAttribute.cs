@@ -24,9 +24,8 @@ public class RepeatAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        return Enumerable
+        return [.. Enumerable
             .Range(0, _count)
-            .Select(x => new object[] { Guid.NewGuid() })
-            .ToArray();
+            .Select(x => new object[] { Guid.NewGuid() })];
     }
 }

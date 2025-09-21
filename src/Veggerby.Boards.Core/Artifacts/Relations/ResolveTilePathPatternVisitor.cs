@@ -8,13 +8,32 @@ using Veggerby.Boards.Core.Artifacts.Patterns;
 
 namespace Veggerby.Boards.Core.Artifacts.Relations;
 
+/// <summary>
+/// Visitor that resolves a movement pattern (<see cref="Veggerby.Boards.Core.Artifacts.Patterns.IPattern"/>) into a concrete <see cref="TilePath"/> between two tiles.
+/// </summary>
 public class ResolveTilePathPatternVisitor : IPatternVisitor
 {
+    /// <summary>
+    /// Gets the board context for relation lookup.
+    /// </summary>
     public Board Board { get; }
+    /// <summary>
+    /// Gets the origin tile.
+    /// </summary>
     public Tile From { get; }
+    /// <summary>
+    /// Gets the destination tile.
+    /// </summary>
     public Tile To { get; }
+    /// <summary>
+    /// Gets the resolved path, if any.
+    /// </summary>
     public TilePath ResultPath { get; private set; }
 
+    /// <summary>
+    /// Initializes the visitor with board and endpoints.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when origin equals destination.</exception>
     public ResolveTilePathPatternVisitor(Board board, Tile from, Tile to)
     {
         ArgumentNullException.ThrowIfNull(board);
@@ -33,6 +52,9 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         To = to;
     }
 
+    /// <summary>
+    /// Selects the shortest valid path among multiple directions, optionally repeating steps.
+    /// </summary>
     public void Visit(MultiDirectionPattern pattern)
     {
         var paths = new List<TilePath>();
@@ -48,11 +70,17 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
     }
 
+    /// <summary>
+    /// Handles a null pattern by clearing the result path.
+    /// </summary>
     public void Visit(NullPattern pattern)
     {
         ResultPath = null;
     }
 
+    /// <summary>
+    /// Attempts to resolve a fixed ordered set of directions into a concrete path.
+    /// </summary>
     public void Visit(FixedPattern pattern)
     {
         var from = From;
@@ -74,11 +102,17 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         ResultPath = To.Equals(path.To) ? path : null;
     }
 
+    /// <summary>
+    /// Resolves a single direction pattern (repeatable or single step) into a path.
+    /// </summary>
     public void Visit(DirectionPattern pattern)
     {
         ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
     }
 
+    /// <summary>
+    /// Uses Johnson's algorithm to find the shortest path between the endpoints regardless of direction constraints.
+    /// </summary>
     public void Visit(AnyPattern pattern)
     {
         // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
@@ -105,6 +139,9 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         ResultPath = resultPath;
     }
 
+    /// <summary>
+    /// Builds a path by stepping repeatedly in a single direction until destination reached or blocked.
+    /// </summary>
     private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
     {
         var from = From;

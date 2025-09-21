@@ -14,7 +14,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Changed
 
-- Migrated test assertions from FluentAssertions to AwesomeAssertions.
 - Centralized all package versions via Directory.Packages.props (removed inline versions).
 
 ### Fixed

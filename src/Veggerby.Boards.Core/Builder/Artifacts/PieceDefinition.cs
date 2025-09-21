@@ -2,11 +2,23 @@
 
 namespace Veggerby.Boards.Core.Builder.Artifacts;
 
+/// <summary>
+/// Fluent definition used to configure a piece artifact, its owner, initial tile and movement patterns.
+/// </summary>
 public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
 {
+    /// <summary>
+    /// Gets the configured piece identifier.
+    /// </summary>
     public string PieceId { get; private set; }
+    /// <summary>
+    /// Gets the owner player identifier if configured.
+    /// </summary>
     public string PlayerId { get; private set; }
 
+    /// <summary>
+    /// Sets the piece identifier.
+    /// </summary>
     public PieceDefinition WithId(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -18,6 +30,9 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
         return this;
     }
 
+    /// <summary>
+    /// Assigns an owner player identifier to the piece.
+    /// </summary>
     public PieceDefinition WithOwner(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -29,6 +44,9 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
         return this;
     }
 
+    /// <summary>
+    /// Places the piece on an initial tile.
+    /// </summary>
     public PieceDefinition OnTile(string tileId)
     {
         if (string.IsNullOrEmpty(tileId))
@@ -40,6 +58,9 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
         return this;
     }
 
+    /// <summary>
+    /// Defines a directional movement pattern consisting of a single direction.
+    /// </summary>
     public PieceDirectionPatternDefinition HasDirection(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -52,6 +73,9 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
         return direction;
     }
 
+    /// <summary>
+    /// Defines a movement pattern consisting of multiple directions.
+    /// </summary>
     public PieceDefinition HasPattern(params string[] ids)
     {
         var direction = new PieceDirectionPatternDefinition(Builder, this).WithDirection(ids);

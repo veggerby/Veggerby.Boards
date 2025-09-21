@@ -9,8 +9,12 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Selects the starting active player based on initial dice roll comparison.
+/// </summary>
 public class SelectActivePlayerGameStateMutator : IStateMutator<RollDiceGameEvent<int>>
 {
+    /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, RollDiceGameEvent<int> @event)
     {
         var white = engine.Game.GetPlayer("white");

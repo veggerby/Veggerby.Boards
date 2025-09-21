@@ -8,20 +8,39 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules;
 
+/// <summary>
+/// Base class for strongly typed game event rules with optional pre- and post- state mutation steps.
+/// </summary>
+/// <typeparam name="T">The concrete event type handled.</typeparam>
+/// <remarks>
+/// Implements <see cref="IGameEventRule"/> by performing type discrimination and delegating to the strongly typed
+/// <see cref="Check(GameEngine, GameState, T)"/> and <see cref="HandleEvent(GameEngine, GameState, T)"/> logic. Subclasses focus on
+/// validation logic via the abstract <see cref="Check(GameEngine, GameState, T)"/> while mutation hooks are provided through
+/// injected <see cref="IStateMutator{T}"/> instances.
+/// </remarks>
 public abstract class GameEventRule<T>(IStateMutator<T> onBeforeEvent, IStateMutator<T> onAfterEvent) : IGameEventRule where T : IGameEvent
 {
+    /// <summary>
+    /// A permissive no-op rule that always returns <see cref="ConditionResponse.Valid"/> and performs no mutation.
+    /// </summary>
     public static IGameEventRule Null = SimpleGameEventRule<T>.New(new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid));
 
     private readonly IStateMutator<T> _onBeforeEvent = onBeforeEvent;
     private readonly IStateMutator<T> _onAfterEvent = onAfterEvent;
 
+    /// <summary>
+    /// Performs the validity check for the concrete event type.
+    /// </summary>
     protected abstract ConditionResponse Check(GameEngine engine, GameState gameState, T @event);
 
-    private GameState MutateState(IStateMutator<T> eventMutator, GameEngine engine, GameState gameState, T @event)
+    private static GameState MutateState(IStateMutator<T> eventMutator, GameEngine engine, GameState gameState, T @event)
     {
         return eventMutator is not null ? eventMutator.MutateState(engine, gameState, @event) : gameState;
     }
 
+    /// <summary>
+    /// Handles the event by applying pre-mutation, validation and post-mutation.
+    /// </summary>
     protected GameState HandleEvent(GameEngine engine, GameState gameState, T @event)
     {
         var newState = MutateState(_onBeforeEvent, engine, gameState, @event);
@@ -34,8 +53,7 @@ public abstract class GameEventRule<T>(IStateMutator<T> onBeforeEvent, IStateMut
         }
         else if (check.Result == ConditionResult.Ignore)
         {
-            // do nothing, return original state
-            return gameState;
+            return gameState; // ignored – return original state
         }
 
         throw new BoardException("Invalid game event");

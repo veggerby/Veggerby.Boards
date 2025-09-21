@@ -7,6 +7,10 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core.Flows.Rules;
 
+/// <summary>
+/// Minimal concrete implementation of <see cref="GameEventRule{T}"/> that defers validation to an injected condition.
+/// </summary>
+/// <typeparam name="T">The event type handled.</typeparam>
 public class SimpleGameEventRule<T> : GameEventRule<T> where T : IGameEvent
 {
     private readonly IGameEventCondition<T> _condition;
@@ -19,11 +23,19 @@ public class SimpleGameEventRule<T> : GameEventRule<T> where T : IGameEvent
         _condition = condition;
     }
 
+    /// <inheritdoc />
     protected override ConditionResponse Check(GameEngine engine, GameState state, T @event)
     {
         return _condition.Evaluate(engine, state, @event);
     }
 
+    /// <summary>
+    /// Creates a new simple rule instance.
+    /// </summary>
+    /// <param name="condition">Validation condition executed during <see cref="GameEventRule{T}.Check"/>.</param>
+    /// <param name="onBeforeEvent">Optional pre-mutation mutator.</param>
+    /// <param name="onAfterEvent">Optional post-mutation mutator (defaults to <see cref="NullStateMutator{T}"/>).</param>
+    /// <returns>The rule instance.</returns>
     public static IGameEventRule New(IGameEventCondition<T> condition, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
     {
         return new SimpleGameEventRule<T>(condition, onBeforeEvent, onAfterEvent ?? new NullStateMutator<T>());

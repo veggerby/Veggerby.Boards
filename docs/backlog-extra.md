@@ -7,7 +7,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - PhaseEnter callback in `IEvaluationObserver` (emit before evaluating any rule when phase deemed active). **COMPLETED**
 - StateHashed callback (after future Merkle/xxHash computation) for correlation. **COMPLETED**
 - In-memory trace capture scaffold (last evaluation) **COMPLETED**
-- JSON trace serializer / exporter (compact) **PENDING**
+- JSON trace serializer / exporter (compact) **COMPLETED**
 - Trace overhead microbenchmark (compare enabled vs disabled) **PENDING**
 - Trace entry object pooling / reuse strategy (avoid per-callback alloc) **PENDING**
 - Aggregated batch observer adapter reducing callback overhead via struct buffer.
@@ -19,7 +19,8 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Golden parity harness comparing legacy vs DecisionPlan across randomized event streams (property-based).
 - Test helper: `using FeatureFlagScope(decisionPlan: true)` disposable to restore flags automatically.
 - Multi-event deterministic parity test sequence — COMPLETED.
-- Replay harness for BugReport captured event streams **PENDING**
+- Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
+- Replay harness for BugReport captured event streams **PARTIAL (empty-event validation implemented; payload synthesis TBD)**
 - Dual-run test asserting trace sequence identical with/without hashing enabled **PENDING**
 
 ## Performance Tooling

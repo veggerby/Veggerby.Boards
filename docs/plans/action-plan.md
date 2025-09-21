@@ -13,11 +13,11 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold (no replay yet) |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold + initial replay harness (empty-event support) |
 | 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
-| 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture scaffold; JSON emitter & visualizer pending |
+| 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
 | 8. Module & API Versioning Strategy | NOT STARTED | No versioned DTOs yet |
 | 9. Small Structural Refactors | NOT STARTED | Refactors/de-analyzers not started |
@@ -255,8 +255,8 @@ Deliverables (Status annotations in brackets):
 - `IEvaluationObserver` minimal v1 (RuleEvaluated, RuleApplied, EventIgnored) implemented + no-op default + builder injection. **[COMPLETED]**
 - PhaseEnter callback emitted (legacy + DecisionPlan) **[COMPLETED]**
 - StateHashed callback **[COMPLETED]**
-- In-memory trace capture scaffold (last evaluation) **[COMPLETED – internal model; no JSON serialization yet]**
-- Decision trace serializer (compact JSON) for last evaluation. **[NOT STARTED]**
+- In-memory trace capture scaffold (last evaluation) **[COMPLETED]**
+- Decision trace serializer (compact JSON) for last evaluation. **[COMPLETED]**
 - CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
 Acceptance Criteria:
 - Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – initial overhead benchmarks collected; need gating)**
@@ -272,6 +272,7 @@ Deliverables (Status annotations in brackets):
 
 - Property tests (FsCheck) for listed invariants. **[PARTIAL – scaffold + minimal tests]**
 - Benchmark suite (BenchmarkDotNet) in `/benchmarks` project. **[COMPLETED (baseline harness present)]**
+- Uniform AAA Arrange/Act/Assert annotation across entire test suite (readability & future analyzer basis). **[COMPLETED]**
 - CI workflow: run benchmarks on PR; compare against stored baseline JSON; fail on >2% regression. **[NOT STARTED]**
 - Documentation for extension points & stability guarantees. **[PARTIAL – new feature docs only]**
 Acceptance Criteria:

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;
@@ -38,7 +39,34 @@ internal sealed class EvaluationTrace
 
     public string ToJson()
     {
-        return JsonSerializer.Serialize(_entries, new JsonSerializerOptions { WriteIndented = false });
+        return TraceJsonExporter.Serialize(this, indented: false);
+    }
+}
+
+/// <summary>
+/// Deterministic JSON exporter for <see cref="EvaluationTrace"/>.
+/// </summary>
+/// <remarks>
+/// Keeps a stable field ordering and omits null fields for compactness. Intended for diagnostics only; schema may evolve.
+/// </remarks>
+internal static class TraceJsonExporter
+{
+    private static readonly JsonSerializerOptions CompactOptions = new()
+    {
+        WriteIndented = false,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+    private static readonly JsonSerializerOptions IndentedOptions = new()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+    public static string Serialize(EvaluationTrace trace, bool indented = false)
+    {
+        // Defensive: ensure entries already in deterministic order (append-only with Order). We rely on insertion order here.
+        return JsonSerializer.Serialize(trace.Entries, indented ? IndentedOptions : CompactOptions);
     }
 }
 

@@ -72,6 +72,10 @@ When `EnableDecisionPlanDebugParity` is active, every handled event is also eval
 
 Overhead: Expected marginally higher due to duplicate evaluation; benchmarks to be added before graduating new optimization stages.
 
+### EventKind Expansion (Preparation)
+
+The `EventKind` enum now anticipates broader categorization (`Move`, `Roll`, `State`, `Phase`, `Custom1`, `Custom2`, `Any`). Current classifier still only assigns `Move` or `Roll`; all other events default to `Any`. This staged expansion allows future rules (e.g., active player selection, phase control) to opt into more selective filtering without refactoring existing logic. Until events are explicitly tagged, runtime behavior is unchanged.
+
 ## Metrics
 
 Initial target: ≥30% p50 latency reduction on representative move scenarios (Chess opening, Backgammon entry) in Phase 1.

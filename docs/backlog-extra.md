@@ -41,7 +41,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Group evaluation path + tests (gate evaluated once, skip when invalid). **COMPLETED (basic positive test; add invalid-gate test later)**
 - EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
 - Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + initial tests + baseline benchmark scaffold)**
-  - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **PENDING**
+  - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **PARTIAL – taxonomy expanded (State/Phase) awaiting event mappings & benchmarks**
 - Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **COMPLETED**
 - Mask table generation from exclusivity hints. **COMPLETED (ExclusivityGroups + ExclusivityGroupRoots compiled)**
 - Evaluation mask application logic + tests (skip flagged entries). **COMPLETED (feature-flagged; masking tests added)**

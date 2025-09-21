@@ -11,10 +11,12 @@ internal sealed class CompiledPatternServices
 {
     public CompiledPatternTable Table { get; }
     public ICompiledPatternResolver Resolver { get; }
+    public BoardAdjacencyCache Adjacency { get; }
 
-    public CompiledPatternServices(CompiledPatternTable table, ICompiledPatternResolver resolver)
+    public CompiledPatternServices(CompiledPatternTable table, ICompiledPatternResolver resolver, BoardAdjacencyCache adjacency)
     {
         Table = table;
         Resolver = resolver;
+        Adjacency = adjacency;
     }
 }

@@ -62,4 +62,9 @@ internal static class FeatureFlags
     /// (Future – scaffolding only)
     /// </summary>
     public static bool EnableDecisionPlanDebugParity { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the compiled pattern resolver should use a pre-built adjacency cache for (tile, direction) lookups.
+    /// </summary>
+    public static bool EnableCompiledPatternsAdjacencyCache { get; set; } = false;
 }

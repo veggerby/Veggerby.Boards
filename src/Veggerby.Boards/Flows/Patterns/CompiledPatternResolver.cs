@@ -1,5 +1,6 @@
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Compiled;
 
 namespace Veggerby.Boards.Flows.Patterns;
@@ -11,11 +12,13 @@ internal sealed class CompiledPatternResolver : ICompiledPatternResolver
 {
     private readonly CompiledPatternTable _table;
     private readonly Board _board;
+    private readonly BoardAdjacencyCache _adjacency;
 
-    public CompiledPatternResolver(CompiledPatternTable table, Board board)
+    public CompiledPatternResolver(CompiledPatternTable table, Board board, BoardAdjacencyCache adjacency)
     {
         _table = table;
         _board = board;
+        _adjacency = adjacency;
     }
 
     public bool TryResolve(Piece piece, Tile from, Tile to, out TilePath path)
@@ -38,7 +41,7 @@ internal sealed class CompiledPatternResolver : ICompiledPatternResolver
                         var ok = true;
                         foreach (var dir in pattern.Directions)
                         {
-                            var rel = _board.GetTileRelation(current, dir);
+                            var rel = Resolve(current, dir);
                             if (rel is null)
                             {
                                 ok = false; break;
@@ -59,7 +62,7 @@ internal sealed class CompiledPatternResolver : ICompiledPatternResolver
                         TilePath localPath = null;
                         while (true)
                         {
-                            var rel = _board.GetTileRelation(current, dir);
+                            var rel = Resolve(current, dir);
                             if (rel is null) break;
                             localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
@@ -79,7 +82,7 @@ internal sealed class CompiledPatternResolver : ICompiledPatternResolver
                         TilePath localPath = null;
                         while (true)
                         {
-                            var rel = _board.GetTileRelation(current, dir);
+                            var rel = Resolve(current, dir);
                             if (rel is null) break;
                             localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
@@ -103,5 +106,14 @@ internal sealed class CompiledPatternResolver : ICompiledPatternResolver
         if (candidate is null) return currentBest;
         if (currentBest is null) return candidate;
         return candidate.Distance < currentBest.Distance ? candidate : currentBest;
+    }
+
+    private TileRelation Resolve(Tile from, Direction dir)
+    {
+        if (FeatureFlags.EnableCompiledPatternsAdjacencyCache && _adjacency is not null && _adjacency.TryGet(from, dir, out var rel))
+        {
+            return rel;
+        }
+        return _board.GetTileRelation(from, dir);
     }
 }

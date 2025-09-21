@@ -27,7 +27,7 @@ public class CompiledPatternExtendedParityTests
         var legacy = legacyVisitor.ResultPath;
 
         var table = PatternCompiler.Compile(game);
-        var resolver = new CompiledPatternResolver(table, game.Board);
+        var resolver = new CompiledPatternResolver(table, game.Board, null);
         resolver.TryResolve(piece, from, to, out var compiled);
         return (legacy, compiled);
     }

@@ -200,10 +200,12 @@ Deliverables (Status annotations in brackets):
 - Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[COMPLETED (64-bit + 128-bit xxHash128 upgrade)]**
 <!-- Removed previous internal `BugReport` envelope scaffold: concept moved out of core; external tool will supply reproduction envelope per roadmap item 14. -->
 Acceptance Criteria:
+
 - Replaying same seed + events yields identical final hash and RNG state. **[PENDING – replay not implemented]**
 - Undo/Redo operations O(1) and hash-stable. **[PARTIAL – zipper present; formal tests pending]**
 <!-- Removed internal replay harness item (now external responsibility). -->
 Risks:
+
 - Hash collisions (mitigate with 128-bit hash like xxHash128 or Blake2b incremental).
 - State size growth (dedupe identical state nodes via hash interning map optional in Phase 3).
 Migration:

@@ -40,11 +40,17 @@ public sealed class DecisionPlan
     /// </summary>
     internal EventKind[] SupportedKinds { get; }
 
-    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds)
+    /// <summary>
+    /// Gets the optional exclusivity group id per entry (index aligned with <see cref="Entries"/>). Null when no exclusivity declared.
+    /// </summary>
+    internal string[] ExclusivityGroups { get; }
+
+    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds, string[] exclusivityGroups)
     {
         Entries = entries.ToArray();
         Groups = groups?.ToArray() ?? Array.Empty<DecisionPlanGroup>();
         SupportedKinds = supportedKinds ?? Array.Empty<EventKind>();
+        ExclusivityGroups = exclusivityGroups ?? Array.Empty<string>();
     }
 
     /// <summary>
@@ -56,21 +62,22 @@ public sealed class DecisionPlan
 
         var entries = new List<DecisionPlanEntry>();
         var kinds = new List<EventKind>();
-        Traverse(root, entries, kinds);
+        var exclusivity = new List<string>();
+        Traverse(root, entries, kinds, exclusivity);
 
         // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
         // This avoids having to recompile the plan when flag toggles and keeps plan deterministic.
         var groups = BuildGroups(entries);
-        return new DecisionPlan(entries, groups, kinds.ToArray());
+        return new DecisionPlan(entries, groups, kinds.ToArray(), exclusivity.ToArray());
     }
 
-    private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries, IList<EventKind> kinds)
+    private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries, IList<EventKind> kinds, IList<string> exclusivity)
     {
         if (phase is CompositeGamePhase composite)
         {
             foreach (var child in composite.ChildPhases)
             {
-                Traverse(child, entries, kinds);
+                Traverse(child, entries, kinds, exclusivity);
             }
         }
         else
@@ -86,6 +93,7 @@ public sealed class DecisionPlan
             }
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
             kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
+            exclusivity.Add(phase.ExclusivityGroup);
         }
     }
 

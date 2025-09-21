@@ -15,6 +15,7 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
     private GameEventRuleDefinitions _ruleDefinitions;
     private readonly IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = [];
     private readonly string _label = label;
+    private string _exclusivityGroup;
 
     internal void Add(GameEventPreProcessorDefinition preProcessorDefinition)
     {
@@ -24,6 +25,12 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
     public GamePhaseDefinition WithNumber(int number)
     {
         _number = number;
+        return this;
+    }
+
+    public GamePhaseDefinition Exclusive(string group)
+    {
+        _exclusivityGroup = group;
         return this;
     }
 
@@ -55,6 +62,6 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         var condition = _conditionDefinition.Build(game);
         var rule = _ruleDefinitions.Build(game);
         var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game)).ToList();
-        return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors);
+        return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors, _exclusivityGroup);
     }
 }

@@ -20,7 +20,7 @@ public class CompiledPatternParityTests
 
         // compiled (simulate by directly invoking resolver after manual compile)
         var table = PatternCompiler.Compile(game); // compiler now emits fixed + multi-direction patterns
-        var resolver = new CompiledPatternResolver(table, game.Board);
+        var resolver = new CompiledPatternResolver(table, game.Board, null);
         resolver.TryResolve(piece, from, to, out var compiled);
         return (legacy, compiled);
     }

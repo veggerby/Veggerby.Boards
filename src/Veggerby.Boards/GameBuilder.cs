@@ -373,9 +373,14 @@ public abstract class GameBuilder
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
-            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board);
+            Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache adjacency = null;
+            if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
+            {
+                adjacency = Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
+            }
+            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency);
             services = new EngineServices();
-            services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver));
+            services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver, adjacency));
         }
 
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);

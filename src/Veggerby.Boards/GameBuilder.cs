@@ -7,9 +7,11 @@ using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Builder.Artifacts;
 using Veggerby.Boards.Builder.Phases;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards;
@@ -329,7 +331,13 @@ public abstract class GameBuilder
         }
 
         // combine
-        var engine = new GameEngine(game, gamePhaseRoot);
+        DecisionPlan decisionPlan = null;
+        if (FeatureFlags.EnableDecisionPlan)
+        {
+            decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
+        }
+
+        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan);
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;

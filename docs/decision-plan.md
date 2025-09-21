@@ -1,30 +1,24 @@
-# DecisionPlan (Preview)
+# DecisionPlan (Experimental)
 
-> Status: Planned (Phase 1). This document will be expanded as the implementation lands.
+Status: Experimental (behind `FeatureFlags.EnableDecisionPlan`).
 
-## Overview
+The DecisionPlan is a precompiled linear list of leaf phases (condition + rule). Phase 1 provides parity only.
 
-The DecisionPlan is a pre-compiled, immutable representation of rule evaluation for a game instance. It replaces per-event dynamic condition scanning with tight, array-based iteration over pre-bound predicate delegates and associated mutators.
+Enable (before `Compile()`):
 
-## Goals
+```csharp
+FeatureFlags.EnableDecisionPlan = true;
+```
 
-- Reduce branching & allocations in `HandleEvent`.
-- Provide stable rule indexes for tracing and diagnostics.
-- Enable short-circuit optimizations in later phases without altering public behavior.
+Goals (Phase 1):
 
-## Structure (Draft)
+1. Parity with legacy traversal
+2. Stable indexes for upcoming observer/tracing
 
-- Phases array (stable ids)
-- Rules array (phase id, predicates[], mutator)
-- Phase gate bitsets (v1 simple, v2 optional masks)
+Deferred (later phases): short-circuit masks, predicate hoisting, caching.
 
-## Feature Flag
+Disabling the flag reverts to legacy behavior with identical outcomes.
 
-Controlled by `FeatureFlags.EnableDecisionPlan` until parity and performance targets are met.
-
-## Parity Strategy
-
-A legacy evaluator path will remain in tests (compile symbol) to assert identical results across a corpus of generated event sequences until removal criteria are satisfied.
 
 ## Metrics
 

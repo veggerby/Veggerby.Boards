@@ -1,9 +1,9 @@
 using System.Linq;
 
-using Veggerby.Boards.Chess;
 using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 

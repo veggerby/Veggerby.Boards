@@ -98,7 +98,47 @@ public class GameProgress
     /// <returns>The resulting progress.</returns>
     public GameProgress HandleEvent(IGameEvent @event)
     {
-        var events = Phase.PreProcessEvent(this, @event);
-        return events.Aggregate(this, (seed, e) => seed.HandleSingleEvent(e));
+        // Legacy path retains phase resolution per event when DecisionPlan feature flag is disabled or plan absent.
+        if (Engine.DecisionPlan is null || !Internal.FeatureFlags.EnableDecisionPlan)
+        {
+            var events = Phase.PreProcessEvent(this, @event);
+            return events.Aggregate(this, (seed, e) => seed.HandleSingleEvent(e));
+        }
+
+        // DecisionPlan parity path: iterate precompiled leaf phases in order, selecting first whose condition is valid.
+        // Pre-processing still uses the currently active phase determined at construction (could be refined later
+        // to pre-process per candidate phase if needed). This maintains functional parity with legacy traversal.
+        var preProcessed = Phase.PreProcessEvent(this, @event);
+        var progress = this;
+        foreach (var evt in preProcessed)
+        {
+            var handled = false;
+            foreach (var entry in Engine.DecisionPlan.Entries)
+            {
+                if (!entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
+                {
+                    continue;
+                }
+
+                var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                if (ruleCheck.Result == ConditionResult.Valid)
+                {
+                    var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                    progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                    handled = true;
+                    break; // only first valid rule/phase handles event (parity with existing behavior)
+                }
+                else if (ruleCheck.Result == ConditionResult.Invalid)
+                {
+                    throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                }
+            }
+
+            if (!handled)
+            {
+                // Event ignored (no applicable phase/rule).
+            }
+        }
+        return progress;
     }
 }

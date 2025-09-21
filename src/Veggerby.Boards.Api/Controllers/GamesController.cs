@@ -5,12 +5,12 @@ using AutoMapper;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Veggerby.Boards.Api.Models;
-using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.Chess;
 using Veggerby.Boards;
+using Veggerby.Boards.Api.Models;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Backgammon;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 

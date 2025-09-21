@@ -1,8 +1,26 @@
 # 2025-09-21 Strategic Architecture & DX Action Plan
 
+> Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
+
 ## Executive Summary
 
 This plan operationalizes the 15+ architectural and developer experience upgrades outlined in `docs/plans/roadmap.md`. It groups them into coherent workstreams, defines phased delivery (Foundations → Acceleration → Observability & Tooling → Hardening & Ecosystem), and specifies deliverables, acceptance criteria, success metrics, risk mitigations, and migration safety for existing modules (Chess, Backgammon) and API consumers.
+
+## Progress Status (2025-09-21 – branch `feat/architecture-and-dx`)
+
+| Workstream | High-Level Status | Notes |
+|------------|-------------------|-------|
+| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
+| 2. Deterministic Randomness & State History | PARTIAL | `IRandomSource`, `XorShiftRandomSource`, `GameState.Random` implemented; timeline, hashing, BugReport not started |
+| 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
+| 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
+| 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
+| 6. Observability & Diagnostics | NOT STARTED | No observer interface / trace emitter yet |
+| 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
+| 8. Module & API Versioning Strategy | NOT STARTED | No versioned DTOs yet |
+| 9. Small Structural Refactors | NOT STARTED | Refactors/de-analyzers not started |
+
+Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 
 ## Guiding Principles
 
@@ -143,17 +161,17 @@ To mitigate overreach and maintain momentum:
 
 ### 1. Rule Evaluation Engine Modernization
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- `DecisionPlan` immutable model: phases, rule table, pre-bound predicates, mutator delegate array.
-- Compiler: `DecisionPlanBuilder.Compile(GameBuilderContext ctx)`.
-- Execution path: `GameEngine.HandleEvent` uses precomputed plan.
-- Typed result: `EventResult` discriminated union.
-- Observer integration points for rule evaluation events.
+- `DecisionPlan` immutable model: phases, rule table, pre-bound predicates, mutator delegate array. **[COMPLETED (parity subset – minimal model, no delegate table yet)]**
+- Compiler: `DecisionPlanBuilder.Compile(GameBuilderContext ctx)`. **[COMPLETED (integrated into builder; context abstraction simplified)]**
+- Execution path: `GameEngine.HandleEvent` uses precomputed plan. **[COMPLETED (flag-gated parity path)]**
+- Typed result: `EventResult` discriminated union. **[COMPLETED (placeholder, not yet returned publicly)]**
+- Observer integration points for rule evaluation events. **[NOT STARTED]**
 Acceptance Criteria:
-- No functional behavior change vs legacy path (golden test suite).
-- Benchmark: `HandleEvent` median latency reduced ≥30% on sample scenarios (Chess opening moves, Backgammon entry moves).
-- Trace includes rule index + failing predicate reason.
+- No functional behavior change vs legacy path (golden test suite). **[PENDING – parity tests not yet added]**
+- Benchmark: `HandleEvent` median latency reduced ≥30% on sample scenarios (Chess opening moves, Backgammon entry moves). **[PENDING – only baseline harness exists]**
+- Trace includes rule index + failing predicate reason. **[NOT STARTED – tracing/observer missing]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).
 - Debug difficulty: include verbose validator to cross-check results in tests.
@@ -162,17 +180,17 @@ Migration Strategy:
 
 ### 2. Deterministic Randomness & State History Evolution
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- `IRandomSource` + `XorShiftRandomSource` implementation (seed + serializable state).
-- GameState includes RNG snapshot (struct) + `WithRandom(IRandomSource)` cloning.
-- Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`.
-- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state.
-- `BugReport` envelope capturing seed, event stream, decision plan version.
+- `IRandomSource` + `XorShiftRandomSource` implementation (seed + serializable state). **[COMPLETED]**
+- GameState includes RNG snapshot (struct) + `WithRandom(IRandomSource)` cloning. **[COMPLETED]**
+- Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`. **[NOT STARTED]**
+- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[NOT STARTED]**
+- `BugReport` envelope capturing seed, event stream, decision plan version. **[NOT STARTED]**
 Acceptance Criteria:
-- Replaying same seed + events yields identical final hash and RNG state.
-- Undo/Redo operations O(1) and hash-stable.
-- BugReport replay test harness passes sample captured report.
+- Replaying same seed + events yields identical final hash and RNG state. **[PENDING – hashing & replay infra not implemented]**
+- Undo/Redo operations O(1) and hash-stable. **[NOT STARTED]**
+- BugReport replay test harness passes sample captured report. **[NOT STARTED]**
 Risks:
 - Hash collisions (mitigate with 128-bit hash like xxHash128 or Blake2b incremental).
 - State size growth (dedupe identical state nodes via hash interning map optional in Phase 3).
@@ -181,15 +199,15 @@ Migration:
 
 ### 3. Movement & Pattern Engine Compilation
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- Pattern IR: normalized representation (directions, repeats, terminals).
-- Compiler: pattern set per piece → DFA/NFA structure (arrays of transitions, acceptance flags).
-- Runtime: path resolution via integer indices + bitsets, no interface dispatch in hot loop.
-- Fallback to existing visitor system for non-compiled patterns until parity confirmed.
+- Pattern IR: normalized representation (directions, repeats, terminals). **[NOT STARTED]**
+- Compiler: pattern set per piece → DFA/NFA structure (arrays of transitions, acceptance flags). **[NOT STARTED]**
+- Runtime: path resolution via integer indices + bitsets, no interface dispatch in hot loop. **[NOT STARTED]**
+- Fallback to existing visitor system for non-compiled patterns until parity confirmed. **[NOT STARTED]**
 Acceptance Criteria:
-- All existing movement tests green under compiled engine.
-- Benchmark: pattern resolution ≥5x faster on 1000 random moves sample.
+- All existing movement tests green under compiled engine. **[NOT STARTED]**
+- Benchmark: pattern resolution ≥5x faster on 1000 random moves sample. **[NOT STARTED]**
 Risks:
 - Over-optimizing rare patterns; limit scope to current patterns first.
 Migration:
@@ -197,16 +215,16 @@ Migration:
 
 ### 4. Performance Data Layout & Hot Path Optimization
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- Internal `BoardShape` (tile adjacency arrays, directional lookup table).
-- `PieceMap` struct-of-arrays (ids, tile indices, owner indices).
-- Replace LINQ enumerations in path & rule evaluation with for loops.
-- Identify micro hotspots via BenchmarkDotNet baseline.
-- Chess bitboard adapter (64-bit masks for occupancy, attacks) synced at evaluation entry.
+- Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[NOT STARTED]**
+- `PieceMap` struct-of-arrays (ids, tile indices, owner indices). **[NOT STARTED]**
+- Replace LINQ enumerations in path & rule evaluation with for loops. **[NOT STARTED]**
+- Identify micro hotspots via BenchmarkDotNet baseline. **[PARTIAL – baseline harness exists, analysis pending]**
+- Chess bitboard adapter (64-bit masks for occupancy, attacks) synced at evaluation entry. **[NOT STARTED]**
 Acceptance Criteria:
-- Benchmarks: resolve path & legal move generation 10–30× faster (target upper bound, accept ≥8× initial).
-- Allocation count in hot benchmarks < 5% of baseline.
+- Benchmarks: resolve path & legal move generation 10–30× faster (target upper bound, accept ≥8× initial). **[NOT STARTED]**
+- Allocation count in hot benchmarks < 5% of baseline. **[NOT STARTED]**
 Risks:
 - Bitboard sync overhead > savings (measure early).
 Migration:
@@ -214,15 +232,15 @@ Migration:
 
 ### 5. Concurrency & Simulation
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- `Simulator` API (pure playout loop) with cancellation token.
-- Policy delegate signature: `Func<GameState, IGameEvent?>`.
-- Parallel playout orchestrator using `Task` or `Parallel.ForEachAsync` without shared mutation.
-- Determinism guarantee doc (ordering independent).
+- `Simulator` API (pure playout loop) with cancellation token. **[NOT STARTED]**
+- Policy delegate signature: `Func<GameState, IGameEvent?>`. **[NOT STARTED]**
+- Parallel playout orchestrator using `Task` or `Parallel.ForEachAsync` without shared mutation. **[NOT STARTED]**
+- Determinism guarantee doc (ordering independent). **[NOT STARTED]**
 Acceptance Criteria:
-- Running N playouts sequentially vs parallel yields identical multiset of final state hashes (when seeds derived deterministically per playout index).
-- Handles cancellation gracefully (partial results surfaced).
+- Running N playouts sequentially vs parallel yields identical multiset of final state hashes (when seeds derived deterministically per playout index). **[NOT STARTED]**
+- Handles cancellation gracefully (partial results surfaced). **[NOT STARTED]**
 Risks:
 - Contention on shared resources (avoid globals, pre-clone plan/read-only data).
 Migration:
@@ -230,15 +248,15 @@ Migration:
 
 ### 6. Observability & Diagnostics
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- `IEvaluationObserver` with callbacks: PhaseEnter, RuleEvaluated(result, reason), MutatorApplied, StateHashed.
-- No-op default; builder injection.
-- Decision trace serializer (compact JSON) for last evaluation.
-- CLI or lightweight web visualizer (Phase 3) reading trace JSON.
+- `IEvaluationObserver` with callbacks: PhaseEnter, RuleEvaluated(result, reason), MutatorApplied, StateHashed. **[NOT STARTED]**
+- No-op default; builder injection. **[NOT STARTED]**
+- Decision trace serializer (compact JSON) for last evaluation. **[NOT STARTED]**
+- CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
 Acceptance Criteria:
-- Observer adds ≤5% overhead when enabled in benchmark microtests.
-- Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum).
+- Observer adds ≤5% overhead when enabled in benchmark microtests. **[NOT STARTED]**
+- Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum). **[NOT STARTED]**
 Risks:
 - Performance drag; mitigate with aggressive inlining and early branch-out when no observers.
 Migration:
@@ -246,15 +264,15 @@ Migration:
 
 ### 7. Developer Experience & Quality Gates
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- Property tests (FsCheck) for listed invariants.
-- Benchmark suite (BenchmarkDotNet) in `/benchmarks` project.
-- CI workflow: run benchmarks on PR; compare against stored baseline JSON; fail on >2% regression.
-- Documentation for extension points & stability guarantees.
+- Property tests (FsCheck) for listed invariants. **[PARTIAL – scaffold + minimal tests]**
+- Benchmark suite (BenchmarkDotNet) in `/benchmarks` project. **[COMPLETED (baseline harness present)]**
+- CI workflow: run benchmarks on PR; compare against stored baseline JSON; fail on >2% regression. **[NOT STARTED]**
+- Documentation for extension points & stability guarantees. **[PARTIAL – new feature docs only]**
 Acceptance Criteria:
-- Invariants >99% pass rate across 10k generated cases each.
-- Regression workflow reliably detects synthetic slowdown.
+- Invariants >99% pass rate across 10k generated cases each. **[NOT STARTED – limited invariants]**
+- Regression workflow reliably detects synthetic slowdown. **[NOT STARTED]**
 Risks:
 - Flaky benchmarks (mitigate with statistical filtering, dedicated CI runner settings).
 Migration:
@@ -262,14 +280,14 @@ Migration:
 
 ### 8. Module & API Versioning Strategy
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- Separate package metadata for Chess/Backgammon (csproj adjustments, semantic version scheme).
-- Versioned DTO namespaces: `Veggerby.Boards.Api.V1.Models`.
-- Changelog & migration guide for introducing v1.
+- Separate package metadata for Chess/Backgammon (csproj adjustments, semantic version scheme). **[NOT STARTED]**
+- Versioned DTO namespaces: `Veggerby.Boards.Api.V1.Models`. **[NOT STARTED]**
+- Changelog & migration guide for introducing v1. **[NOT STARTED]**
 Acceptance Criteria:
-- Existing clients (if any) compile unchanged; new versioned namespace exposed.
-- Pack step produces distinct nupkgs.
+- Existing clients (if any) compile unchanged; new versioned namespace exposed. **[NOT STARTED]**
+- Pack step produces distinct nupkgs. **[NOT STARTED]**
 Risks:
 - Namespace churn confusion; emphasize docs.
 Migration:
@@ -277,15 +295,15 @@ Migration:
 
 ### 9. Small Structural Refactors
 
-Deliverables:
+Deliverables (Status annotations in brackets):
 
-- Replace LINQ in hot spots (profile-guided list).
-- Introduce `record struct` wrappers: `TileIndex`, `PlayerId` (implicit conversions avoided for clarity).
-- Adjacency cache keyed by board hash (dictionary or ConcurrentDictionary) with size cap.
-- Audit for hidden globals; enforce analyzer rule if necessary.
+- Replace LINQ in hot spots (profile-guided list). **[NOT STARTED]**
+- Introduce `record struct` wrappers: `TileIndex`, `PlayerId` (implicit conversions avoided for clarity). **[NOT STARTED]**
+- Adjacency cache keyed by board hash (dictionary or ConcurrentDictionary) with size cap. **[NOT STARTED]**
+- Audit for hidden globals; enforce analyzer rule if necessary. **[NOT STARTED]**
 Acceptance Criteria:
-- Analyzer or code review checklist updated.
-- GC pressure reduced (verify via allocation benchmarks).
+- Analyzer or code review checklist updated. **[NOT STARTED]**
+- GC pressure reduced (verify via allocation benchmarks). **[NOT STARTED]**
 Risks:
 - Over-abstraction; keep wrappers tiny and well-documented.
 

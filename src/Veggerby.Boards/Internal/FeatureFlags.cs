@@ -3,38 +3,42 @@ using System;
 namespace Veggerby.Boards.Internal;
 
 /// <summary>
-/// Central runtime feature flags controlling activation of upcoming experimental engine components.
+/// Central runtime feature flags controlling activation of experimental engine components.
 /// </summary>
 /// <remarks>
 /// All flags default to <c>false</c>. They can be toggled in tests or hosting layers to gradually
 /// introduce new subsystems (DecisionPlan, compiled patterns, hashing, tracing, bitboards) while
-/// preserving deterministic behavior. Flags are not persisted across historical state and must be
-/// treated strictly as environmental configuration.
+/// preserving deterministic behavior. Flags are not serialized with game state to avoid hidden divergence.
 /// </remarks>
 internal static class FeatureFlags
 {
     /// <summary>
     /// Gets or sets a value indicating whether the DecisionPlan executor replaces the legacy rule evaluation.
+    /// Parity-only in initial implementation (no optimizations yet).
     /// </summary>
-    public static bool EnableDecisionPlan { get; set; }
+    public static bool EnableDecisionPlan { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether compiled movement patterns (DFA) are used instead of the visitor pattern.
+    /// (Placeholder – not yet implemented)
     /// </summary>
-    public static bool EnableCompiledPatterns { get; set; }
+    public static bool EnableCompiledPatterns { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether chess-specific bitboard acceleration is enabled.
+    /// (Placeholder – not yet implemented)
     /// </summary>
-    public static bool EnableBitboards { get; set; }
+    public static bool EnableBitboards { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether state hashing (Merkle style) is performed each transition.
+    /// (Placeholder – not yet implemented)
     /// </summary>
-    public static bool EnableStateHashing { get; set; }
+    public static bool EnableStateHashing { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether evaluation traces are captured (requires observer hooks).
+    /// (Placeholder – not yet implemented)
     /// </summary>
-    public static bool EnableTraceCapture { get; set; }
+    public static bool EnableTraceCapture { get; set; } = false;
 }

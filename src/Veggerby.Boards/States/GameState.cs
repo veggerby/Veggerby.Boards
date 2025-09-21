@@ -4,6 +4,7 @@ using System.Linq;
 
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Random;
 
 namespace Veggerby.Boards.States;
 
@@ -19,6 +20,7 @@ public class GameState
 {
     private readonly IDictionary<Artifact, IArtifactState> _childStates;
     private readonly GameState _previousState;
+    private readonly IRandomSource _random;
 
     /// <summary>
     /// Gets the collection of artifact states contained in this snapshot.
@@ -30,10 +32,11 @@ public class GameState
     /// </summary>
     public bool IsInitialState => _previousState is null;
 
-    private GameState(IEnumerable<IArtifactState> childStates = null, GameState previousState = null)
+    private GameState(IEnumerable<IArtifactState> childStates = null, GameState previousState = null, IRandomSource random = null)
     {
         _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
         _previousState = previousState;
+        _random = random;
     }
 
     /// <summary>
@@ -116,7 +119,8 @@ public class GameState
             ChildStates
                 .Except(newStates ?? Enumerable.Empty<IArtifactState>(), new ArtifactStateEqualityComparer())
                 .Concat(newStates ?? Enumerable.Empty<IArtifactState>()),
-            this);
+            this,
+            _random?.Clone());
     }
 
     /// <summary>
@@ -146,9 +150,23 @@ public class GameState
     /// Creates a new initial <see cref="GameState"/>.
     /// </summary>
     /// <param name="initialStates">The initial artifact states.</param>
+    /// <param name="random">Optional deterministic random source snapshot.</param>
     /// <returns>The new initial game state.</returns>
-    public static GameState New(IEnumerable<IArtifactState> initialStates)
+    public static GameState New(IEnumerable<IArtifactState> initialStates, IRandomSource random = null)
     {
-        return new GameState(initialStates, null);
+        return new GameState(initialStates, null, random);
     }
+
+    /// <summary>
+    /// Creates a new <see cref="GameState"/> with the provided random source replacing the existing one (if any).
+    /// </summary>
+    public GameState WithRandom(IRandomSource random)
+    {
+        return new GameState(ChildStates, _previousState, random);
+    }
+
+    /// <summary>
+    /// Gets the random source snapshot associated with this state (may be null if none assigned).
+    /// </summary>
+    public IRandomSource Random => _random;
 }

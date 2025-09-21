@@ -26,6 +26,13 @@ Piece mobility is abstracted through pattern objects:
 
 Patterns are visited (e.g., `ResolveTilePathPatternVisitor`) to create a concrete `TilePath` at event time.
 
+### Compiled Movement (Experimental)
+
+When the feature flag `EnableCompiledPatterns` is enabled during build, supported pattern types are precompiled
+into a lightweight intermediate representation (see `compiled-patterns.md`). Resolution then prefers a
+table-driven lookup (`CompiledPatternResolver`) falling back to the visitor only when no compiled candidate path
+matches. Parity tests ensure behavior is identical; if the flag is disabled the legacy visitor always executes.
+
 ## Game
 
 `Game` aggregates the immutable structural model: `Board`, `Players`, and all `Artifact` instances. It does not track mutable positions or dice values—those live in `GameState`.

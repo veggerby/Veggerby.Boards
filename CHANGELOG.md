@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Hashing overhead benchmark (`HashingOverheadBenchmark`) comparing per-event cost with hashing disabled/enabled.
 - Pattern resolution benchmark scaffold (`PatternResolutionBaseline`) comparing legacy visitor vs (future) compiled resolver.
 - Initial populated pattern compiler mapping FixedPattern and MultiDirectionPattern to compiled IR (feature-flagged, parity with legacy visitor for fixed sequences).
+- Resolver exposure via `GameProgress.ResolvePathCompiledFirst` enabling feature-flagged runtime use of compiled patterns.
+- Extended parity test suite (multi-direction, repeatable, null/unreachable) and chess integration parity test.
+- Documentation: `docs/compiled-patterns.md` describing IR, resolver semantics, parity guarantees, and roadmap.
 - Trace capture scaffold (feature-flagged) recording PhaseEnter, RuleEvaluated, RuleApplied, EventIgnored, StateHashed entries for last evaluation (now enriched with rule index + condition reason fields).
 
 ### Changed

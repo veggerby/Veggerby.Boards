@@ -41,6 +41,10 @@ public class GameEngine
 
     private readonly Veggerby.Boards.Internal.Tracing.EvaluationTrace _lastTrace;
     private readonly EngineServices _services;
+    /// <summary>
+    /// Gets the internal engine services container (compiled patterns, future bitboards). Internal for extension wiring.
+    /// </summary>
+    internal EngineServices Services => _services;
 
     /// <summary>
     /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.

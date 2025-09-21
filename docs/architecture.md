@@ -76,6 +76,9 @@ Both modules demonstrate reuse of the same engine primitives:
 
 - Backgammon defines directional linear movement with dice-driven phases and multi-step conditional transitions (e.g., bar clearing, doubling logic).
 - Chess defines a dense 8×8 grid with pattern-based piece movement (directional + fixed multi-step patterns).
+      - Experimental compiled movement pattern subsystem (flag `EnableCompiledPatterns`) converts supported patterns
+         (`FixedPattern`, `MultiDirectionPattern`) into a lightweight IR (Fixed, Ray, MultiRay) resolved by a fast
+         table-driven resolver. Parity is enforced via test suite and can be inspected in `compiled-patterns.md`.
 
 ## Design Principles
 
@@ -83,6 +86,13 @@ Both modules demonstrate reuse of the same engine primitives:
 - Separation of static structure (Artifacts) from dynamic behavior (State + Events + Rules).
 - Explicit gating via Conditions; no hidden side-effects.
 - Extensible through additive types (new Mutators / Conditions / Events) without modifying core engine.
+
+### Emerging Optimization Synergy
+
+The DecisionPlan (phase ordering pre-compilation) and Compiled Movement Patterns are independent feature-flagged
+optimizations. Future synergy work may precompute rule movement dependencies allowing direct compiled path
+evaluation inside decision plan traversal, eliminating duplicate visitor passes. This remains a roadmap item
+pending performance measurements.
 
 ## Extension Points
 

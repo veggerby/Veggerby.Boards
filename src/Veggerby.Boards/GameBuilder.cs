@@ -266,6 +266,7 @@ public abstract class GameBuilder
     private GameProgress _initialGameProgress;
 
     private IEvaluationObserver _observer = NullEvaluationObserver.Instance;
+    private ulong? _seed; // deterministic RNG seed (optional)
 
     /// <summary>
     /// Sets a custom evaluation observer for instrumentation (optional).
@@ -279,6 +280,17 @@ public abstract class GameBuilder
             _observer = observer;
         }
 
+        return this;
+    }
+
+    /// <summary>
+    /// Assigns a deterministic random seed for the initial <see cref="GameState"/>.
+    /// </summary>
+    /// <param name="seed">Seed value (0 permitted but discouraged as sentinel ambiguity; still applied).</param>
+    /// <returns>Builder for fluent chaining.</returns>
+    public GameBuilder WithSeed(ulong seed)
+    {
+        _seed = seed;
         return this;
     }
 
@@ -323,7 +335,9 @@ public abstract class GameBuilder
                 : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
             .ToList();
 
-        var initialGameState = GameState.New([.. pieceStates, .. diceStates]);
+        var initialGameState = _seed.HasValue
+            ? GameState.New([.. pieceStates, .. diceStates], Random.XorShiftRandomSource.Create(_seed.Value))
+            : GameState.New([.. pieceStates, .. diceStates]);
 
         // compile GamePhase root
 

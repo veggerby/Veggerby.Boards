@@ -55,8 +55,10 @@ internal static class BugReportReplayer
         FeatureFlags.EnableTimelineZipper = report.TimelineEnabled;
 
         var builder = builderFactory();
-        // NOTE: Seed application not yet exposed via GameBuilder public API; seeding is implicit in RNG scaffold.
-        // Future enhancement: introduce WithSeed/WithRandomSource for deterministic replay.
+        if (report.Seed != 0UL)
+        {
+            builder.WithSeed(report.Seed);
+        }
         var progress = builder.Compile();
 
         // Early exit if no events captured – validate initial hash only.

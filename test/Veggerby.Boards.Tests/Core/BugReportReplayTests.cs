@@ -11,6 +11,24 @@ public class BugReportReplayTests
     private static GameBuilder NewBuilder() => new TestGameBuilder(useSimpleGamePhase: false);
 
     [Fact]
+    public void Replay_Should_Apply_Captured_Seed()
+    {
+        // Arrange
+        using var _ = FeatureFlagScope.StateHashing(true);
+        const ulong seed = 123456789UL;
+        var progress = NewBuilder().WithSeed(seed).Compile();
+        var report = progress.CaptureBugReport();
+        report.Seed.Should().Be(seed);
+
+        // Act
+        var result = BugReportReplayer.Replay(report, NewBuilder);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.Reason.Should().BeEmpty();
+    }
+
+    [Fact]
     public void Replay_Should_Succeed_For_Empty_Event_Report_With_Matching_Hash()
     {
         // Arrange

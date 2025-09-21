@@ -28,9 +28,16 @@ public sealed class DecisionPlan
     /// </summary>
     public IReadOnlyList<DecisionPlanEntry> Entries { get; }
 
-    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries)
+    /// <summary>
+    /// Gets the optional list of compiled groups (when grouping feature enabled at compile time).
+    /// Groups provide gate predicates evaluated once prior to scanning member entries.
+    /// </summary>
+    internal IReadOnlyList<DecisionPlanGroup> Groups { get; }
+
+    private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups)
     {
         Entries = entries.ToArray();
+        Groups = groups?.ToArray() ?? Array.Empty<DecisionPlanGroup>();
     }
 
     /// <summary>
@@ -42,7 +49,11 @@ public sealed class DecisionPlan
 
         var entries = new List<DecisionPlanEntry>();
         Traverse(root, entries);
-        return new DecisionPlan(entries);
+
+        // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
+        // This avoids having to recompile the plan when flag toggles and keeps plan deterministic.
+        var groups = BuildGroups(entries);
+        return new DecisionPlan(entries, groups);
     }
 
     private static void Traverse(GamePhase phase, IList<DecisionPlanEntry> entries)
@@ -104,6 +115,29 @@ public sealed class DecisionPlan
         }
         return null;
     }
+
+    private static IEnumerable<DecisionPlanGroup> BuildGroups(IReadOnlyList<DecisionPlanEntry> entries)
+    {
+        if (entries.Count == 0)
+        {
+            yield break;
+        }
+
+        var start = 0;
+        var currentCondition = entries[0].Condition;
+        for (var i = 1; i < entries.Count; i++)
+        {
+            if (!ReferenceEquals(entries[i].Condition, currentCondition))
+            {
+                // close current group
+                yield return new DecisionPlanGroup(start, i - start, currentConditionIsGate: true);
+                start = i;
+                currentCondition = entries[i].Condition;
+            }
+        }
+        // final group
+        yield return new DecisionPlanGroup(start, entries.Count - start, currentConditionIsGate: true);
+    }
 }
 
 /// <summary>
@@ -113,3 +147,9 @@ public sealed class DecisionPlan
 /// Represents a leaf phase entry within a compiled decision plan.
 /// </summary>
 public readonly record struct DecisionPlanEntry(int PhaseNumber, IGameStateCondition Condition, IGameEventRule Rule, GamePhase Phase, bool ConditionIsAlwaysValid);
+
+/// <summary>
+/// Represents a contiguous group of entries sharing the exact same condition reference.
+/// The first entry's predicate acts as a gate for all entries when grouping is enabled.
+/// </summary>
+internal readonly record struct DecisionPlanGroup(int StartIndex, int Length, bool currentConditionIsGate);

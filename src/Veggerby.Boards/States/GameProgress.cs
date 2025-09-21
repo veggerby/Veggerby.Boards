@@ -135,40 +135,93 @@ public class GameProgress
         foreach (var evt in preProcessed)
         {
             var handled = false;
-            for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
+            if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
-                var entry = Engine.DecisionPlan.Entries[i];
-                if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
+                // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
+                foreach (var group in Engine.DecisionPlan.Groups)
                 {
-                    continue;
-                }
-
-                var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                // Use cached phase reference from compiled plan (removes per-event depth-first traversal cost).
-                var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
-                progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
-                if (ruleCheck.Result == ConditionResult.Valid)
-                {
-                    var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                    progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
-                    if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                    var gateEntry = Engine.DecisionPlan.Entries[group.StartIndex];
+                    bool gateValid = gateEntry.ConditionIsAlwaysValid || gateEntry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid);
+                    if (!gateValid)
                     {
-                        progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                        continue; // skip entire group
                     }
-                    progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
-                    handled = true;
-                    break; // only first valid rule/phase handles event (parity with existing behavior)
+
+                    for (var offset = 0; offset < group.Length; offset++)
+                    {
+                        var index = group.StartIndex + offset;
+                        var entry = Engine.DecisionPlan.Entries[index];
+                        // For first entry we've already evaluated the condition (unless always-valid); others share same reference so skip Evaluate.
+                        if (offset > 0 && !entry.ConditionIsAlwaysValid)
+                        {
+                            // Skip re-evaluation (identical reference); condition already proven valid by gate.
+                        }
+                        else if (offset == 0)
+                        {
+                            // Already evaluated gate unless always-valid; nothing to do.
+                        }
+
+                        var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                        var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
+                        progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                        progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, index);
+                        if (ruleCheck.Result == ConditionResult.Valid)
+                        {
+                            var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                            progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
+                            if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                            {
+                                progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                            }
+                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                            handled = true;
+                            break;
+                        }
+                        else if (ruleCheck.Result == ConditionResult.Invalid)
+                        {
+                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                        }
+                    }
+                    if (handled)
+                    {
+                        break; // stop scanning remaining groups
+                    }
                 }
-                else if (ruleCheck.Result == ConditionResult.Invalid)
+            }
+            else
+            {
+                for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
                 {
-                    throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                    var entry = Engine.DecisionPlan.Entries[i];
+                    if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
+                    {
+                        continue;
+                    }
+                    var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                    var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
+                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
+                    if (ruleCheck.Result == ConditionResult.Valid)
+                    {
+                        var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                        progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
+                        if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                        {
+                            progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                        }
+                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                        handled = true;
+                        break;
+                    }
+                    else if (ruleCheck.Result == ConditionResult.Invalid)
+                    {
+                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                    }
                 }
             }
 
             if (!handled)
             {
-                // Event ignored (no applicable phase/rule).
                 progress.Engine.Observer.OnEventIgnored(evt, progress.State);
             }
         }

@@ -44,4 +44,10 @@ internal static class FeatureFlags
     /// Gets or sets a value indicating whether the experimental timeline zipper (undo/redo structure) is active.
     /// </summary>
     public static bool EnableTimelineZipper { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether DecisionPlan grouping (gate predicate evaluated once per group) is enabled.
+    /// When disabled, plan evaluation performs a simple linear scan of entries.
+    /// </summary>
+    public static bool EnableDecisionPlanGrouping { get; set; } = false;
 }

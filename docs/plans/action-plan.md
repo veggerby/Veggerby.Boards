@@ -177,13 +177,13 @@ Acceptance Criteria:
 - Benchmark: `HandleEvent` median latency reduced ≥30% on sample scenarios (Chess opening moves, Backgammon entry moves). **[PENDING – only baseline harness exists]**
 - Trace includes rule index + failing predicate reason. **[COMPLETED – enriched trace entries]**
 
-Upcoming Optimizations (Design Drafted in `decision-plan-optimizations.md`):
+Upcoming / In-Progress Optimizations (Design Drafted in `decision-plan-optimizations.md`):
 
-- G1 Grouping: compile contiguous identical predicate phases into gated groups (feature flag `EnableDecisionPlanGrouping`).
-- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`).
-- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`).
-- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`).
-- M2 Static Exclusivity Inference: attribute-driven automatic mask derivation.
+- G1 Grouping: compile contiguous identical predicate phases into gated groups (feature flag `EnableDecisionPlanGrouping`). **[COMPLETED – gate evaluated once; no behavior drift; test added]**
+- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[PENDING]**
+- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[PENDING]**
+- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[PENDING]**
+- M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[PENDING]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).
 - Debug difficulty: include verbose validator to cross-check results in tests.

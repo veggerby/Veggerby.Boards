@@ -35,6 +35,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 ## Future Nice-To-Haves
 
 - Lightweight structured logging adapter (compile-time optional) layering on observer events.
-+- Event correlation id generator (deterministic increment) surfaced in observer callbacks.
+- Event correlation id generator (deterministic increment) surfaced in observer callbacks.
+- Optional HTTP facade re-introduction as separate package (`Veggerby.Boards.Http`) with versioned DTOs; keep separate until hashing & observer extensions stabilize.
 
 -- End of Backlog --

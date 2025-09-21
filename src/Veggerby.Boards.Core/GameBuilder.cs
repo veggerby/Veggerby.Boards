@@ -15,6 +15,15 @@ using Veggerby.Boards.Core.States;
 
 namespace Veggerby.Boards.Core;
 
+/// <summary>
+/// Declarative compiler for a concrete game module combining static structure (board, tiles, relations,
+/// players, artifacts) with initial state (piece positions, dice values) and flow logic (phases + rules).
+/// </summary>
+/// <remarks>
+/// Subclasses implement <see cref="Build"/> to register definitions via protected <c>Add*</c>/ <c>With*</c> helpers.
+/// Calling <see cref="Compile"/> is idempotent; subsequent calls return the cached <c>GameProgress</c> representing
+/// initial engine + state. The builder is not thread-safe and intended for one-time composition at startup.
+/// </remarks>
 public abstract class GameBuilder
 {
     protected string BoardId { get; set; }

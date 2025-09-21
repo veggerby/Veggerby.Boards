@@ -11,6 +11,13 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Concrete <see cref="GameBuilder"/> defining the Backgammon board, pieces, dice and phase / rule set.
+/// </summary>
+/// <remarks>
+/// Demonstrates multi-phase flow including an initial dice roll phase to select the starting player and
+/// subsequent movement phases with dice consumption, bar clearing and doubling cube logic.
+/// </remarks>
 public class BackgammonGameBuilder : GameBuilder
 {
     protected override void Build()

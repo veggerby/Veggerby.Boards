@@ -8,6 +8,14 @@ using Veggerby.Boards.Core.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
 
+/// <summary>
+/// Concrete <see cref="GameBuilder"/> defining a standard chess initial position including all piece
+/// movement patterns (directional + fixed sequences) and a single movement phase.
+/// </summary>
+/// <remarks>
+/// This module focuses on demonstrating complex pattern registration (e.g., knight L-shapes via fixed patterns)
+/// and reuse of directional repeatable patterns for sliding pieces (rook, bishop, queen).
+/// </remarks>
 public class ChessGameBuilder : GameBuilder
 {
     private string GetChar(int i)

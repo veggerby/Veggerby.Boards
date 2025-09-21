@@ -2,13 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Description>Core engine for Veggerby.Boards: immutable board game modeling, artifact states, phases, rules and deterministic game state transitions.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;core</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Veggerby.Algorithm" Version="1.0.0" />
+    <PackageReference Include="Veggerby.Algorithm" />
   </ItemGroup>
 
 </Project>

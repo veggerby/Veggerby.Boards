@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Description>Chess implementation components for Veggerby.Boards built atop the core engine.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;chess</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

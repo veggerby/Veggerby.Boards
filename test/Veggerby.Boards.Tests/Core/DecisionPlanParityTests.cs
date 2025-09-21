@@ -23,7 +23,7 @@ public class DecisionPlanParityTests
     [Fact]
     public void MovePiece_Should_have_identical_end_state_with_and_without_decision_plan()
     {
-        // Arrange
+        // arrange
         var legacy = Build(false);
         var plan = Build(true);
         var piece = legacy.Game.GetPiece("piece-1");
@@ -33,11 +33,11 @@ public class DecisionPlanParityTests
         var path = new TilePath([relation]);
         var evt = new MovePieceGameEvent(piece, path);
 
-        // Act
+        // act
         var legacyResult = legacy.HandleEvent(evt);
         var planResult = plan.HandleEvent(evt);
 
-        // Assert
+        // assert
         var legacyPieceState = legacyResult.State.GetState<PieceState>(piece);
         var planPieceState = planResult.State.GetState<PieceState>(piece);
         planPieceState.CurrentTile.Should().Be(legacyPieceState.CurrentTile);
@@ -46,7 +46,7 @@ public class DecisionPlanParityTests
     [Fact]
     public void RollDice_Should_have_identical_end_state_with_and_without_decision_plan()
     {
-        // Arrange
+        // arrange
         var legacy = Build(false);
         var plan = Build(true);
         var dice = legacy.Game.GetArtifact<Dice>("dice");
@@ -54,11 +54,11 @@ public class DecisionPlanParityTests
         var newState = new DiceState<int>(dice, 5);
         var evt = new RollDiceGameEvent<int>(newState);
 
-        // Act
+        // act
         var legacyResult = legacy.HandleEvent(evt);
         var planResult = plan.HandleEvent(evt);
 
-        // Assert
+        // assert
         var legacyDiceState = legacyResult.State.GetState<DiceState<int>>(dice);
         var planDiceState = planResult.State.GetState<DiceState<int>>(dice);
         planDiceState.CurrentValue.Should().Be(legacyDiceState.CurrentValue);
@@ -67,7 +67,7 @@ public class DecisionPlanParityTests
     [Fact]
     public void MultiEventSequence_Should_remain_in_parity()
     {
-        // Arrange
+        // arrange
         var legacy = Build(false);
         var plan = Build(true);
 
@@ -81,7 +81,7 @@ public class DecisionPlanParityTests
         var dice = legacy.Game.GetArtifact<Dice>("dice");
         var diceEvent = new RollDiceGameEvent<int>(new DiceState<int>(dice, 3));
 
-        // Act (apply sequence: roll -> move -> roll)
+        // act (apply sequence: roll -> move -> roll)
         var legacyAfterFirstRoll = legacy.HandleEvent(diceEvent);
         var planAfterFirstRoll = plan.HandleEvent(diceEvent);
 
@@ -91,12 +91,12 @@ public class DecisionPlanParityTests
         var legacyAfterSecondRoll = legacyAfterMove.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(dice, 6)));
         var planAfterSecondRoll = planAfterMove.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(dice, 6)));
 
-        // Assert piece location parity
+        // assert piece location parity
         var legacyPieceState = legacyAfterSecondRoll.State.GetState<PieceState>(piece1);
         var planPieceState = planAfterSecondRoll.State.GetState<PieceState>(piece1);
         planPieceState.CurrentTile.Should().Be(legacyPieceState.CurrentTile);
 
-        // Assert dice value parity
+        // assert dice value parity
         var legacyDiceState = legacyAfterSecondRoll.State.GetState<DiceState<int>>(dice);
         var planDiceState = planAfterSecondRoll.State.GetState<DiceState<int>>(dice);
         planDiceState.CurrentValue.Should().Be(legacyDiceState.CurrentValue);

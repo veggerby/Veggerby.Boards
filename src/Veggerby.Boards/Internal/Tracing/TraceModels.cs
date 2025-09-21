@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Flows.Phases;
@@ -58,19 +59,19 @@ internal sealed class TraceCaptureObserver : IEvaluationObserver
 
     public void OnPhaseEnter(GamePhase phase, GameState state)
     {
-    _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnPhaseEnter(phase, state);
     }
 
     public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state)
     {
-    _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnRuleEvaluated(phase, rule, response, state);
     }
 
     public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState)
     {
-    _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
         _inner.OnRuleApplied(phase, rule, @event, beforeState, afterState);
     }
 

@@ -11,7 +11,7 @@ public class ConditionResultTests
         {
             // arrange
 
-            // act
+            // act (no action – static members)
 
             // assert
             ConditionResponse.Valid.Should().NotBeNull();

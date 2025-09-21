@@ -65,7 +65,7 @@ public abstract class GameBuilder
         return new Dice(dice.DiceId);
     }
 
-    private Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
+    private static Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
     {
         var player = !string.IsNullOrEmpty(piece.PlayerId)
             ? players.SingleOrDefault(x => string.Equals(x.Id, piece.PlayerId))
@@ -305,7 +305,7 @@ public abstract class GameBuilder
         var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
         var dice = _diceDefinitions.Select(CreateDice).ToArray();
         var relations = _tileRelationDefinitions.Select(x => CreateTileRelation(x, tiles, directions)).ToArray();
-        var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
+        var pieces = _pieceDefinitions.Select(x => GameBuilder.CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToArray();
 
         var board = new Board(BoardId, relations);

@@ -58,7 +58,7 @@ It models **boards (graphs), artifacts (pieces, dice, players), immutable state,
 * `using System;` first, blank line, then others.
 * Private fields: `_camelCase`. Public: PascalCase. Constants: PascalCase.
 * Expression-bodied members only if trivially clearer.
-* Tests: use `// Arrange`, `// Act`, `// Assert`.
+* Tests: use `// arrange`, `// act`, `// assert`.
 
 ---
 
@@ -100,7 +100,7 @@ It models **boards (graphs), artifacts (pieces, dice, players), immutable state,
 [Fact]
 public void GivenValidMove_WhenHandled_ThenPieceMoves()
 {
-    // Arrange
+    // arrange
     var builder = new ChessGameBuilder();
     var progress = builder.Compile();
     var pawn = progress.Game.GetPiece("white-pawn-2");
@@ -108,10 +108,10 @@ public void GivenValidMove_WhenHandled_ThenPieceMoves()
     var to = progress.Game.GetTile("e4");
     var path = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to).ResultPath;
 
-    // Act
+    // act
     var updated = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
 
-    // Assert
+    // assert
     updated.State.GetPieceState(pawn).Tile.Should().Be(to);
 }
 ```

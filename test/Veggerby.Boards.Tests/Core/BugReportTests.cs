@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Tests.Core;
 
 public class BugReportTests
 {
-    private GameProgress Build(bool hashing)
+    private static GameProgress Build(bool hashing)
     {
         using var _ = FeatureFlagScope.StateHashing(hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);

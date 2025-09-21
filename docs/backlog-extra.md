@@ -16,7 +16,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 
 ## Parity & Testing Utilities
 
-- Golden parity harness comparing legacy vs DecisionPlan across randomized event streams (property-based). **PENDING**
+- Golden parity harness comparing legacy vs DecisionPlan across randomized event streams (property-based). **PARTIAL – deterministic opening sequence harness added (DecisionPlanParityTests); randomized property-based still pending**
 - Test helper: `using FeatureFlagScope(decisionPlan: true)` disposable to restore flags automatically. **COMPLETED**
 - Multi-event deterministic parity test sequence — COMPLETED.
 - Movement pattern parity scaffold (legacy visitor vs compiled resolver pre-population) **COMPLETED**

@@ -44,6 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Exclusivity metadata scaffold: `GamePhaseDefinition.Exclusive(string)` and `GamePhase.ExclusivityGroup` now compiled into `DecisionPlan` (`ExclusivityGroups[]`) – no runtime masking yet (future skip masks stage).
 - Adjacency cache scaffold for compiled patterns (`BoardAdjacencyCache`) + feature flag `EnableCompiledPatternsAdjacencyCache` integrated into `CompiledPatternResolver` (lookup fast-path when enabled).
 - Test utility `FeatureFlagScope` (disposable) for deterministic flag toggling in parity and optimization tests.
+- DecisionPlan parity test harness (`DecisionPlanParityTests`) validating identical resulting piece positions for a deterministic opening sequence.
 
 ### Changed
 

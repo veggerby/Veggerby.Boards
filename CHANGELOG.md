@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
-- Package metadata (Description, PackageTags) for Core, Backgammon, Chess and API projects.
+- Package metadata (Description, PackageTags) for Core, Backgammon, and Chess projects. (API layer temporarily removed)
 - README packaged as NuGet readme (PackageReadmeFile) and included in artifacts.
 - Initial CHANGELOG following Keep a Changelog format.
 - Comprehensive XML documentation across public APIs (removed CS1591 suppression and achieved clean build with warnings-as-errors).
@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Internal / Maintenance
 
 - Partial XML documentation added for key engine classes (GameEngine, GameBuilder, game-specific builders, selected state artifacts).
+-- Removed API layer project and documentation (will return later as optional HTTP facade package).
 - Established groundwork for completing remaining public XML docs.
 - Removed temporary CS1591 suppression after completing full XML documentation coverage.
 - Added initial scaffolds for performance benchmarking and property-based invariant testing.

@@ -48,7 +48,7 @@ Encapsulates:
 - Current `GameState`
 - Last processed `IGameEvent` (nullable)
 
-Methods like `HandleEvent` (not shown here but used in API) return a new `GameProgress` with updated state.
+Methods like `HandleEvent` return a new `GameProgress` with updated state.
 
 ## Events
 

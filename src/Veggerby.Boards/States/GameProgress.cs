@@ -108,8 +108,41 @@ public class GameProgress
         // Legacy path retains phase resolution per event when DecisionPlan feature flag is disabled or plan absent.
         if (Engine.DecisionPlan is null || !Internal.FeatureFlags.EnableDecisionPlan)
         {
-            var events = Phase.PreProcessEvent(this, @event);
-            return events.Aggregate(this, (seed, e) => seed.HandleSingleEvent(e));
+            // Re-resolve active phase for each incoming base event (phase may have changed since this progress was constructed).
+            var currentPhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
+            if (currentPhase is null)
+            {
+                // No active phase; event ignored.
+                Engine.Observer.OnEventIgnored(@event, State);
+                return this;
+            }
+            var events = currentPhase.PreProcessEvent(this, @event);
+            return events.Aggregate(this, (seed, e) =>
+            {
+                var phaseForEvent = seed.Engine.GamePhaseRoot.GetActiveGamePhase(seed.State);
+                // Fallback to existing Phase to preserve prior behavior if still null
+                var legacyProgress = phaseForEvent is null ? seed : new GameProgress(seed.Engine, seed.State, seed.Events);
+                if (phaseForEvent is null)
+                {
+                    return seed; // nothing active; event ignored
+                }
+                // Local function replicating HandleSingleEvent but with dynamic phase
+                seed.Engine.Observer.OnPhaseEnter(phaseForEvent, seed.State);
+                var ruleCheckLocal = phaseForEvent.Rule.Check(seed.Engine, seed.State, e);
+                seed.Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheckLocal, seed.State);
+                if (ruleCheckLocal.Result == ConditionResult.Valid)
+                {
+                    var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
+                    seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal);
+                    return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
+                }
+                else if (ruleCheckLocal.Result == ConditionResult.Invalid)
+                {
+                    throw new InvalidGameEventException(e, ruleCheckLocal, seed.Game, phaseForEvent, seed.State);
+                }
+                seed.Engine.Observer.OnEventIgnored(e, seed.State);
+                return seed;
+            });
         }
 
         // DecisionPlan parity path: iterate precompiled leaf phases in order, selecting first whose condition is valid.

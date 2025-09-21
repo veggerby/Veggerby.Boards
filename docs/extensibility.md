@@ -125,8 +125,8 @@ Avoid premature generalization—prefer clarity and explicitness.
 - [ ] All mutators covered by tests (happy + edge + failure).
 - [ ] No orphan directions or unreachable tiles.
 - [ ] Dice / random artifacts start in a deterministic state (explicit Null or seed strategy).
-- [ ] API layer mapping updated if exposing new artifact/state shapes.
+<!-- API layer mapping step omitted (HTTP facade currently removed). -->
 
 ## Next Steps
 
-See `api-layer.md` to expose your game through HTTP and `core-concepts.md` for deeper semantic grounding.
+See `core-concepts.md` for deeper semantic grounding. (HTTP exposure package will be reconsidered later.)

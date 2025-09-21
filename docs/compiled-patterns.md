@@ -57,7 +57,7 @@ Resolution logic iterates compiled patterns for a piece and attempts to build a 
 
 Test coverage ensures:
 
-- Fixed sequences (2+ steps) produce identical paths.
+- Fixed sequences (2+ steps) produce identical paths (direct artifact construction parity test for clarity, no builder dependency).
 - Single and multi-direction repeatable and non-repeatable cases match legacy visitor.
 - Unreachable sequences yield null in both systems.
 - Null pattern yields null.

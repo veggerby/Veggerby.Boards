@@ -14,7 +14,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + initial EventKind filtering + flag merged; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
-| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated for Fixed & MultiDirection; extended parity tests restored |
+| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); direct-construction parity test added for Fixed pattern clarity |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |

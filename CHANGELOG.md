@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - DecisionPlan: EventKind filtering (experimental, flag `EnableDecisionPlanEventFiltering`) with initial Move vs Roll classification and tests (`DecisionPlanEventFilteringTests`).
 - EventFiltering baseline benchmark scaffold (`EventFilteringBaseline`) measuring Move vs Roll evaluation paths (initial; tagging breadth expansion pending).
 - Restored and extended compiled pattern parity tests (expanded edge coverage) with adjustments for legacy visitor null path handling.
+- Simplified core compiled pattern parity test now constructs artifacts directly (no builder indirection) for fixed pattern validation, improving test clarity and isolation.
 
 ### Changed
 

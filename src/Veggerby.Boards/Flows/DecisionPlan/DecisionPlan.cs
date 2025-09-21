@@ -57,7 +57,15 @@ public sealed class DecisionPlan
         else
         {
             // Leaf phase
-            entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule));
+            bool alwaysValid = false;
+            if (phase.Condition is States.Conditions.NullGameStateCondition nullCondition)
+            {
+                // Evaluate once with a minimal dummy state (NullGameStateCondition ignores the state argument anyway).
+                // We pass null intentionally; implementation does not dereference.
+                var result = nullCondition.Evaluate(null);
+                alwaysValid = ReferenceEquals(result, ConditionResponse.Valid);
+            }
+            entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
         }
     }
 
@@ -104,4 +112,4 @@ public sealed class DecisionPlan
 /// <summary>
 /// Represents a leaf phase entry within a compiled decision plan.
 /// </summary>
-public readonly record struct DecisionPlanEntry(int PhaseNumber, IGameStateCondition Condition, IGameEventRule Rule);
+public readonly record struct DecisionPlanEntry(int PhaseNumber, IGameStateCondition Condition, IGameEventRule Rule, GamePhase Phase, bool ConditionIsAlwaysValid);

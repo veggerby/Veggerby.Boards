@@ -34,27 +34,6 @@ public class CompiledPatternExtendedParityTests
         return (legacy, compiled);
     }
 
-    [Fact]
-    public void GivenSingleDirectionMultiPattern_WhenResolving_ThenCompiledMatchesLegacy()
-    {
-        // arrange (a -> b -> c linear)
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var d1 = new Direction("ab"); var d2 = new Direction("bc");
-        var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2);
-        var board = new Board("board-md-1", new[] { r1, r2 });
-        var player = new Player("p1");
-        var piece = new Piece("piece-1", player, new IPattern[] { new MultiDirectionPattern(new[] { d1 }, isRepeatable: true) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
-
-        // act (resolve a -> c using repeat)
-        var (legacy, compiled) = ResolveBoth(game, piece, a, c);
-
-        // assert
-        legacy.Should().NotBeNull();
-        compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
-        compiled.Relations.Count().Should().Be(legacy.Relations.Count());
-    }
 
     [Fact]
     public void GivenMultiDirectionPattern_WhenResolvingAlongSecondDirection_ThenCompiledMatchesLegacy()

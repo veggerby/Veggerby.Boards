@@ -166,6 +166,8 @@ To mitigate overreach and maintain momentum:
 Deliverables (Status annotations in brackets):
 
 - `DecisionPlan` immutable model: phases, rule table, pre-bound predicates, mutator delegate array. **[COMPLETED (parity subset – minimal model, no delegate table yet)]**
+- Phase reference caching in `DecisionPlanEntry` to eliminate runtime tree lookups. **[COMPLETED – micro-optimization]**
+- Predicate hoisting v1: Skip evaluation for trivially true `NullGameStateCondition` entries (flag on `DecisionPlanEntry`). **[COMPLETED]**
 - Compiler: `DecisionPlanBuilder.Compile(GameBuilderContext ctx)`. **[COMPLETED (integrated into builder; context abstraction simplified)]**
 - Execution path: `GameEngine.HandleEvent` uses precomputed plan. **[COMPLETED (flag-gated parity path)]**
 - Typed result: `EventResult` discriminated union. **[COMPLETED (placeholder, not yet returned publicly)]**

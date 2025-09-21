@@ -30,9 +30,14 @@ public static partial class GameExtensions
     /// </summary>
     public static Tile GetTile(this Game game, string id)
     {
-        return game
+        var tile = game
             .Board
             .GetTile(id);
+        if (tile is null && !string.IsNullOrEmpty(id) && !id.StartsWith("tile-", System.StringComparison.Ordinal))
+        {
+            tile = game.Board.GetTile($"tile-{id}");
+        }
+        return tile;
     }
 
     /// <summary>

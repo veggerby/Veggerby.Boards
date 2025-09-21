@@ -20,6 +20,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Test helper: `using FeatureFlagScope(decisionPlan: true)` disposable to restore flags automatically.
 - Multi-event deterministic parity test sequence — COMPLETED.
 - Movement pattern parity scaffold (legacy visitor vs compiled resolver pre-population) **COMPLETED**
+- Restore and expand compiled pattern parity tests (legacy visitor multi-direction repeat + chess pawn double move) after investigating legacy visitor null path edge case. **PENDING**
 - Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
 - (Removed) Former BugReport replay harness concept replaced by future roadmap item 14 (external issue reproduction) – not in core code.
 - Deterministic seeding API (`GameBuilder.WithSeed`) **COMPLETED**
@@ -30,6 +31,8 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Microbenchmark variant with observer enabled vs disabled to measure overhead delta.
 - Microbenchmark variant with trace capture enabled vs disabled (overhead quantification) **PENDING**
 - Pattern resolution benchmark scaffold (visitor vs compiled placeholder) **COMPLETED (compiler now populated for Fixed & MultiDirection)**
+- DecisionPlan phase cache optimization benchmark follow-up (measure delta from removing ResolvePhase traversal). **PENDING**
+- Predicate hoisting extended: future phases include grouping conditions, short-circuit bit masks, and invalidation sets. **PENDING**
 - Allocation profiler script capturing top 10 hot allocations in `HandleEvent`.
 - Future: capture observer callback counts per benchmark iteration to detect silent regression.
 

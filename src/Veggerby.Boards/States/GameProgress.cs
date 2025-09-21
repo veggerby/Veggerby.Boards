@@ -138,14 +138,14 @@ public class GameProgress
             for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
             {
                 var entry = Engine.DecisionPlan.Entries[i];
-                if (!entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
+                if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                 {
                     continue;
                 }
 
                 var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                // Resolve phase by number for accurate observer attribution (depth-first traversal cost acceptable for V1).
-                var observedPhase = Flows.DecisionPlan.DecisionPlan.ResolvePhase(progress.Engine.GamePhaseRoot, entry.PhaseNumber) ?? progress.Engine.GamePhaseRoot;
+                // Use cached phase reference from compiled plan (removes per-event depth-first traversal cost).
+                var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
                 progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
                 progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
                 if (ruleCheck.Result == ConditionResult.Valid)

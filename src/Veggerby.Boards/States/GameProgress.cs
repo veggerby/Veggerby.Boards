@@ -4,7 +4,6 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards.States;
@@ -61,32 +60,6 @@ public class GameProgress
     /// Gets the root game definition.
     /// </summary>
     public Game Game => Engine.Game;
-
-    private GameProgress HandleSingleEvent(IGameEvent @event)
-    {
-        // Notify phase entry (legacy path active phase only)
-        Engine.Observer.OnPhaseEnter(Phase, State);
-        var ruleCheck = Phase.Rule.Check(Engine, State, @event);
-        Engine.Observer.OnRuleEvaluated(Phase, Phase.Rule, ruleCheck, State);
-        if (ruleCheck.Result == ConditionResult.Valid)
-        {
-            var newState = Phase.Rule.HandleEvent(Engine, State, @event);
-            Engine.Observer.OnRuleApplied(Phase, Phase.Rule, @event, State, newState);
-            if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
-            {
-                Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
-            }
-            return new GameProgress(Engine, newState, Events.Concat([@event]));
-        }
-        else if (ruleCheck.Result == ConditionResult.Invalid)
-        {
-            throw new InvalidGameEventException(@event, ruleCheck, Game, Phase, State);
-        }
-
-        // ignored
-        Engine.Observer.OnEventIgnored(@event, State);
-        return this;
-    }
 
     /// <summary>
     /// Produces a new <see cref="GameProgress"/> with a successor <see cref="GameState"/> built from replacing the provided artifact states.
@@ -199,14 +172,5 @@ public class GameProgress
             }
         }
         return progress;
-    }
-
-    /// <summary>
-    /// Captures a bug report (seed, feature flags, event types, final hashes) for diagnostic purposes.
-    /// </summary>
-    /// <returns>Captured bug report.</returns>
-    internal Internal.BugReport CaptureBugReport()
-    {
-        return Internal.BugReport.Capture(this);
     }
 }

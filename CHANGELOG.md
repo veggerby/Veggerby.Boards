@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `IEvaluationObserver.OnStateHashed` callback invoked after successful rule application (hashing enabled only).
 - Experimental timeline zipper (`GameTimeline`) with immutable undo/redo (flag-gated).
 - 128-bit state hash (`Hash128`) computed alongside legacy 64-bit hash when hashing enabled (xxHash128 scaffold).
-- BugReport capture scaffold (internal) capturing seed, feature flags, event types, final hashes (replay deferred).
+- (Removed in Unreleased) Previous temporary internal BugReport capture scaffold (seed, flags, event types, hashes). Concept moved out of core; future external reproduction tooling tracked via roadmap item 14.
 - Hashing overhead benchmark (`HashingOverheadBenchmark`) comparing per-event cost with hashing disabled/enabled.
 - Trace capture scaffold (feature-flagged) recording PhaseEnter, RuleEvaluated, RuleApplied, EventIgnored, StateHashed entries for last evaluation.
 

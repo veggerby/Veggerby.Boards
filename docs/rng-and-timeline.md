@@ -38,7 +38,7 @@ Limitations / Next Steps:
 - Replaces earlier temporary `ToString()` approach with a canonical binary layout (property-name ordered, typed tags) to stabilize cross-platform equality.
 - Transition to 128-bit hash to further reduce collision probability and enable Merkle tree / timeline node dedup.
 - Introduce `GameTimeline` zipper with undo/redo; hash becomes node identity key.
-- Add `BugReport` envelope capturing initial seed + event list + final hash.
+- (Deferred) External reproduction tooling (seed + event list + final hash) per roadmap item 14; not implemented in core engine.
 
 ## Timeline Zipper (Experimental)
 
@@ -69,27 +69,15 @@ Future Enhancements:
 
 128-bit hashing upgrade (xxHash128), bug report capture & replay harness, hash interning, and timeline diff utilities.
 
-## BugReport Capture (Scaffold)
+## Deferred Reproduction Envelope
 
-Phase 1 introduces a minimal `BugReport` capture (internal) to snapshot:
+The original embedded bug report capture has been removed. Future external tooling (roadmap item 14) will package:
 
-- Seed (or 0 if RNG not initialized)
-- Feature flags (DecisionPlan, StateHashing, Timeline)
-- Event type names (no payload serialization yet)
-- Final state hash (64-bit) and Hash128 (if enabled)
+- Seed
+- Event script
+- Final hash (64/128-bit)
 
-Usage (internal API – surface may change):
-
-```csharp
-var report = progress.CaptureBugReport();
-```
-
-Replay is deferred until payload schema and event argument canonical serialization are specified. Future steps:
-
-1. Canonical event serialization (type id + ordered field values)
-2. Replay harness verifying final Hash128 equality
-3. Optional compression / chunking for large sequences
-4. Cross-platform hash parity validation
+for GitHub issue reproduction without adding surface area to the core engine.
 
 ## Hashing Overhead (Benchmark Reference)
 

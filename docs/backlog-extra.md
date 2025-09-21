@@ -20,7 +20,8 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Test helper: `using FeatureFlagScope(decisionPlan: true)` disposable to restore flags automatically.
 - Multi-event deterministic parity test sequence — COMPLETED.
 - Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
-- Replay harness for BugReport captured event streams **PARTIAL (empty-event validation implemented; payload synthesis TBD)**
+- (Removed) Former BugReport replay harness concept replaced by future roadmap item 14 (external issue reproduction) – not in core code.
+- Deterministic seeding API (`GameBuilder.WithSeed`) **COMPLETED**
 - Dual-run test asserting trace sequence identical with/without hashing enabled **PENDING**
 
 ## Performance Tooling

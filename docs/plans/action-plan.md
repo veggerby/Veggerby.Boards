@@ -2,7 +2,7 @@
 
 > Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
 >
-> Revision Addendum (2025-09-21 later, same branch): Added timeline zipper (flagged), dual state hashing (64-bit FNV-1a + 128-bit xxHash128), BugReport capture scaffold (no replay yet), extended `IEvaluationObserver` with `PhaseEnter`, `StateHashed`, and trace capture scaffold (in‑memory last-evaluation trace). Added hashing + observer overhead benchmarks and documentation updates.
+> Revision Addendum (2025-09-21 later, same branch): Added timeline zipper (flagged), dual state hashing (64-bit FNV-1a + 128-bit xxHash128), extended `IEvaluationObserver` with `PhaseEnter`, `StateHashed`, and trace capture scaffold (in‑memory last-evaluation trace). Added hashing + observer overhead benchmarks and documentation updates. (Previous internal BugReport scaffold removed; future external reproduction tooling deferred to roadmap item 14.)
 
 ## Executive Summary
 
@@ -13,7 +13,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold + initial replay harness (empty-event support) |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
@@ -60,7 +60,7 @@ The external architectural review recommends tightening early phase scope and pu
 |-------|-------------------|--------------------|-----------------------------|
 | Phase 1 Foundations | 1–2 weeks | Minimal DecisionPlan, IRandomSource, no-op IEvaluationObserver, baseline benchmarks, FsCheck scaffold | Short-circuit masks, advanced predicate hoisting |
 | Phase 2 Acceleration | 2–3 weeks | Pattern compiler (subset: sliders, knights, basic forward strides), SoA mirrors, one short-circuit optimization, optional chess bitboards (flag) | Full DFA for exotic patterns |
-| Phase 3 Observability & Simulation | 1–2 weeks | JSON trace emitter, CLI viewer MVP, Simulator (sequential + parallel), Merkle hash + BugReport replay | Full web visualizer UI |
+| Phase 3 Observability & Simulation | 1–2 weeks | JSON trace emitter, CLI viewer MVP, Simulator (sequential + parallel), Merkle hash tooling | Full web visualizer UI |
 | Phase 4 Hardening & Ecosystem | ~1 week | Versioned DTOs, package split, analyzers for hidden globals, migration docs | Any experimental feature graduation pending metrics |
 
 Rationale:
@@ -92,7 +92,7 @@ To mitigate overreach and maintain momentum:
 |----------|-----------|
 | Determinism (Cross-Platform) | Same event stream + seed yields identical Merkle hash on Linux x64, Windows x64, and (when available) ARM64 CI agents. |
 | Observer Transparency | Enabling observer must not alter any resulting state hash (dual-run assertion test). |
-| BugReport Stability | Serialized BugReport round-trips (versioned schema) with semantic equality of: seed, event list, terminal state hash, decision plan version. |
+| External Reproduction Envelope (Deferred) | Out-of-process artifact (seed, event list, terminal state hash, decision plan version) handled by external tooling – no in-core schema commitment. |
 | Performance Gate | Observer enabled adds ≤5% overhead in microbenchmarks. |
 | Fallback Safety | Disabling compiled patterns or DecisionPlan (feature flag) reverts to legacy path with identical test outcomes. |
 
@@ -155,7 +155,7 @@ To mitigate overreach and maintain momentum:
 | Add cross-platform determinism | Additional Acceptance Criteria / Cross-Platform Determinism Strategy |
 | Dual-engine parity only in tests | Scope Guardrails / Feature Toggles |
 | Abort bitboards if low gain | Scope Guardrails (Bitboards) |
-| Add schema stability for BugReport | Additional Acceptance Criteria |
+| External reproduction envelope (deferred) | Additional Acceptance Criteria |
 | Provide clear feature flags | Feature Toggles & Flags |
 | Expand metrics with phased targets | Updated Metrics Targets |
 
@@ -188,11 +188,11 @@ Deliverables (Status annotations in brackets):
 - GameState includes RNG snapshot (struct) + `WithRandom(IRandomSource)` cloning. **[COMPLETED]**
 - Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`. **[COMPLETED (flag-gated implementation)**]
 - Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[COMPLETED (64-bit + 128-bit xxHash128 upgrade)]**
-- `BugReport` envelope capturing seed, event stream, decision plan version. **[PARTIAL – capture scaffold without replay]**
+<!-- Removed previous internal `BugReport` envelope scaffold: concept moved out of core; external tool will supply reproduction envelope per roadmap item 14. -->
 Acceptance Criteria:
 - Replaying same seed + events yields identical final hash and RNG state. **[PENDING – replay not implemented]**
 - Undo/Redo operations O(1) and hash-stable. **[PARTIAL – zipper present; formal tests pending]**
-- BugReport replay test harness passes sample captured report. **[NOT STARTED]**
+<!-- Removed internal replay harness item (now external responsibility). -->
 Risks:
 - Hash collisions (mitigate with 128-bit hash like xxHash128 or Blake2b incremental).
 - State size growth (dedupe identical state nodes via hash interning map optional in Phase 3).
@@ -351,7 +351,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
 ## Sequencing Dependencies
 
 - DecisionPlan before Observer (observer hooks rely on stable plan indexes).
-- RNG integration before BugReport & Simulation.
+- RNG integration before Simulation (external reproduction envelope independent).
 - Pattern DFA before large perf refactors (so measurements reflect future model).
 - Bitboards after pattern compilation (reuses adjacency baseline).
 
@@ -373,7 +373,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
    - Story: embed rng state in GameState
    - Story: zipper structure with undo/redo tests
    - Story: merkle hash function & tests
-   - Story: bug report capture + replay
+   -- Story: (Removed) internal bug report capture + replay (externalized)
 3. EPIC: Pattern Compilation
    - Spike: IR representation
    - Story: direction adjacency bitsets
@@ -408,7 +408,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
 
 ## Deliverables Summary
 
-This action plan yields: faster deterministic evaluation, richer diagnostics, replayable bug reports, a compiled pattern engine, parallel simulation scaffolding, stable extension contracts, and hardened performance guardrails.
+This action plan yields: faster deterministic evaluation, richer diagnostics, a compiled pattern engine, parallel simulation scaffolding, stable extension contracts, and hardened performance guardrails. (Replayable bug reports now explicitly out-of-scope for core; handled by future external tooling.)
 
 ## Next Immediate Steps
 

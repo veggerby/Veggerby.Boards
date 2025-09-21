@@ -21,6 +21,7 @@
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <!-- Benchmarks -->
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.3" />
+    <PackageVersion Include="FsCheck.Xunit" Version="2.16.6" />
     <!-- Public API approval -->
     <PackageVersion Include="PublicApiGenerator" Version="11.4.6" />
     <!-- API layer packages -->

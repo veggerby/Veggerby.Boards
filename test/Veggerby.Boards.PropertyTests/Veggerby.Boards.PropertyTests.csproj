@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FsCheck.Xunit" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Veggerby.Boards.Core/Veggerby.Boards.Core.csproj" />
+    <ProjectReference Include="../../src/Veggerby.Boards.Chess/Veggerby.Boards.Chess.csproj" />
+    <ProjectReference Include="../../src/Veggerby.Boards.Backgammon/Veggerby.Boards.Backgammon.csproj" />
+  </ItemGroup>
+</Project>

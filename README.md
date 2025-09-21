@@ -51,12 +51,12 @@ See `docs/core-concepts.md` for details.
 
 Layered solution:
 
-```
+```txt
 Game Modules (Backgammon, Chess)
-				↓
-			Core (artifacts • state • phases • rules)
-				↓
-			API (demo HTTP exposure)
+                ↓
+            Core (artifacts • state • phases • rules)
+                ↓
+            API (demo HTTP exposure)
 ```
 
 More in `docs/architecture.md`.
@@ -75,10 +75,10 @@ Step-by-step: `docs/extensibility.md`.
 
 `Veggerby.Boards.Api` exposes a sample endpoint:
 
-```
+```txt
 GET /api/games/{guid}
-	endsWith("1") => Backgammon (with simulated dice + move)
-	otherwise     => Chess initial state
+    endsWith("1") => Backgammon (with simulated dice + move)
+    otherwise     => Chess initial state
 ```
 
 Models map engine objects to simple DTOs (tiles, pieces, dice values, active player, etc.).

@@ -1,9 +1,9 @@
 using System;
 
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Flows.Observers;
 
@@ -48,6 +48,13 @@ public interface IEvaluationObserver
     /// <param name="event">Ignored event.</param>
     /// <param name="state">State at the time of ignoring.</param>
     void OnEventIgnored(IGameEvent @event, GameState state);
+
+    /// <summary>
+    /// Called after a new state hash has been computed (when state hashing feature flag enabled).
+    /// </summary>
+    /// <param name="state">The hashed state.</param>
+    /// <param name="hash">The computed hash value.</param>
+    void OnStateHashed(GameState state, ulong hash);
 }
 
 /// <summary>
@@ -81,6 +88,11 @@ public sealed class NullEvaluationObserver : IEvaluationObserver
 
     /// <inheritdoc />
     public void OnPhaseEnter(GamePhase phase, GameState state)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnStateHashed(GameState state, ulong hash)
     {
     }
 }

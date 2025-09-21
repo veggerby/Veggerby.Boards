@@ -10,10 +10,12 @@ namespace Veggerby.Boards.Tests.Utils;
 public sealed class FeatureFlagScope : IDisposable
 {
     private readonly bool _originalDecisionPlan;
+    private readonly bool _originalStateHashing;
 
-    private FeatureFlagScope(bool originalDecisionPlan)
+    private FeatureFlagScope(bool originalDecisionPlan, bool originalStateHashing)
     {
         _originalDecisionPlan = originalDecisionPlan;
+        _originalStateHashing = originalStateHashing;
     }
 
     /// <summary>
@@ -23,8 +25,18 @@ public sealed class FeatureFlagScope : IDisposable
     /// <returns>Disposable scope.</returns>
     public static FeatureFlagScope DecisionPlan(bool enableDecisionPlan)
     {
-        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan);
+        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing);
         FeatureFlags.EnableDecisionPlan = enableDecisionPlan;
+        return scope;
+    }
+
+    /// <summary>
+    /// Enables or disables the StateHashing flag for the scope lifetime.
+    /// </summary>
+    public static FeatureFlagScope StateHashing(bool enable)
+    {
+        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing);
+        FeatureFlags.EnableStateHashing = enable;
         return scope;
     }
 
@@ -32,5 +44,6 @@ public sealed class FeatureFlagScope : IDisposable
     public void Dispose()
     {
         FeatureFlags.EnableDecisionPlan = _originalDecisionPlan;
+        FeatureFlags.EnableStateHashing = _originalStateHashing;
     }
 }

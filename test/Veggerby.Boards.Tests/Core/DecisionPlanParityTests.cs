@@ -29,7 +29,7 @@ public class DecisionPlanParityTests
         var piece = legacy.Game.GetPiece("piece-1");
         var from = legacy.Game.GetTile("tile-1");
         var to = legacy.Game.GetTile("tile-2");
-    var relation = legacy.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        var relation = legacy.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
         var path = new TilePath([relation]);
         var evt = new MovePieceGameEvent(piece, path);
 
@@ -38,9 +38,9 @@ public class DecisionPlanParityTests
         var planResult = plan.HandleEvent(evt);
 
         // Assert
-    var legacyPieceState = legacyResult.State.GetState<PieceState>(piece);
-    var planPieceState = planResult.State.GetState<PieceState>(piece);
-    planPieceState.CurrentTile.Should().Be(legacyPieceState.CurrentTile);
+        var legacyPieceState = legacyResult.State.GetState<PieceState>(piece);
+        var planPieceState = planResult.State.GetState<PieceState>(piece);
+        planPieceState.CurrentTile.Should().Be(legacyPieceState.CurrentTile);
     }
 
     [Fact]
@@ -49,19 +49,19 @@ public class DecisionPlanParityTests
         // Arrange
         var legacy = Build(false);
         var plan = Build(true);
-    var dice = legacy.Game.GetArtifact<Dice>("dice");
-    // create a deterministic dice state (value arbitrary for parity, both paths receive same value)
-    var newState = new DiceState<int>(dice, 5);
-    var evt = new RollDiceGameEvent<int>(newState);
+        var dice = legacy.Game.GetArtifact<Dice>("dice");
+        // create a deterministic dice state (value arbitrary for parity, both paths receive same value)
+        var newState = new DiceState<int>(dice, 5);
+        var evt = new RollDiceGameEvent<int>(newState);
 
         // Act
         var legacyResult = legacy.HandleEvent(evt);
         var planResult = plan.HandleEvent(evt);
 
         // Assert
-    var legacyDiceState = legacyResult.State.GetState<DiceState<int>>(dice);
-    var planDiceState = planResult.State.GetState<DiceState<int>>(dice);
-    planDiceState.CurrentValue.Should().Be(legacyDiceState.CurrentValue);
+        var legacyDiceState = legacyResult.State.GetState<DiceState<int>>(dice);
+        var planDiceState = planResult.State.GetState<DiceState<int>>(dice);
+        planDiceState.CurrentValue.Should().Be(legacyDiceState.CurrentValue);
     }
 
     [Fact]

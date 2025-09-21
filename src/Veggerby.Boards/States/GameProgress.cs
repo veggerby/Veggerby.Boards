@@ -4,8 +4,8 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Observers;
+using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards.States;
 
@@ -67,11 +67,15 @@ public class GameProgress
         // Notify phase entry (legacy path active phase only)
         Engine.Observer.OnPhaseEnter(Phase, State);
         var ruleCheck = Phase.Rule.Check(Engine, State, @event);
-    Engine.Observer.OnRuleEvaluated(Phase, Phase.Rule, ruleCheck, State);
+        Engine.Observer.OnRuleEvaluated(Phase, Phase.Rule, ruleCheck, State);
         if (ruleCheck.Result == ConditionResult.Valid)
         {
             var newState = Phase.Rule.HandleEvent(Engine, State, @event);
             Engine.Observer.OnRuleApplied(Phase, Phase.Rule, @event, State, newState);
+            if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+            {
+                Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+            }
             return new GameProgress(Engine, newState, Events.Concat([@event]));
         }
         else if (ruleCheck.Result == ConditionResult.Invalid)
@@ -134,6 +138,10 @@ public class GameProgress
                 {
                     var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
                     seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal);
+                    if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
+                    {
+                        seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
+                    }
                     return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
                 }
                 else if (ruleCheckLocal.Result == ConditionResult.Invalid)
@@ -148,7 +156,8 @@ public class GameProgress
         // DecisionPlan parity path: iterate precompiled leaf phases in order, selecting first whose condition is valid.
         // Pre-processing still uses the currently active phase determined at construction (could be refined later
         // to pre-process per candidate phase if needed). This maintains functional parity with legacy traversal.
-        var preProcessed = Phase.PreProcessEvent(this, @event);
+        // Phase can be null if no active phase resolves for current state; in that case, skip pre-processing.
+        var preProcessed = Phase is null ? new[] { @event } : Phase.PreProcessEvent(this, @event);
         var progress = this;
         foreach (var evt in preProcessed)
         {
@@ -161,14 +170,18 @@ public class GameProgress
                 }
 
                 var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                    // Resolve phase by number for accurate observer attribution (depth-first traversal cost acceptable for V1).
-                    var observedPhase = Flows.DecisionPlan.DecisionPlan.ResolvePhase(progress.Engine.GamePhaseRoot, entry.PhaseNumber) ?? progress.Engine.GamePhaseRoot;
-                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State);
+                // Resolve phase by number for accurate observer attribution (depth-first traversal cost acceptable for V1).
+                var observedPhase = Flows.DecisionPlan.DecisionPlan.ResolvePhase(progress.Engine.GamePhaseRoot, entry.PhaseNumber) ?? progress.Engine.GamePhaseRoot;
+                progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State);
                 if (ruleCheck.Result == ConditionResult.Valid)
                 {
                     var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
                     progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState);
+                    if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                    {
+                        progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                    }
                     progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
                     handled = true;
                     break; // only first valid rule/phase handles event (parity with existing behavior)

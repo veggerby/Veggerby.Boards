@@ -2,8 +2,8 @@ using System;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.DecisionPlan;
-using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Observers;
+using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards;
 

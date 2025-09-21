@@ -1,0 +1,87 @@
+using System.Linq;
+
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Internal;
+using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.Utils;
+
+namespace Veggerby.Boards.Tests.Core;
+
+public class StateHashingTests
+{
+    private GameProgress Build(bool hashing)
+    {
+        var scope = FeatureFlagScope.StateHashing(hashing);
+        var builder = new TestGameBuilder(useSimpleGamePhase: false);
+        var progress = builder.Compile();
+        scope.Dispose();
+        return progress;
+    }
+
+    [Fact]
+    public void GivenHashingDisabled_WhenBuildingState_ThenHashIsNull()
+    {
+        // Arrange
+        var progress = Build(false);
+
+        // Assert
+        progress.State.Hash.Should().BeNull();
+    }
+
+    [Fact]
+    public void GivenHashingEnabled_WhenBuildingState_ThenHashHasValue()
+    {
+        // Arrange
+        var progress = Build(true);
+
+        // Assert
+        progress.State.Hash.HasValue.Should().BeTrue();
+    }
+
+    [Fact]
+    public void GivenSameSequence_WhenHashingEnabled_ThenFinalHashesMatch()
+    {
+        // Arrange
+        var a = Build(true);
+        var b = Build(true);
+
+        var pieceId = "piece-1";
+        var from = a.Game.GetTile("tile-1");
+        var to = a.Game.GetTile("tile-2");
+        var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        var path = new TilePath([relation]);
+        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+
+        // Act
+        a = a.HandleEvent(move);
+        b = b.HandleEvent(move);
+
+        // Assert
+        a.State.Hash.Should().Be(b.State.Hash);
+    }
+
+    [Fact]
+    public void GivenDifferentEvents_WhenHashingEnabled_ThenFinalHashesDiffer()
+    {
+        // Arrange
+        var a = Build(true);
+        var b = Build(true);
+
+        var pieceId = "piece-1";
+        var from = a.Game.GetTile("tile-1");
+        var to = a.Game.GetTile("tile-2");
+        var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        var path = new TilePath([relation]);
+        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+
+        // Act
+        a = a.HandleEvent(move); // move piece
+        // b does not move
+
+        // Assert
+        a.State.Hash.Should().NotBe(b.State.Hash);
+    }
+}

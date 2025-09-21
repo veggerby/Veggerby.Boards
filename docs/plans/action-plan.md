@@ -11,11 +11,11 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | `IRandomSource`, `XorShiftRandomSource`, `GameState.Random` implemented; timeline, hashing, BugReport not started |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + feature-flagged state hashing (FNV-1a 64-bit) implemented; timeline zipper & BugReport not started |
 | 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
-| 6. Observability & Diagnostics | NOT STARTED | No observer interface / trace emitter yet |
+| 6. Observability & Diagnostics | PARTIAL | Observer interface + PhaseEnter + StateHashed callbacks implemented; trace emitter pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
 | 8. Module & API Versioning Strategy | NOT STARTED | No versioned DTOs yet |
 | 9. Small Structural Refactors | NOT STARTED | Refactors/de-analyzers not started |
@@ -185,7 +185,7 @@ Deliverables (Status annotations in brackets):
 - `IRandomSource` + `XorShiftRandomSource` implementation (seed + serializable state). **[COMPLETED]**
 - GameState includes RNG snapshot (struct) + `WithRandom(IRandomSource)` cloning. **[COMPLETED]**
 - Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`. **[NOT STARTED]**
-- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[NOT STARTED]**
+- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[COMPLETED (phase 1 FNV-1a 64-bit scaffold; upgrade to xxHash128 planned)]**
 - `BugReport` envelope capturing seed, event stream, decision plan version. **[NOT STARTED]**
 Acceptance Criteria:
 - Replaying same seed + events yields identical final hash and RNG state. **[PENDING – hashing & replay infra not implemented]**
@@ -252,7 +252,7 @@ Deliverables (Status annotations in brackets):
 
 - `IEvaluationObserver` minimal v1 (RuleEvaluated, RuleApplied, EventIgnored) implemented + no-op default + builder injection. **[COMPLETED]**
 - PhaseEnter callback emitted (legacy + DecisionPlan) **[COMPLETED (StateHashed still pending)]**
-- StateHashed callback **[NOT STARTED]**
+- StateHashed callback **[COMPLETED]**
 - Decision trace serializer (compact JSON) for last evaluation. **[NOT STARTED]**
 - CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
 Acceptance Criteria:

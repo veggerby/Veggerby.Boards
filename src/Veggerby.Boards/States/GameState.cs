@@ -21,11 +21,17 @@ public class GameState
     private readonly IDictionary<Artifact, IArtifactState> _childStates;
     private readonly GameState _previousState;
     private readonly IRandomSource _random;
+    private readonly ulong? _hash; // computed when hashing feature flag enabled
 
     /// <summary>
     /// Gets the collection of artifact states contained in this snapshot.
     /// </summary>
     public IEnumerable<IArtifactState> ChildStates => _childStates.Values.ToList().AsReadOnly();
+
+    /// <summary>
+    /// Gets the deterministic state hash (when hashing feature flag enabled); otherwise <c>null</c>.
+    /// </summary>
+    public ulong? Hash => _hash;
 
     /// <summary>
     /// Gets a value indicating whether this is the initial state (no prior state).
@@ -37,6 +43,10 @@ public class GameState
         _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
         _previousState = previousState;
         _random = random;
+        if (Internal.FeatureFlags.EnableStateHashing)
+        {
+            _hash = ComputeHash();
+        }
     }
 
     /// <summary>
@@ -169,4 +179,66 @@ public class GameState
     /// Gets the random source snapshot associated with this state (may be null if none assigned).
     /// </summary>
     public IRandomSource Random => _random;
+
+    /// <summary>
+    /// Computes a 64-bit FNV-1a style hash over artifact states (id + type + serialized state) and RNG snapshot.
+    /// Stable ordering: artifact id ascending.
+    /// </summary>
+    private ulong ComputeHash()
+    {
+        const ulong offset = 1469598103934665603UL; // FNV offset basis
+        ulong h = offset;
+
+        // order by artifact id for canonical ordering; use canonical serializer for deterministic representation
+        foreach (var kvp in _childStates.OrderBy(x => x.Key.Id, StringComparer.Ordinal))
+        {
+            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(kvp.Key.Id));
+            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(kvp.Key.GetType().FullName));
+            var state = kvp.Value;
+            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(state.GetType().FullName));
+            var writer = new Internal.IncrementalHashWriter(h);
+            Internal.CanonicalStateSerializer.WriteObject(state, ref writer);
+            h = writer.Hash;
+        }
+
+        if (_random is not null)
+        {
+            // Serialize RNG seed plus a small deterministic peek (does not mutate original due to clone).
+            var clone = _random.Clone();
+            Span<byte> seedBytes = stackalloc byte[8];
+            BitConverter.TryWriteBytes(seedBytes, clone.Seed);
+            h = HashBytes(h, seedBytes);
+            // Peek 2 uints as additional state fingerprint (8 bytes)
+            Span<byte> peek = stackalloc byte[8];
+            var u1 = clone.NextUInt();
+            var u2 = clone.NextUInt();
+            BitConverter.TryWriteBytes(peek[..4], u1);
+            BitConverter.TryWriteBytes(peek[4..], u2);
+            h = HashBytes(h, peek);
+        }
+
+        return h;
+    }
+
+    private static ulong HashBytes(ulong seed, IEnumerable<byte> bytes)
+    {
+        ulong h = seed;
+        foreach (var b in bytes)
+        {
+            h ^= b;
+            h *= 1099511628211UL;
+        }
+        return h;
+    }
+
+    private static ulong HashBytes(ulong seed, ReadOnlySpan<byte> bytes)
+    {
+        ulong h = seed;
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            h ^= bytes[i];
+            h *= 1099511628211UL;
+        }
+        return h;
+    }
 }

@@ -355,7 +355,7 @@ public abstract class GameBuilder
             decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
         }
 
-    var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer);
+        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer);
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;

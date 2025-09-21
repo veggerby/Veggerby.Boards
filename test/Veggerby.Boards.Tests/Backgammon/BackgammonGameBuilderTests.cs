@@ -2,20 +2,20 @@ using System;
 
 
 using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Backgammon;
 
 public class BackgammonGameBuilderTests
 {
-    private Tuple<string, string> Clockwise(string tileId)
+    private static Tuple<string, string> Clockwise(string tileId)
     {
         return new Tuple<string, string>("clockwise", tileId);
     }
 
-    private Tuple<string, string> CounterClockwise(string tileId)
+    private static Tuple<string, string> CounterClockwise(string tileId)
     {
         return new Tuple<string, string>("counterclockwise", tileId);
     }

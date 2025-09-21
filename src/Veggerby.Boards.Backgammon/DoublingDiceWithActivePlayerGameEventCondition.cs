@@ -1,16 +1,22 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Ensures doubling cube may only be rolled by its current owner or when unowned.
+/// </summary>
 public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventCondition<RollDiceGameEvent<int>>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoublingDiceWithActivePlayerGameEventCondition"/> class.
+    /// </summary>
     public DoublingDiceWithActivePlayerGameEventCondition(Dice doublingDice)
     {
         ArgumentNullException.ThrowIfNull(doublingDice);
@@ -18,8 +24,12 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
         DoublingDice = doublingDice;
     }
 
+    /// <summary>
+    /// Gets the doubling dice artifact.
+    /// </summary>
     public Dice DoublingDice { get; }
 
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
         var diceState = state.GetState<DoublingDiceState>(DoublingDice);

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts;

@@ -1,4 +1,4 @@
-﻿using Veggerby.Boards.Core;
+﻿using Veggerby.Boards;
 
 namespace Veggerby.Boards.Tests.Core.Fakes;
 

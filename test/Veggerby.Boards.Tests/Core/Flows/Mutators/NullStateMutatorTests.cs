@@ -1,5 +1,5 @@
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Tests.Core.Fakes;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators;

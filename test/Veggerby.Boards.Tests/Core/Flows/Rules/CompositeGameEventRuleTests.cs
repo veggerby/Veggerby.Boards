@@ -1,13 +1,13 @@
 using System.Linq;
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.Flows.Rules;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Rules;

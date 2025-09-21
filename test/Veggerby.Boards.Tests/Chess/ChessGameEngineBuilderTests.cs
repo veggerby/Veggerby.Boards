@@ -8,7 +8,7 @@ namespace Veggerby.Boards.Tests.Chess;
 
 public class ChessGameEngineBuilderTests
 {
-    private Tuple<string, string> Relation(string directionId, string tileId)
+    private static Tuple<string, string> Relation(string directionId, string tileId)
     {
         return new Tuple<string, string>(directionId, tileId);
     }

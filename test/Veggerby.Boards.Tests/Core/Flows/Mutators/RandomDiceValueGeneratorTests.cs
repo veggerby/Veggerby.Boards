@@ -1,8 +1,8 @@
 using System;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators;

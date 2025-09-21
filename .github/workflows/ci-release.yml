@@ -1,0 +1,203 @@
+name: Build, Test & (Optional) Package
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  NUGET_PACK_DIR: ${{ github.workspace }}/nupkg
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore
+        run: dotnet restore Veggerby.Boards.sln
+      - name: Build
+        run: dotnet build Veggerby.Boards.sln --configuration Release --no-restore
+      - name: Test (with coverage)
+        run: >-
+          dotnet test test/Veggerby.Boards.Tests/Veggerby.Boards.Tests.csproj
+          --configuration Release
+          --no-build
+          --collect:"XPlat Code Coverage"
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test/Veggerby.Boards.Tests/TestResults
+      - name: Upload coverage to Codecov
+        if: ${{ always() && env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: test/Veggerby.Boards.Tests/TestResults/**/coverage.cobertura.xml
+          flags: unittests
+          name: veggerby-units-codecov
+          fail_ci_if_error: false
+          token: ${{ env.CODECOV_TOKEN }}
+
+  # Package (NuGet) all libraries; depends on successful build & tests
+  pack:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1
+        with:
+          versionSpec: '5.x'
+      - name: Run GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1
+      - name: Restore
+        run: dotnet restore Veggerby.Boards.sln
+      - name: Build
+        run: dotnet build Veggerby.Boards.sln --configuration Release --no-restore
+      - name: Fetch GitHub Release Notes
+        id: get_release_notes
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = process.env.GITHUB_REF.split('/').pop();
+            try {
+              const { data: release } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag
+              });
+              core.setOutput('body', release.body || '');
+            } catch {
+              core.setOutput('body', '');
+            }
+
+      - name: Write release notes to file
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          NOTES_FILE="$RUNNER_TEMP/RELEASE_NOTES.txt"
+          printf "%s" "$RELEASE_NOTES" > "$NOTES_FILE"
+          echo "NOTES_FILE=$NOTES_FILE" >> "$GITHUB_ENV"
+        env:
+          RELEASE_NOTES: ${{ steps.get_release_notes.outputs.body }}
+
+      - name: Pack (all public libraries)
+        shell: bash
+        run: |
+          VERSION_SUFFIX=""
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            VERSION_SUFFIX="-pr${{ github.event.pull_request.number }}.${{ github.run_number }}"
+          fi
+
+          RELEASE_NOTES_ARG=()
+          if [[ "${GITHUB_REF}" == refs/tags/* && -n "${NOTES_FILE:-}" ]]; then
+            RELEASE_NOTES_ARG=(/p:PackageReleaseNotesFile="$NOTES_FILE")
+          fi
+
+          mkdir -p "$NUGET_PACK_DIR"
+
+          dotnet pack Veggerby.Boards.sln \
+            --configuration Release \
+            --no-build \
+            --output "$NUGET_PACK_DIR" \
+            /p:Version=${{ steps.gitversion.outputs.nuGetVersionV2 }}$VERSION_SUFFIX \
+            "${RELEASE_NOTES_ARG[@]}"
+
+      - name: Upload NuGet Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ${{ env.NUGET_PACK_DIR }}
+
+  # Publish prerelease packages for pull requests to GitHub Packages
+  publish-gh-prerelease:
+    needs: pack
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./nupkg
+      - name: Publish prerelease to GitHub Packages (PR)
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        env:
+          GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
+
+  # Publish prerelease packages on main branch pushes (GitHub + NuGet)
+  publish-main-prerelease:
+    needs: pack
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./nupkg
+      - name: Publish prerelease to GitHub Packages (main)
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        env:
+          GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
+      - name: Publish prerelease to NuGet.org (main)
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ env.NUGET_API_KEY }}
+
+  # Publish tagged releases (version tags starting with v) to GitHub + NuGet
+  publish-tag-release:
+    needs: pack
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./nupkg
+      - name: Publish release to GitHub Packages (tag)
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        env:
+          GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
+      - name: Publish release to NuGet.org (tag)
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ env.NUGET_API_KEY }}

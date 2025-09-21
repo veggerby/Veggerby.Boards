@@ -2,17 +2,27 @@
 using System.Linq;
 
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Core.States.Conditions;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Backgammon;
 
+/// <summary>
+/// Concrete <see cref="GameBuilder"/> defining the Backgammon board, pieces, dice and phase / rule set.
+/// </summary>
+/// <remarks>
+/// Demonstrates multi-phase flow including an initial dice roll phase to select the starting player and
+/// subsequent movement phases with dice consumption, bar clearing and doubling cube logic.
+/// </remarks>
 public class BackgammonGameBuilder : GameBuilder
 {
+    /// <summary>
+    /// Configures the Backgammon game artifacts, initial state and rule/phase flow.
+    /// </summary>
     protected override void Build()
     {
         // Game
@@ -144,7 +154,7 @@ public class BackgammonGameBuilder : GameBuilder
             .If<NullGameStateCondition>()
             .Then()
                 .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2").ToArray()))
+                    .If(game => new DiceGameEventCondition<int>([.. game.GetArtifacts<Dice>("dice-1", "dice-2")]))
                     .Then()
                         .Do<DiceStateMutator<int>>();
     }

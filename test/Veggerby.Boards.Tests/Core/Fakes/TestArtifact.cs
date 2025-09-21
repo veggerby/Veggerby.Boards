@@ -1,6 +1,6 @@
 using System;
 
-using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Artifacts;
 
 namespace Veggerby.Boards.Tests.Core.Fakes;
 

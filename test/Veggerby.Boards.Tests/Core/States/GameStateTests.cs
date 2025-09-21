@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 
 namespace Veggerby.Boards.Tests.Core.States;

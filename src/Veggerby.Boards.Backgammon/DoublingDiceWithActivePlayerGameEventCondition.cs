@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Backgammon;
 

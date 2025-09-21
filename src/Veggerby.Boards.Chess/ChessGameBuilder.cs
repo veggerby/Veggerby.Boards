@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.States.Conditions;
+using Veggerby.Boards;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
 

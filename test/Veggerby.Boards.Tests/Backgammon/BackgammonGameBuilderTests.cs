@@ -2,8 +2,8 @@ using System;
 
 
 using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Backgammon;

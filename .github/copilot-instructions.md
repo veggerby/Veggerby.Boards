@@ -64,7 +64,7 @@ It models **boards (graphs), artifacts (pieces, dice, players), immutable state,
 
 ## 4. Architecture Boundaries
 
-* **Core (`Veggerby.Boards.Core`)**
+* **Core (`Veggerby.Boards`)**
 
   * Definitions: `Artifact`, `Game`, `GameState`, `IGameEvent`, `IStateMutator<T>`, `IGameEventRule`, `GamePhase`, `GameBuilder`.
   * No direct coupling to game-specific logic.

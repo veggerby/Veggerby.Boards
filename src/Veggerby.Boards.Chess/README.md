@@ -2,7 +2,7 @@
 
 Chess module for Veggerby.Boards providing piece set, initial FEN-equivalent placement, movement patterns, and rule wiring atop the immutable deterministic core.
 
-> Depends on `Veggerby.Boards.Core`. Use when you want a ready chess ruleset or a foundation for chess variants (house rules, timing layers, analysis tooling).
+> Depends on `Veggerby.Boards`. Use when you want a ready chess ruleset or a foundation for chess variants (house rules, timing layers, analysis tooling).
 
 ## Install
 

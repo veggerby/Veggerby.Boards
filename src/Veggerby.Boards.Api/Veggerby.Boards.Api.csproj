@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Veggerby.Boards.Core\Veggerby.Boards.Core.csproj" />
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
     <ProjectReference Include="..\Veggerby.Boards.Backgammon\Veggerby.Boards.Backgammon.csproj" />
     <ProjectReference Include="..\Veggerby.Boards.Chess\Veggerby.Boards.Chess.csproj" />
   </ItemGroup>

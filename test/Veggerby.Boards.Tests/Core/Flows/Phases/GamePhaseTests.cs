@@ -1,11 +1,11 @@
 using System;
 
 
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Phases;
-using Veggerby.Boards.Core.Flows.Rules;
-using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Core.States.Conditions;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.States;
+using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Phases;
 

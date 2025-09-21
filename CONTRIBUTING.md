@@ -103,7 +103,7 @@ dotnet test test/Veggerby.Boards.Tests \
 
 | Folder | Purpose |
 |:-------|:--------|
-| `src/Veggerby.Boards.Core` | Core engine (artifacts, state, phases, rules, builder) |
+| `src/Veggerby.Boards` | Core engine (artifacts, state, phases, rules, builder) |
 | `src/Veggerby.Boards.Backgammon` | Backgammon sample module |
 | `src/Veggerby.Boards.Chess` | Chess sample module |
 | `src/Veggerby.Boards.Api` | ASP.NET Core demo API |

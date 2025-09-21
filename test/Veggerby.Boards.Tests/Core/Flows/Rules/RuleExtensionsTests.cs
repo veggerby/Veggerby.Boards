@@ -1,11 +1,11 @@
 using System.Linq;
 
 
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.Flows.Events;
-using Veggerby.Boards.Core.Flows.Mutators;
-using Veggerby.Boards.Core.Flows.Rules;
-using Veggerby.Boards.Core.Flows.Rules.Conditions;
+using Veggerby.Boards;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.Flows.Rules.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Rules;
 

@@ -4,7 +4,7 @@ This guide walks through adding a new game or extending engine behavior.
 
 ## Adding a New Game Module
 
-1. Create a new project `Veggerby.Boards.<GameName>` referencing `Veggerby.Boards.Core`.
+1. Create a new project `Veggerby.Boards.<GameName>` referencing `Veggerby.Boards`.
 2. Add a `<GameName>GameBuilder : GameBuilder` class.
 3. Inside `Build()`:
    - Set `BoardId`.

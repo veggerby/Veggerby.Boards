@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 
 
-using Veggerby.Boards.Core.Artifacts;
+using Veggerby.Boards.Artifacts;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts;
 

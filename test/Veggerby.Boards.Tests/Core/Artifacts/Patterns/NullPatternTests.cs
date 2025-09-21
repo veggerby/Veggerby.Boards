@@ -1,5 +1,5 @@
-using Veggerby.Boards.Core.Artifacts.Patterns;
-using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Artifacts.Patterns;
+using Veggerby.Boards.Artifacts.Relations;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Patterns;
 

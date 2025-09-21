@@ -1,6 +1,6 @@
-using Veggerby.Boards.Core;
-using Veggerby.Boards.Core.States;
-using Veggerby.Boards.Core.States.Conditions;
+using Veggerby.Boards;
+using Veggerby.Boards.States;
+using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.States.Conditions;
 

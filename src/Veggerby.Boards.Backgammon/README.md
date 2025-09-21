@@ -2,7 +2,7 @@
 
 Backgammon module for Veggerby.Boards. Provides artifacts, rules, dice handling, and setup logic built atop the immutable deterministic core engine.
 
-> Depends on `Veggerby.Boards.Core` (transitively referenced when installing this package). Use it when you want a ready Backgammon ruleset or a template for similarly structured race games.
+> Depends on `Veggerby.Boards` (transitively referenced when installing this package). Use it when you want a ready Backgammon ruleset or a template for similarly structured race games.
 
 ## Install
 

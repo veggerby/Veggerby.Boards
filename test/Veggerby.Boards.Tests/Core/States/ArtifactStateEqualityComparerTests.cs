@@ -1,5 +1,5 @@
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Core.States;
 

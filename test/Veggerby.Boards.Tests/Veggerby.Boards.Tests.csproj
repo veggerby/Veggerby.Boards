@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Veggerby.Boards.Core\Veggerby.Boards.Core.csproj" />
+    <ProjectReference Include="..\..\src\Veggerby.Boards\Veggerby.Boards.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Backgammon\Veggerby.Boards.Backgammon.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Chess\Veggerby.Boards.Chess.csproj" />
   </ItemGroup>

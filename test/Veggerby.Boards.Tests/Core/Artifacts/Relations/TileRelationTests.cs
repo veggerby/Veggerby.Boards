@@ -1,7 +1,7 @@
 using System;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.Artifacts.Relations;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Relations;
 

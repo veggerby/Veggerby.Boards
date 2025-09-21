@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Veggerby.Boards.Core\Veggerby.Boards.Core.csproj" />
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
   </ItemGroup>
 
 </Project>

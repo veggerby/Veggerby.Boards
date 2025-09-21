@@ -2,8 +2,8 @@ using System.Linq;
 
 using AutoMapper;
 
-using Veggerby.Boards.Core.Artifacts;
-using Veggerby.Boards.Core.States;
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Api.Models.Mappings;
 

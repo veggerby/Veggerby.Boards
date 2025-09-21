@@ -2,7 +2,7 @@
 
 Veggerby.Boards is organized into layered .NET projects:
 
-- Core (`Veggerby.Boards.Core`): Generic board game engine abstractions (Artifacts, State, Events, Rules, Phases, Mutators, Conditions, Builder).
+- Core (`Veggerby.Boards`): Generic board game engine abstractions (Artifacts, State, Events, Rules, Phases, Mutators, Conditions, Builder).
 - Game Modules (`Veggerby.Boards.Backgammon`, `Veggerby.Boards.Chess`): Declarative game definitions built via specialized `GameBuilder` subclasses.
 - API (`Veggerby.Boards.Api`): ASP.NET Core wrapper that exposes game construction and progression through HTTP endpoints and mapping models.
 

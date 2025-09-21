@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BC741A71-537D-4C6E-8A36-00F6B6DC9DEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veggerby.Boards.Core", "src\Veggerby.Boards.Core\Veggerby.Boards.Core.csproj", "{0060BA96-2330-469D-B76E-8D6AE5DBE609}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veggerby.Boards", "src\Veggerby.Boards\Veggerby.Boards.csproj", "{0060BA96-2330-469D-B76E-8D6AE5DBE609}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veggerby.Boards.Backgammon", "src\Veggerby.Boards.Backgammon\Veggerby.Boards.Backgammon.csproj", "{89CB8ACA-99D2-44A7-A22A-610DC2986C53}"
 EndProject

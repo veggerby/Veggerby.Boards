@@ -33,6 +33,22 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Pattern resolution benchmark scaffold (visitor vs compiled placeholder) **COMPLETED (compiler now populated for Fixed & MultiDirection)**
 - DecisionPlan phase cache optimization benchmark follow-up (measure delta from removing ResolvePhase traversal). **PENDING**
 - Predicate hoisting extended: future phases include grouping conditions, short-circuit bit masks, and invalidation sets. **PENDING**
+
+### DecisionPlan Optimization (Grouping & Masking) Tasks
+
+- Add feature flags: `EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`, `EnableDecisionPlanDebugParity`. **PENDING**
+- Group compiler pass: identify contiguous identical predicate entries -> emit groups. **PENDING**
+- Group evaluation path + tests (gate evaluated once, skip when invalid). **PENDING**
+- EventKind enum & tagging of existing rules (Move/Roll). **PENDING**
+- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **PENDING**
+- Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **PENDING**
+- Mask table generation from exclusivity hints. **PENDING**
+- Evaluation mask application logic + tests (skip flagged entries). **PENDING**
+- Debug parity dual-scan path + assertion (shadow linear evaluator). **PENDING**
+- Property-based randomized parity suite for grouping + masks. **PENDING**
+- Benchmarks: GroupingBaseline, EventFilteringBaseline, MaskingBaseline, DebugParityOverhead. **PENDING**
+- Static exclusivity inference attribute + analyzer (optional). **PENDING**
+- OptimizationVersion property + observer trace inclusion. **PENDING**
 - Allocation profiler script capturing top 10 hot allocations in `HandleEvent`.
 - Future: capture observer callback counts per benchmark iteration to detect silent regression.
 

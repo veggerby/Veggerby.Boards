@@ -3,6 +3,7 @@ using System;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.Observers;
 
 namespace Veggerby.Boards;
 
@@ -33,13 +34,19 @@ public class GameEngine
     internal DecisionPlan DecisionPlan { get; }
 
     /// <summary>
+    /// Gets the evaluation observer used for instrumentation (never null).
+    /// </summary>
+    internal IEvaluationObserver Observer { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GameEngine"/> class.
     /// </summary>
     /// <param name="game">Immutable structural aggregate.</param>
     /// <param name="gamePhaseRoot">Root game phase (composite or leaf).</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> or <paramref name="gamePhaseRoot"/> is null.</exception>
     /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
-    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null)
+    /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
+    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null)
     {
         ArgumentNullException.ThrowIfNull(game);
 
@@ -48,5 +55,6 @@ public class GameEngine
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
         DecisionPlan = decisionPlan; // may be null (feature flag disabled)
+        Observer = observer ?? NullEvaluationObserver.Instance;
     }
 }

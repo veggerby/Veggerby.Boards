@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Property tests project scaffold (`Veggerby.Boards.PropertyTests`) including first invariant placeholder.
 - Experimental DecisionPlan scaffold (feature-flagged) compiling phase tree to linear leaf phase list (parity only, no optimizations yet).
 - Deterministic RNG abstraction (`IRandomSource`, `XorShiftRandomSource`) and `GameState.Random` snapshot cloning.
+- Baseline observability hooks: `IEvaluationObserver` (RuleEvaluated, RuleApplied, EventIgnored) + builder injection (future callbacks pending).
+- Added `OnPhaseEnter` callback to observer (emitted in both legacy and DecisionPlan paths).
 - EventResult placeholder struct for future observer/tracing integration (not yet used in public API).
 - Documentation skeletons: `docs/decision-plan.md`, `docs/rng-and-timeline.md`.
 

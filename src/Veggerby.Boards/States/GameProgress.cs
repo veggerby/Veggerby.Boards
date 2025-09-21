@@ -5,6 +5,7 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.Observers;
 
 namespace Veggerby.Boards.States;
 
@@ -63,10 +64,14 @@ public class GameProgress
 
     private GameProgress HandleSingleEvent(IGameEvent @event)
     {
+        // Notify phase entry (legacy path active phase only)
+        Engine.Observer.OnPhaseEnter(Phase, State);
         var ruleCheck = Phase.Rule.Check(Engine, State, @event);
+    Engine.Observer.OnRuleEvaluated(Phase, Phase.Rule, ruleCheck, State);
         if (ruleCheck.Result == ConditionResult.Valid)
         {
             var newState = Phase.Rule.HandleEvent(Engine, State, @event);
+            Engine.Observer.OnRuleApplied(Phase, Phase.Rule, @event, State, newState);
             return new GameProgress(Engine, newState, Events.Concat([@event]));
         }
         else if (ruleCheck.Result == ConditionResult.Invalid)
@@ -74,6 +79,8 @@ public class GameProgress
             throw new InvalidGameEventException(@event, ruleCheck, Game, Phase, State);
         }
 
+        // ignored
+        Engine.Observer.OnEventIgnored(@event, State);
         return this;
     }
 
@@ -121,9 +128,14 @@ public class GameProgress
                 }
 
                 var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                    // Resolve phase by number for accurate observer attribution (depth-first traversal cost acceptable for V1).
+                    var observedPhase = Flows.DecisionPlan.DecisionPlan.ResolvePhase(progress.Engine.GamePhaseRoot, entry.PhaseNumber) ?? progress.Engine.GamePhaseRoot;
+                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State);
                 if (ruleCheck.Result == ConditionResult.Valid)
                 {
                     var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                    progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState);
                     progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
                     handled = true;
                     break; // only first valid rule/phase handles event (parity with existing behavior)
@@ -137,6 +149,7 @@ public class GameProgress
             if (!handled)
             {
                 // Event ignored (no applicable phase/rule).
+                progress.Engine.Observer.OnEventIgnored(evt, progress.State);
             }
         }
         return progress;

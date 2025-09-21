@@ -9,6 +9,7 @@ using Veggerby.Boards.Builder.Artifacts;
 using Veggerby.Boards.Builder.Phases;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Internal;
@@ -264,6 +265,23 @@ public abstract class GameBuilder
 
     private GameProgress _initialGameProgress;
 
+    private IEvaluationObserver _observer = NullEvaluationObserver.Instance;
+
+    /// <summary>
+    /// Sets a custom evaluation observer for instrumentation (optional).
+    /// </summary>
+    /// <param name="observer">Observer instance (null ignored, retains existing).</param>
+    /// <returns>Builder for fluent chaining.</returns>
+    public GameBuilder WithObserver(IEvaluationObserver observer)
+    {
+        if (observer is not null)
+        {
+            _observer = observer;
+        }
+
+        return this;
+    }
+
     /// <summary>
     /// Compiles the game definition into an executable <see cref="GameEngine"/> + initial <see cref="GameState"/>.
     /// </summary>
@@ -337,7 +355,7 @@ public abstract class GameBuilder
             decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
         }
 
-        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan);
+    var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer);
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;

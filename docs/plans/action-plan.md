@@ -250,12 +250,13 @@ Migration:
 
 Deliverables (Status annotations in brackets):
 
-- `IEvaluationObserver` with callbacks: PhaseEnter, RuleEvaluated(result, reason), MutatorApplied, StateHashed. **[NOT STARTED]**
-- No-op default; builder injection. **[NOT STARTED]**
+- `IEvaluationObserver` minimal v1 (RuleEvaluated, RuleApplied, EventIgnored) implemented + no-op default + builder injection. **[COMPLETED]**
+- PhaseEnter callback emitted (legacy + DecisionPlan) **[COMPLETED (StateHashed still pending)]**
+- StateHashed callback **[NOT STARTED]**
 - Decision trace serializer (compact JSON) for last evaluation. **[NOT STARTED]**
 - CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
 Acceptance Criteria:
-- Observer adds ≤5% overhead when enabled in benchmark microtests. **[NOT STARTED]**
+- Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – instrumentation not benchmarked]**
 - Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum). **[NOT STARTED]**
 Risks:
 - Performance drag; mitigate with aggressive inlining and early branch-out when no observers.

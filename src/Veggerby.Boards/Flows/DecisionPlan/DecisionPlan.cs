@@ -60,6 +60,42 @@ public sealed class DecisionPlan
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule));
         }
     }
+
+    /// <summary>
+    /// Attempts to resolve a phase by its phase number via depth-first traversal of the original tree.
+    /// </summary>
+    /// <remarks>
+    /// This helper performs a linear search over entries first (fast path) and falls back to null when not found.
+    /// Future optimized versions may maintain a dictionary if profiling shows material overhead.
+    /// </remarks>
+    /// <param name="root">Root phase for traversal.</param>
+    /// <param name="phaseNumber">Phase number to locate.</param>
+    /// <returns>The matching <see cref="GamePhase"/> or null.</returns>
+    internal static GamePhase ResolvePhase(GamePhase root, int phaseNumber)
+    {
+        if (root is null)
+        {
+            return null;
+        }
+
+        if (root.Number == phaseNumber)
+        {
+            return root;
+        }
+
+        if (root is CompositeGamePhase composite)
+        {
+            foreach (var child in composite.ChildPhases)
+            {
+                var match = ResolvePhase(child, phaseNumber);
+                if (match is not null)
+                {
+                    return match;
+                }
+            }
+        }
+        return null;
+    }
 }
 
 /// <summary>

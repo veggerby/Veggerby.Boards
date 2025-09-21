@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - 128-bit state hash (`Hash128`) computed alongside legacy 64-bit hash when hashing enabled (xxHash128 scaffold).
 - BugReport capture scaffold (internal) capturing seed, feature flags, event types, final hashes (replay deferred).
 - Hashing overhead benchmark (`HashingOverheadBenchmark`) comparing per-event cost with hashing disabled/enabled.
+- Trace capture scaffold (feature-flagged) recording PhaseEnter, RuleEvaluated, RuleApplied, EventIgnored, StateHashed entries for last evaluation.
 
 
 ### Changed
@@ -50,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Removed temporary CS1591 suppression after completing full XML documentation coverage.
 - Added initial scaffolds for performance benchmarking and property-based invariant testing.
 - Fixed malformed XML documentation in `XXHash128` (removed CS1570 warnings) and enriched algorithm remarks.
+- Added internal trace capture observer decorator (no public API exposure yet).
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

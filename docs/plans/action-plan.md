@@ -1,6 +1,8 @@
 # 2025-09-21 Strategic Architecture & DX Action Plan
 
 > Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
+>
+> Revision Addendum (2025-09-21 later, same branch): Added timeline zipper (flagged), dual state hashing (64-bit FNV-1a + 128-bit xxHash128), BugReport capture scaffold (no replay yet), extended `IEvaluationObserver` with `PhaseEnter`, `StateHashed`, and trace capture scaffold (in‑memory last-evaluation trace). Added hashing + observer overhead benchmarks and documentation updates.
 
 ## Executive Summary
 
@@ -11,11 +13,11 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + flag merged; EventResult placeholder added; observer + perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | RNG + state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold (no replay yet) |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + BugReport capture scaffold (no replay yet) |
 | 3. Movement & Pattern Engine Compilation | NOT STARTED | No IR / compiler code yet |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
-| 6. Observability & Diagnostics | PARTIAL | Observer interface + PhaseEnter + StateHashed callbacks implemented; trace emitter pending |
+| 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture scaffold; JSON emitter & visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
 | 8. Module & API Versioning Strategy | NOT STARTED | No versioned DTOs yet |
 | 9. Small Structural Refactors | NOT STARTED | Refactors/de-analyzers not started |
@@ -102,7 +104,7 @@ To mitigate overreach and maintain momentum:
 | EnableCompiledPatterns | Switch between visitor and DFA engine | Off (Phase 1), On (post Phase 2 validation) | After parity + perf threshold met |
 | EnableBitboards | Use chess bitboard adapter | Off | If sustained >15% attack gen speedup across 3 benchmarks |
 | EnableStateHashing | Compute Merkle hash each transition | Off (Phase 1) | Always on after Phase 3 stability |
-| EnableTraceCapture | Persist JSON trace of last evaluation | Off | Always on (behind observer presence) once overhead validated |
+| EnableTraceCapture | Capture in-memory trace (JSON export pending) of last evaluation | Off | Always on (behind observer presence) once overhead validated |
 
 ## Updated Metrics Targets (Consolidated)
 
@@ -167,7 +169,7 @@ Deliverables (Status annotations in brackets):
 - Compiler: `DecisionPlanBuilder.Compile(GameBuilderContext ctx)`. **[COMPLETED (integrated into builder; context abstraction simplified)]**
 - Execution path: `GameEngine.HandleEvent` uses precomputed plan. **[COMPLETED (flag-gated parity path)]**
 - Typed result: `EventResult` discriminated union. **[COMPLETED (placeholder, not yet returned publicly)]**
-- Observer integration points for rule evaluation events. **[NOT STARTED]**
+- Observer integration points for rule evaluation events. **[COMPLETED]**
 Acceptance Criteria:
 - No functional behavior change vs legacy path (golden test suite). **[PENDING – parity tests not yet added]**
 - Benchmark: `HandleEvent` median latency reduced ≥30% on sample scenarios (Chess opening moves, Backgammon entry moves). **[PENDING – only baseline harness exists]**
@@ -184,12 +186,12 @@ Deliverables (Status annotations in brackets):
 
 - `IRandomSource` + `XorShiftRandomSource` implementation (seed + serializable state). **[COMPLETED]**
 - GameState includes RNG snapshot (struct) + `WithRandom(IRandomSource)` cloning. **[COMPLETED]**
-- Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`. **[NOT STARTED]**
-- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[COMPLETED (phase 1 FNV-1a 64-bit scaffold; upgrade to xxHash128 planned)]**
-- `BugReport` envelope capturing seed, event stream, decision plan version. **[NOT STARTED]**
+- Persistent zipper model: `GameTimeline { ImmutableStack<GameState> Past; GameState Present; ImmutableStack<GameState> Future; }`. **[COMPLETED (flag-gated implementation)**]
+- Merkle hash: deterministic hash over artifact ids, piece positions, dice values, RNG state. **[COMPLETED (64-bit + 128-bit xxHash128 upgrade)]**
+- `BugReport` envelope capturing seed, event stream, decision plan version. **[PARTIAL – capture scaffold without replay]**
 Acceptance Criteria:
-- Replaying same seed + events yields identical final hash and RNG state. **[PENDING – hashing & replay infra not implemented]**
-- Undo/Redo operations O(1) and hash-stable. **[NOT STARTED]**
+- Replaying same seed + events yields identical final hash and RNG state. **[PENDING – replay not implemented]**
+- Undo/Redo operations O(1) and hash-stable. **[PARTIAL – zipper present; formal tests pending]**
 - BugReport replay test harness passes sample captured report. **[NOT STARTED]**
 Risks:
 - Hash collisions (mitigate with 128-bit hash like xxHash128 or Blake2b incremental).
@@ -251,13 +253,14 @@ Migration:
 Deliverables (Status annotations in brackets):
 
 - `IEvaluationObserver` minimal v1 (RuleEvaluated, RuleApplied, EventIgnored) implemented + no-op default + builder injection. **[COMPLETED]**
-- PhaseEnter callback emitted (legacy + DecisionPlan) **[COMPLETED (StateHashed still pending)]**
+- PhaseEnter callback emitted (legacy + DecisionPlan) **[COMPLETED]**
 - StateHashed callback **[COMPLETED]**
+- In-memory trace capture scaffold (last evaluation) **[COMPLETED – internal model; no JSON serialization yet]**
 - Decision trace serializer (compact JSON) for last evaluation. **[NOT STARTED]**
 - CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
 Acceptance Criteria:
-- Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – instrumentation not benchmarked]**
-- Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum). **[NOT STARTED]**
+- Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – initial overhead benchmarks collected; need gating)**
+- Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum). **[PARTIAL – fields captured; reason detail & rule index still pending]**
 Risks:
 - Performance drag; mitigate with aggressive inlining and early branch-out when no observers.
 Migration:

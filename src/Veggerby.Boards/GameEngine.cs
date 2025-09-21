@@ -38,6 +38,13 @@ public class GameEngine
     /// </summary>
     internal IEvaluationObserver Observer { get; }
 
+    private readonly Veggerby.Boards.Internal.Tracing.EvaluationTrace _lastTrace;
+
+    /// <summary>
+    /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
+    /// </summary>
+    internal Veggerby.Boards.Internal.Tracing.EvaluationTrace LastTrace => _lastTrace;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameEngine"/> class.
     /// </summary>
@@ -55,6 +62,16 @@ public class GameEngine
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
         DecisionPlan = decisionPlan; // may be null (feature flag disabled)
-        Observer = observer ?? NullEvaluationObserver.Instance;
+        var baseObserver = observer ?? NullEvaluationObserver.Instance;
+        if (Internal.FeatureFlags.EnableTraceCapture)
+        {
+            _lastTrace = new Internal.Tracing.EvaluationTrace();
+            Observer = new Internal.Tracing.TraceCaptureObserver(baseObserver, _lastTrace);
+        }
+        else
+        {
+            Observer = baseObserver;
+            _lastTrace = null;
+        }
     }
 }

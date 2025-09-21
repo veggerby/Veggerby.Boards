@@ -117,3 +117,34 @@ Benchmark Execution:
 
 Run the benchmark project selecting either `HandleEventBaseline` or `HashingOverheadBenchmark` entry points.
 Results should be captured and summarized in future documentation once performance stabilization phase begins.
+
+## Trace Capture (Experimental)
+
+When `FeatureFlags.EnableTraceCapture` is enabled at engine construction time, the observer pipeline is
+decorated with a lightweight in-memory recorder that emits a linear sequence of entries for the latest
+handled event batch. Each entry encodes (order, kind, phase label, rule type, event type, condition result,
+state hash values if present). Entry kinds currently emitted:
+
+1. `PhaseEnter`
+2. `RuleEvaluated`
+3. `RuleApplied`
+4. `EventIgnored`
+5. `StateHashed`
+
+Scope / Intent:
+
+- Debugging parity issues between legacy and DecisionPlan paths (ordering & rule selection).
+- Future JSON trace export (current form is internal object graph accessible via `engine.LastTrace`).
+- Foundation for future CLI / UI visualizer; schema deliberately minimal.
+
+Limitations:
+
+- Only retains the most recent evaluation sequence (no rolling buffer).
+- Not yet serialized externally (JSON string can be produced via `EvaluationTrace.ToJson()` if needed).
+- Adds minor allocation per trace entry (acceptable for diagnostic mode; future pooling possible).
+
+Next Steps:
+
+1. Add optional exporter returning immutable DTO or JSON directly.
+2. Integrate with planned replay harness for step-by-step divergence detection.
+3. Provide benchmark to quantify overhead (<5% target) with trace enabled vs disabled.

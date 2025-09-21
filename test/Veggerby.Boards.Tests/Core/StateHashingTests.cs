@@ -14,11 +14,9 @@ public class StateHashingTests
 {
     private GameProgress Build(bool hashing)
     {
-        var scope = FeatureFlagScope.StateHashing(hashing);
+        using var scope = FeatureFlagScope.StateHashing(hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
-        var progress = builder.Compile();
-        scope.Dispose();
-        return progress;
+        return builder.Compile();
     }
 
     [Fact]

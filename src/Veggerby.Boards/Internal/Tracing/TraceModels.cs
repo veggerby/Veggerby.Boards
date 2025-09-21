@@ -1,0 +1,88 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Observers;
+using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.States;
+
+namespace Veggerby.Boards.Internal.Tracing;
+
+/// <summary>
+/// A single evaluation trace entry capturing a deterministic step during event handling.
+/// </summary>
+#nullable enable
+internal sealed record TraceEntry(
+    int Order,
+    string Kind,
+    string? Phase,
+    string? Rule,
+    string? EventType,
+    string? ConditionResult,
+    ulong? StateHash,
+    ulong? StateHash128Low,
+    ulong? StateHash128High
+);
+
+/// <summary>
+/// Container for the most recent evaluation trace.
+/// </summary>
+internal sealed class EvaluationTrace
+{
+    private readonly List<TraceEntry> _entries = new();
+    public IReadOnlyList<TraceEntry> Entries => _entries;
+
+    public void Add(TraceEntry entry) => _entries.Add(entry);
+
+    public string ToJson()
+    {
+        return JsonSerializer.Serialize(_entries, new JsonSerializerOptions { WriteIndented = false });
+    }
+}
+
+/// <summary>
+/// Observer decorator that records evaluation steps to an in-memory trace when trace capture is enabled.
+/// </summary>
+internal sealed class TraceCaptureObserver : IEvaluationObserver
+{
+    private readonly IEvaluationObserver _inner;
+    private readonly EvaluationTrace _trace;
+    private int _order;
+
+    public TraceCaptureObserver(IEvaluationObserver inner, EvaluationTrace trace)
+    {
+        _inner = inner;
+        _trace = trace;
+    }
+
+    public void OnPhaseEnter(GamePhase phase, GameState state)
+    {
+    _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnPhaseEnter(phase, state);
+    }
+
+    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state)
+    {
+    _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnRuleEvaluated(phase, rule, response, state);
+    }
+
+    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState)
+    {
+    _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
+        _inner.OnRuleApplied(phase, rule, @event, beforeState, afterState);
+    }
+
+    public void OnEventIgnored(IGameEvent @event, GameState state)
+    {
+        _trace.Add(new TraceEntry(++_order, "EventIgnored", null, null, @event.GetType().Name, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnEventIgnored(@event, state);
+    }
+
+    public void OnStateHashed(GameState state, ulong hash)
+    {
+        _trace.Add(new TraceEntry(++_order, "StateHashed", null, null, null, null, hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnStateHashed(state, hash);
+    }
+}

@@ -382,7 +382,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
    - Spike: IR representation **(DONE)**
    - Story: direction adjacency bitsets **(PENDING)**
    - Story: repeat pattern expansion **(PENDING)**
-   - Story: DFA executor + benchmarks **(PENDING)**
+   - Story: DFA executor + benchmarks **(PENDING)** (benchmark scaffold for path resolution added: `PatternResolutionBaseline`)
    - Story: parity tests vs visitor **(IN PROGRESS)**
 4. EPIC: Performance Layout
    - Spike: BoardShape arrays

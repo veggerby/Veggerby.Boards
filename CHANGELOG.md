@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Resolver exposure via `GameProgress.ResolvePathCompiledFirst` enabling feature-flagged runtime use of compiled patterns.
 - Extended parity test suite (multi-direction, repeatable, null/unreachable) and chess integration parity test.
 - Documentation: `docs/compiled-patterns.md` describing IR, resolver semantics, parity guarantees, and roadmap.
+- Trace capture overhead benchmark (`TraceCaptureOverheadBenchmark`) comparing HandleEvent with trace enabled vs disabled.
 - Trace capture scaffold (feature-flagged) recording PhaseEnter, RuleEvaluated, RuleApplied, EventIgnored, StateHashed entries for last evaluation (now enriched with rule index + condition reason fields).
 
 ### Changed

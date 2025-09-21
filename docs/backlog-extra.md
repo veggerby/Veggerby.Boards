@@ -8,7 +8,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - StateHashed callback (after future Merkle/xxHash computation) for correlation. **COMPLETED**
 - In-memory trace capture scaffold (last evaluation) **COMPLETED**
 - JSON trace serializer / exporter (compact) **COMPLETED** (now includes rule index + condition reason enrichment)
-- Trace overhead microbenchmark (compare enabled vs disabled) **PENDING**
+- Trace overhead microbenchmark (compare enabled vs disabled) **COMPLETED (TraceCaptureOverheadBenchmark)**
 - Trace entry object pooling / reuse strategy (avoid per-callback alloc) **PENDING**
 - Aggregated batch observer adapter reducing callback overhead via struct buffer.
 - Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`).

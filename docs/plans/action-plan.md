@@ -379,7 +379,7 @@ Versioning: Each phase increments minor version; breaking changes require major 
    - Story: merkle hash function & tests
    -- Story: (Removed) internal bug report capture + replay (externalized)
 3. EPIC: Pattern Compilation
-   - Spike: IR representation **(DONE)**
+   - Spike: IR representation **(DONE)** (trace overhead benchmark added separately for observability cost tracking)
    - Story: direction adjacency bitsets **(PENDING)**
    - Story: repeat pattern expansion **(PENDING)**
    - Story: DFA executor + benchmarks **(PENDING)** (benchmark scaffold + compiler emits Fixed & MultiDirection patterns; doc added `compiled-patterns.md`)

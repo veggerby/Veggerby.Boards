@@ -4,9 +4,11 @@ namespace Veggerby.Boards.Internal;
 /// Central runtime feature flags controlling activation of experimental engine components.
 /// </summary>
 /// <remarks>
-/// All flags default to <c>false</c>. They can be toggled in tests or hosting layers to gradually
-/// introduce new subsystems (DecisionPlan, compiled patterns, hashing, tracing, bitboards) while
-/// preserving deterministic behavior. Flags are not serialized with game state to avoid hidden divergence.
+/// All flags default to <c>false</c> unless a subsystem has graduated from experimental status via
+/// comprehensive parity + safety tests. Compiled movement patterns have reached this bar and are now
+/// enabled by default (visitor fallback retained on per-path miss). Remaining subsystems (DecisionPlan,
+/// hashing, tracing, bitboards) remain opt-in until performance + determinism guards are finalized.
+/// Flags are not serialized with game state to avoid hidden divergence.
 /// </remarks>
 internal static class FeatureFlags
 {
@@ -18,9 +20,9 @@ internal static class FeatureFlags
 
     /// <summary>
     /// Gets or sets a value indicating whether compiled movement patterns (DFA) are used instead of the visitor pattern.
-    /// (Placeholder – not yet implemented)
+    /// Default: true (parity suite + integration + adjacency cache parity validated).
     /// </summary>
-    public static bool EnableCompiledPatterns { get; set; } = false;
+    public static bool EnableCompiledPatterns { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether chess-specific bitboard acceleration is enabled.

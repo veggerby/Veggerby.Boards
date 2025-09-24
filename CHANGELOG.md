@@ -62,6 +62,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Changed
 
+- Compiled movement patterns feature flag default switched to enabled (comprehensive unit + integration + adjacency cache parity tests green; visitor legacy fallback retained for any unresolved patterns).
+
 - Centralized all package versions via Directory.Packages.props (removed inline versions).
 - README updated with roadmap reference.
 - State hashing now uses canonical binary serialization (ordered public properties, typed tags) instead of transient ToString() output for stability.

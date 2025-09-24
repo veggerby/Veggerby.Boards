@@ -107,7 +107,7 @@ To mitigate overreach and maintain momentum:
 | Flag | Purpose | Default | Removal Condition |
 |------|---------|---------|--------------------|
 | LEGACY_RULE_ENGINE (compile symbol) | Enables legacy evaluator in tests for parity checks | On (tests only) | After two successive minor versions with zero diffs |
-| EnableCompiledPatterns | Switch between visitor and DFA engine | Off (Phase 1), On (post Phase 2 validation) | After parity + perf threshold met |
+| EnableCompiledPatterns | Switch between visitor and DFA engine | On (parity achieved) | Can remove flag once perf benchmarks captured |
 | EnableBitboards | Use chess bitboard adapter | Off | If sustained >15% attack gen speedup across 3 benchmarks |
 | EnableStateHashing | Compute Merkle hash each transition | Off (Phase 1) | Always on after Phase 3 stability |
 | EnableTraceCapture | Capture in-memory trace (JSON export pending) of last evaluation | Off | Always on (behind observer presence) once overhead validated |
@@ -231,7 +231,7 @@ Acceptance Criteria:
 - All movement tests + parity suite green under compiled engine once populated. **[PENDING]**
 - ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
 Current Status:
-- Infra merged; feature off by default; unit parity (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; adjacency cache on/off parity validated; unreachable scenarios assert null parity (double-step pawn not modeled yet).
+- Infra merged; feature now ON by default (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; adjacency cache on/off parity validated; unreachable scenarios assert null parity (double-step pawn not modeled yet); visitor fallback retained for safety.
 Risks:
 - Premature optimization without representative workloads.
 Migration:

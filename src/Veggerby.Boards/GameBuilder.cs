@@ -383,6 +383,19 @@ public abstract class GameBuilder
             services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver, adjacency));
         }
 
+        // Bitboard acceleration (experimental): add layout + services when enabled and board fits in 64 tiles.
+        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
+        {
+            if (services == EngineServices.Empty)
+            {
+                services = new EngineServices();
+            }
+            var layout = new Internal.Bitboards.BoardBitboardLayout(game.Board);
+            var bitboards = new Internal.Bitboards.BitboardServices(layout);
+            services.Set(layout);
+            services.Set(bitboards);
+        }
+
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 

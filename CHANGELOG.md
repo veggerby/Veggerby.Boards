@@ -77,6 +77,7 @@ Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance AP
   - Playout diagnostics observer (`GameSimulator.IPlayoutObserver`) with per-step instrumentation hooks.
   - Early-stop sequential batch (`PlayoutManyUntil`) supporting convergence / threshold termination predicates.
   - Generic single-step legal move helper policy (`PolicyHelpers.SingleStepAllPieces`) enumerating deterministic movement candidates.
+  - Experimental bitboard acceleration scaffold (`Bitboard64`, `BoardBitboardLayout`, `BitboardServices`) behind `EnableBitboards` feature flag: provides occupancy + per-player occupancy masks for boards with <=64 tiles (initial Chess mapping tests added; no engine integration yet).
 
 ### Changed
 

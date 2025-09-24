@@ -15,7 +15,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
-| 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
+| 4. Performance Data Layout & Hot Paths | PARTIAL | Bitboard occupancy scaffold (layout + masks) behind flag; BoardShape/PieceMap pending |
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
@@ -81,7 +81,7 @@ To mitigate overreach and maintain momentum:
 
 - DecisionPlan v1: fixed rule order, array iteration only (no multi-level mask layering yet).
 - Pattern compiler v1: only (a) fixed-step, (b) repeat-until-blocked (sliders), (c) single jump (knight), (d) simple single-direction stride (DirectionPattern). Defer conditional / compound patterns.
-- Bitboards: chess module internal adapter; abort if <15% net gain on attack generation after two profiling runs.
+- Bitboards: chess module internal adapter (phase 1: occupancy + per-player masks delivered); abort if <15% net gain on attack generation after two profiling runs.
 - Merkle hash: non-crypto xxHash128/BLAKE3-128 equivalent; stable canonical serialization (little-endian, sorted deterministic field ordering).
 - Dual-engine parity: legacy evaluator retained only inside test compilation (compile symbol) for golden comparisons—never shipped.
 

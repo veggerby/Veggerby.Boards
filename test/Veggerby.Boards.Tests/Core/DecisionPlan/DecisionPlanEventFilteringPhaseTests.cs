@@ -10,10 +10,9 @@ using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
-internal sealed class TestPhaseControlEvent : IPhaseControlGameEvent
+internal sealed class TestPhaseControlEvent(string phaseId) : IPhaseControlGameEvent
 {
-    public string PhaseId { get; }
-    public TestPhaseControlEvent(string phaseId) => PhaseId = phaseId;
+    public string PhaseId { get; } = phaseId;
 }
 
 internal sealed class RecordingConditionPhase<TEvent> : IGameEventCondition<TEvent> where TEvent : IGameEvent
@@ -82,20 +81,13 @@ public class DecisionPlanEventFilteringPhaseTests
     }
 }
 
-internal sealed class PhaseFilteringGameBuilder : GameBuilder
+internal sealed class PhaseFilteringGameBuilder(RecordingConditionPhase<MovePieceGameEvent> moveCond,
+    RecordingConditionPhase<RollDiceGameEvent<int>> rollCond,
+    RecordingConditionPhase<TestPhaseControlEvent> phaseCond) : GameBuilder
 {
-    private readonly RecordingConditionPhase<MovePieceGameEvent> _moveCond;
-    private readonly RecordingConditionPhase<RollDiceGameEvent<int>> _rollCond;
-    private readonly RecordingConditionPhase<TestPhaseControlEvent> _phaseCond;
-
-    public PhaseFilteringGameBuilder(RecordingConditionPhase<MovePieceGameEvent> moveCond,
-        RecordingConditionPhase<RollDiceGameEvent<int>> rollCond,
-        RecordingConditionPhase<TestPhaseControlEvent> phaseCond)
-    {
-        _moveCond = moveCond;
-        _rollCond = rollCond;
-        _phaseCond = phaseCond;
-    }
+    private readonly RecordingConditionPhase<MovePieceGameEvent> _moveCond = moveCond;
+    private readonly RecordingConditionPhase<RollDiceGameEvent<int>> _rollCond = rollCond;
+    private readonly RecordingConditionPhase<TestPhaseControlEvent> _phaseCond = phaseCond;
 
     protected override void Build()
     {

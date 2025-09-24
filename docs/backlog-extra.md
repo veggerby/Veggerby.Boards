@@ -74,4 +74,19 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Event correlation id generator (deterministic increment) surfaced in observer callbacks.
 - Optional HTTP facade re-introduction as separate package (`Veggerby.Boards.Http`) with versioned DTOs; keep separate until hashing & observer extensions stabilize.
 
+## Simulation Enhancement Backlog
+
+New items following initial Simulator API landing (core + metrics + observer):
+
+- Parallel early-stop playout variant (evaluate predicate against rolling shard metrics without full synchronization each iteration).
+- Branching factor / candidate distribution sampling helper leveraging `IPlayoutObserver` (aggregate mean, p95, max across batch).
+- Policy helper: multi-step path expansion (follow relation chains up to N distance) yielding longer `MovePieceGameEvent` paths deterministically.
+- Policy helper: stochastic epsilon-greedy wrapper (uses deterministic RNG in state) combining heuristic policy + randomized fallback.
+- Observer adapter aggregating only every K steps to reduce callback overhead for deep playouts.
+- Batch percentile convergence predicate utilities (extension methods returning `Func<PlayoutBatchResult,bool>` for common criteria).
+- Playout trace diff tool (compare two traces step-by-step for divergence analysis when policies differ).
+- Incremental batch metrics aggregator (avoid reallocating list each iteration in `PlayoutManyUntil`).
+- Optional transposition avoidance (skip repeating identical terminal states across playouts when hashing enabled) – evaluate determinism and overhead.
+- Simulation metrics benchmark suite (measure overhead of observer on/off and randomized policy shuffle cost).
+
 -- End of Backlog --

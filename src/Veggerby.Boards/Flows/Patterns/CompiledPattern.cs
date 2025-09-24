@@ -53,16 +53,10 @@ internal sealed class CompiledPattern
 /// <summary>
 /// Per-piece compiled pattern bundle.
 /// </summary>
-internal sealed class CompiledPiecePatterns
+internal sealed class CompiledPiecePatterns(string pieceId, IReadOnlyList<CompiledPattern> patterns)
 {
-    public string PieceId { get; }
-    public IReadOnlyList<CompiledPattern> Patterns { get; }
-
-    public CompiledPiecePatterns(string pieceId, IReadOnlyList<CompiledPattern> patterns)
-    {
-        PieceId = pieceId ?? throw new ArgumentNullException(nameof(pieceId));
-        Patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
-    }
+    public string PieceId { get; } = pieceId ?? throw new ArgumentNullException(nameof(pieceId));
+    public IReadOnlyList<CompiledPattern> Patterns { get; } = patterns ?? throw new ArgumentNullException(nameof(patterns));
 }
 
 /// <summary>

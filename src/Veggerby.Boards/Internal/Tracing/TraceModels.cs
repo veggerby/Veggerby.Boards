@@ -74,17 +74,11 @@ internal static class TraceJsonExporter
 /// <summary>
 /// Observer decorator that records evaluation steps to an in-memory trace when trace capture is enabled.
 /// </summary>
-internal sealed class TraceCaptureObserver : IEvaluationObserver
+internal sealed class TraceCaptureObserver(IEvaluationObserver inner, EvaluationTrace trace) : IEvaluationObserver
 {
-    private readonly IEvaluationObserver _inner;
-    private readonly EvaluationTrace _trace;
+    private readonly IEvaluationObserver _inner = inner;
+    private readonly EvaluationTrace _trace = trace;
     private int _order;
-
-    public TraceCaptureObserver(IEvaluationObserver inner, EvaluationTrace trace)
-    {
-        _inner = inner;
-        _trace = trace;
-    }
 
     public void OnPhaseEnter(GamePhase phase, GameState state)
     {

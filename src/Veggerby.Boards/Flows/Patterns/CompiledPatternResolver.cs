@@ -8,18 +8,11 @@ namespace Veggerby.Boards.Flows.Patterns;
 /// <summary>
 /// Resolves a path using compiled patterns for a piece if available; returns null when no pattern matches.
 /// </summary>
-internal sealed class CompiledPatternResolver : ICompiledPatternResolver
+internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board board, BoardAdjacencyCache adjacency) : ICompiledPatternResolver
 {
-    private readonly CompiledPatternTable _table;
-    private readonly Board _board;
-    private readonly BoardAdjacencyCache _adjacency;
-
-    public CompiledPatternResolver(CompiledPatternTable table, Board board, BoardAdjacencyCache adjacency)
-    {
-        _table = table;
-        _board = board;
-        _adjacency = adjacency;
-    }
+    private readonly CompiledPatternTable _table = table;
+    private readonly Board _board = board;
+    private readonly BoardAdjacencyCache _adjacency = adjacency;
 
     public bool TryResolve(Piece piece, Tile from, Tile to, out TilePath path)
     {

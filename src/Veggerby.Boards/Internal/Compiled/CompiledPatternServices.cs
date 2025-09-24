@@ -7,16 +7,9 @@ internal interface ICompiledPatternResolver
     bool TryResolve(Artifacts.Piece piece, Artifacts.Tile from, Artifacts.Tile to, out Artifacts.Relations.TilePath path);
 }
 
-internal sealed class CompiledPatternServices
+internal sealed class CompiledPatternServices(CompiledPatternTable table, ICompiledPatternResolver resolver, BoardAdjacencyCache adjacency)
 {
-    public CompiledPatternTable Table { get; }
-    public ICompiledPatternResolver Resolver { get; }
-    public BoardAdjacencyCache Adjacency { get; }
-
-    public CompiledPatternServices(CompiledPatternTable table, ICompiledPatternResolver resolver, BoardAdjacencyCache adjacency)
-    {
-        Table = table;
-        Resolver = resolver;
-        Adjacency = adjacency;
-    }
+    public CompiledPatternTable Table { get; } = table;
+    public ICompiledPatternResolver Resolver { get; } = resolver;
+    public BoardAdjacencyCache Adjacency { get; } = adjacency;
 }

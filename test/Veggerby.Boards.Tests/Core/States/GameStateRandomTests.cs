@@ -6,9 +6,8 @@ namespace Veggerby.Boards.Tests.Core.States;
 
 public class GameStateRandomTests
 {
-    private sealed class DummyArtifact : Artifact
+    private sealed class DummyArtifact(string id) : Artifact(id)
     {
-        public DummyArtifact(string id) : base(id) { }
     }
 
     private sealed record DummyArtifactState(DummyArtifact ArtifactRef) : IArtifactState

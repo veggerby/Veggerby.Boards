@@ -7,11 +7,11 @@ using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
-internal sealed class CountingCondition : IGameStateCondition
+internal sealed class CountingCondition(bool result) : IGameStateCondition
 {
-    private readonly bool _result;
+    private readonly bool _result = result;
     public int Evaluations { get; private set; }
-    public CountingCondition(bool result) { _result = result; }
+
     public ConditionResponse Evaluate(GameState state)
     {
         Evaluations++;

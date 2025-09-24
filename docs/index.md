@@ -4,6 +4,7 @@
 - [Core Concepts](core-concepts.md)
 - [Extensibility Guide](extensibility.md)
 - [Compiled Movement Patterns](compiled-patterns.md)
+- [Simulation & Playouts](simulation.md)
 
 ## Suggested Reading Order
 

@@ -78,15 +78,10 @@ public class DecisionPlanEventFilteringTests
     }
 }
 
-internal sealed class TestFilteringGameBuilder : GameBuilder
+internal sealed class TestFilteringGameBuilder(RecordingCondition<MovePieceGameEvent> moveCond, RecordingCondition<RollDiceGameEvent<int>> rollCond) : GameBuilder
 {
-    private readonly RecordingCondition<MovePieceGameEvent> _moveCond;
-    private readonly RecordingCondition<RollDiceGameEvent<int>> _rollCond;
-    public TestFilteringGameBuilder(RecordingCondition<MovePieceGameEvent> moveCond, RecordingCondition<RollDiceGameEvent<int>> rollCond)
-    {
-        _moveCond = moveCond;
-        _rollCond = rollCond;
-    }
+    private readonly RecordingCondition<MovePieceGameEvent> _moveCond = moveCond;
+    private readonly RecordingCondition<RollDiceGameEvent<int>> _rollCond = rollCond;
 
     protected override void Build()
     {

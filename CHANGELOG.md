@@ -61,6 +61,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Integration: Added `CompiledPatternAdjacencyCacheParityTests` validating path parity with compiled patterns adjacency cache enabled vs disabled across representative chess archetypes (rook, bishop, queen, knight, pawn) including unreachable double-step pawn case.
 - Typed event handling result: Introduced `EventRejectionReason` enumeration and `EventResult` discriminated record struct (State, Applied, Reason, Message) with helper factories plus non-breaking `HandleEventResult` extension method on `GameProgress` that infers rejection causes (phase closed, not applicable, invalid ownership, path not found, rule rejected, invalid event, engine invariant). Initial mapping heuristics added for common `BoardException` messages; legacy `HandleEvent` API unchanged (backwards compatible). Basic tests (`EventResultTests`) covering accepted, ignored, and invalid ownership scenarios.
 Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance API (extension now `[Obsolete]` pass-through) and expanded rejection coverage with deterministic tests for `RuleRejected`, `PathNotFound`, and stable `NotApplicable` (no-op rule) scenarios. Mapping refined to classify benign no-op evaluations as `NotApplicable` instead of `EngineInvariant`.
+- Simulation API: Introduced `Veggerby.Boards.Simulation` namespace with:
+  - `IPlayoutPolicy` (deterministic candidate event source)
+  - `PlayoutOptions` (MaxEvents, TimeLimit, CaptureTrace)
+  - `GameSimulator` (single playout + parallel `PlayoutManyAsync` with bounded degree of parallelism & cancellation)
+  - Result types `PlayoutResult`, `PlayoutBatchResult`, and `PlayoutTerminalReason` classification (`NoMoves`, `MaxEvents`, `TimeLimit`).
+  - Concurrency-safe design leveraging immutable `GameProgress` snapshots (engine/state reuse) enabling Monte Carlo style rollouts / future search integrations.
+  - Initial unit tests covering termination (no moves), max event cap, parallel aggregation, and cancellation behavior.
+  - Documentation (`docs/simulation.md`) detailing design principles, usage examples, policy guidelines, tracing, and roadmap.
+  - Extended batch metrics: histogram, min/max/average applied events.
+  - Deterministic randomized candidate ordering support via `GameSimulator.WithRandomizedPolicy()` (Fisher-Yates using `GameState.Random`).
+  - Additional tests: time limit termination, histogram/metrics validation.
+  - Advanced metrics: variance, standard deviation, percentile accessor on `PlayoutBatchResult`.
+  - Composite policy chaining (`WithCompositePolicy`) enabling ordered fallback strategies.
+  - Playout diagnostics observer (`GameSimulator.IPlayoutObserver`) with per-step instrumentation hooks.
+  - Early-stop sequential batch (`PlayoutManyUntil`) supporting convergence / threshold termination predicates.
+  - Generic single-step legal move helper policy (`PolicyHelpers.SingleStepAllPieces`) enumerating deterministic movement candidates.
 
 ### Changed
 

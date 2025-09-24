@@ -180,14 +180,9 @@ internal static class CanonicalStateSerializer
 /// <summary>
 /// Lightweight writer that feeds bytes directly into FNV-1a incremental hash without large intermediate buffers.
 /// </summary>
-internal ref struct IncrementalHashWriter
+internal ref struct IncrementalHashWriter(ulong seed)
 {
-    private ulong _hash; // FNV-1a 64-bit state
-
-    public IncrementalHashWriter(ulong seed)
-    {
-        _hash = seed;
-    }
+    private ulong _hash = seed; // FNV-1a 64-bit state
 
     public readonly ulong Hash => _hash;
 

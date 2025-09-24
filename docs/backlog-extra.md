@@ -13,6 +13,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Aggregated batch observer adapter reducing callback overhead via struct buffer.
 - Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`). (Will record % overhead once benchmarks are run at end of perf cycle.)
 - Overhead target doc update once hashing added.
+- Typed EventResult + rejection reasons + `HandleEventResult` extension method (non-breaking) — COMPLETED (initial heuristic BoardException mapping; future refinement for precise rule invalid vs engine invariant differentiation).
 
 ## Parity & Testing Utilities
 

@@ -12,7 +12,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
-| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
+| 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
@@ -176,7 +176,7 @@ Deliverables (Status annotations in brackets):
 - Predicate hoisting v1: Skip evaluation for trivially true `NullGameStateCondition` entries (flag on `DecisionPlanEntry`). **[COMPLETED]**
 - Compiler: `DecisionPlanBuilder.Compile(GameBuilderContext ctx)`. **[COMPLETED (integrated into builder; context abstraction simplified)]**
 - Execution path: `GameEngine.HandleEvent` uses precomputed plan. **[COMPLETED (flag-gated parity path)]**
-- Typed result: `EventResult` discriminated union. **[COMPLETED (placeholder, not yet returned publicly)]**
+-- Typed result: `EventResult` discriminated union + rejection reasons + `HandleEventResult` adapter. **[COMPLETED – extension surface only (core pipeline still returns progress for legacy API)]**
 - Observer integration points for rule evaluation events. **[COMPLETED]**
 Acceptance Criteria:
 - No functional behavior change vs legacy path (golden test suite). **[PENDING – parity tests not yet added]**

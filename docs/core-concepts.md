@@ -126,6 +126,37 @@ Resolution finds the first leaf phase whose `IGameStateCondition` returns `Valid
 
 Engine throws specialized exceptions (e.g., `BoardException`, `InvalidGameEventException`) when invariants are broken (invalid event application, construction errors).
 
+## Typed Event Handling Results
+
+While `HandleEvent` returns a new `GameProgress` (or throws for invariants), the preferred deterministic evaluation surface is
+`GameProgress.HandleEventResult(IGameEvent)`, which returns an `EventResult` capturing:
+
+- `State` – Successor state snapshot (or original if rejected)
+- `Applied` – Whether any rule mutator produced a new state
+- `Reason` – Structured `EventRejectionReason` enum
+- `Message` – Optional diagnostic detail (exception message, condition reason)
+
+### Rejection Reasons
+
+| Reason | Meaning | Typical Trigger |
+| ------ | ------- | --------------- |
+| None | Event applied successfully | A rule validated and mutators changed state |
+| PhaseClosed | No active phase accepted the event | No leaf phase condition evaluated to valid |
+| NotApplicable | No rule produced a state change | Valid rule chain but mutators no-op OR no matching rule types |
+| InvalidOwnership | Ownership / source tile mismatch | BoardException containing "Invalid from tile" |
+| PathNotFound | Required movement/path cannot be resolved against dice or patterns | BoardException containing "No valid dice state for path" |
+| RuleRejected | A rule explicitly rejected via invalid condition | Condition returned `Invalid` leading to `InvalidGameEventException` |
+| InvalidEvent | Malformed event semantics | Unmapped `BoardException` (payload / structural issue) |
+| EngineInvariant | Internal invariant breach | Unexpected exception (should be investigated) |
+
+The mapping is deterministic: identical input state + event yields the same `EventResult`.
+
+### Guidance
+
+Use the typed result when integrating an API or diagnostics layer. Only escalate to thrown exceptions for construction and invariant failures. Module authors should prefer returning `Invalid` from conditions to surface `RuleRejected` rather than throwing.
+
+The legacy extension method `HandleEventResult(this GameProgress, IGameEvent)` remains temporarily (marked `[Obsolete]`) and will be removed in a future release after consumers migrate to the instance API.
+
 ## Extensibility Summary
 
 Add new interactions by introducing:

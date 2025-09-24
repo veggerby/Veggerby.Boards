@@ -6,7 +6,6 @@ Veggerby.Boards is organized into layered .NET projects:
 - Game Modules (`Veggerby.Boards.Backgammon`, `Veggerby.Boards.Chess`): Declarative game definitions built via specialized `GameBuilder` subclasses.
 
 ```txt
-
 +-------------v-------------+
 |        Game Modules       |
 |  Backgammon  |   Chess    |
@@ -57,7 +56,7 @@ Veggerby.Boards is organized into layered .NET projects:
 
 ## Event Handling Workflow (Simplified)
 
-```
+```txt
 Submit Event
    ↓
 Active Phase? (condition)

@@ -59,10 +59,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Pattern compiler: Expanded chess archetype parity (rook/bishop/queen sliders, knight fixed L, pawn single-step) and added `PatternResolutionBenchmark` (legacy visitor vs compiled) scaffold.
 - Integration: Added `ChessCompiledIntegrationParityTests` exercising compiled pattern resolution under feature flag within full Chess builder (single-step pawn advance parity + unreachable double-step null parity).
 - Integration: Added `CompiledPatternAdjacencyCacheParityTests` validating path parity with compiled patterns adjacency cache enabled vs disabled across representative chess archetypes (rook, bishop, queen, knight, pawn) including unreachable double-step pawn case.
+- Typed event handling result: Introduced `EventRejectionReason` enumeration and `EventResult` discriminated record struct (State, Applied, Reason, Message) with helper factories plus non-breaking `HandleEventResult` extension method on `GameProgress` that infers rejection causes (phase closed, not applicable, invalid ownership, path not found, rule rejected, invalid event, engine invariant). Initial mapping heuristics added for common `BoardException` messages; legacy `HandleEvent` API unchanged (backwards compatible). Basic tests (`EventResultTests`) covering accepted, ignored, and invalid ownership scenarios.
+Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance API (extension now `[Obsolete]` pass-through) and expanded rejection coverage with deterministic tests for `RuleRejected`, `PathNotFound`, and stable `NotApplicable` (no-op rule) scenarios. Mapping refined to classify benign no-op evaluations as `NotApplicable` instead of `EngineInvariant`.
 
 ### Changed
 
 - Compiled movement patterns feature flag default switched to enabled (comprehensive unit + integration + adjacency cache parity tests green; visitor legacy fallback retained for any unresolved patterns).
+`HandleEventResult` logic moved into core `GameProgress` (instance method) reducing indirection; extension method retained only for backward compatibility.
+Adjusted event rejection mapping: benign no state change without exception now returns `NotApplicable` (previously could surface `EngineInvariant`).
 
 - Centralized all package versions via Directory.Packages.props (removed inline versions).
 - README updated with roadmap reference.

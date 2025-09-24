@@ -271,6 +271,24 @@ public class GameProgress
     }
 
     /// <summary>
+    /// Handles an event and returns a structured <see cref="Flows.Events.EventResult"/> indicating success or rejection reason.
+    /// </summary>
+    /// <param name="event">Event to evaluate.</param>
+    /// <returns>Typed handling result (never null).</returns>
+    public Flows.Events.EventResult HandleEventResult(IGameEvent @event)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+
+        // If there is no active phase, treat as phase closed (cannot apply any rule).
+        if (Phase is null)
+        {
+            return Flows.Events.EventResult.Rejected(State, Flows.Events.EventRejectionReason.PhaseClosed, "No active phase accepts the event.");
+        }
+
+        return Internal.EventRejectionClassifier.Classify(this, @event);
+    }
+
+    /// <summary>
     /// Legacy per-event tree traversal evaluation path (no DecisionPlan). Extracted for potential dual-run parity.
     /// </summary>
     private GameProgress HandleEventLegacy(IGameEvent @event)

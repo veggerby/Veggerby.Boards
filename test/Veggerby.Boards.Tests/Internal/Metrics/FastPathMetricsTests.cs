@@ -130,6 +130,66 @@ public class FastPathMetricsTests
     }
 
     [Fact]
+    public void GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash()
+    {
+        // arrange
+        // Build 9x8 board (72 tiles > 64) with simple north relations to exceed bitboard threshold.
+        using var flags = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        Veggerby.Boards.Internal.FeatureFlags.EnableSlidingFastPath = true;
+        FastPathMetrics.Reset();
+
+        var north = new Direction("north");
+        var tiles = new List<Tile>();
+        for (int r = 1; r <= 8; r++)
+        {
+            for (int c = 1; c <= 9; c++)
+            {
+                tiles.Add(new Tile($"t{c}-{r}"));
+            }
+        }
+
+        Tile T(int c, int r) => tiles.Single(t => t.Id == $"t{c}-{r}");
+
+        var rels = new List<TileRelation>();
+        for (int r = 1; r <= 7; r++)
+        {
+            for (int c = 1; c <= 9; c++)
+            {
+                rels.Add(new TileRelation(T(c, r), T(c, r + 1), north));
+            }
+        }
+
+        var board = new Board("gt64-board", rels);
+        var white = new Player("white");
+        var rook = new Piece("rook", white, [new DirectionPattern(north, true)]);
+        var game = new Game(board, [white], [rook]);
+        var initial = GameState.New([new PieceState(rook, T(1, 1))]);
+
+        var services = new EngineServices();
+        var shape = BoardShape.Build(board);
+        services.Set(shape);
+        // Intentionally DO NOT register bitboards / attack generator: threshold guard should prevent their creation.
+
+        var phase = GamePhase.New(1, "noop", new NullGameStateCondition(), new NoOpRule());
+        var engine = new GameEngine(game, phase, null, NullEvaluationObserver.Instance, services);
+        var progress = new GameProgress(engine, initial, null, null, null);
+
+        var from = T(1, 1); var to = T(1, 8);
+
+        // act
+        var path = progress.ResolvePathCompiledFirst(rook, from, to);
+
+        // assert
+        path.Should().NotBeNull();
+        var snap = FastPathMetrics.Snapshot();
+        snap.Attempts.Should().Be(1);
+        snap.FastPathHits.Should().Be(0);
+        // Should record skip because no services (bitboards/attacks) were registered for >64 board.
+        snap.FastPathSkipNoServices.Should().BeGreaterThan(0);
+        (snap.CompiledHits + snap.LegacyHits).Should().Be(1);
+    }
+
+    [Fact]
     public void GivenBitboardsEnabled_WhenResolvingSlidingPath_ThenFastPathHitIncrementsCounter()
     {
         // arrange

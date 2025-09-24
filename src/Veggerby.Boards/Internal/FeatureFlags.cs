@@ -25,10 +25,10 @@ internal static class FeatureFlags
     public static bool EnableCompiledPatterns { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether chess-specific bitboard acceleration is enabled.
-    /// (Placeholder – not yet implemented)
+    /// Gets or sets a value indicating whether bitboard occupancy acceleration is enabled for boards with &lt;=64 tiles.
+    /// Default: true (parity + benchmarks validated). Automatically skipped internally for larger boards (services not registered).
     /// </summary>
-    public static bool EnableBitboards { get; set; } = false;
+    public static bool EnableBitboards { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether state hashing (Merkle style) is performed each transition.
@@ -87,7 +87,7 @@ internal static class FeatureFlags
     /// <summary>
     /// Gets or sets a value indicating whether the sliding movement fast-path (bitboards + attack generator + path reconstruction)
     /// is enabled. Requires <see cref="EnableBitboards"/> and supporting services; when disabled, compiled/legacy paths are used exclusively.
-    /// Default: false until expanded parity (blocked/capture matrix) and benchmarks are published.
+    /// Default: true (comprehensive Parity V2 + benchmarks show >=4.6× speedup empty board, thresholds met). Can be toggled off for troubleshooting.
     /// </summary>
-    public static bool EnableSlidingFastPath { get; set; } = false;
+    public static bool EnableSlidingFastPath { get; set; } = true;
 }

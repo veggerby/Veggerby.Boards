@@ -71,14 +71,3 @@ public class PatternResolutionBaseline
         return path; // currently null until compiler populated
     }
 }
-
-/// <summary>
-/// Program entry to execute the pattern resolution benchmark in isolation.
-/// </summary>
-public static class PatternResolutionBaselineProgram
-{
-    public static void Main(string[] args)
-    {
-        BenchmarkRunner.Run<PatternResolutionBaseline>();
-    }
-}

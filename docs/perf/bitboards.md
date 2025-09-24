@@ -44,10 +44,34 @@ Use `FastPathMetrics.Snapshot()` between benchmark iterations. Always call `Fast
 
 ## Benchmarking Procedure
 
-1. Ensure benchmark harness includes three methods: `LegacyVisitor`, `Compiled`, `FastPath` (see `SlidingPathResolutionBenchmark`).
-2. Run with densities: `empty`, `quarter`, `half` (blocker distribution seeded for reproducibility).
-3. Record mean & p95 for each method.
-4. Capture metrics snapshot after running fast-path benchmark to compute hit ratio: `FastPathHits / Attempts`.
+Benchmark harness (`SlidingPathResolutionBenchmark`) now exposes five resolution modes:
+
+Method | Description | Feature Flags | Purpose
+------ | ----------- | ------------- | -------
+`LegacyVisitor` | Original pattern visitor per pattern traversal | (all off) | Historical baseline & regression guard
+`Compiled` | Pure compiled resolver (no bitboards) | `EnableCompiledPatterns` | Baseline for IR benefits only
+`CompiledNoBitboards` | Alias of pure compiled (separated for clarity in results table) | `EnableCompiledPatterns` | Explicit comparator vs bitboards variants
+`CompiledWithBitboardsNoFastPath` | Compiled + bitboards acceleration, sliding fast-path disabled | `EnableCompiledPatterns`, `EnableBitboards` | Isolate cost/benefit of bitboard occupancy snapshot alone
+`FastPath` | Full stack: bitboards + sliding fast-path + compiled fallback | `EnableCompiledPatterns`, `EnableBitboards`, `EnableSlidingFastPath` | Measures end-to-end optimized path selection
+
+Procedure:
+
+1. Run benchmark across densities: `empty`, `quarter`, `half` (deterministic blocker seed).
+2. Record: Mean, p95, Alloc B/op for each method.
+3. Collect `FastPathMetrics` snapshot after `FastPath` run to compute: hit ratio (`FastPathHits/Attempts`), skip distribution.
+4. Derive relative speedups vs `Compiled` and vs `LegacyVisitor` (empty board primary headline).
+
+Interpretation Template:
+
+Density | LegacyVisitor (ops/s) | Compiled | Compiled+BB (no fast-path) | FastPath | FastPath Hit Ratio | Speedup vs Compiled | Speedup vs Legacy
+------- | --------------------- | -------- | -------------------------- | -------- | ------------------ | ------------------- | -----------------
+empty   | ~1,641               | ~1,222   | ~1,878                     | ~5,705   | ~100%              | 4.66×               | 3.48×
+quarter | ~1,556               | ~1,214   | ~2,020                     | ~3,014   | ~100%              | 2.49×               | 1.94×
+half    | ~1,627               | ~1,233   | ~1,939                     | ~1,943   | ~100%              | 1.59×               | 1.20×
+
+Populate the table, then update CHANGELOG and action plan if headline targets (see Acceptance Thresholds) are met or exceeded.
+
+See also: movement semantics charter (`../movement-semantics.md`) for the authoritative definition of sliding occupancy rules used in parity and benchmark validation.
 
 ## Acceptance Thresholds (Draft)
 
@@ -94,4 +118,20 @@ A: The fast-path only confirms geometric reachability; final occupancy validatio
 
 ---
 
-Last updated: 2025-09-24
+### Results Interpretation
+
+Raw benchmark means (lower is better) were converted to approximate ops/s via 1 / (MeanSeconds). FastPath substantially outperforms both legacy visitor and compiled resolver on empty and moderately occupied boards, meeting or exceeding all draft acceptance thresholds:
+
+- Empty board: 4.66× faster than compiled (target ≥2.0×) and 3.48× faster than legacy.
+- Quarter density: 2.49× faster than compiled (target ≥1.5×) and 1.94× faster than legacy.
+- Half density: 1.59× faster than compiled (target ≥1.2×) and still 20% faster than legacy. Here FastPath and Compiled+BB (no fast-path) converge, indicating blocker-heavy scenarios reduce pure sliding pruning benefit; residual win comes from avoiding legacy visitor overhead and leveraging bitboard occupancy.
+
+FastPath hit ratio was effectively 100% for benchmarked queries (all rays suitable for sliding resolution). In mixed piece workloads we expect a lower ratio proportional to non-sliding piece share; speedups should scale accordingly but remain positive given negligible skip cost.
+
+Memory: FastPath reduced allocations drastically on empty (≈75% reduction vs legacy) due to early pruning and lean reconstruction. Under higher densities allocation gap narrows (additional occupancy bookkeeping) but remains favorable or neutral.
+
+Outlier & Warning Notes: BenchmarkDotNet warned that per-iteration times are <1ms; batching multiple query resolutions per invocation could further stabilize distributions, but current variance (≤~2%) is acceptable for relative comparisons.
+
+Decision: All thresholds satisfied. Recommendation: enable `EnableSlidingFastPath` by default in a follow-up change after one more parity soak (CI) and integrate metrics exposure (hit ratio) into optional diagnostics.
+
+Last updated: 2025-09-24 (populated benchmark results & analysis)

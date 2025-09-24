@@ -5,7 +5,7 @@ This document describes the internal runtime feature flags controlling experimen
 ## Philosophy
 
 - Determinism First: New performance paths ship behind flags until parity & invariants are proven.
-- Explicit Opt-In: Except for features that pass full parity + benchmark acceptance (currently compiled movement patterns), defaults remain `false`.
+- Explicit Opt-In: Except for features that pass full parity + benchmark acceptance (currently compiled patterns, bitboards + sliding fast-path for ≤64 tiles) defaults remain `false`.
 - Transience: Flags are short‑lived migration tools. Mature subsystems graduate; their flags are removed in a subsequent minor version after two stable releases.
 
 ## Current Flags (2025-09-24)
@@ -14,7 +14,7 @@ This document describes the internal runtime feature flags controlling experimen
 |------|---------|---------|---------------------|-------|
 | EnableDecisionPlan | false | Replace legacy rule traversal with precompiled leaf phase list (parity + optional optimizations). | All optimization stages (grouping, filtering, masks) validated + stable perf gate. | Debug parity & grouping/masks individually flag-gated. |
 | EnableCompiledPatterns | true | DFA/IR based movement pattern resolution with legacy visitor fallback. | Sustained perf win & no unresolved parity gaps for two releases. | Visitor automatically used per-path when resolver misses. |
-| EnableBitboards | false | Incremental bitboard occupancy + sliding attack generator & path fast‑path. | Net ≥15% improvement on sliding-heavy scenarios & parity across blocker/capture suites. | Guarded by board tile count ≤64. |
+| EnableBitboards | true | Incremental bitboard occupancy + sliding attack generator foundation. | Net ≥15% improvement on sliding-heavy scenarios & parity across blocker/capture suites. | Auto-skipped for boards >64 tiles. |
 | EnableStateHashing | false | Deterministic 64/128-bit (xxHash128) state hash each transition. | Downstream consumers (replay / transposition) validated for cost. | Observer `OnStateHashed` fired when on. |
 | EnableTraceCapture | false | Capture last evaluation trace (phase enters, rule decisions, state hash). | Overhead ≤5% with tracing on; stable schema documented. | Trace cleared each event. |
 | EnableTimelineZipper | false | Immutable undo/redo chain (past/present/future) for state history. | Replay / branching algorithms integrate; memory profile stable. | Not yet integrated with simulator. |
@@ -24,28 +24,45 @@ This document describes the internal runtime feature flags controlling experimen
 | EnableCompiledPatternsAdjacencyCache | false | Precomputed (tile,direction)->neighbor cache for compiled resolver. | Confirmed micro-benchmark win (≥5%) w/out allocation regressions. | Mutually exclusive benefit with BoardShape fast path once enabled. |
 | EnableDecisionPlanMasks | false | Short-circuit skip of mutually exclusive phases after first success. | Exclusive grouping correctness + perf proven. | Depends on EnableDecisionPlan. |
 | EnableBoardShape | false | Prefer `BoardShape` O(1) neighbor lookups over relation scans / adjacency cache lookups. | Board topology heuristics integrated + microbench win. | Always built; flag controls exploitation. |
-| EnableSlidingFastPath | false | Sliding (rook/bishop/queen) geometric fast-path using bitboards + attack generator + path reconstruction. | Parity V2 (blocked/capture matrix) + benchmark gains published; default ON for ≤64 tiles thereafter. | Requires EnableBitboards; metrics expose granular skip reasons. |
+| EnableSlidingFastPath | true | Sliding (rook/bishop/queen) geometric fast-path using bitboards + attack generator + path reconstruction. | Already met: Parity V2 + benchmarks (≥4.6× empty, ≥2.4× quarter, ≥1.5× half vs compiled). | Requires EnableBitboards; metrics expose granular skip reasons. |
 
 ## Usage Pattern
 
-Typical opt-in flow for experimental performance runs:
+### Typical Opt-In (Acceleration)
 
 ```csharp
-// Enable compiled patterns already ON by default.
-Internal.FeatureFlags.EnableBitboards = true;                 // sliding attacks + fast-path
-Internal.FeatureFlags.EnableBoardShape = true;                // adjacency lookups
-Internal.FeatureFlags.EnableDecisionPlan = true;              // plan executor
-Internal.FeatureFlags.EnableDecisionPlanGrouping = true;      // predicate gate hoisting
-Internal.FeatureFlags.EnableDecisionPlanEventFiltering = true;// EventKind pre-filter
-Internal.FeatureFlags.EnableDecisionPlanMasks = true;         // exclusivity short-circuit
+// Compiled patterns are ON by default.
+Internal.FeatureFlags.EnableBitboards = true;          // (default ON ≤64 tiles)
+Internal.FeatureFlags.EnableSlidingFastPath = true;    // (default ON)
+Internal.FeatureFlags.EnableBoardShape = true;         // Experimental topology exploitation
+Internal.FeatureFlags.EnableDecisionPlan = true;       // Phase/rule plan executor
 ```
+
+### DecisionPlan Optimizations (Optional Layers)
+
+```csharp
+Internal.FeatureFlags.EnableDecisionPlanGrouping = true;       // Predicate hoisting
+Internal.FeatureFlags.EnableDecisionPlanEventFiltering = true;  // EventKind pre-filter
+Internal.FeatureFlags.EnableDecisionPlanMasks = true;           // Exclusivity short-circuit
+```
+
+### Quick Disable (Bisect / Troubleshooting)
+
+```csharp
+Internal.FeatureFlags.EnableSlidingFastPath = false; // disable sliding acceleration
+Internal.FeatureFlags.EnableBitboards = false;       // revert to compiled/legacy occupancy path
+```
+
+### Code Style Reminder
+
+All acceleration code must follow repository style rules: file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot loops (fast-path, attack generation, mutators), immutability of `GameState` snapshots, and deterministic branching only. Any deviation should be justified in code comments and slated for cleanup in backlog.
 
 Disable individual toggles to isolate their contribution in benchmarks.
 
 ## Ordering & Dependencies
 
 - DecisionPlan optimization flags (`Grouping`, `EventFiltering`, `Masks`, `DebugParity`) require `EnableDecisionPlan`.
-- Bitboard fast-path currently engages inside `GameProgress.ResolvePathCompiledFirst` when **all** of: bitboards enabled, sliding attack generator service present, piece map snapshot present, and board size ≤64.
+- Bitboard fast-path currently engages inside `GameProgress.ResolvePathCompiledFirst` when **all** of: bitboards enabled, sliding attack generator service present, piece map snapshot present, and board size ≤64. See also: [`board-vs-bitboard.md`](./board-vs-bitboard.md) for architectural division of responsibility.
 - BoardShape is always constructed but only prioritized when `EnableBoardShape` is set (future resolvers will branch on this).
 
 ## Benchmarking Guidance
@@ -74,4 +91,4 @@ Mature acceleration features (compiled patterns, board shape, bitboards) may be 
 
 ---
 
-Last updated: 2025-09-24
+Last updated: 2025-09-24 (post cleanup; bitboards + sliding fast-path defaults ON)

@@ -62,14 +62,3 @@ public class HashingOverheadBenchmark
         return _withHashing.HandleEvent(new MovePieceGameEvent(_pawn, _path));
     }
 }
-
-/// <summary>
-/// Benchmark host for the hashing overhead suite.
-/// </summary>
-public static class HashingOverheadProgram
-{
-    public static void Main(string[] args)
-    {
-        BenchmarkRunner.Run<HashingOverheadBenchmark>();
-    }
-}

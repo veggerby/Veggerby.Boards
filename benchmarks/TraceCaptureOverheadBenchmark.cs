@@ -51,11 +51,3 @@ public class TraceCaptureOverheadBenchmark
         return _progress.HandleEvent(_event);
     }
 }
-
-public static class TraceCaptureOverheadProgram
-{
-    public static void Main(string[] args)
-    {
-        BenchmarkRunner.Run<TraceCaptureOverheadBenchmark>();
-    }
-}

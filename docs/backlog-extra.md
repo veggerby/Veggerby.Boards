@@ -104,6 +104,16 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Popcount based mobility heuristic prototype (feeds future evaluation module)
 - Optional transposition hash integration reusing state hash + bitboards for faster equality short-circuit
 
+### Newly Added (Post-Acceleration Defaults Flip)
+
+- Bitboard128 implementation (boards up to 128 tiles) – design note drafted (`docs/perf/bitboard128-design.md`); implement only when a >64 tile module is introduced.
+- Typed mask operations (evaluate introducing lightweight `IBitboardOps` once dual-size support lands; avoid premature abstraction now).
+- Topology-aware pruning (leverage `BoardShape` classification to pre-elide unreachable directional rays in compiled tables or fast-path pre-check).
+- Mobility heuristic (popcount-based attack span per sliding piece feeding future evaluation/scoring module).
+- LINQ sweep: eliminate any residual LINQ usage inside mutators, fast-path reconstruction, or attack generation (style rule already forbids; audit to enforce after new features merge).
+
+Style reminder: all future acceleration work must keep hot paths allocation-free, avoid LINQ, retain explicit braces, and preserve immutability/determinism.
+
 ### Recently Landed (to be migrated into main plan on next revision)
 
 - BoardShape build integrated (unconditional construction; feature flag controls fast-path exploitation).

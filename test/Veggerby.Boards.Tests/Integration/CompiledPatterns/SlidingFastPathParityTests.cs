@@ -1,8 +1,8 @@
 using System.Linq;
-using Veggerby.Boards.Internal;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Utils;
 
 using Xunit;

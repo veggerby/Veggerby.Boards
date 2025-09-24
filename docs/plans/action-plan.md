@@ -15,7 +15,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
-| 4. Performance Data Layout & Hot Paths | PARTIAL | BoardShape (built), PieceMap incremental (integrated), Bitboard incremental snapshot (global + per-player), SlidingAttackGenerator (ray precompute), sliding path fast-path (ResolvePathCompiledFirst pre-compiled resolver), occupancy semantics charter (sliding blockers/captures), parity tests (empty-ray + blocker/capture rook/bishop/queen), sliding path benchmark scaffold (legacy vs compiled). Remaining: true fast-path microbench (needs progress harness), typed per-piece masks, Bitboard128 (>64 tiles) design, LINQ legacy sweep, mobility heuristic prototype, topology classification integration. |
+| 4. Performance Data Layout & Hot Paths | PARTIAL → NEARING COMPLETE | BoardShape (built), PieceMap incremental (integrated), Bitboard incremental snapshot (global + per-player), SlidingAttackGenerator (ray precompute), sliding path fast-path (pre-compiled resolver), occupancy semantics charter, Parity V2 (blockers/captures/multi-block/edge/non-slider) tests, benchmarks published (FastPath default ON). Remaining: typed per-piece masks, Bitboard128 design & implementation (>64 tiles), LINQ legacy sweep, mobility heuristic, topology-based pruning heuristics. |
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
@@ -370,6 +370,16 @@ Performance Acceleration Tracking (Recent Progress):
 - Parity V2 sliding test matrix implemented (adjacent friendly/enemy, mid-ray blockers, multi-blocker order permutations, zero-length request) – total test suite now 462; all fast-path vs compiled parity assertions green.
 - Style charter reaffirmed in new tests (explicit braces, file-scoped namespaces, no LINQ in engine hot-path code; LINQ confined to test assertions only).
 - Sliding benchmark extended (FastPath, CompiledWithBitboardsNoFastPath, CompiledNoBitboards) enabling isolation of bitboards vs sliding fast-path overhead; style charter respected (no additional LINQ in hot loops, deterministic feature flag toggling per variant).
+- Bitboards + Sliding FastPath defaults flipped ON (≤64 tiles) after benchmarks demonstrated ≥4.6× (empty), ≥2.4× (quarter), ≥1.5× (half) speedups vs compiled resolver.
+- Configuration docs updated with disable snippet; code style rules reiterated in configuration & this plan.
+
+### Next (Post-Acceleration) Items
+
+- Bitboard128 dual-segment representation for >64 tile boards (design note drafted; implementation pending profiling need).
+- Typed per-piece occupancy masks (finer sliding pruning / mobility metrics).
+- Topology-based pruning (orthogonal-only boards skip diagonal ray setup; diagonal filtering specialization).
+- Mobility heuristic / evaluation prototype using attack generator outputs.
+- LINQ sweep through remaining legacy visitor & rule evaluation code paths (only outside hot loops now; still a cleanup target).
 
 ## Metrics Dashboard (Targets)
 

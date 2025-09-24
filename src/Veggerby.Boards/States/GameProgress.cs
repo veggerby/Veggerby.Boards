@@ -24,7 +24,9 @@ public class GameProgress
     /// <param name="engine">The game engine hosting rules and phase graph.</param>
     /// <param name="state">The current game state.</param>
     /// <param name="events">The historical events (optional).</param>
-    public GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events)
+    /// <param name="pieceMapSnapshot">Optional piece map acceleration snapshot (internal) carried forward for incremental updates.</param>
+    /// <param name="bitboardSnapshot">Optional bitboard occupancy snapshot (global + per-player) carried forward for incremental updates.</param>
+    internal GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events, Internal.Layout.PieceMapSnapshot pieceMapSnapshot = null, Internal.Layout.BitboardSnapshot bitboardSnapshot = null)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
@@ -34,6 +36,8 @@ public class GameProgress
         State = state;
         Events = [.. (events ?? Enumerable.Empty<IGameEvent>())];
         Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
+        _pieceMapSnapshot = pieceMapSnapshot; // may be null if feature disabled
+        _bitboardSnapshot = bitboardSnapshot; // may be null if feature disabled
     }
 
     /// <summary>
@@ -56,6 +60,20 @@ public class GameProgress
     /// </summary>
     public IEnumerable<IGameEvent> Events { get; }
 
+    private readonly Internal.Layout.PieceMapSnapshot _pieceMapSnapshot;
+
+    /// <summary>
+    /// Gets the acceleration PieceMap snapshot for this progress (internal experimental).
+    /// </summary>
+    internal Internal.Layout.PieceMapSnapshot PieceMapSnapshot => _pieceMapSnapshot;
+
+    private readonly Internal.Layout.BitboardSnapshot _bitboardSnapshot;
+
+    /// <summary>
+    /// Gets the incremental bitboard snapshot (global + per-player occupancy) if enabled.
+    /// </summary>
+    internal Internal.Layout.BitboardSnapshot BitboardSnapshot => _bitboardSnapshot;
+
     /// <summary>
     /// Gets the root game definition.
     /// </summary>
@@ -68,11 +86,20 @@ public class GameProgress
     /// <returns>A new progress instance.</returns>
     public GameProgress NewState(IEnumerable<IArtifactState> newStates)
     {
-        return new GameProgress(
-            Engine,
-            State.Next(newStates),
-            Events
-        );
+        // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
+        Internal.Layout.PieceMapSnapshot nextSnapshot = _pieceMapSnapshot;
+        Internal.Layout.BitboardSnapshot nextBb = _bitboardSnapshot;
+        if (Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices))
+        {
+            // Full rebuild since we don't know which pieces changed.
+            nextSnapshot = Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, State.Next(newStates), Engine.Services.TryGet(out Internal.Layout.BoardShape shape) ? shape : null);
+        }
+
+        if (Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices) && Engine.Services.TryGet(out Internal.Layout.BoardShape shape2))
+        {
+            nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices.Layout, State.Next(newStates), shape2);
+        }
+        return new GameProgress(Engine, State.Next(newStates), Events, nextSnapshot, nextBb);
     }
 
     /// <summary>
@@ -118,6 +145,7 @@ public class GameProgress
                             continue; // skip group
                         }
                     }
+
                     bool gateValid = gateEntry.ConditionIsAlwaysValid || gateEntry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid);
                     if (!gateValid)
                     {
@@ -136,6 +164,7 @@ public class GameProgress
                                 continue; // another entry in this exclusivity group already applied
                             }
                         }
+
                         if (eventKindFiltering)
                         {
                             var ek = Engine.DecisionPlan.SupportedKinds.Length > index ? Engine.DecisionPlan.SupportedKinds[index] : EventKind.Any;
@@ -144,6 +173,7 @@ public class GameProgress
                                 continue;
                             }
                         }
+
                         // For first entry we've already evaluated the condition (unless always-valid); others share same reference so skip Evaluate.
                         if (offset > 0 && !entry.ConditionIsAlwaysValid)
                         {
@@ -158,15 +188,47 @@ public class GameProgress
                         var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
                         progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
                         progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, index);
+
                         if (ruleCheck.Result == ConditionResult.Valid)
                         {
                             var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                            var nextSnapshot = progress._pieceMapSnapshot;
+                            var nextBb = progress._bitboardSnapshot;
+
+                            if (progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices) && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape))
+                            {
+                                if (evt is MovePieceGameEvent mpe)
+                                {
+                                    if (shape.TryGetTileIndex(mpe.From, out var fromIdx) && shape.TryGetTileIndex(mpe.To, out var toIdx))
+                                    {
+                                        nextSnapshot = nextSnapshot?.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx)
+                                            ?? Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
+                                        if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices2))
+                                        {
+                                            nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices2.Layout, newState, shape))
+                                                .UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, nextSnapshot, shape);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
+                                    if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices3))
+                                    {
+                                        nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices3.Layout, newState, shape);
+                                    }
+                                }
+                            }
+
                             progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
+
                             if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
                             {
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
-                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+
+                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]), nextSnapshot, nextBb);
+
                             if (masksEnabled)
                             {
                                 var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
@@ -175,6 +237,7 @@ public class GameProgress
                                     appliedGroupRoots.Add(root);
                                 }
                             }
+
                             handled = true;
                             break;
                         }
@@ -183,6 +246,7 @@ public class GameProgress
                             throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
                         }
                     }
+
                     if (handled)
                     {
                         break; // stop scanning remaining groups
@@ -202,6 +266,7 @@ public class GameProgress
                             continue;
                         }
                     }
+
                     if (eventKindFiltering)
                     {
                         var ek = Engine.DecisionPlan.SupportedKinds.Length > i ? Engine.DecisionPlan.SupportedKinds[i] : EventKind.Any;
@@ -210,23 +275,56 @@ public class GameProgress
                             continue;
                         }
                     }
+
                     if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                     {
                         continue;
                     }
+
                     var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
                     var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
                     progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
                     progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
+
                     if (ruleCheck.Result == ConditionResult.Valid)
                     {
                         var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                        var nextSnapshot = progress._pieceMapSnapshot;
+                        var nextBb = progress._bitboardSnapshot;
+
+                        if (progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices2) && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape2))
+                        {
+                            if (evt is MovePieceGameEvent mpe2)
+                            {
+                                if (shape2.TryGetTileIndex(mpe2.From, out var fromIdx2) && shape2.TryGetTileIndex(mpe2.To, out var toIdx2))
+                                {
+                                    nextSnapshot = nextSnapshot?.UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2)
+                                        ?? Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
+                                    if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices4))
+                                    {
+                                        nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices4.Layout, newState, shape2))
+                                            .UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2, nextSnapshot, shape2);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
+                                if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices5))
+                                {
+                                    nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices5.Layout, newState, shape2);
+                                }
+                            }
+                        }
                         progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
+
                         if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
                         {
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+
+                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]), nextSnapshot, nextBb);
+
                         if (masksEnabled)
                         {
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
@@ -235,6 +333,7 @@ public class GameProgress
                                 appliedGroupRoots.Add(root);
                             }
                         }
+
                         handled = true;
                         break;
                     }
@@ -250,12 +349,14 @@ public class GameProgress
                 progress.Engine.Observer.OnEventIgnored(evt, progress.State);
             }
         }
+
         // Debug parity (dual-run) – shadow legacy evaluation and compare resulting state snapshots.
         if (debugParityEnabled)
         {
             var legacy = originalProgress.HandleEventLegacy(@event);
             var forceMismatch = Internal.Debug.DebugParityTestHooks.ForceMismatch; // test hook
             var equal = progress.State.Equals(legacy.State);
+
             if (!equal || forceMismatch)
             {
                 // Compute simple diff summary (counts) for diagnostic clarity.
@@ -264,9 +365,11 @@ public class GameProgress
                 var mismatching = planStates.Keys.Union(legacyStates.Keys)
                     .Where(k => !legacyStates.ContainsKey(k) || !planStates.ContainsKey(k) || !legacyStates[k].Equals(planStates[k]))
                     .ToList();
+
                 throw new BoardException($"DecisionPlan debug parity divergence detected (mismatched artifacts: {string.Join(", ", mismatching)}). ForceMismatch={(forceMismatch ? "true" : "false")}");
             }
         }
+
         return progress;
     }
 
@@ -299,31 +402,64 @@ public class GameProgress
             Engine.Observer.OnEventIgnored(@event, State);
             return this;
         }
+
         var events = currentPhase.PreProcessEvent(this, @event);
         return events.Aggregate(this, (seed, e) =>
         {
             var phaseForEvent = seed.Engine.GamePhaseRoot.GetActiveGamePhase(seed.State);
+
             if (phaseForEvent is null)
             {
                 return seed; // nothing active; event ignored
             }
+
             seed.Engine.Observer.OnPhaseEnter(phaseForEvent, seed.State);
             var ruleCheckLocal = phaseForEvent.Rule.Check(seed.Engine, seed.State, e);
             seed.Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheckLocal, seed.State, 0);
+
             if (ruleCheckLocal.Result == ConditionResult.Valid)
             {
                 var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
                 seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal, 0);
+
                 if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
                 {
                     seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
                 }
-                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
+
+                var nextSnapshot = seed._pieceMapSnapshot;
+                var nextBb = seed._bitboardSnapshot;
+                if (seed.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices3) && seed.Engine.Services.TryGet(out Internal.Layout.BoardShape shape3))
+                {
+                    if (e is MovePieceGameEvent mpe3)
+                    {
+                        if (shape3.TryGetTileIndex(mpe3.From, out var fromIdx3) && shape3.TryGetTileIndex(mpe3.To, out var toIdx3))
+                        {
+                            nextSnapshot = nextSnapshot?.UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3)
+                                ?? Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
+                            if (seed.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices6))
+                            {
+                                nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices6.Layout, newStateLocal, shape3))
+                                    .UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3, nextSnapshot, shape3);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
+                        if (seed.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices7))
+                        {
+                            nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices7.Layout, newStateLocal, shape3);
+                        }
+                    }
+                }
+                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]), nextSnapshot, nextBb);
             }
             else if (ruleCheckLocal.Result == ConditionResult.Invalid)
             {
                 throw new InvalidGameEventException(e, ruleCheckLocal, seed.Game, phaseForEvent, seed.State);
             }
+
             seed.Engine.Observer.OnEventIgnored(e, seed.State);
             return seed;
         });

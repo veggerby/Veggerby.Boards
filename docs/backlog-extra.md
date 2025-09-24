@@ -37,6 +37,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Pattern resolution benchmark scaffold (visitor vs compiled placeholder) **COMPLETED (compiler now populated for Fixed & MultiDirection)**
 - DecisionPlan phase cache optimization benchmark follow-up (measure delta from removing ResolvePhase traversal). **PENDING**
 - Predicate hoisting extended: future phases include grouping conditions, short-circuit bit masks, and invalidation sets. **PENDING**
+- Sliding fast-path microbenchmark (bitboards+attacks vs compiled-only) capturing mean path resolution latency for representative rook/bishop/queen rays on empty & semi-blocked boards. **PENDING**
 
 ### DecisionPlan Optimization (Grouping & Masking) Tasks
 
@@ -95,9 +96,18 @@ New items following initial Simulator API landing (core + metrics + observer):
 
 - BoardShape arrays (directional adjacency index tables) feeding both visitor + compiled resolver (reduce relation scans)
 - PieceMap struct-of-arrays (parallel arrays: PieceId, OwnerIndex, TileIndex) for cache-friendly iteration
+- Incremental PieceMap updates integrated into GameProgress (move-event O(1) mutation) – further parity + perf benchmarks upcoming
 - Attack generation helpers (rook/bishop/queen sliding attacks via directional rays using Layout precomputed offsets)
 - Incremental bitboard updates (mutator computes delta instead of full rebuild) – benchmark for net win
 - 128+ tile support (dual Bitboard64 mask pair or 128-bit intrinsic when available) – only if needed by larger boards
 - Benchmark: compare HandleEvent with/without bitboards for dense chess move phases – require ≥15% improvement to graduate
 - Popcount based mobility heuristic prototype (feeds future evaluation module)
 - Optional transposition hash integration reusing state hash + bitboards for faster equality short-circuit
+
+### Recently Landed (to be migrated into main plan on next revision)
+
+- BoardShape build integrated (unconditional construction; feature flag controls fast-path exploitation).
+- PieceMap initial & incremental snapshot pipeline (GameBuilder registration + GameProgress propagation + tests).
+- Incremental Bitboard snapshot integration (global + per-player occupancy) and dual update propagation.
+- Sliding attack generator (ray-based) + rook parity test.
+- Sliding attack fast-path integration ahead of compiled pattern resolver.

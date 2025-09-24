@@ -78,6 +78,14 @@ Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance AP
   - Early-stop sequential batch (`PlayoutManyUntil`) supporting convergence / threshold termination predicates.
   - Generic single-step legal move helper policy (`PolicyHelpers.SingleStepAllPieces`) enumerating deterministic movement candidates.
   - Experimental bitboard acceleration scaffold (`Bitboard64`, `BoardBitboardLayout`, `BitboardServices`) behind `EnableBitboards` feature flag: provides occupancy + per-player occupancy masks for boards with <=64 tiles (initial Chess mapping tests added; no engine integration yet).
+  - BoardShape adjacency layout (tile index + directional neighbor arrays) constructed during game build (fast-path indexing for future path and attack generation optimizations; feature-flagged usage).
+  - PieceMap data layout (stable player & piece indices + per-piece tile index array + per-player piece counts) created at build when compiled patterns or bitboards are enabled.
+  - Incremental PieceMap snapshot updates integrated into `GameProgress` event handling (DecisionPlan + legacy paths) performing O(1) tile index mutation on move events without full rebuild.
+  - Incremental Bitboard occupancy snapshot (global + per-player) integrated into `GameProgress` alongside PieceMap when `EnableBitboards` is active (boards ≤64 tiles).
+  - Sliding attack generator (ray precomputation + blocker aware traversal) registered when bitboards enabled; initial rook parity test ensures correctness vs naive traversal.
+  - Sliding attack path resolution fast-path integrated into `GameProgress.ResolvePathCompiledFirst` (prior to compiled resolver) when bitboards + attack services present.
+  - Internal acceleration tests (`PieceMapIncrementalTests`) covering tile index update, mismatch no-op, and unaffected piece stability (test suite now 437 tests).
+  - `GameProgress` now internally carries acceleration snapshot (PieceMap) paving the way for upcoming bitboard + sliding attack generator integration.
 
 ### Changed
 
@@ -91,6 +99,8 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Added xxHash128-based 128-bit hash (non-cryptographic) for future Merkle / interning work; legacy 64-bit retained for transition.
 - Backgammon opening phase: removed direct `SelectActivePlayerGameStateMutator` invocation from initial roll rule chain (selection now occurs via dedicated state event in follow-up rule logic), preserving original semantics while isolating state mutation classification.
 - DecisionPlan evaluation now uses cached phase reference (no functional change expected).
+- GameProgress constructor (internal) extended to accept optional PieceMap snapshot; builder passes initial snapshot; state transitions propagate incremental updates (no public API change).
+- GameBuilder now wires BoardShape and PieceMap services before compiled resolver creation ensuring index-based fast paths have consistent layout context.
 
 ### Fixed
 
@@ -107,6 +117,10 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Fixed malformed XML documentation in `XXHash128` (removed CS1570 warnings) and enriched algorithm remarks.
 - Added internal trace capture observer decorator (no public API exposure yet).
 - Temporarily removed / simplified certain compiled pattern parity tests pending investigation of legacy visitor edge case (tracking in backlog-extra) to unblock DecisionPlan optimization landing.
+- Reinforced repository code style (file-scoped namespaces, explicit braces, 4-space indentation, no tabs, minimal LINQ in hot paths) across newly added BoardShape / PieceMap / GameProgress modifications.
+- Incremental Bitboard + SlidingAttackGenerator services added (GameBuilder registration + GameProgress dual-snapshot update path) adhering strictly to style & immutability rules.
+- Sliding attack fast-path path resolution (pre-compiled resolver) adhering to code style (no LINQ in tight loop aside from direction selection) and determinism guarantees.
+- Sliding fast-path parity tests (rook horizontal, bishop diagonal, queen vertical) comparing fast-path (bitboards + compiled) vs compiled-only reference ensuring geometric path equivalence under empty-ray scenarios (test suite now 440 tests).
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

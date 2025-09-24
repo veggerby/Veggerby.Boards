@@ -52,7 +52,8 @@ public class PatternResolutionBaseline
         // Pre-create compiled resolver (currently empty table -> always miss)
         var table = PatternCompiler.Compile(_game);
         var adjacency = BoardAdjacencyCache.Build(_game.Board);
-        _compiledResolver = new CompiledPatternResolver(table, _game.Board, adjacency);
+        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(_game.Board);
+        _compiledResolver = new CompiledPatternResolver(table, _game.Board, adjacency, shape);
     }
 
     [Benchmark(Baseline = true)]

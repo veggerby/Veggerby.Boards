@@ -407,14 +407,33 @@ public abstract class GameBuilder
             {
                 services = new EngineServices();
             }
-            var layout = new Internal.Bitboards.BoardBitboardLayout(game.Board);
-            var bitboards = new Internal.Bitboards.BitboardServices(layout);
-            services.Set(layout);
-            services.Set(bitboards);
+
+            // Legacy bitboard services (non-incremental, rebuild-on-demand).
+            var legacyLayout = new Internal.Bitboards.BoardBitboardLayout(game.Board);
+            var legacyServices = new Internal.Bitboards.BitboardServices(legacyLayout);
+            services.Set(legacyLayout);
+            services.Set(legacyServices);
+
+            // New incremental bitboard snapshot (global + per-player occupancy) built once and updated per move.
+            var bbLayout = Internal.Layout.BitboardLayout.Build(game);
+            var initialBbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
+            services.Set(new Internal.Layout.BitboardServices(bbLayout, initialBbSnapshot));
         }
 
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);
-        _initialGameProgress = new GameProgress(engine, initialGameState, null);
+        Veggerby.Boards.Internal.Layout.PieceMapSnapshot pmSnapshot = null;
+        Veggerby.Boards.Internal.Layout.BitboardSnapshot bbSnapshot = null;
+        if (services.TryGet(out Veggerby.Boards.Internal.Layout.PieceMapServices pmServices))
+        {
+            pmSnapshot = pmServices.Snapshot; // already built earlier
+        }
+
+        if (services.TryGet(out Veggerby.Boards.Internal.Layout.BitboardServices bbServices))
+        {
+            bbSnapshot = bbServices.Snapshot;
+        }
+
+        _initialGameProgress = new GameProgress(engine, initialGameState, null, pmSnapshot, bbSnapshot);
 
         return _initialGameProgress;
     }

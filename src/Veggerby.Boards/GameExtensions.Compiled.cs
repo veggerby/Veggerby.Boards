@@ -2,6 +2,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Internal.Attacks; // sliding attack fast-path
 using Veggerby.Boards.Internal.Compiled;
 using Veggerby.Boards.States;
 
@@ -78,6 +79,49 @@ public static partial class GameExtensions
     /// </summary>
     public static TilePath ResolvePathCompiledFirst(this GameProgress progress, Piece piece, Tile from, Tile to)
     {
+        // Sliding attack fast-path (bitboards + attack generator)
+        if (Internal.FeatureFlags.EnableBitboards
+            && progress?.Engine?.Services is not null
+            && progress.Engine.Services.TryGet(out Internal.Attacks.AttackGeneratorServices atk)
+            && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape)
+            && progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bb)
+            && progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pm))
+        {
+            if (shape.TryGetTileIndex(from, out var fromIdx) && shape.TryGetTileIndex(to, out var toIdx))
+            {
+                var attacks = atk.Sliding.GetSlidingAttacks(piece, (short)fromIdx, progress.PieceMapSnapshot, bb.Snapshot);
+                if (attacks.Contains((short)toIdx))
+                {
+                    // Determine direction: find first direction whose ray sequence reaches target via consecutive neighbors
+                    var direction = shape.Directions.FirstOrDefault(d =>
+                    {
+                        var current = from;
+                        while (shape.TryGetNeighbor(current, d, out var n))
+                        {
+                            if (n.Equals(to)) { return true; }
+                            current = n;
+                        }
+                        return false;
+                    });
+                    if (direction is not null)
+                    {
+                        TilePath built = null;
+                        var current = from;
+                        while (!current.Equals(to))
+                        {
+                            if (!shape.TryGetNeighbor(current, direction, out var n)) { built = null; break; }
+                            var rel = progress.Game.Board.GetTileRelation(current, direction);
+                            built = TilePath.Create(built, rel);
+                            current = n;
+                        }
+                        if (built is not null && built.To.Equals(to))
+                        {
+                            return built; // fast-path win
+                        }
+                    }
+                }
+            }
+        }
         if (progress.TryGetCompiledResolver(out var services))
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))

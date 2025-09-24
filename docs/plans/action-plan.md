@@ -15,7 +15,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
-| 4. Performance Data Layout & Hot Paths | PARTIAL | Bitboard occupancy scaffold (layout + masks) behind flag; BoardShape/PieceMap pending |
+| 4. Performance Data Layout & Hot Paths | PARTIAL | BoardShape + PieceMap incremental + Bitboard snapshot + sliding attack generator + sliding path fast-path; remaining: typed piece masks, benchmarks, Bitboard128 |
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
@@ -241,18 +241,21 @@ Migration:
 
 Deliverables (Status annotations in brackets):
 
-- Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[NOT STARTED]**
-- `PieceMap` struct-of-arrays (ids, tile indices, owner indices). **[NOT STARTED]**
-- Replace LINQ enumerations in path & rule evaluation with for loops. **[NOT STARTED]**
+- Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[COMPLETED – built every game build; flag governs fast-path usage]**
+- `PieceMap` struct-of-arrays (ids, tile indices, owner indices). **[COMPLETED – initial snapshot + incremental move updates integrated]**
+- Incremental PieceMap update wired into `GameProgress` (DecisionPlan + legacy). **[COMPLETED]**
+- Replace LINQ enumerations in path & rule evaluation with for loops. **[PARTIAL – new code adheres; broader sweep pending]**
 - Identify micro hotspots via BenchmarkDotNet baseline. **[PARTIAL – baseline harness exists, analysis pending]**
-- Chess bitboard adapter (64-bit masks for occupancy, attacks) synced at evaluation entry. **[NOT STARTED]**
+- Chess bitboard adapter (64-bit masks for occupancy, attacks) synced at evaluation entry. **[PENDING – next]**
+- Sliding attack generator using BoardShape + bitboards. **[PENDING]**
+- Incremental bitboard update path. **[PENDING]**
 Acceptance Criteria:
-- Benchmarks: resolve path & legal move generation 10–30× faster (target upper bound, accept ≥8× initial). **[NOT STARTED]**
-- Allocation count in hot benchmarks < 5% of baseline. **[NOT STARTED]**
+- Benchmarks: resolve path & legal move generation 10–30× faster (target upper bound, accept ≥8× initial). **[PENDING]**
+- Allocation count in hot benchmarks < 5% of baseline. **[PENDING]**
 Risks:
-- Bitboard sync overhead > savings (measure early).
+- Bitboard sync overhead > savings (measure early). Mitigation: incremental delta application modeled after PieceMap path.
 Migration:
-- Keep bitboard logic internal; no public exposure.
+- Keep bitboard + attack generation internal; expose only stable resolver improvements post parity.
 
 ### 5. Concurrency & Simulation
 

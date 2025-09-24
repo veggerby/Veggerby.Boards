@@ -77,4 +77,22 @@ internal sealed class PieceMapSnapshot
 
         return new PieceMapSnapshot(Layout, clone, PlayerPieceCounts); // counts unchanged for simple move
     }
+
+    public PieceMapSnapshot UpdateForMove(Piece piece, short expectedFromTileIndex, short toTileIndex)
+    {
+        if (!Layout.TryGetPieceIndex(piece, out var idx))
+        {
+            return this;
+        }
+
+        // If expectedFromTileIndex provided (>=0) ensure optimistic concurrency style match
+        if (expectedFromTileIndex >= 0 && PieceTileIndices[idx] != expectedFromTileIndex)
+        {
+            return this; // treat mismatch as no-op (could throw if stricter behavior desired)
+        }
+
+        var clone = (short[])PieceTileIndices.Clone();
+        clone[idx] = toTileIndex;
+        return new PieceMapSnapshot(Layout, clone, PlayerPieceCounts);
+    }
 }

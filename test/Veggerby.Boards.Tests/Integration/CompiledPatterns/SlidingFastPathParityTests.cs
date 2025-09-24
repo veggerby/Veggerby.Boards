@@ -1,4 +1,5 @@
 using System.Linq;
+using Veggerby.Boards.Internal;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
@@ -101,12 +102,22 @@ public class SlidingFastPathParityTests
     private static TilePath ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
         using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
+        // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
+        var prevSliding = FeatureFlags.EnableSlidingFastPath;
+        FeatureFlags.EnableSlidingFastPath = bitboards;
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        return progress.ResolvePathCompiledFirst(piece, from, to);
+        try
+        {
+            return progress.ResolvePathCompiledFirst(piece, from, to);
+        }
+        finally
+        {
+            FeatureFlags.EnableSlidingFastPath = prevSliding;
+        }
     }
 
     private static void AssertParity(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
@@ -200,5 +211,80 @@ public class SlidingFastPathParityTests
     {
         var stone = new PieceSpec("stone", "immobile", "tile-d4", "white");
         AssertParity([stone], stone, "tile-d5");
+    }
+
+    // ---------------- Parity V2 Extended Scenarios (from movement-semantics charter) ----------------
+
+    [Fact]
+    public void GivenRook_AdjacentFriendlyBlocker_TargetInvalid()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-d5", "white");
+        AssertParity([rook, friendly], rook, "tile-d5"); // null
+    }
+
+    [Fact]
+    public void GivenRook_AdjacentEnemy_Capture()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-d5", "black");
+        AssertParity([rook, enemy], rook, "tile-d5"); // capture single-step
+    }
+
+    [Fact]
+    public void GivenBishop_FriendlyBlockerMidRay_TargetBeyondBlocked()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
+        AssertParity([bishop, friendly], bishop, "tile-g5"); // null beyond friendly
+    }
+
+    [Fact]
+    public void GivenBishop_FriendlyBlockerAtTarget_Invalid()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
+        AssertParity([bishop, friendly], bishop, "tile-e3"); // null (occupied by friendly)
+    }
+
+    [Fact]
+    public void GivenBishop_EnemyBlockerAsTarget_Capture()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
+        AssertParity([bishop, enemy], bishop, "tile-e3"); // capture
+    }
+
+    [Fact]
+    public void GivenBishop_EnemyBlockerMidRay_TargetBeyondBlocked()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
+        AssertParity([bishop, enemy], bishop, "tile-g5"); // null beyond enemy blocker
+    }
+
+    [Fact]
+    public void GivenBishop_FriendlyThenEnemy_FirstBlockerPrevails()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-f4", "black");
+        AssertParity([bishop, friendly, enemy], bishop, "tile-f4"); // null (friendly earlier)
+    }
+
+    [Fact]
+    public void GivenBishop_EnemyThenFriendly_FirstBlockerPrevails()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
+        var friendly = new PieceSpec("ally", "immobile", "tile-f4", "white");
+        AssertParity([bishop, enemy, friendly], bishop, "tile-f4"); // null beyond enemy blocker
+    }
+
+    [Fact]
+    public void GivenRook_ZeroLengthRequest_ReturnsNull()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        AssertParity([rook], rook, "tile-d4"); // from == to => null
     }
 }

@@ -226,12 +226,12 @@ Deliverables (Status annotations in brackets):
 - Resolver: compiled attempt with visitor fallback. **[COMPLETED – behind `EnableCompiledPatterns`]**
 - Compiler population (translate existing `IPattern` instances to IR). **[PARTIAL – FixedPattern, DirectionPattern, MultiDirectionPattern supported]**
 - Performance benchmarks (visitor vs compiled). **[PENDING – scaffold exists (`PatternResolutionBenchmark`)]**
-- Parity test suite (legacy vs compiled). **[PARTIAL – unit archetypes + chess integration parity green]**
+- Parity test suite (legacy vs compiled). **[PARTIAL – unit archetypes + chess integration parity + adjacency cache parity green]**
 Acceptance Criteria:
 - All movement tests + parity suite green under compiled engine once populated. **[PENDING]**
 - ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
 Current Status:
-- Infra merged; feature off by default; unit parity (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; unreachable scenarios assert null parity (double-step pawn not modeled yet).
+- Infra merged; feature off by default; unit parity (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; adjacency cache on/off parity validated; unreachable scenarios assert null parity (double-step pawn not modeled yet).
 Risks:
 - Premature optimization without representative workloads.
 Migration:

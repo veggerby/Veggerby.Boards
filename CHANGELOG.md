@@ -7,10 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Added
+
 - Backgammon: Introduced `SelectActivePlayerGameEvent` (classified as `EventKind.State`) and corresponding `SelectActivePlayerGameStateMutator` + `SelectActivePlayerRule` to exercise new event kind taxonomy. No functional change to gameplay semantics (still derives starter from opening distinct dice) but now surfaces a concrete state mutation event for DecisionPlan filtering experiments.
 
 - Public exposure of marker interfaces `IStateMutationGameEvent` and `IPhaseControlGameEvent` (previously internal) enabling module-level event classification.
-
 
 - Package metadata (Description, PackageTags) for Core, Backgammon, and Chess projects. (API layer temporarily removed)
 - README packaged as NuGet readme (PackageReadmeFile) and included in artifacts.
@@ -58,6 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Benchmark: Added `ObserverOverheadBenchmark` measuring per-event callback overhead (ignored event across multiple phases) for DecisionPlan scanning.
 - Pattern compiler: Expanded chess archetype parity (rook/bishop/queen sliders, knight fixed L, pawn single-step) and added `PatternResolutionBenchmark` (legacy visitor vs compiled) scaffold.
 - Integration: Added `ChessCompiledIntegrationParityTests` exercising compiled pattern resolution under feature flag within full Chess builder (single-step pawn advance parity + unreachable double-step null parity).
+- Integration: Added `CompiledPatternAdjacencyCacheParityTests` validating path parity with compiled patterns adjacency cache enabled vs disabled across representative chess archetypes (rook, bishop, queen, knight, pawn) including unreachable double-step pawn case.
 
 ### Changed
 

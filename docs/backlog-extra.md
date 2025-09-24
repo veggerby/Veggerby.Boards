@@ -22,6 +22,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Movement pattern parity scaffold (legacy visitor vs compiled resolver pre-population) **COMPLETED**
 - Restore and expand compiled pattern parity tests (legacy visitor multi-direction repeat + chess pawn scenarios). **COMPLETED** (double-step pawn intentionally not modeled; integration test asserts null parity for unreachable e2->e4)
 -- Integration-level compiled patterns parity (Chess builder under feature flag). **COMPLETED**
+- Adjacency cache on/off compiled pattern parity tests (representative chess archetypes). **COMPLETED**
 - Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
 - (Removed) Former BugReport replay harness concept replaced by future roadmap item 14 (external issue reproduction) – not in core code.
 - Deterministic seeding API (`GameBuilder.WithSeed`) **COMPLETED**

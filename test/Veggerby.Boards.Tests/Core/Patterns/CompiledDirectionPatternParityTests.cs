@@ -38,10 +38,10 @@ public class CompiledDirectionPatternParityTests
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var dir = new Direction("step");
         var r1 = new TileRelation(a, b, dir); var r2 = new TileRelation(b, c, dir);
-        var board = new Board("board-dir-1", new[] { r1, r2 });
+        var board = new Board("board-dir-1", [r1, r2]);
         var player = new Player("p1");
-        var piece = new Piece("piece-dir-1", player, new IPattern[] { new DirectionPattern(dir, isRepeatable: true) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-dir-1", player, [new DirectionPattern(dir, isRepeatable: true)]);
+        var game = new Game(board, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, c);
         legacy.Should().NotBeNull();
@@ -55,10 +55,10 @@ public class CompiledDirectionPatternParityTests
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var dir = new Direction("step");
         var r1 = new TileRelation(a, b, dir); var r2 = new TileRelation(b, c, dir);
-        var board = new Board("board-dir-2", new[] { r1, r2 });
+        var board = new Board("board-dir-2", [r1, r2]);
         var player = new Player("p1");
-        var piece = new Piece("piece-dir-2", player, new IPattern[] { new DirectionPattern(dir, isRepeatable: false) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-dir-2", player, [new DirectionPattern(dir, isRepeatable: false)]);
+        var game = new Game(board, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, c); // cannot reach c in one step
         legacy.Should().BeNull();
@@ -71,10 +71,10 @@ public class CompiledDirectionPatternParityTests
         var a = new Tile("a"); var b = new Tile("b");
         var dir = new Direction("step");
         var r1 = new TileRelation(a, b, dir);
-        var board = new Board("board-dir-3", new[] { r1 });
+        var board = new Board("board-dir-3", [r1]);
         var player = new Player("p1");
-        var piece = new Piece("piece-dir-3", player, new IPattern[] { new DirectionPattern(dir, isRepeatable: false) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-dir-3", player, [new DirectionPattern(dir, isRepeatable: false)]);
+        var game = new Game(board, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, b);
         legacy.Should().NotBeNull();

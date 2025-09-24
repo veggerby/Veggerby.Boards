@@ -81,6 +81,8 @@ public static partial class GameExtensions
     /// </summary>
     public static TilePath ResolvePathCompiledFirst(this GameProgress progress, Piece piece, Tile from, Tile to)
     {
+        // metrics placeholder (internal static counters)
+        Internal.FastPathMetrics.OnAttempt();
         // Sliding attack fast-path (bitboards + attack generator)
         if (Internal.FeatureFlags.EnableBitboards
             && progress?.Engine?.Services is not null
@@ -89,54 +91,85 @@ public static partial class GameExtensions
             && progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bb)
             && progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pm))
         {
-            if (shape.TryGetTileIndex(from, out var fromIdx) && shape.TryGetTileIndex(to, out var toIdx))
+            // Fast-path only applies to pieces with at least one sliding (repeatable) directional movement pattern.
+            // Without this guard immobile pieces (no directions) could incorrectly produce a single-step path via raw attacks.
+            static bool HasSlidingPatterns(Piece pc)
             {
-                var attacks = atk.Sliding.GetSlidingAttacks(piece, (short)fromIdx, progress.PieceMapSnapshot, bb.Snapshot);
-                if (attacks.Contains((short)toIdx))
+                foreach (var pat in pc.Patterns)
                 {
-                    // Determine direction: find first direction whose ray sequence reaches target via consecutive neighbors
-                    var direction = shape.Directions.FirstOrDefault(d =>
+                    if (pat is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable) { return true; }
+                    if (pat is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { return true; }
+                }
+
+                return false;
+            }
+            var canUseFastPath = HasSlidingPatterns(piece);
+            if (!canUseFastPath)
+            {
+                Internal.FastPathMetrics.OnFastPathSkippedNoPrereq();
+            }
+            else
+            {
+                if (shape.TryGetTileIndex(from, out var fromIdx) && shape.TryGetTileIndex(to, out var toIdx))
+                {
+                    var attacks = atk.Sliding.GetSlidingAttacks(piece, (short)fromIdx, progress.PieceMapSnapshot, bb.Snapshot);
+                    if (attacks.Contains((short)toIdx))
                     {
-                        var current = from;
-                        while (shape.TryGetNeighbor(current, d, out var n))
+                        // Determine direction: find first direction whose ray sequence reaches target via consecutive neighbors
+                        var direction = shape.Directions.FirstOrDefault(d =>
                         {
-                            if (n.Equals(to)) { return true; }
-                            current = n;
-                        }
+                            var current = from;
+                            while (shape.TryGetNeighbor(current, d, out var n))
+                            {
+                                if (n.Equals(to)) { return true; }
+                                current = n;
+                            }
 
-                        return false;
-                    });
+                            return false;
+                        });
 
-                    if (direction is not null)
-                    {
-                        TilePath built = null;
-                        var current = from;
-                        while (!current.Equals(to))
+                        if (direction is not null)
                         {
-                            if (!shape.TryGetNeighbor(current, direction, out var n)) { built = null; break; }
-                            var rel = progress.Game.Board.GetTileRelation(current, direction);
-                            built = TilePath.Create(built, rel);
-                            current = n;
-                        }
+                            TilePath built = null;
+                            var current = from;
+                            while (!current.Equals(to))
+                            {
+                                if (!shape.TryGetNeighbor(current, direction, out var n)) { built = null; break; }
+                                var rel = progress.Game.Board.GetTileRelation(current, direction);
+                                built = TilePath.Create(built, rel);
+                                current = n;
+                            }
 
-                        if (built is not null && built.To.Equals(to))
-                        {
-                            return built; // fast-path win
+                            if (built is not null && built.To.Equals(to))
+                            {
+                                Internal.FastPathMetrics.OnFastPathHit();
+                                return built; // fast-path win
+                            }
                         }
                     }
                 }
             }
         }
+        else
+        {
+            Internal.FastPathMetrics.OnFastPathSkippedNoPrereq();
+        }
+        // Compiled or legacy resolution path after optional fast-path attempt
 
         if (progress.TryGetCompiledResolver(out var services))
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
             {
+                Internal.FastPathMetrics.OnCompiledHit();
                 return ApplyOccupancySemantics(progress, piece, compiledPath);
             }
         }
 
         var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
+        if (legacy is not null)
+        {
+            Internal.FastPathMetrics.OnLegacyHit();
+        }
         return ApplyOccupancySemantics(progress, piece, legacy);
     }
 

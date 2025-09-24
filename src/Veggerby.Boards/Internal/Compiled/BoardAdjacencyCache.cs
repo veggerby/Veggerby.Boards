@@ -32,7 +32,7 @@ internal sealed class BoardAdjacencyCache
         {
             if (!outer.TryGetValue(rel.From, out var inner))
             {
-                inner = new Dictionary<Direction, TileRelation>();
+                inner = [];
                 outer[rel.From] = inner;
             }
 

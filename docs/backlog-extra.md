@@ -115,3 +115,6 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Sliding fast-path parity extension: blocker + capture scenarios (friendly blocker rejection, enemy capture terminal, multi-blocker earliest-stop) across rook, bishop, queen; negative non-slider coverage added; test suite now 447 tests.
 - Occupancy semantics enforcement for compiled & legacy fallback path resolution (post-filter ensures no pass-through of friendly or enemy blockers beyond first; enemy target capture allowed).
 - Sliding path resolution benchmark scaffold (legacy visitor vs compiled resolver) added (`SlidingPathResolutionBenchmark`) – fast-path (bitboards + attacks) measurement pending GameProgress harness integration.
+- Board topology classification & tests (future: topology-aware pruning / heuristic grouping) now part of BoardShape build.
+- Fast-path sliding metrics (Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits) + tests; will inform benchmark deltas and gating criteria for future optimization stages.
+- Immobile piece guard (skip fast-path when no repeatable directional pattern) and structure refactor (removed interim `goto`).

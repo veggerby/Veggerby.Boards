@@ -43,11 +43,11 @@ public class CompiledChessPatternParityTests
         var north = new Direction("north"); var east = new Direction("east");
         var a = new Tile("a"); var b = new Tile("b"); var n1 = new Tile("n1"); var n2 = new Tile("n2");
         var ab = new TileRelation(a, b, east); var b_n1 = new TileRelation(b, n1, north); var n1_n2 = new TileRelation(n1, n2, north);
-        var board = new Board("knight-board", new[] { ab, b_n1, n1_n2 });
+        var board = new Board("knight-board", [ab, b_n1, n1_n2]);
         var player = new Player("pl");
         // Knight pattern example: east + north + north
-        var knight = new Piece("kn", player, new IPattern[] { new FixedPattern(new[] { east, north, north }) });
-        var game = new Game(board, new[] { player }, new Artifact[] { knight });
+        var knight = new Piece("kn", player, [new FixedPattern([east, north, north])]);
+        var game = new Game(board, [player], [knight]);
 
         var (legacy, compiled) = Resolve(game, knight, a, n2);
         legacy.Should().NotBeNull();
@@ -62,10 +62,10 @@ public class CompiledChessPatternParityTests
         var north = new Direction("north");
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
         var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north); var cd = new TileRelation(c, d, north);
-        var board = new Board("rook-board", new[] { ab, bc, cd });
+        var board = new Board("rook-board", [ab, bc, cd]);
         var player = new Player("pl");
-        var rook = new Piece("rk", player, new IPattern[] { new DirectionPattern(north, isRepeatable: true) });
-        var game = new Game(board, new[] { player }, new Artifact[] { rook });
+        var rook = new Piece("rk", player, [new DirectionPattern(north, isRepeatable: true)]);
+        var game = new Game(board, [player], [rook]);
         var (legacy, compiled) = Resolve(game, rook, a, d);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
@@ -78,10 +78,10 @@ public class CompiledChessPatternParityTests
         var ne = new Direction("ne");
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var ab = new TileRelation(a, b, ne); var bc = new TileRelation(b, c, ne);
-        var board = new Board("bishop-board", new[] { ab, bc });
+        var board = new Board("bishop-board", [ab, bc]);
         var player = new Player("pl");
-        var bishop = new Piece("bp", player, new IPattern[] { new MultiDirectionPattern(new[] { ne }, isRepeatable: true) });
-        var game = new Game(board, new[] { player }, new Artifact[] { bishop });
+        var bishop = new Piece("bp", player, [new MultiDirectionPattern([ne], isRepeatable: true)]);
+        var game = new Game(board, [player], [bishop]);
         var (legacy, compiled) = Resolve(game, bishop, a, c);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
@@ -95,10 +95,10 @@ public class CompiledChessPatternParityTests
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
         // model vertical chain a->b->c, plus side branch from a->d east (queen choosing direction set)
         var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north); var ad = new TileRelation(a, d, east);
-        var board = new Board("queen-board", new[] { ab, bc, ad });
+        var board = new Board("queen-board", [ab, bc, ad]);
         var player = new Player("pl");
-        var queen = new Piece("qn", player, new IPattern[] { new MultiDirectionPattern(new[] { north, east }, isRepeatable: true) });
-        var game = new Game(board, new[] { player }, new Artifact[] { queen });
+        var queen = new Piece("qn", player, [new MultiDirectionPattern([north, east], isRepeatable: true)]);
+        var game = new Game(board, [player], [queen]);
         // resolve vertical path two steps
         var (legacy, compiled) = Resolve(game, queen, a, c);
         legacy.Should().NotBeNull();
@@ -112,10 +112,10 @@ public class CompiledChessPatternParityTests
         var north = new Direction("north");
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north);
-        var board = new Board("pawn-board", new[] { ab, bc });
+        var board = new Board("pawn-board", [ab, bc]);
         var player = new Player("pl");
-        var pawn = new Piece("pw", player, new IPattern[] { new DirectionPattern(north, isRepeatable: false) });
-        var game = new Game(board, new[] { player }, new Artifact[] { pawn });
+        var pawn = new Piece("pw", player, [new DirectionPattern(north, isRepeatable: false)]);
+        var game = new Game(board, [player], [pawn]);
         var (legacy, compiled) = Resolve(game, pawn, a, c); // cannot reach in two steps
         legacy.Should().BeNull();
         compiled.Should().BeNull();

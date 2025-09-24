@@ -21,17 +21,20 @@ Cost centers observed / anticipated:
 ## Optimization Goals
 
 Measured, incremental improvements preserving determinism & transparency:
+
 - Reduce average number of condition evaluations per event.
 - Provide stable introspection (observer indexes unchanged, or versioned) across optimization phases.
 - Avoid premature abstraction; prefer data-driven bitmasks & small structs.
 
 Target (aggregate across representative scenarios after full rollout):
+
 - ≥50% reduction in condition evaluations vs baseline linear scan.
 - Maintain zero behavioral drift (verified via exhaustive parity tests & property tests).
 
 ## Core Concepts
 
 ### 1. Grouping
+
 Logical partitioning of entries into evaluation groups sharing:
 
 - A common *gate predicate* (cheap, coarse filter) evaluated once.
@@ -63,11 +66,10 @@ Evaluation algorithm (group aware):
 2. Within group: evaluate entries sequentially (still honoring per-entry hoisting); stop when rule applied.
 
 ### 2. Short-Circuit Masks
+
 Represent potential skip sets as bitmasks keyed by gate outcomes or prior entry results.
 
-
 Rationale: Some conditions are mutually exclusive (e.g., phase A valid -> phase B cannot be valid this event). Instead of evaluating B redundantly, we jump ahead.
-
 
 Data model additions:
 
@@ -101,8 +103,8 @@ Mask derivation strategies (incremental):
 2. Static inference pass: detect sets of entries sharing a common ancestor in original phase tree where semantics guarantee exclusivity (requires explicit invariant metadata—deferred until we formalize exclusivity markers on phases).
 
 ### 3. Event Type Bucketing (Filtering)
-Add optional `EventKind` classification (enum or hash) to `IGameEventRule` / phases enabling pre-filtering of irrelevant entries.
 
+Add optional `EventKind` classification (enum or hash) to `IGameEventRule` / phases enabling pre-filtering of irrelevant entries.
 
 Structure change (optional initial prototype):
 
@@ -113,14 +115,16 @@ public enum EventKind : ulong { None=0, Move=1, Roll=2, Drop=4, Custom1=8, Any=~
 
 Extend `DecisionPlanEntry` with `EventKind SupportedKinds`. At evaluation: if `(entry.SupportedKinds & currentKind)==0` -> skip without condition evaluation.
 
-
 ### 4. Observer Stability Plan
+
 - Maintain existing `Entries` ordering index for external observers (trace aligns).
 - Provide `OptimizationVersion` integer on plan. Increment when structural semantics (grouping/masks) change.
 - Add debug-only verification mode to cross-check that skipping did not alter chosen rule vs naive scan.
 
 ### 5. Feature Flags
+
 New flags (all default false):
+
 - `EnableDecisionPlanGrouping`
 - `EnableDecisionPlanMasks`
 - `EnableDecisionPlanEventFiltering`
@@ -137,6 +141,7 @@ New flags (all default false):
 | D | Debug parity shadow path | Overhead characterization | Overhead <15% when enabled |
 
 ### 7. Public API Impact
+
 Remain internal until stable; no public surface change except new feature flags & optional diagnostic properties:
 
 ```csharp
@@ -161,8 +166,8 @@ New tests per phase:
 
 Property-based extension: randomly generate phase trees annotated with exclusivity hints; compare naive vs optimized selected rule index across random event sequences.
 
-
 ### 9. Benchmark Plan
+
 Add benchmarks:
 
 - `DecisionPlanGroupingBaseline` (flags off vs grouping on).
@@ -172,8 +177,8 @@ Add benchmarks:
 
 Metrics captured: average condition evaluations per event, rule application latency (ns), allocated bytes.
 
-
 ### 10. Risks & Mitigations
+
 | Risk | Mitigation |
 |------|------------|
 | Incorrect mask causing rule skip | Debug parity flag; unit tests; shadow scan in CI optional job |
@@ -182,6 +187,7 @@ Metrics captured: average condition evaluations per event, rule application late
 | Overhead of shadow verification | Make opt-in; micro-benchmark its cost |
 
 ### 11. Implementation Order (Actionable Tasks)
+
 1. Add feature flags + scaffolds (no behavior change).
 
 2. Implement grouping compilation & evaluation branch (G1) + tests + benchmark.
@@ -192,11 +198,13 @@ Metrics captured: average condition evaluations per event, rule application late
 7. Documentation updates & finalize optimization versioning.
 
 ### 12. Open Questions
+
 - Should EventKind live on rules or phases? (Leaning: rule; phase might host multiple rules in future.)
 - Bitmask size >128? (Defer until real scenarios exceed; can extend to 256 via 4x64 fields.)
 - Exclusivity inference: require explicit marker interface on conditions? (Simplest: attribute `[MutuallyExclusiveGroup("token")]`).
 
 ### 13. Out-of-Scope (For Now)
+
 - JIT code generation / expression tree fusion.
 - Condition result caching across events (needs invalidation semantics).
 - Probabilistic profiling-driven reordering.

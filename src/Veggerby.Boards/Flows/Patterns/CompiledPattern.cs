@@ -40,7 +40,7 @@ internal sealed class CompiledPattern
     public static CompiledPattern Ray(Direction direction, bool repeatable)
     {
         if (direction is null) throw new ArgumentNullException(nameof(direction));
-        return new CompiledPattern(CompiledPatternKind.Ray, new[] { direction }, repeatable);
+        return new CompiledPattern(CompiledPatternKind.Ray, [direction], repeatable);
     }
 
     public static CompiledPattern MultiRay(Direction[] directions, bool repeatable)
@@ -64,7 +64,7 @@ internal sealed class CompiledPiecePatterns(string pieceId, IReadOnlyList<Compil
 /// </summary>
 internal sealed class CompiledPatternTable
 {
-    private readonly Dictionary<string, CompiledPiecePatterns> _byPiece = new();
+    private readonly Dictionary<string, CompiledPiecePatterns> _byPiece = [];
     public IReadOnlyDictionary<string, CompiledPiecePatterns> ByPiece => _byPiece;
 
     public void Add(CompiledPiecePatterns entry)

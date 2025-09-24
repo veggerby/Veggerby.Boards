@@ -18,14 +18,16 @@ internal sealed class BoardShape
     public short[] Neighbors { get; } // (tileIndex * DirectionCount + directionIndex) => neighbor tile index or -1
     private readonly Dictionary<Tile, int> _tileToIndex;
     private readonly Dictionary<Direction, int> _directionToIndex;
+    public BoardTopology Topology { get; }
 
-    private BoardShape(Tile[] tiles, Direction[] directions, short[] neighbors, Dictionary<Tile, int> t2i, Dictionary<Direction, int> d2i)
+    private BoardShape(Tile[] tiles, Direction[] directions, short[] neighbors, Dictionary<Tile, int> t2i, Dictionary<Direction, int> d2i, BoardTopology topology)
     {
         Tiles = tiles;
         Directions = directions;
         Neighbors = neighbors;
         _tileToIndex = t2i;
         _directionToIndex = d2i;
+        Topology = topology;
     }
 
     public int TileCount => Tiles.Length;
@@ -73,7 +75,48 @@ internal sealed class BoardShape
             neighbors[fromIdx * directions.Length + dirIdx] = (short)toIdx;
         }
 
-        return new BoardShape(tiles, directions, neighbors, t2i, d2i);
+        var topology = ClassifyTopology(directions);
+        return new BoardShape(tiles, directions, neighbors, t2i, d2i, topology);
+    }
+
+    private static BoardTopology ClassifyTopology(Direction[] directions)
+    {
+        // Heuristic classification based on common chess-like direction ids.
+        // If both orthogonal (N,S,E,W variants) and diagonal (NE,NW,SE,SW variants) present -> OrthogonalAndDiagonal.
+        // If only orthogonal subset present -> Orthogonal.
+        // Otherwise -> Arbitrary.
+        // Direction ids are arbitrary user strings; we use contains tests tolerant to hyphenation.
+        static bool Has(Direction[] dirs, params string[] needles)
+        {
+            foreach (var d in dirs)
+            {
+                var id = d.Id;
+                for (int i = 0; i < needles.Length; i++)
+                {
+                    if (id.IndexOf(needles[i], StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        bool orth = Has(directions, "north") || Has(directions, "south") || Has(directions, "east") || Has(directions, "west");
+        bool diag = Has(directions, "north-east", "northeast", "south-east", "southeast", "north-west", "northwest", "south-west", "southwest");
+
+        if (orth && diag)
+        {
+            return BoardTopology.OrthogonalAndDiagonal;
+        }
+
+        if (orth)
+        {
+            return BoardTopology.Orthogonal;
+        }
+
+        return BoardTopology.Arbitrary;
     }
 
     public bool TryGetNeighbor(Tile from, Direction direction, out Tile neighbor)

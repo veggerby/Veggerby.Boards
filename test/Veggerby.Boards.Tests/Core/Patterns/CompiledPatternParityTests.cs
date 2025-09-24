@@ -34,10 +34,10 @@ public class CompiledPatternParityTests
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var d1 = new Direction("ab"); var d2 = new Direction("bc");
         var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2);
-        var board = new Board("board-1", new[] { r1, r2 });
+        var board = new Board("board-1", [r1, r2]);
         var player = new Player("pl1");
-        var piece = new Piece("p1", player, new IPattern[] { new FixedPattern(new[] { d1, d2 }) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("p1", player, [new FixedPattern([d1, d2])]);
+        var game = new Game(board, [player], [piece]);
         var from = a; var to = c;
 
         // act
@@ -59,10 +59,10 @@ public class CompiledPatternParityTests
         var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
         var d1 = new Direction("ab"); var d2 = new Direction("bc");
         var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2);
-        var board = new Board("board-bs-1", new[] { r1, r2 });
+        var board = new Board("board-bs-1", [r1, r2]);
         var player = new Player("pl1");
-        var piece = new Piece("p1", player, new IPattern[] { new FixedPattern(new[] { d1, d2 }) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("p1", player, [new FixedPattern([d1, d2])]);
+        var game = new Game(board, [player], [piece]);
 
         TilePath compiledOff;
         using (new Veggerby.Boards.Tests.Utils.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, boardShape: false))

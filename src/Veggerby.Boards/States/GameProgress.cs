@@ -121,7 +121,7 @@ public class GameProgress
         // Pre-processing still uses the currently active phase determined at construction (could be refined later
         // to pre-process per candidate phase if needed). This maintains functional parity with legacy traversal.
         // Phase can be null if no active phase resolves for current state; in that case, skip pre-processing.
-        var preProcessed = Phase is null ? new[] { @event } : Phase.PreProcessEvent(this, @event);
+        var preProcessed = Phase is null ? [@event] : Phase.PreProcessEvent(this, @event);
         var progress = this;
         foreach (var evt in preProcessed)
         {

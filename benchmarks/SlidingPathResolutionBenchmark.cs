@@ -11,6 +11,8 @@ using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Compiled;
 using Veggerby.Boards.Internal.Layout;
+using Veggerby.Boards.States;
+using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards.Benchmarks;
 
@@ -27,6 +29,17 @@ public class SlidingPathResolutionBenchmark
     private List<(Piece piece, Tile from, Tile to)> _queriesEmpty = null!;
     private List<(Piece piece, Tile from, Tile to)> _queriesQuarter = null!;
     private List<(Piece piece, Tile from, Tile to)> _queriesHalf = null!;
+    private GameProgress _progressEmpty = null!; // for fast-path benchmark (bitboards + piece map)
+    private GameProgress _progressQuarter = null!;
+    private GameProgress _progressHalf = null!;
+    private Piece _rook = null!;
+    private Piece _bishop = null!;
+    private Piece _queen = null!;
+    private Tile _d4 = null!;
+    private Tile _h4 = null!;
+    private Tile _d8 = null!;
+    private Tile _c1 = null!;
+    private Tile _g5 = null!;
 
     [Params("empty", "quarter", "half")] public string Density { get; set; } = "empty";
 
@@ -34,68 +47,122 @@ public class SlidingPathResolutionBenchmark
     public void Setup()
     {
         // Build full 8x8 grid (tile-a1..tile-h8) with orthogonal + diagonal directions
-        var north = new Direction("north"); var south = new Direction("south"); var east = new Direction("east"); var west = new Direction("west");
-        var ne = new Direction("north-east"); var nw = new Direction("north-west"); var se = new Direction("south-east"); var sw = new Direction("south-west");
+        var north = new Direction("north");
+        var south = new Direction("south");
+        var east = new Direction("east");
+        var west = new Direction("west");
+        var ne = new Direction("north-east");
+        var nw = new Direction("north-west");
+        var se = new Direction("south-east");
+        var sw = new Direction("south-west");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
         var tiles = new List<Tile>();
         var rels = new List<TileRelation>();
+
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
         for (int r = 1; r <= 8; r++)
         {
-            foreach (var f in files) tiles.Add(new Tile($"tile-{f}{r}"));
+            foreach (var f in files)
+            {
+                tiles.Add(new Tile($"tile-{f}{r}"));
+            }
         }
+
         Tile T(char f, int r) => tiles.Single(t => t.Id == $"tile-{f}{r}");
         foreach (var f in files)
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) rels.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) rels.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
-                if (f < 'h' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
-                if (f > 'a' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
-                if (f < 'h' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
-                if (f > 'a' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                if (r < 8)
+                {
+                    rels.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                }
+
+                if (r > 1)
+                {
+                    rels.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                }
+
+                if (f < 'h')
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                }
+
+                if (f > 'a')
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                }
+
+                if (f < 'h' && r < 8)
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                }
+
+                if (f > 'a' && r < 8)
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                }
+
+                if (f < 'h' && r > 1)
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                }
+
+                if (f > 'a' && r > 1)
+                {
+                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                }
             }
         }
+
         var board = new Board("bench-sliding-8x8", rels);
         var white = new Player("white"); var black = new Player("black");
+
         // Slider archetypes
-        var rook = new Piece("rook", white, new IPattern[] { new DirectionPattern(north, true), new DirectionPattern(east, true), new DirectionPattern(south, true), new DirectionPattern(west, true) });
-        var bishop = new Piece("bishop", white, new IPattern[] { new DirectionPattern(ne, true), new DirectionPattern(nw, true), new DirectionPattern(se, true), new DirectionPattern(sw, true) });
-        var queen = new Piece("queen", white, new IPattern[] { new MultiDirectionPattern(dirs, true) });
+        _rook = new Piece("rook", white, [new DirectionPattern(north, true), new DirectionPattern(east, true), new DirectionPattern(south, true), new DirectionPattern(west, true)]);
+        _bishop = new Piece("bishop", white, [new DirectionPattern(ne, true), new DirectionPattern(nw, true), new DirectionPattern(se, true), new DirectionPattern(sw, true)]);
+        _queen = new Piece("queen", white, [new MultiDirectionPattern(dirs, true)]);
+
         // Populate all pieces (movers + blockers) into artifact list
-        var artifacts = new List<Artifact> { rook, bishop, queen, white, black, board };
-        _game = new Game(board, new[] { white, black }, artifacts);
+        var artifacts = new List<Artifact> { _rook, _bishop, _queen, white, black, board };
+        _game = new Game(board, [white, black], artifacts);
 
         var table = PatternCompiler.Compile(_game);
         _shape = BoardShape.Build(board);
         _compiled = new CompiledPatternResolver(table, board, null, _shape);
 
         // Queries: representative rays (orthogonal & diagonal) various lengths
-        Tile d4 = T('d', 4); Tile h4 = T('h', 4); Tile d8 = T('d', 8); Tile c1 = T('c', 1); Tile g5 = T('g', 5); Tile a4 = T('a', 4); Tile d1 = T('d', 1);
-        _queriesEmpty = new() { (rook, d4, h4), (rook, d4, d8), (bishop, c1, g5), (queen, d4, h4), (queen, d4, d8) };
+        _d4 = T('d', 4);
+        _h4 = T('h', 4);
+        _d8 = T('d', 8);
+        _c1 = T('c', 1);
+        _g5 = T('g', 5);
+        Tile a4 = T('a', 4); // unused but retained for potential future targets
+        Tile d1 = T('d', 1); // unused but retained
+
+        _queriesEmpty = [(_rook, _d4, _h4), (_rook, _d4, _d8), (_bishop, _c1, _g5), (_queen, _d4, _h4), (_queen, _d4, _d8)];
 
         // Densities: choose a repeatable pseudo random subset for blockers (25% and 50%)
         var rnd = new System.Random(1234);
-        var candidateSquares = tiles.Where(t => t != d4 && t != h4 && t != d8 && t != c1 && t != g5).ToList();
+        var candidateSquares = tiles.Where(t => t != _d4 && t != _h4 && t != _d8 && t != _c1 && t != _g5).ToList();
         var quarterCount = candidateSquares.Count / 4;
         var halfCount = candidateSquares.Count / 2;
         var quarter = candidateSquares.OrderBy(_ => rnd.Next()).Take(quarterCount).ToHashSet();
         var half = candidateSquares.OrderBy(_ => rnd.Next()).Take(halfCount).ToHashSet();
 
-        _queriesQuarter = _queriesEmpty; // same target set; occupancy changes performance only
+        _queriesQuarter = _queriesEmpty; // same target set; occupancy influences pruning only
         _queriesHalf = _queriesEmpty;
 
-        // Build initial snapshots for each density scenario in OnIterationSetup.
+        // Build initial progress instances for each density scenario (bitboards + piece map enabled via feature flags).
+        BuildProgressScenarios(tiles, quarter, half, white);
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        // For each iteration we rebuild snapshots according to selected Density to avoid incremental mutation costs.
-        // Fast-path occupancy not yet benchmarked here (requires GameProgress refactor); placeholder for future extension.
+        // No per-iteration rebuild required; scenarios pre-built in GlobalSetup to isolate path resolution cost.
+        // If future mutations are introduced, rebuild here to avoid skew from incremental updates being benchmarked.
     }
 
     [Benchmark(Baseline = true)]
@@ -108,9 +175,13 @@ public class SlidingPathResolutionBenchmark
             {
                 var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_game.Board, q.from, q.to);
                 pattern.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to)) { count++; break; }
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to))
+                {
+                    count++; break;
+                }
             }
         }
+
         return count;
     }
 
@@ -120,12 +191,41 @@ public class SlidingPathResolutionBenchmark
         int count = 0;
         foreach (var q in SelectQueries())
         {
-            if (_compiled.TryResolve(q.piece, q.from, q.to, out var path) && path is not null) count++;
+            if (_compiled.TryResolve(q.piece, q.from, q.to, out var path) && path is not null)
+            {
+                count++;
+            }
         }
+
         return count;
     }
 
-    // Fast-path benchmark deferred until a reusable GameProgress harness is wired for benchmarks.
+    [Benchmark]
+    public int FastPath()
+    {
+        // Ensure feature flags required for fast-path are on (benchmarks are internal; safe to toggle).
+        Internal.FeatureFlags.EnableBitboards = true;
+        Internal.FeatureFlags.EnableCompiledPatterns = true; // compiled used for fallback in fast-path path
+
+        var progress = Density switch
+        {
+            "quarter" => _progressQuarter,
+            "half" => _progressHalf,
+            _ => _progressEmpty
+        };
+
+        int count = 0;
+        foreach (var q in SelectQueries())
+        {
+            var path = progress.ResolvePathCompiledFirst(q.piece, q.from, q.to);
+            if (path is not null && path.To.Equals(q.to))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
 
     private IEnumerable<(Piece piece, Tile from, Tile to)> SelectQueries()
     {
@@ -136,5 +236,55 @@ public class SlidingPathResolutionBenchmark
             "half" => _queriesHalf,
             _ => _queriesEmpty
         };
+    }
+
+    private void BuildProgressScenarios(IEnumerable<Tile> tiles, HashSet<Tile> quarter, HashSet<Tile> half, Player owner)
+    {
+        // Build artificial GameProgress instances with different blocker densities by constructing GameState snapshots.
+        // Place sliding pieces on their source squares; add blockers as anonymous pieces owned by opponent for capture / blocking semantics.
+        var opponent = _game.Players.First(p => p != owner);
+        GameProgress Build(HashSet<Tile> blockers)
+        {
+            var artifactStates = new List<IArtifactState>();
+            // Primary sliders (placed deterministically)
+            artifactStates.Add(new PieceState(_rook, _d4));
+            artifactStates.Add(new PieceState(_bishop, _c1));
+            artifactStates.Add(new PieceState(_queen, _d4)); // queen shares rook origin intentionally
+            // Blockers – create temporary artifacts (pieces) each run; identity uniqueness not required for benchmark semantics.
+            int i = 0;
+            foreach (var t in blockers)
+            {
+                var blocker = new Piece($"blocker-{i++}-{t.Id}", opponent, new[] { new NullPattern() });
+                // Register artifact in game (unsafe to mutate artifacts post construction ordinarily; here we rely on local reference list for state only).
+                artifactStates.Add(new PieceState(blocker, t));
+            }
+            var state = GameState.New(artifactStates);
+
+            // Build minimal services replicating builder compile path for acceleration features.
+            var services = new EngineServices();
+            var shape = BoardShape.Build(_game.Board);
+            services.Set(shape);
+            // PieceMap + bitboards required for fast-path
+            var pieceLayout = PieceMapLayout.Build(_game);
+            var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, shape);
+            services.Set(new PieceMapServices(pieceLayout, pieceSnapshot));
+            if (_game.Board.Tiles.Count() <= 64)
+            {
+                var bbLayout = BitboardLayout.Build(_game);
+                var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, shape);
+                services.Set(new BitboardServices(bbLayout, bbSnapshot));
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+                services.Set(new Internal.Attacks.AttackGeneratorServices(sliding));
+            }
+
+            // Minimal phase root (no rules needed for path resolution benchmark)
+            var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
+            var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, services);
+            return new GameProgress(engine, state, null, pieceSnapshot, services.TryGet(out BitboardServices bb) ? bb.Snapshot : null);
+        }
+
+        _progressEmpty = Build(new HashSet<Tile>());
+        _progressQuarter = Build(quarter);
+        _progressHalf = Build(half);
     }
 }

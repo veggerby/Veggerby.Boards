@@ -85,7 +85,7 @@ public class DecisionPlanEventFilteringMetricsTests
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();
         var from = disabledProgress.Game.Board.Tiles.First();
         var relation = disabledProgress.Game.Board.TileRelations.FirstOrDefault(r => r.From == from) ?? disabledProgress.Game.Board.TileRelations.First();
-        var path = new TilePath(new[] { relation });
+        var path = new TilePath([relation]);
         var move = new MovePieceGameEvent(piece, path);
 
         // act

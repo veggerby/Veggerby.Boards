@@ -43,10 +43,10 @@ public class PatternResolutionBaseline
         var r2 = new TileRelation(b, c, d2);
         var r3 = new TileRelation(c, d, d3);
         var r4 = new TileRelation(d, e, d4);
-        var board = new Board("board-pattern-benchmark", new[] { r1, r2, r3, r4 });
+        var board = new Board("board-pattern-benchmark", [r1, r2, r3, r4]);
         var player = new Player("p1");
-        _piece = new Piece("piece-1", player, new IPattern[] { new FixedPattern(new[] { d1, d2, d3, d4 }) });
-        _game = new Game(board, new[] { player }, new Artifact[] { _piece });
+        _piece = new Piece("piece-1", player, [new FixedPattern([d1, d2, d3, d4])]);
+        _game = new Game(board, [player], [_piece]);
         _from = a; _to = e;
 
         // Pre-create compiled resolver (currently empty table -> always miss)

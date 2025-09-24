@@ -27,8 +27,15 @@ public class PatternResolutionBenchmark
     public void Setup()
     {
         // Construct a small synthetic board with orthogonal and diagonal connections sufficient for rook/bishop/queen/pawn/knight examples.
-        var north = new Direction("north"); var east = new Direction("east"); var northEast = new Direction("north-east");
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d"); var e = new Tile("e");
+        var north = new Direction("north");
+        var east = new Direction("east");
+        var northEast = new Direction("north-east");
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var e = new Tile("e");
+
         // Chains: a->b->c (east), c->d->e (north), and diagonal a->c (ne), b->d (ne)
         var rels = new List<TileRelation>
         {
@@ -36,16 +43,17 @@ public class PatternResolutionBenchmark
             new(c,d,north), new(d,e,north),
             new(a,c,northEast), new(b,d,northEast)
         };
+
         var board = new Board("pattern-bench-board", rels);
         var player = new Player("pl");
 
         // Archetype pieces
-        var rook = new Piece("rook", player, new IPattern[] { new DirectionPattern(east, true), new DirectionPattern(north, true) });
-        var bishop = new Piece("bishop", player, new IPattern[] { new DirectionPattern(northEast, true) });
-        var queen = new Piece("queen", player, new IPattern[] { new MultiDirectionPattern(new[] { east, north, northEast }, true) });
-        var pawn = new Piece("pawn", player, new IPattern[] { new DirectionPattern(east, false) }); // single step east
-        var knight = new Piece("knight", player, new IPattern[] { new FixedPattern(new[] { east, east, north }) });
-        _gameLegacy = new Game(board, new[] { player }, new Artifact[] { rook, bishop, queen, pawn, knight });
+        var rook = new Piece("rook", player, [new DirectionPattern(east, true), new DirectionPattern(north, true)]);
+        var bishop = new Piece("bishop", player, [new DirectionPattern(northEast, true)]);
+        var queen = new Piece("queen", player, [new MultiDirectionPattern([east, north, northEast], true)]);
+        var pawn = new Piece("pawn", player, [new DirectionPattern(east, false)]); // single step east
+        var knight = new Piece("knight", player, [new FixedPattern([east, east, north])]);
+        _gameLegacy = new Game(board, [player], [rook, bishop, queen, pawn, knight]);
 
         // Compiled variant (table + resolver)
         var table = PatternCompiler.Compile(_gameLegacy); // same game reference
@@ -54,8 +62,8 @@ public class PatternResolutionBenchmark
         _resolverBoardShape = new CompiledPatternResolver(table, board, null, shape);
         _gameCompiled = _gameLegacy; // alias; compilation is stateless aside from table
 
-        _queries = new List<(Piece, Tile, Tile)>
-        {
+        _queries =
+        [
             (rook, a, c),        // horizontal 2
             (rook, c, e),        // vertical 2
             (bishop, a, c),      // diagonal 2 (repeatable)
@@ -64,7 +72,7 @@ public class PatternResolutionBenchmark
             (pawn, a, c),        // invalid (non-repeatable two step)
             (pawn, a, b),        // single step valid
             (knight, a, d)       // fixed pattern east, east, north
-        };
+        ];
     }
 
     [Benchmark(Baseline = true)]
@@ -77,8 +85,12 @@ public class PatternResolutionBenchmark
             foreach (var p in q.piece.Patterns)
             {
                 p.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to)) break;
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to))
+                {
+                    break;
+                }
             }
+
             if (visitor.ResultPath is not null) count++;
         }
         return count;
@@ -90,8 +102,12 @@ public class PatternResolutionBenchmark
         var count = 0;
         foreach (var q in _queries)
         {
-            if (_resolver.TryResolve(q.piece, q.from, q.to, out var p) && p is not null) count++;
+            if (_resolver.TryResolve(q.piece, q.from, q.to, out var p) && p is not null)
+            {
+                count++;
+            }
         }
+
         return count;
     }
 
@@ -106,7 +122,10 @@ public class PatternResolutionBenchmark
             var count = 0;
             foreach (var q in _queries)
             {
-                if (_resolverBoardShape.TryResolve(q.piece, q.from, q.to, out var p) && p is not null) count++;
+                if (_resolverBoardShape.TryResolve(q.piece, q.from, q.to, out var p) && p is not null)
+                {
+                    count++;
+                }
             }
 
             return count;

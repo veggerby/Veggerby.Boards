@@ -360,6 +360,12 @@ Testing: Golden master tests to ensure parity between legacy and new compiled en
 Security: No external dependencies for cryptographic hashing unless necessary (prefer managed Blake2b implementation or xxHash).
 Versioning: Each phase increments minor version; breaking changes require major bump plus migration notes.
 
+Performance Acceleration Tracking (Recent Progress):
+
+- BoardShape now classifies board topology (Orthogonal / Orthogonal+Diagonal / Arbitrary) enabling future specialized move generation heuristics.
+- Sliding fast-path instrumentation (FastPathMetrics) added – captures attempt vs hit vs skip reasons and fallback (compiled/legacy) distribution for ongoing benchmark reporting.
+- Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
+
 ## Metrics Dashboard (Targets)
 
 - HandleEvent p50 latency: -30% Phase 1, -60% Phase 2 vs baseline.

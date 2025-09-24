@@ -43,7 +43,7 @@ public class DecisionPlanEventFilteringTests
         // Build a trivial path (single relation) from tile A to tile A (self-loop) using existing board relation.
         var from = progress.Game.Board.Tiles.First();
         var relation = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == from) ?? progress.Game.Board.TileRelations.First();
-        var path = new TilePath(new[] { relation });
+        var path = new TilePath([relation]);
         var evt = new MovePieceGameEvent(piece, path);
 
         // act

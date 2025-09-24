@@ -68,7 +68,7 @@ public class DecisionPlanEventFilteringPhaseTests
         var piece = progress.Game.GetArtifacts<Piece>().First();
         var from = progress.Game.Board.Tiles.First();
         var relation = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == from) ?? progress.Game.Board.TileRelations.First();
-        var path = new TilePath(new[] { relation });
+        var path = new TilePath([relation]);
         var evt = new MovePieceGameEvent(piece, path);
 
         // act

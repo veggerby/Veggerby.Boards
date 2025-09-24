@@ -43,10 +43,10 @@ public class CompiledPatternExtendedParityTests
         var o = new Tile("o"); var x = new Tile("x"); var y = new Tile("y");
         var dx = new Direction("ox"); var dy = new Direction("oy");
         var r1 = new TileRelation(o, x, dx); var r2 = new TileRelation(o, y, dy);
-        var board = new Board("board-md-2", new[] { r1, r2 });
+        var board = new Board("board-md-2", [r1, r2]);
         var player = new Player("p1");
-        var piece = new Piece("piece-2", player, new IPattern[] { new MultiDirectionPattern(new[] { dx, dy }, isRepeatable: false) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-2", player, [new MultiDirectionPattern([dx, dy], isRepeatable: false)]);
+        var game = new Game(board, [player], [piece]);
 
         // act (resolve o -> y)
         var (legacy, compiled) = ResolveBoth(game, piece, o, y);
@@ -66,14 +66,14 @@ public class CompiledPatternExtendedParityTests
         var d1 = new Direction("ab"); var d2 = new Direction("bc"); var d3 = new Direction("cd");
         var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2); var r3 = new TileRelation(c, d, d3);
         // Use single repeatable direction sequence (d1 reused logically); model by multi-direction single dir repeatable
-        var board = new Board("board-md-3", new[] { r1, r2, r3 });
+        var board = new Board("board-md-3", [r1, r2, r3]);
         var player = new Player("p1");
         // We want a single direction; but linear uses distinct direction instances. Provide first direction only; since relations require exact direction match, we need unified direction reused.
         var dir = new Direction("step");
         var r1u = new TileRelation(a, b, dir); var r2u = new TileRelation(b, c, dir); var r3u = new TileRelation(c, d, dir);
-        var board2 = new Board("board-md-3u", new[] { r1u, r2u, r3u });
-        var piece = new Piece("piece-3", player, new IPattern[] { new MultiDirectionPattern(new[] { dir }, isRepeatable: true) });
-        var game = new Game(board2, new[] { player }, new Artifact[] { piece });
+        var board2 = new Board("board-md-3u", [r1u, r2u, r3u]);
+        var piece = new Piece("piece-3", player, [new MultiDirectionPattern([dir], isRepeatable: true)]);
+        var game = new Game(board2, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, d);
 
@@ -89,10 +89,10 @@ public class CompiledPatternExtendedParityTests
         var d1 = new Direction("ab"); var d2 = new Direction("bc");
         // only second relation missing (b->c) so pattern cannot complete
         var r1 = new TileRelation(a, b, d1);
-        var board = new Board("board-unreach-1", new[] { r1 });
+        var board = new Board("board-unreach-1", [r1]);
         var player = new Player("p1");
-        var piece = new Piece("piece-4", player, new IPattern[] { new FixedPattern(new[] { d1, d2 }) });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-4", player, [new FixedPattern([d1, d2])]);
+        var game = new Game(board, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, c);
         legacy.Should().BeNull();
@@ -104,10 +104,10 @@ public class CompiledPatternExtendedParityTests
     {
         var a = new Tile("a"); var b = new Tile("b");
         var d1 = new Direction("ab"); var r1 = new TileRelation(a, b, d1);
-        var board = new Board("board-null-1", new[] { r1 });
+        var board = new Board("board-null-1", [r1]);
         var player = new Player("p1");
-        var piece = new Piece("piece-5", player, new IPattern[] { new NullPattern() });
-        var game = new Game(board, new[] { player }, new Artifact[] { piece });
+        var piece = new Piece("piece-5", player, [new NullPattern()]);
+        var game = new Game(board, [player], [piece]);
 
         var (legacy, compiled) = ResolveBoth(game, piece, a, b);
         legacy.Should().BeNull();

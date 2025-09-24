@@ -33,7 +33,7 @@ internal sealed record TraceEntry(
 /// </summary>
 internal sealed class EvaluationTrace
 {
-    private readonly List<TraceEntry> _entries = new();
+    private readonly List<TraceEntry> _entries = [];
     public IReadOnlyList<TraceEntry> Entries => _entries;
 
     public void Add(TraceEntry entry) => _entries.Add(entry);

@@ -10,7 +10,7 @@ namespace Veggerby.Boards;
 /// </summary>
 public sealed class EngineServices
 {
-    private readonly Dictionary<Type, object> _items = new();
+    private readonly Dictionary<Type, object> _items = [];
     /// <summary>
     /// Gets an empty service container instance.
     /// </summary>

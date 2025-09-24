@@ -197,7 +197,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
                 if (result.Applied)
                 {
                     applied++;
-                    current = new GameProgress(current.Engine, result.State, current.Events.Concat(new[] { evt }));
+                    current = new GameProgress(current.Engine, result.State, current.Events.Concat([evt]));
 
                     if (trace is not null)
                     {

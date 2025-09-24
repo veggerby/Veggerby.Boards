@@ -99,7 +99,7 @@ public class GameSimulatorTests
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policy = new DelegatePlayoutPolicy(_ => new[] { evt });
+        var policy = new DelegatePlayoutPolicy(_ => [evt]);
         var sim = new GameSimulator(policy, new PlayoutOptions { MaxEvents = 1 });
 
         // act
@@ -150,7 +150,7 @@ public class GameSimulatorTests
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policy = new DelegatePlayoutPolicy(_ => new[] { evt }); // always available
+        var policy = new DelegatePlayoutPolicy(_ => [evt]); // always available
         var sim = new GameSimulator(policy, new PlayoutOptions { TimeLimit = TimeSpan.FromMilliseconds(1) });
 
         // act
@@ -170,7 +170,7 @@ public class GameSimulatorTests
         var progressApply = builderApply.Compile();
         var progressNoOp = builderNoOp.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policyApply = new DelegatePlayoutPolicy(_ => new[] { evt });
+        var policyApply = new DelegatePlayoutPolicy(_ => [evt]);
         var policyNoOp = new DelegatePlayoutPolicy(_ => Enumerable.Empty<IGameEvent>());
         var simApply = new GameSimulator(policyApply, new PlayoutOptions { MaxEvents = 1 });
         var simNoOp = new GameSimulator(policyNoOp);
@@ -222,7 +222,7 @@ public class GameSimulatorTests
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policy = new DelegatePlayoutPolicy(_ => new[] { evt });
+        var policy = new DelegatePlayoutPolicy(_ => [evt]);
         var sim = new GameSimulator(policy, new PlayoutOptions { MaxEvents = 3 });
         var observer = new RecordingObserver();
 
@@ -266,7 +266,7 @@ public class GameSimulatorTests
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policy = new DelegatePlayoutPolicy(_ => new[] { evt }); // always applies until MaxEvents limit
+        var policy = new DelegatePlayoutPolicy(_ => [evt]); // always applies until MaxEvents limit
         var sim = new GameSimulator(policy, new PlayoutOptions { MaxEvents = 2 }); // fixed length = 2
 
         // act: variance should be 0 after first two playouts (all identical length)
@@ -287,7 +287,7 @@ public class GameSimulatorTests
         var progressApply = builderApply.Compile();
         var progressNoOp = builderNoOp.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policyApply = new DelegatePlayoutPolicy(_ => new[] { evt });
+        var policyApply = new DelegatePlayoutPolicy(_ => [evt]);
         var policyNoOp = new DelegatePlayoutPolicy(_ => Enumerable.Empty<IGameEvent>());
         var simApply = new GameSimulator(policyApply, new PlayoutOptions { MaxEvents = 1 });
         var simNoOp = new GameSimulator(policyNoOp);
@@ -312,7 +312,7 @@ public class GameSimulatorTests
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
-        var policy = new DelegatePlayoutPolicy(_ => new[] { evt });
+        var policy = new DelegatePlayoutPolicy(_ => [evt]);
         var sim = new GameSimulator(policy, new PlayoutOptions { MaxEvents = 1 }); // fixed length =1
 
         // act

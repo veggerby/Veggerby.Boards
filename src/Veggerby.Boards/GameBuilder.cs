@@ -418,6 +418,13 @@ public abstract class GameBuilder
             var bbLayout = Internal.Layout.BitboardLayout.Build(game);
             var initialBbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
             services.Set(new Internal.Layout.BitboardServices(bbLayout, initialBbSnapshot));
+
+            // Sliding attack generator (requires BoardShape + bitboards + piece map snapshot for owner resolution)
+            if (FeatureFlags.EnableBitboards && services.TryGet(out Internal.Layout.PieceMapServices pmServicesForAttacks))
+            {
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+                services.Set(new Internal.Attacks.AttackGeneratorServices(sliding));
+            }
         }
 
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);

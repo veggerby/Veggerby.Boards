@@ -86,6 +86,10 @@ Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance AP
   - Sliding attack path resolution fast-path integrated into `GameProgress.ResolvePathCompiledFirst` (prior to compiled resolver) when bitboards + attack services present.
   - Internal acceleration tests (`PieceMapIncrementalTests`) covering tile index update, mismatch no-op, and unaffected piece stability (test suite now 437 tests).
   - `GameProgress` now internally carries acceleration snapshot (PieceMap) paving the way for upcoming bitboard + sliding attack generator integration.
+  - Board topology classification (`BoardTopology` enum) embedded in `BoardShape` build (Orthogonal / OrthogonalAndDiagonal / Arbitrary) with tests; enables future topology-specialized heuristics and benchmark segmentation.
+  - Sliding fast-path metrics instrumentation (`FastPathMetrics` internal counters + snapshot API) tracking Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits; accompanying unit tests (hit + skip scenarios) added.
+  - Immobile / non-sliding piece guard in sliding fast-path (skips raw attack path synthesis when no repeatable directional pattern present) preventing false positive single-step paths.
+  - Additional parity coverage for immobile piece negative case (fast-path vs compiled reference) ensuring null-path consistency.
 
 ### Changed
 
@@ -124,6 +128,8 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Extended sliding fast-path parity tests adding blocker & capture scenarios (friendly blocker rejection, enemy capture terminal, earliest blocker precedence, non-slider negative) across rook/bishop/queen; test suite now 447 tests.
 - Occupancy semantics enforcement for compiled and legacy fallback path resolution (post-filter prevents passing through blockers; enemy capture allowed only at blocker tile) ensuring consistent geometric vs attack-path parity.
 - Sliding path resolution benchmark scaffold (`SlidingPathResolutionBenchmark`) comparing legacy visitor vs compiled resolver (fast-path measurement pending GameProgress harness) to baseline future acceleration gains.
+- Refactored temporary `goto` used during early fast-path guard introduction into structured branching (maintains identical semantics while aligning with style guidelines: no `goto` in production engine code).
+- Reaffirmed code style charter in new acceleration code (explicit braces, file-scoped namespaces, 4-space indentation, minimal LINQ in hot loops, immutable snapshots) and added internal test scaffolds (no-op phase + rule) without leaking abstractions publicly.
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

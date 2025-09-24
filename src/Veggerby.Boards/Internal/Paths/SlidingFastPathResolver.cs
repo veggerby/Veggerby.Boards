@@ -34,21 +34,11 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
             if (pattern is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { isSlider = true; break; }
         }
 
-        if (isSlider && _rays is not null && _occupancy is not null && _rays.TryGetRays(piece, from, out var rays))
+        if (isSlider && _rays is not null && _occupancy is not null && _shape is not null && _rays.TryGetRays(piece, from, out var rays))
         {
-            // We need BoardShape to map tiles to indices. Try to obtain from occupancy (bitboard index) by probing GlobalMask after cast; fallback to inner if not available.
-            if (_inner is CompiledPathResolverAdapter compiledAdapter)
+            if (_shape.TryGetTileIndex(from, out var fromIdx) && _shape.TryGetTileIndex(to, out var toIdx))
             {
-                // We cannot access internal board shape here; rely purely on geometric reconstruction via piece patterns using adjacency fallback.
-                // Proceed only if destination lies on at least one ray mask (geometric inclusion test).
-                if (SlidingFastPathResolver.TryResolveViaRays(piece, from, to, rays, state, out var fastPath))
-                {
-                    return fastPath;
-                }
-            }
-            else
-            {
-                if (SlidingFastPathResolver.TryResolveViaRays(piece, from, to, rays, state, out var fastPath))
+                if (TryResolveViaRays(piece, from, to, state, rays, fromIdx, toIdx, out var fastPath))
                 {
                     return fastPath;
                 }
@@ -58,35 +48,109 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
         return _inner.Resolve(piece, from, to, state);
     }
 
-    private static bool TryResolveViaRays(Piece piece, Tile from, Tile to, ulong[] rays, States.GameState state, out TilePath path)
+    private bool TryResolveViaRays(Piece piece, Tile from, Tile to, States.GameState state, ulong[] rays, int fromIdx, int toIdx, out TilePath path)
     {
         path = null;
-        // Quick inclusion test: if no ray contains 'to', bail.
-        // To perform bit test we need tile indices; without BoardShape index mapping we fallback to adjacency traversal using piece patterns.
-        // Here we attempt a directional step reconstruction: follow each repeatable direction outward until we reach 'to' or blocked.
-
-        // Collect repeatable direction ids for piece
-        var directions = new List<string>();
-        foreach (var pattern in piece.Patterns)
+        if (fromIdx == toIdx)
         {
-            if (pattern is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable)
+            return false; // zero-length move not produced by sliding path generator
+        }
+
+        // Determine if destination lies on any geometric ray; capture direction index for reconstruction.
+        var dirCount = _shape.DirectionCount;
+        int matchedDirection = -1;
+        for (int d = 0; d < dirCount; d++)
+        {
+            var mask = rays.Length > d ? rays[d] : 0UL;
+            if (mask == 0UL)
             {
-                directions.Add(dp.Direction.Id);
+                continue;
             }
-            else if (pattern is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable)
+            var bit = 1UL << toIdx;
+            if ((mask & bit) != 0UL)
             {
-                foreach (var d in md.Directions) { directions.Add(d.Id); }
+                matchedDirection = d;
+                break;
             }
         }
 
-        if (directions.Count == 0)
+        if (matchedDirection < 0)
+        {
+            return false; // not on any ray
+        }
+
+        // Walk along matched direction using precomputed neighbor indices until we reach destination or blockage.
+        var steps = new List<Tile>(8);
+        var currentIdx = fromIdx;
+        var destIdx = toIdx;
+        var direction = _shape.Directions[matchedDirection];
+        var globalMaskAvailable = _occupancy.GlobalMask != 0UL || _occupancy.GlobalMask == 0UL; // always accessible property; used to avoid repeated property calls
+
+        while (true)
+        {
+            var nextIdx = _shape.Neighbors[currentIdx * dirCount + matchedDirection];
+            if (nextIdx < 0)
+            {
+                return false; // ray terminated before reaching destination
+            }
+
+            var nextTile = _shape.Tiles[nextIdx];
+            // Occupancy check
+            var occupied = !_occupancy.IsEmpty(nextTile);
+            if (nextIdx == destIdx)
+            {
+                // Destination reached; ensure we are not capturing friendly piece.
+                if (occupied && piece.Owner is not null && _occupancy.IsOwnedBy(nextTile, piece.Owner))
+                {
+                    return false; // cannot capture own piece
+                }
+                steps.Add(nextTile);
+                break;
+            }
+            else
+            {
+                if (occupied)
+                {
+                    return false; // blocked before destination
+                }
+                steps.Add(nextTile);
+            }
+            currentIdx = nextIdx;
+        }
+
+        if (steps.Count == 0)
         {
             return false;
         }
 
-        // Access BoardShape through piece.Board (indirectly via from relation indices) not directly exposed; fallback to inner resolver if shape unavailable.
-        // Retrieve shape by using reflection to locate internal service is avoided; instead rely on geometric board relations enumeration via board.TileRelations.
-        // Fast-path reconstruction requires BoardShape adjacency (not yet injected here) – abort for now.
-        return false;
+        // Build relations from from -> each step in order.
+        var relations = new List<TileRelation>(steps.Count);
+        var prev = from;
+        foreach (var tile in steps)
+        {
+            // We must locate the direction from prev to tile. Iterate all directions and pick the matching neighbor.
+            TileRelation rel = null;
+            if (!_shape.TryGetTileIndex(prev, out var prevIdxLookup))
+            {
+                return false;
+            }
+            for (int d = 0; d < dirCount; d++)
+            {
+                var neighIdx = _shape.Neighbors[prevIdxLookup * dirCount + d];
+                if (neighIdx >= 0 && _shape.Tiles[neighIdx] == tile)
+                {
+                    rel = new TileRelation(prev, tile, _shape.Directions[d]);
+                    break;
+                }
+            }
+            if (rel is null)
+            {
+                return false; // adjacency failure (should not happen if BoardShape is consistent)
+            }
+            relations.Add(rel);
+            prev = tile;
+        }
+        path = new TilePath(relations);
+        return true;
     }
 }

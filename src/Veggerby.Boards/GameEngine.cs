@@ -39,11 +39,11 @@ public class GameEngine
     internal IEvaluationObserver Observer { get; }
 
     private readonly Veggerby.Boards.Internal.Tracing.EvaluationTrace _lastTrace;
-    private readonly EngineServices _services;
+
     /// <summary>
-    /// Gets the internal engine services container (compiled patterns, future bitboards). Internal for extension wiring.
+    /// Gets the optional capability set (may be null when no experimental subsystems enabled).
     /// </summary>
-    internal EngineServices Services => _services;
+    internal EngineCapabilities Capabilities { get; }
 
     /// <summary>
     /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
@@ -58,8 +58,20 @@ public class GameEngine
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> or <paramref name="gamePhaseRoot"/> is null.</exception>
     /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
     /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
-    /// <param name="services">Optional internal service container (compiled patterns, etc.).</param>
-    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null, EngineServices services = null)
+    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null)
+        : this(game, gamePhaseRoot, decisionPlan, observer, null)
+    {
+    }
+
+    /// <summary>
+    /// Internal constructor allowing capability injection (builder / tests).
+    /// </summary>
+    /// <param name="game">Immutable structural aggregate.</param>
+    /// <param name="gamePhaseRoot">Root game phase (composite or leaf).</param>
+    /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
+    /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
+    /// <param name="capabilities">Optional capability set (compiled patterns, bitboards, occupancy, etc.).</param>
+    internal GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan, IEvaluationObserver observer, EngineCapabilities capabilities)
     {
         ArgumentNullException.ThrowIfNull(game);
 
@@ -68,7 +80,7 @@ public class GameEngine
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
         DecisionPlan = decisionPlan; // may be null (feature flag disabled)
-        _services = services ?? EngineServices.Empty;
+        Capabilities = capabilities; // may be null (no experimental features)
         var baseObserver = observer ?? NullEvaluationObserver.Instance;
         if (Internal.FeatureFlags.EnableTraceCapture)
         {

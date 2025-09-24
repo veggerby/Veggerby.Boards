@@ -111,6 +111,7 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Topology-aware pruning (leverage `BoardShape` classification to pre-elide unreachable directional rays in compiled tables or fast-path pre-check).
 - Mobility heuristic (popcount-based attack span per sliding piece feeding future evaluation/scoring module).
 - LINQ sweep: eliminate any residual LINQ usage inside mutators, fast-path reconstruction, or attack generation (style rule already forbids; audit to enforce after new features merge).
+- IPathResolver capability seam: Decorator (`SlidingFastPathResolver`) now conditionally registered ahead of compiled resolver (flag `EnableSlidingFastPath`) – reconstruction logic still pending; upcoming tasks: implement ray + occupancy reconstruction, parity/metrics tests, benchmark delta capture, ensure zero allocations & style charter adherence (no LINQ, explicit braces, file-scoped namespaces).
 
 Style reminder: all future acceleration work must keep hot paths allocation-free, avoid LINQ, retain explicit braces, and preserve immutability/determinism.
 

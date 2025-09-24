@@ -89,15 +89,16 @@ public class GameProgress
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
         Internal.Layout.PieceMapSnapshot nextSnapshot = _pieceMapSnapshot;
         Internal.Layout.BitboardSnapshot nextBb = _bitboardSnapshot;
-        if (Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices))
+        if (Engine.Capabilities?.PieceMap is not null)
         {
+            var shape = Engine.Capabilities.Shape;
             // Full rebuild since we don't know which pieces changed.
-            nextSnapshot = Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, State.Next(newStates), Engine.Services.TryGet(out Internal.Layout.BoardShape shape) ? shape : null);
+            nextSnapshot = Internal.Layout.PieceMapSnapshot.Build(Engine.Capabilities.PieceMap.Layout, State.Next(newStates), shape);
         }
 
-        if (Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices) && Engine.Services.TryGet(out Internal.Layout.BoardShape shape2))
+        if (Engine.Capabilities?.Bitboards is not null && Engine.Capabilities.Shape is not null)
         {
-            nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices.Layout, State.Next(newStates), shape2);
+            nextBb = Internal.Layout.BitboardSnapshot.Build(Engine.Capabilities.Bitboards.Layout, State.Next(newStates), Engine.Capabilities.Shape);
         }
         return new GameProgress(Engine, State.Next(newStates), Events, nextSnapshot, nextBb);
     }
@@ -195,17 +196,19 @@ public class GameProgress
                             var nextSnapshot = progress._pieceMapSnapshot;
                             var nextBb = progress._bitboardSnapshot;
 
-                            if (progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices) && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape))
+                            if (progress.Engine.Capabilities?.PieceMap is not null && progress.Engine.Capabilities.Shape is not null)
                             {
+                                var pServices = progress.Engine.Capabilities.PieceMap;
+                                var shape = progress.Engine.Capabilities.Shape;
                                 if (evt is MovePieceGameEvent mpe)
                                 {
                                     if (shape.TryGetTileIndex(mpe.From, out var fromIdx) && shape.TryGetTileIndex(mpe.To, out var toIdx))
                                     {
                                         nextSnapshot = nextSnapshot?.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx)
                                             ?? Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
-                                        if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices2))
+                                        if (progress.Engine.Capabilities.Bitboards is not null)
                                         {
-                                            nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices2.Layout, newState, shape))
+                                            nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape))
                                                 .UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, nextSnapshot, shape);
                                         }
                                     }
@@ -213,9 +216,9 @@ public class GameProgress
                                 else
                                 {
                                     nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
-                                    if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices3))
+                                    if (progress.Engine.Capabilities.Bitboards is not null)
                                     {
-                                        nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices3.Layout, newState, shape);
+                                        nextBb = Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape);
                                     }
                                 }
                             }
@@ -292,17 +295,19 @@ public class GameProgress
                         var nextSnapshot = progress._pieceMapSnapshot;
                         var nextBb = progress._bitboardSnapshot;
 
-                        if (progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices2) && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape2))
+                        if (progress.Engine.Capabilities?.PieceMap is not null && progress.Engine.Capabilities.Shape is not null)
                         {
+                            var pServices2 = progress.Engine.Capabilities.PieceMap;
+                            var shape2 = progress.Engine.Capabilities.Shape;
                             if (evt is MovePieceGameEvent mpe2)
                             {
                                 if (shape2.TryGetTileIndex(mpe2.From, out var fromIdx2) && shape2.TryGetTileIndex(mpe2.To, out var toIdx2))
                                 {
                                     nextSnapshot = nextSnapshot?.UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2)
                                         ?? Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
-                                    if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices4))
+                                    if (progress.Engine.Capabilities.Bitboards is not null)
                                     {
-                                        nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices4.Layout, newState, shape2))
+                                        nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape2))
                                             .UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2, nextSnapshot, shape2);
                                     }
                                 }
@@ -310,9 +315,9 @@ public class GameProgress
                             else
                             {
                                 nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
-                                if (progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices5))
+                                if (progress.Engine.Capabilities.Bitboards is not null)
                                 {
-                                    nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices5.Layout, newState, shape2);
+                                    nextBb = Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape2);
                                 }
                             }
                         }
@@ -429,17 +434,19 @@ public class GameProgress
 
                 var nextSnapshot = seed._pieceMapSnapshot;
                 var nextBb = seed._bitboardSnapshot;
-                if (seed.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pServices3) && seed.Engine.Services.TryGet(out Internal.Layout.BoardShape shape3))
+                if (seed.Engine.Capabilities?.PieceMap is not null && seed.Engine.Capabilities.Shape is not null)
                 {
+                    var pServices3 = seed.Engine.Capabilities.PieceMap;
+                    var shape3 = seed.Engine.Capabilities.Shape;
                     if (e is MovePieceGameEvent mpe3)
                     {
                         if (shape3.TryGetTileIndex(mpe3.From, out var fromIdx3) && shape3.TryGetTileIndex(mpe3.To, out var toIdx3))
                         {
                             nextSnapshot = nextSnapshot?.UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3)
                                 ?? Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
-                            if (seed.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices6))
+                            if (seed.Engine.Capabilities.Bitboards is not null)
                             {
-                                nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(bbServices6.Layout, newStateLocal, shape3))
+                                nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(seed.Engine.Capabilities.Bitboards.Layout, newStateLocal, shape3))
                                     .UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3, nextSnapshot, shape3);
                             }
                         }
@@ -447,9 +454,9 @@ public class GameProgress
                     else
                     {
                         nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
-                        if (seed.Engine.Services.TryGet(out Internal.Layout.BitboardServices bbServices7))
+                        if (seed.Engine.Capabilities.Bitboards is not null)
                         {
-                            nextBb = Internal.Layout.BitboardSnapshot.Build(bbServices7.Layout, newStateLocal, shape3);
+                            nextBb = Internal.Layout.BitboardSnapshot.Build(seed.Engine.Capabilities.Bitboards.Layout, newStateLocal, shape3);
                         }
                     }
                 }

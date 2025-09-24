@@ -33,7 +33,7 @@ Bitboards are an internal acceleration layer comprising:
 - `BitboardSnapshot`: immutable snapshot holding:
   - `ulong Global` (all occupied tiles)
   - `ulong[] PerPlayer` (one mask per player) — currently only for ≤64 tile boards.
-- `BitboardServices`: wrapper publishing layout + current snapshot to engine services (lookups inside fast‑path code).
+- `BitboardServices`: wrapper publishing layout + current snapshot via `EngineCapabilities.Bitboards` (lookups inside fast‑path code).
 - (Legacy) `BoardBitboardLayout` + `BitboardServices` (non‑incremental) retained during transition; coexists but not authoritative.
 
 These are constructed in `GameBuilder` only when:

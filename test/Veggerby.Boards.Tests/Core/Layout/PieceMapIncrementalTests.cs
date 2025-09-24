@@ -20,7 +20,7 @@ public class PieceMapIncrementalTests
         var pawn = game.GetPiece("white-pawn-2");
         var from = game.GetTile("tile-b2");
         var to = game.GetTile("tile-b3");
-        var shape = progress.Engine.Services.TryGet(out BoardShape s) ? s : null;
+        var shape = progress.Engine.Capabilities?.Shape;
         Assert.NotNull(shape);
         Assert.NotNull(progress.PieceMapSnapshot);
         var beforeIndex = progress.PieceMapSnapshot.GetTileIndex(pawn);
@@ -48,7 +48,7 @@ public class PieceMapIncrementalTests
         var from = game.GetTile("tile-b2");
         var to = game.GetTile("tile-b3");
         var wrongFrom = game.GetTile("tile-b4");
-        var shape = progress.Engine.Services.TryGet(out BoardShape s) ? s : null;
+        var shape = progress.Engine.Capabilities?.Shape;
         Assert.NotNull(shape);
         var originalSnapshot = progress.PieceMapSnapshot;
 

@@ -68,12 +68,12 @@ public static partial class GameExtensions
             return false;
         }
 
-        if (progress?.Engine?.Services is null)
+        if (progress?.Engine?.Capabilities is null)
         {
             return false;
         }
-
-        return progress.Engine.Services.TryGet(out services);
+        services = progress.Engine.Capabilities.CompiledPatterns;
+        return services is not null;
     }
 
     /// <summary>
@@ -86,12 +86,16 @@ public static partial class GameExtensions
         // Sliding attack fast-path (requires explicit feature flag + bitboards + services)
         if (Internal.FeatureFlags.EnableSlidingFastPath
             && Internal.FeatureFlags.EnableBitboards
-            && progress?.Engine?.Services is not null
-            && progress.Engine.Services.TryGet(out Internal.Attacks.AttackGeneratorServices atk)
-            && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape)
-            && progress.Engine.Services.TryGet(out Internal.Layout.BitboardServices bb)
-            && progress.Engine.Services.TryGet(out Internal.Layout.PieceMapServices pm))
+            && progress?.Engine?.Capabilities is not null
+            && progress.Engine.Capabilities.Attacks is not null
+            && progress.Engine.Capabilities.Shape is not null
+            && progress.Engine.Capabilities.Bitboards is not null
+            && progress.Engine.Capabilities.PieceMap is not null)
         {
+            var atk = progress.Engine.Capabilities.Attacks;
+            var shape = progress.Engine.Capabilities.Shape;
+            var bb = progress.Engine.Capabilities.Bitboards;
+            var pm = progress.Engine.Capabilities.PieceMap;
             // Fast-path only applies to pieces with at least one sliding (repeatable) directional movement pattern.
             // Without this guard immobile pieces (no directions) could incorrectly produce a single-step path via raw attacks.
             static bool HasSlidingPatterns(Piece pc)

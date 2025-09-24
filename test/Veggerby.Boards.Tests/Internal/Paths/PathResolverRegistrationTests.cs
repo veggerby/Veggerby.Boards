@@ -13,8 +13,8 @@ public class PathResolverRegistrationTests
     {
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.True(progress.Engine.Services.TryGet<IPathResolver>(out var resolver));
-        Assert.NotNull(resolver);
+        Assert.NotNull(progress.Engine.Capabilities);
+        Assert.NotNull(progress.Engine.Capabilities.PathResolver);
     }
 
     [Fact]
@@ -22,6 +22,6 @@ public class PathResolverRegistrationTests
     {
         using var scope = new FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.False(progress.Engine.Services.TryGet<IPathResolver>(out _));
+        Assert.True(progress.Engine.Capabilities == null || progress.Engine.Capabilities.PathResolver == null);
     }
 }

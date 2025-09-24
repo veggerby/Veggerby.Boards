@@ -16,7 +16,7 @@ determinism and immutability guarantees.
 `Veggerby.Boards.Internal.FeatureFlags.EnableCompiledPatterns`
 
 - Off (default): Legacy visitor exclusively used.
-- On (build time via builder): Patterns compiled and resolver attached to `EngineServices`.
+- On (build time via builder): Patterns compiled and resolver attached via `EngineCapabilities.PathResolver`.
 - Path resolution helpers (`Game.ResolvePathCompiledFirst` / `GameProgress.ResolvePathCompiledFirst`) prefer compiled patterns.
 
 ## Intermediate Representation

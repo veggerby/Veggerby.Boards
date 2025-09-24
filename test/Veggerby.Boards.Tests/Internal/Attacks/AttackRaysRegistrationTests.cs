@@ -13,8 +13,7 @@ public class AttackRaysRegistrationTests
     {
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.True(progress.Engine.Services.TryGet<IAttackRays>(out var rays));
-        Assert.NotNull(rays);
+        Assert.NotNull(progress.Engine.Capabilities?.Attacks?.Sliding);
     }
 
     [Fact]
@@ -22,6 +21,6 @@ public class AttackRaysRegistrationTests
     {
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.False(progress.Engine.Services.TryGet<IAttackRays>(out var _));
+        Assert.True(progress.Engine.Capabilities?.Attacks == null);
     }
 }

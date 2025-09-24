@@ -287,4 +287,73 @@ public class SlidingFastPathParityTests
         var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
         AssertParity([rook], rook, "tile-d4"); // from == to => null
     }
+
+    // ---------------- Decorator Direct Parity (fast-path vs compiled only) ----------------
+
+    private static TilePath ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    {
+        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        var prev = FeatureFlags.EnableSlidingFastPath;
+        FeatureFlags.EnableSlidingFastPath = true;
+        var builder = new SlidingTestBuilder(specs);
+        var progress = builder.Compile();
+        var piece = progress.Game.GetPiece(moving.Id);
+        var from = progress.Game.GetTile(moving.FromTile);
+        var to = progress.Game.GetTile(target);
+        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        finally { FeatureFlags.EnableSlidingFastPath = prev; }
+    }
+
+    private static TilePath ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    {
+        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
+        var prev = FeatureFlags.EnableSlidingFastPath;
+        FeatureFlags.EnableSlidingFastPath = false;
+        var builder = new SlidingTestBuilder(specs);
+        var progress = builder.Compile();
+        var piece = progress.Game.GetPiece(moving.Id);
+        var from = progress.Game.GetTile(moving.FromTile);
+        var to = progress.Game.GetTile(target);
+        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        finally { FeatureFlags.EnableSlidingFastPath = prev; }
+    }
+
+    private static void AssertDecoratorParity(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    {
+        var fast = ResolveViaDecorator(specs, moving, target);
+        var compiled = ResolveCompiledOnly(specs, moving, target);
+        if (compiled is null)
+        {
+            Assert.Null(fast);
+            return;
+        }
+        Assert.NotNull(fast);
+        Assert.Equal(compiled.To.Id, fast!.To.Id);
+        var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
+        var cmpSeq = compiled.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
+        Assert.Equal(cmpSeq, fastSeq);
+    }
+
+    [Fact]
+    public void Decorator_Rook_LongHorizontal_Parity()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        AssertDecoratorParity([rook], rook, "tile-h4");
+    }
+
+    [Fact]
+    public void Decorator_Bishop_DiagonalCapture_Parity()
+    {
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
+        AssertDecoratorParity([bishop, enemy], bishop, "tile-e3");
+    }
+
+    [Fact]
+    public void Decorator_Queen_BlockedBeyondFriendly_NullParity()
+    {
+        var queen = new PieceSpec("queen", "queen", "tile-d4", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
+        AssertDecoratorParity([queen, friendly], queen, "tile-d8");
+    }
 }

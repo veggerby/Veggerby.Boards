@@ -304,26 +304,24 @@ public class SlidingPathResolutionBenchmark
             var state = GameState.New(artifactStates);
 
             // Build minimal services replicating builder compile path for acceleration features.
-            var services = new EngineServices();
-            var shape = BoardShape.Build(_game.Board);
-            services.Set(shape);
+            var capabilities = new EngineCapabilities { Shape = BoardShape.Build(_game.Board) };
             // PieceMap + bitboards required for fast-path
             var pieceLayout = PieceMapLayout.Build(_game);
-            var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, shape);
-            services.Set(new PieceMapServices(pieceLayout, pieceSnapshot));
+            var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, capabilities.Shape);
+            capabilities.PieceMap = new PieceMapServices(pieceLayout, pieceSnapshot);
             if (_game.Board.Tiles.Count() <= 64)
             {
                 var bbLayout = BitboardLayout.Build(_game);
-                var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, shape);
-                services.Set(new BitboardServices(bbLayout, bbSnapshot));
-                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-                services.Set(new Internal.Attacks.AttackGeneratorServices(sliding));
+                var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, capabilities.Shape);
+                capabilities.Bitboards = new BitboardServices(bbLayout, bbSnapshot);
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(capabilities.Shape);
+                capabilities.Attacks = new Internal.Attacks.AttackGeneratorServices(sliding);
             }
 
             // Minimal phase root (no rules needed for path resolution benchmark)
             var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
-            var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, services);
-            return new GameProgress(engine, state, null, pieceSnapshot, services.TryGet(out BitboardServices bb) ? bb.Snapshot : null);
+            var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
+            return new GameProgress(engine, state, null, pieceSnapshot, capabilities.Bitboards?.Snapshot);
         }
 
         _progressEmpty = Build(new HashSet<Tile>());

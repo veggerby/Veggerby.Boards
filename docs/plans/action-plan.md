@@ -372,6 +372,8 @@ Performance Acceleration Tracking (Recent Progress):
 - Sliding benchmark extended (FastPath, CompiledWithBitboardsNoFastPath, CompiledNoBitboards) enabling isolation of bitboards vs sliding fast-path overhead; style charter respected (no additional LINQ in hot loops, deterministic feature flag toggling per variant).
 - Bitboards + Sliding FastPath defaults flipped ON (≤64 tiles) after benchmarks demonstrated ≥4.6× (empty), ≥2.4× (quarter), ≥1.5× (half) speedups vs compiled resolver.
 - Configuration docs updated with disable snippet; code style rules reiterated in configuration & this plan.
+- Capability seam finalized: Introduced `IPathResolver` abstraction and conditionally registered `SlidingFastPathResolver` decorator (gated by `EnableSlidingFastPath`) ahead of the compiled resolver when bitboard occupancy + attack rays + occupancy index services are present. Current decorator delegates (fast-path reconstruction logic pending) to minimize diff size for the upcoming implementation commit while enabling early service wiring validation.
+- Style reinforcement: Decorator adheres to repository code style charter (file-scoped namespaces, explicit braces, four-space indentation, no LINQ in hot loops, immutable state). Future fast-path logic must preserve these guarantees and remain allocation-free.
 
 ### Next (Post-Acceleration) Items
 

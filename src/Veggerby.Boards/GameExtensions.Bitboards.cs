@@ -25,11 +25,27 @@ public static partial class GameExtensions
         {
             occupancy = default; perPlayer = null; return false;
         }
-        if (progress.Engine.Services.TryGet<BitboardServices>(out var svc))
+        if (progress.Engine.Capabilities?.Bitboards is not null && progress.Engine.Capabilities.Shape is not null)
         {
-            occupancy = svc.BuildOccupancy(progress.State);
-            perPlayer = svc.BuildPlayerOccupancy(progress.State);
+            // Use incremental snapshot
+            var snap = progress.Engine.Capabilities.Bitboards.Snapshot;
+            occupancy = new Internal.Bitboards.Bitboard64(snap.GlobalOccupancy);
+            perPlayer = new Dictionary<Artifacts.Player, Internal.Bitboards.Bitboard64>();
+            // Map per-player masks using layout mapping
+            var layout = progress.Engine.Capabilities.Bitboards.Layout;
+            foreach (var player in progress.Game.Players)
+            {
+                if (layout.TryGetPlayerIndex(player, out var pIdx) && pIdx < snap.PlayerOccupancy.Length)
+                {
+                    perPlayer[player] = new Internal.Bitboards.Bitboard64(snap.PlayerOccupancy[pIdx]);
+                }
+            }
             return true;
+        }
+        // Legacy on-demand services (if still present for transitional period)
+        if (progress.Engine.Capabilities is not null && progress.Engine.Capabilities.Shape is not null)
+        {
+            var legacy = progress.Engine.Capabilities; // legacy BoardBitboardLayout services removed; fallback false
         }
         occupancy = default; perPlayer = null; return false;
     }

@@ -18,8 +18,8 @@ public class PathResolverParityTests
         var rook = progress.Game.GetPiece("white-rook-1");
         var from = progress.Game.GetTile("tile-a1");
         var to = progress.Game.GetTile("tile-a4"); // a1->a2->a3->a4 (geometric; occupancy not enforced at path layer)
-        Assert.True(progress.Engine.Services.TryGet<IPathResolver>(out var resolver));
-        var path = resolver.Resolve(rook, from, to, progress.State);
+        Assert.NotNull(progress.Engine.Capabilities?.PathResolver);
+        var path = progress.Engine.Capabilities.PathResolver.Resolve(rook, from, to, progress.State);
         Assert.NotNull(path);
         Assert.Equal(to, path.To);
         Assert.Equal(3, path.Distance);
@@ -33,8 +33,8 @@ public class PathResolverParityTests
         var knight = progress.Game.GetPiece("white-knight-1");
         var from = progress.Game.GetTile("tile-b1");
         var to = progress.Game.GetTile("tile-c3");
-        Assert.True(progress.Engine.Services.TryGet<IPathResolver>(out var resolver));
-        var path = resolver.Resolve(knight, from, to, progress.State);
+        Assert.NotNull(progress.Engine.Capabilities?.PathResolver);
+        var path = progress.Engine.Capabilities.PathResolver.Resolve(knight, from, to, progress.State);
         Assert.NotNull(path);
         Assert.Equal(to, path.To);
         Assert.Equal(3, path.Distance); // compiled pattern expands knight L into 3 directional steps

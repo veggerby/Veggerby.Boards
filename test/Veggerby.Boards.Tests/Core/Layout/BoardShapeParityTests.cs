@@ -16,7 +16,8 @@ public class BoardShapeParityTests
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var engine = progress.Engine;
-        Assert.True(engine.Services.TryGet<BoardShape>(out var shape));
+        var shape = engine.Capabilities?.Shape;
+        Assert.NotNull(shape);
 
         // act & assert: every relation must appear in shape mapping
         foreach (var rel in engine.Game.Board.TileRelations)

@@ -16,7 +16,8 @@ public class OccupancyIndexRegistrationTests
         using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: true, boardShape: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
-        progress.Engine.Services.TryGet(out IOccupancyIndex occ).Should().BeTrue();
+        var occ = progress.Engine.Capabilities?.Occupancy;
+        occ.Should().NotBeNull();
         return (progress, occ);
     }
 

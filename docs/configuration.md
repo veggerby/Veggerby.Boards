@@ -24,6 +24,7 @@ This document describes the internal runtime feature flags controlling experimen
 | EnableCompiledPatternsAdjacencyCache | false | Precomputed (tile,direction)->neighbor cache for compiled resolver. | Confirmed micro-benchmark win (≥5%) w/out allocation regressions. | Mutually exclusive benefit with BoardShape fast path once enabled. |
 | EnableDecisionPlanMasks | false | Short-circuit skip of mutually exclusive phases after first success. | Exclusive grouping correctness + perf proven. | Depends on EnableDecisionPlan. |
 | EnableBoardShape | false | Prefer `BoardShape` O(1) neighbor lookups over relation scans / adjacency cache lookups. | Board topology heuristics integrated + microbench win. | Always built; flag controls exploitation. |
+| EnableSlidingFastPath | false | Sliding (rook/bishop/queen) geometric fast-path using bitboards + attack generator + path reconstruction. | Parity V2 (blocked/capture matrix) + benchmark gains published; default ON for ≤64 tiles thereafter. | Requires EnableBitboards; metrics expose granular skip reasons. |
 
 ## Usage Pattern
 
@@ -51,7 +52,7 @@ Disable individual toggles to isolate their contribution in benchmarks.
 
 1. Establish a baseline: all experimental flags off except `EnableCompiledPatterns`.
 2. Toggle one flag at a time; record mean/median + allocation deltas.
-3. Use `FastPathMetrics.Snapshot()` (internal; test assembly accessible) to capture Attempt/Hit distribution for sliding queries pre/post bitboards.
+3. Use `FastPathMetrics.Snapshot()` (internal; test assembly accessible) to capture Attempt/Hit distribution and granular skip reasons (NoServices, NotSlider, AttackMiss, ReconstructFail) for sliding queries pre/post bitboards.
 4. If a flag does not yield its acceptance threshold (see table) across three consecutive runs (different random seeds), defer graduation.
 
 ## Graduation Process

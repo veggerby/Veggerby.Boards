@@ -83,4 +83,11 @@ internal static class FeatureFlags
     /// Default: false (will be toggled after performance validation and parity tests).
     /// </summary>
     public static bool EnableBoardShape { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the sliding movement fast-path (bitboards + attack generator + path reconstruction)
+    /// is enabled. Requires <see cref="EnableBitboards"/> and supporting services; when disabled, compiled/legacy paths are used exclusively.
+    /// Default: false until expanded parity (blocked/capture matrix) and benchmarks are published.
+    /// </summary>
+    public static bool EnableSlidingFastPath { get; set; } = false;
 }

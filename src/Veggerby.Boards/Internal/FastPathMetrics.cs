@@ -10,13 +10,40 @@ internal static class FastPathMetrics
 {
     private static long _attempts;
     private static long _fastPathHits;
-    private static long _fastPathSkippedNoPrereq;
+    private static long _fastPathSkippedNoPrereq; // legacy aggregate (still incremented for backward compatibility)
+    private static long _fastPathSkipNoServices;
+    private static long _fastPathSkipNotSlider;
+    private static long _fastPathSkipAttackMiss;
+    private static long _fastPathSkipReconstructFail;
     private static long _compiledHits;
     private static long _legacyHits;
 
     public static void OnAttempt() => Interlocked.Increment(ref _attempts);
     public static void OnFastPathHit() => Interlocked.Increment(ref _fastPathHits);
     public static void OnFastPathSkippedNoPrereq() => Interlocked.Increment(ref _fastPathSkippedNoPrereq);
+
+    public static void OnFastPathSkipNoServices()
+    {
+        Interlocked.Increment(ref _fastPathSkipNoServices);
+        Interlocked.Increment(ref _fastPathSkippedNoPrereq);
+    }
+
+    public static void OnFastPathSkipNotSlider()
+    {
+        Interlocked.Increment(ref _fastPathSkipNotSlider);
+        Interlocked.Increment(ref _fastPathSkippedNoPrereq);
+    }
+
+    public static void OnFastPathSkipAttackMiss()
+    {
+        Interlocked.Increment(ref _fastPathSkipAttackMiss);
+    }
+
+    public static void OnFastPathSkipReconstructFail()
+    {
+        Interlocked.Increment(ref _fastPathSkipReconstructFail);
+    }
+
     public static void OnCompiledHit() => Interlocked.Increment(ref _compiledHits);
     public static void OnLegacyHit() => Interlocked.Increment(ref _legacyHits);
 
@@ -25,7 +52,11 @@ internal static class FastPathMetrics
         Interlocked.Read(ref _fastPathHits),
         Interlocked.Read(ref _fastPathSkippedNoPrereq),
         Interlocked.Read(ref _compiledHits),
-        Interlocked.Read(ref _legacyHits));
+        Interlocked.Read(ref _legacyHits),
+        Interlocked.Read(ref _fastPathSkipNoServices),
+        Interlocked.Read(ref _fastPathSkipNotSlider),
+        Interlocked.Read(ref _fastPathSkipAttackMiss),
+        Interlocked.Read(ref _fastPathSkipReconstructFail));
 
     public static void Reset()
     {
@@ -34,10 +65,9 @@ internal static class FastPathMetrics
         Interlocked.Exchange(ref _fastPathSkippedNoPrereq, 0);
         Interlocked.Exchange(ref _compiledHits, 0);
         Interlocked.Exchange(ref _legacyHits, 0);
+        Interlocked.Exchange(ref _fastPathSkipNoServices, 0);
+        Interlocked.Exchange(ref _fastPathSkipNotSlider, 0);
+        Interlocked.Exchange(ref _fastPathSkipAttackMiss, 0);
+        Interlocked.Exchange(ref _fastPathSkipReconstructFail, 0);
     }
-}
-
-internal readonly record struct FastPathMetricsSnapshot(long Attempts, long FastPathHits, long FastPathSkippedNoPrereq, long CompiledHits, long LegacyHits)
-{
-    public long FastPathMisses => Attempts - FastPathHits;
 }

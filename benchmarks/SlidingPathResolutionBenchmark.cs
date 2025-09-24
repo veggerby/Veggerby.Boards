@@ -8,11 +8,11 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
+using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Compiled;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards.Benchmarks;
 

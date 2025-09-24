@@ -81,10 +81,11 @@ public static partial class GameExtensions
     /// </summary>
     public static TilePath ResolvePathCompiledFirst(this GameProgress progress, Piece piece, Tile from, Tile to)
     {
-        // metrics placeholder (internal static counters)
+        // metrics attempt
         Internal.FastPathMetrics.OnAttempt();
-        // Sliding attack fast-path (bitboards + attack generator)
-        if (Internal.FeatureFlags.EnableBitboards
+        // Sliding attack fast-path (requires explicit feature flag + bitboards + services)
+        if (Internal.FeatureFlags.EnableSlidingFastPath
+            && Internal.FeatureFlags.EnableBitboards
             && progress?.Engine?.Services is not null
             && progress.Engine.Services.TryGet(out Internal.Attacks.AttackGeneratorServices atk)
             && progress.Engine.Services.TryGet(out Internal.Layout.BoardShape shape)
@@ -106,7 +107,7 @@ public static partial class GameExtensions
             var canUseFastPath = HasSlidingPatterns(piece);
             if (!canUseFastPath)
             {
-                Internal.FastPathMetrics.OnFastPathSkippedNoPrereq();
+                Internal.FastPathMetrics.OnFastPathSkipNotSlider();
             }
             else
             {
@@ -145,6 +146,14 @@ public static partial class GameExtensions
                                 Internal.FastPathMetrics.OnFastPathHit();
                                 return built; // fast-path win
                             }
+                            else
+                            {
+                                Internal.FastPathMetrics.OnFastPathSkipReconstructFail();
+                            }
+                        }
+                        else
+                        {
+                            Internal.FastPathMetrics.OnFastPathSkipAttackMiss();
                         }
                     }
                 }
@@ -152,10 +161,18 @@ public static partial class GameExtensions
         }
         else
         {
-            Internal.FastPathMetrics.OnFastPathSkippedNoPrereq();
+            // Distinguish missing services vs flag disabled
+            if (!Internal.FeatureFlags.EnableSlidingFastPath || !Internal.FeatureFlags.EnableBitboards)
+            {
+                Internal.FastPathMetrics.OnFastPathSkipNoServices();
+            }
+            else
+            {
+                Internal.FastPathMetrics.OnFastPathSkipNoServices(); // fallback generic classification
+            }
         }
-        // Compiled or legacy resolution path after optional fast-path attempt
 
+        // Compiled or legacy resolution path after optional fast-path attempt
         if (progress.TryGetCompiledResolver(out var services))
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
@@ -170,6 +187,7 @@ public static partial class GameExtensions
         {
             Internal.FastPathMetrics.OnLegacyHit();
         }
+
         return ApplyOccupancySemantics(progress, piece, legacy);
     }
 

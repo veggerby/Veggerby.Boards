@@ -118,3 +118,5 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Board topology classification & tests (future: topology-aware pruning / heuristic grouping) now part of BoardShape build.
 - Fast-path sliding metrics (Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits) + tests; will inform benchmark deltas and gating criteria for future optimization stages.
 - Immobile piece guard (skip fast-path when no repeatable directional pattern) and structure refactor (removed interim `goto`).
+- Movement semantics charter (authoritative spec) established.
+- Granular fast-path metrics (NoServices / NotSlider / AttackMiss / ReconstructFail) + new `EnableSlidingFastPath` flag.

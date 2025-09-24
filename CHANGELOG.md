@@ -88,8 +88,10 @@ Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance AP
   - `GameProgress` now internally carries acceleration snapshot (PieceMap) paving the way for upcoming bitboard + sliding attack generator integration.
   - Board topology classification (`BoardTopology` enum) embedded in `BoardShape` build (Orthogonal / OrthogonalAndDiagonal / Arbitrary) with tests; enables future topology-specialized heuristics and benchmark segmentation.
   - Sliding fast-path metrics instrumentation (`FastPathMetrics` internal counters + snapshot API) tracking Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits; accompanying unit tests (hit + skip scenarios) added.
-  - Immobile / non-sliding piece guard in sliding fast-path (skips raw attack path synthesis when no repeatable directional pattern present) preventing false positive single-step paths.
-  - Additional parity coverage for immobile piece negative case (fast-path vs compiled reference) ensuring null-path consistency.
+- Movement semantics charter (`docs/movement-semantics.md`) defining sliding, blockers, captures, reconstruction, and post-filter occupancy semantics.
+- `EnableSlidingFastPath` feature flag (gated until expanded parity and benchmarks) plus granular fast-path metrics (SkipNoServices, SkipNotSlider, SkipAttackMiss, SkipReconstructFail) extending legacy aggregate counters.
+- Immobile / non-sliding piece guard in sliding fast-path (skips raw attack path synthesis when no repeatable directional pattern present) preventing false positive single-step paths.
+- Additional parity coverage for immobile piece negative case (fast-path vs compiled reference) ensuring null-path consistency.
 
 ### Changed
 
@@ -130,6 +132,7 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Sliding path resolution benchmark scaffold (`SlidingPathResolutionBenchmark`) comparing legacy visitor vs compiled resolver (fast-path measurement pending GameProgress harness) to baseline future acceleration gains.
 - Refactored temporary `goto` used during early fast-path guard introduction into structured branching (maintains identical semantics while aligning with style guidelines: no `goto` in production engine code).
 - Reaffirmed code style charter in new acceleration code (explicit braces, file-scoped namespaces, 4-space indentation, minimal LINQ in hot loops, immutable snapshots) and added internal test scaffolds (no-op phase + rule) without leaking abstractions publicly.
+- Granular fast-path metrics added and tests updated; style adherence maintained (no LINQ in added hot-path branches, explicit braces, no `goto`).
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

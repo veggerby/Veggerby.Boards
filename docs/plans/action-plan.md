@@ -363,8 +363,10 @@ Versioning: Each phase increments minor version; breaking changes require major 
 Performance Acceleration Tracking (Recent Progress):
 
 - BoardShape now classifies board topology (Orthogonal / Orthogonal+Diagonal / Arbitrary) enabling future specialized move generation heuristics.
-- Sliding fast-path instrumentation (FastPathMetrics) added – captures attempt vs hit vs skip reasons and fallback (compiled/legacy) distribution for ongoing benchmark reporting.
+- Sliding fast-path instrumentation (FastPathMetrics) added – captures attempt vs hit vs skip reasons and fallback (compiled/legacy) distribution for ongoing benchmark reporting. (Granular reasons added: NoServices, NotSlider, AttackMiss, ReconstructFail; aggregate backward compatible.)
 - Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
+- Movement semantics charter (`docs/movement-semantics.md`) authored – freezes sliding vs non-sliding rules, occupancy enforcement layer, and determinism guarantees ahead of Parity V2 test expansion.
+- Introduced `EnableSlidingFastPath` feature flag (default off pending Parity V2 + benchmarks) separating bitboard occupancy enablement from fast-path activation.
 
 ## Metrics Dashboard (Targets)
 

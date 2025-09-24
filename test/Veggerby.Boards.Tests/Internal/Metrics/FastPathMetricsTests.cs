@@ -134,6 +134,7 @@ public class FastPathMetricsTests
     {
         // arrange
         using var flags = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        Veggerby.Boards.Internal.FeatureFlags.EnableSlidingFastPath = true;
         FastPathMetrics.Reset();
         var progress = BuildProgress(bitboards: true);
         var rook = progress.Game.GetPiece("rook");
@@ -149,6 +150,10 @@ public class FastPathMetricsTests
         snap.Attempts.Should().Be(1);
         snap.FastPathHits.Should().Be(1);
         snap.CompiledHits.Should().Be(0);
+        snap.FastPathSkipNotSlider.Should().Be(0);
+        snap.FastPathSkipNoServices.Should().Be(0);
+        snap.FastPathSkipAttackMiss.Should().Be(0);
+        snap.FastPathSkipReconstructFail.Should().Be(0);
     }
 
     [Fact]
@@ -156,6 +161,7 @@ public class FastPathMetricsTests
     {
         // arrange
         using var flags = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
+        Veggerby.Boards.Internal.FeatureFlags.EnableSlidingFastPath = true;
         FastPathMetrics.Reset();
         var progress = BuildProgress(bitboards: false);
         var rook = progress.Game.GetPiece("rook");
@@ -170,7 +176,48 @@ public class FastPathMetricsTests
         var snap = FastPathMetrics.Snapshot();
         snap.Attempts.Should().Be(1);
         snap.FastPathHits.Should().Be(0);
-        snap.FastPathSkippedNoPrereq.Should().Be(1);
+        snap.FastPathSkippedNoPrereq.Should().Be(1); // aggregate still increments
+        snap.FastPathSkipNoServices.Should().BeGreaterThan(0);
         (snap.CompiledHits + snap.LegacyHits).Should().Be(1);
+    }
+
+    [Fact]
+    public void GivenNonSlider_WhenResolvingPath_ThenFastPathSkipNotSliderIncrements()
+    {
+        // arrange
+        using var flags = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        Veggerby.Boards.Internal.FeatureFlags.EnableSlidingFastPath = true;
+        FastPathMetrics.Reset();
+
+        // Build progress with a knight (non-sliding pattern) so fast path must skip.
+        var north = new Direction("north");
+        var east = new Direction("east");
+        var a = new Tile("a"); var b = new Tile("b");
+        var board = new Board("ns-board", new[] { new TileRelation(a, b, east) });
+        var white = new Player("white");
+        var knight = new Piece("knight", white, new IPattern[] { new FixedPattern(new[] { east }) }); // single-step fixed pattern
+        var game = new Game(board, new[] { white }, new Artifact[] { knight });
+        var state = GameState.New(new IArtifactState[] { new PieceState(knight, a) });
+        var shape = BoardShape.Build(board);
+        var services = new EngineServices();
+        services.Set(shape);
+        var pmLayout = PieceMapLayout.Build(game);
+        var pmSnapshot = PieceMapSnapshot.Build(pmLayout, state, shape);
+        services.Set(new PieceMapServices(pmLayout, pmSnapshot));
+        var bbLayout = BitboardLayout.Build(game);
+        var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, shape);
+        services.Set(new BitboardServices(bbLayout, bbSnapshot));
+        var sliding = SlidingAttackGenerator.Build(shape);
+        services.Set(new AttackGeneratorServices(sliding));
+        var phase = GamePhase.New(1, "noop", new NullGameStateCondition(), new NoOpRule());
+        var engine = new GameEngine(game, phase, null, NullEvaluationObserver.Instance, services);
+        var progress = new GameProgress(engine, state, null, pmSnapshot, bbSnapshot);
+
+        // act
+        var path = progress.ResolvePathCompiledFirst(knight, a, b);
+
+        // assert
+        var snap = FastPathMetrics.Snapshot();
+        snap.FastPathSkipNotSlider.Should().BeGreaterThan(0);
     }
 }

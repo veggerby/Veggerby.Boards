@@ -26,6 +26,10 @@ internal static class PatternCompiler
                         // Direct mapping: ordered steps -> Fixed compiled pattern
                         compiled.Add(CompiledPattern.Fixed(fixedPattern.Pattern.ToArray()));
                         break;
+                    case DirectionPattern singleDir:
+                        // Single direction -> Ray (repeatable flag mirrors pattern)
+                        compiled.Add(CompiledPattern.Ray(singleDir.Direction, singleDir.IsRepeatable));
+                        break;
                     case MultiDirectionPattern multi:
                         // Map multi-direction movement to Ray/MultiRay respecting repeat flag
                         var dirs = multi.Directions.ToArray();

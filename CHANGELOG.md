@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Predicate hoisting (v1): `DecisionPlanEntry` now marks trivially valid `NullGameStateCondition` (true variant) entries with `ConditionIsAlwaysValid` to bypass runtime Evaluate calls (false variant no longer hoisted after refinement).
 - DecisionPlan grouping scaffold (G1): plan now precompiles contiguous identical-condition entries into groups and adds `EnableDecisionPlanGrouping` feature flag with grouped evaluation path (gate evaluated once per group).
 - DecisionPlan: EventKind filtering (experimental, flag `EnableDecisionPlanEventFiltering`) with classification + tests for Move, Roll, State, and Phase (phase via test-only control event) ensuring non-matching rule groups are skipped before condition evaluation.
+- DecisionPlan: Quantitative filtering metrics test (`DecisionPlanEventFilteringMetricsTests`) validating reduced rule evaluation count when filtering enabled vs disabled.
 - EventFiltering baseline benchmark scaffold (`EventFilteringBaseline`) measuring Move vs Roll evaluation paths (initial; tagging breadth expansion pending).
 - Restored and extended compiled pattern parity tests (expanded edge coverage) with adjustments for legacy visitor null path handling.
 - Simplified core compiled pattern parity test now constructs artifacts directly (no builder indirection) for fixed pattern validation, improving test clarity and isolation.
@@ -53,6 +54,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - DecisionPlan exclusivity mask runtime scaffold: feature flag `EnableDecisionPlanMasks`, builder API `.Exclusive(group)`, plan compilation of `ExclusivityGroups` + `ExclusivityGroupRoots`, and mask-based skip logic (skips subsequent exclusive phases sharing a group once one applies) with initial tests (`DecisionPlanMaskingTests`). (Flag gated; parity expected when disabled.)
 - DecisionPlan debug parity dual-run scaffold: feature flag `EnableDecisionPlanDebugParity` executes legacy evaluator in shadow, compares resulting `GameState`, and throws detailed `BoardException` on divergence (includes mismatched artifact ids). Includes forced mismatch test hook (`DebugParityTestHooks.ForceMismatch`) and parity tests (`DecisionPlanDebugParityTests`).
 - Expanded internal `EventKind` taxonomy (added State, Phase, Custom2 buckets) and introduced marker interfaces `IStateMutationGameEvent` / `IPhaseControlGameEvent` for future granular filtering; classifier updated with safe fallbacks (no behavioral change yet until events adopt markers).
+- Pattern compiler: Added support for `DirectionPattern` mapping to compiled Ray patterns (repeatable flag preserved) with parity tests (`CompiledDirectionPatternParityTests`).
+- Benchmark: Added `ObserverOverheadBenchmark` measuring per-event callback overhead (ignored event across multiple phases) for DecisionPlan scanning.
 
 ### Changed
 

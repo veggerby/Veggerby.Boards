@@ -1,24 +1,18 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
-using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;
-using Veggerby.Boards.Flows.Phases;
-using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Benchmarks;
 
 /// <summary>
-/// Measures overhead introduced by enabling an evaluation observer during HandleEvent.
+/// Measures overhead of a counting <see cref="IEvaluationObserver"/> vs no observer when handling a simple move.
+/// Runs with and without DecisionPlan enabled (param) to contextualize relative observer cost.
 /// </summary>
-/// <remarks>
-/// Uses a simple counting observer that increments counters for callbacks; intended to approximate
-/// the minimal structural cost of dispatch. Real observers (serialization, tracing) will incur more.
-/// </remarks>
 [MemoryDiagnoser]
 public class ObserverOverheadBenchmark
 {
@@ -30,17 +24,14 @@ public class ObserverOverheadBenchmark
         public int EventIgnoredCount;
         public int StateHashedCount;
 
-        public void OnPhaseEnter(GamePhase phase, GameState state) => PhaseEnterCount++;
-        public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) => RuleEvaluatedCount++;
-        public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) => RuleAppliedCount++;
+        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state) => PhaseEnterCount++;
+        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) => RuleEvaluatedCount++;
+        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) => RuleAppliedCount++;
         public void OnEventIgnored(IGameEvent @event, GameState state) => EventIgnoredCount++;
         public void OnStateHashed(GameState state, ulong hash) => StateHashedCount++;
     }
 
     [Params(false, true)]
-    /// <summary>
-    /// Toggles the DecisionPlan feature flag for the run. Executes each benchmark with and without the DecisionPlan path.
-    /// </summary>
     public bool EnableDecisionPlan { get; set; }
 
     private GameProgress _baseline = null!;
@@ -49,20 +40,15 @@ public class ObserverOverheadBenchmark
     private CountingObserver _observer = null!;
 
     [GlobalSetup]
-    /// <summary>
-    /// Prepares baseline and observed game progress instances plus a representative move event.
-    /// </summary>
     public void Setup()
     {
-        // baseline without observer
         FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
-        var builder1 = new ChessGameBuilder();
+        var builder1 = new Chess.ChessGameBuilder();
         _baseline = builder1.Compile();
 
-        // observed with counting observer
-        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan; // ensure consistent flag
+        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
         _observer = new CountingObserver();
-        var builder2 = new ChessGameBuilder().WithObserver(_observer);
+        var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
         _observed = builder2.Compile();
 
         var piece = _baseline.Game.GetPiece("white-pawn-2");
@@ -73,31 +59,14 @@ public class ObserverOverheadBenchmark
     }
 
     [Benchmark(Baseline = true)]
-    /// <summary>
-    /// Handles the prepared event without an observer (baseline).
-    /// </summary>
     public GameProgress HandleEvent_NoObserver()
     {
         return _baseline.HandleEvent(_event);
     }
 
     [Benchmark]
-    /// <summary>
-    /// Handles the prepared event with a counting observer attached.
-    /// </summary>
     public GameProgress HandleEvent_CountingObserver()
     {
         return _observed.HandleEvent(_event);
-    }
-}
-
-public static class ObserverOverheadProgram
-{
-    /// <summary>
-    /// Entry point for running the observer overhead benchmarks.
-    /// </summary>
-    public static void Main(string[] args)
-    {
-        BenchmarkRunner.Run<ObserverOverheadBenchmark>();
     }
 }

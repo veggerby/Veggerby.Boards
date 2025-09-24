@@ -12,6 +12,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Trace entry object pooling / reuse strategy (avoid per-callback alloc) **PENDING**
 - Aggregated batch observer adapter reducing callback overhead via struct buffer.
 - Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`).
+- Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`) – updated to include ignored-event DecisionPlan scan scenario.
 - Overhead target doc update once hashing added.
 
 ## Parity & Testing Utilities
@@ -42,6 +43,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 -- EventKind enum & basic classifier (Move/Roll heuristic) + SupportedKinds table compile. **COMPLETED (initial)**
 -- Event filtering evaluation fast-path (skip non-matching kinds before predicate). **COMPLETED (flag gated + tests + baseline benchmark scaffold)**
   - Follow-up: Expand rule tagging coverage, add mixed-kind multi-phase benchmark & debug parity shadow path. **COMPLETED – taxonomy expanded (State/Phase), marker interfaces public, concrete `SelectActivePlayerGameEvent` added; tests cover Move/Roll/State/Phase; benchmarks deferred**
+  - Metrics: quantitative filtering evaluation count test. **COMPLETED (DecisionPlanEventFilteringMetricsTests)**
 - Builder hint API for exclusivity (e.g., `.Exclusive("phase-set-1")`). **COMPLETED**
 - Mask table generation from exclusivity hints. **COMPLETED (ExclusivityGroups + ExclusivityGroupRoots compiled)**
 - Evaluation mask application logic + tests (skip flagged entries). **COMPLETED (feature-flagged; masking tests added)**

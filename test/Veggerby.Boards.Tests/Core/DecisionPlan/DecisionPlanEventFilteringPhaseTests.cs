@@ -1,12 +1,12 @@
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
-using Veggerby.Boards.Artifacts.Relations;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 

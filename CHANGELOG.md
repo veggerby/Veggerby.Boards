@@ -56,6 +56,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Expanded internal `EventKind` taxonomy (added State, Phase, Custom2 buckets) and introduced marker interfaces `IStateMutationGameEvent` / `IPhaseControlGameEvent` for future granular filtering; classifier updated with safe fallbacks (no behavioral change yet until events adopt markers).
 - Pattern compiler: Added support for `DirectionPattern` mapping to compiled Ray patterns (repeatable flag preserved) with parity tests (`CompiledDirectionPatternParityTests`).
 - Benchmark: Added `ObserverOverheadBenchmark` measuring per-event callback overhead (ignored event across multiple phases) for DecisionPlan scanning.
+- Pattern compiler: Expanded chess archetype parity (rook/bishop/queen sliders, knight fixed L, pawn single-step) and added `PatternResolutionBenchmark` (legacy visitor vs compiled) scaffold.
+- Integration: Added `ChessCompiledIntegrationParityTests` exercising compiled pattern resolution under feature flag within full Chess builder (single-step pawn advance parity + unreachable double-step null parity).
 
 ### Changed
 

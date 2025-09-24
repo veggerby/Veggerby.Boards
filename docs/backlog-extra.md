@@ -11,8 +11,7 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Trace overhead microbenchmark (compare enabled vs disabled) **COMPLETED (TraceCaptureOverheadBenchmark)**
 - Trace entry object pooling / reuse strategy (avoid per-callback alloc) **PENDING**
 - Aggregated batch observer adapter reducing callback overhead via struct buffer.
-- Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`).
-- Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`) – updated to include ignored-event DecisionPlan scan scenario.
+- Counting observer benchmark (baseline) — COMPLETED (see `ObserverOverheadBenchmark`). (Will record % overhead once benchmarks are run at end of perf cycle.)
 - Overhead target doc update once hashing added.
 
 ## Parity & Testing Utilities
@@ -21,7 +20,8 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Test helper: `using FeatureFlagScope(decisionPlan: true)` disposable to restore flags automatically. **COMPLETED**
 - Multi-event deterministic parity test sequence — COMPLETED.
 - Movement pattern parity scaffold (legacy visitor vs compiled resolver pre-population) **COMPLETED**
-- Restore and expand compiled pattern parity tests (legacy visitor multi-direction repeat + chess pawn double move) after investigating legacy visitor null path edge case. **PENDING**
+- Restore and expand compiled pattern parity tests (legacy visitor multi-direction repeat + chess pawn scenarios). **COMPLETED** (double-step pawn intentionally not modeled; integration test asserts null parity for unreachable e2->e4)
+-- Integration-level compiled patterns parity (Chess builder under feature flag). **COMPLETED**
 - Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
 - (Removed) Former BugReport replay harness concept replaced by future roadmap item 14 (external issue reproduction) – not in core code.
 - Deterministic seeding API (`GameBuilder.WithSeed`) **COMPLETED**

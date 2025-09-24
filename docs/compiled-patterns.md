@@ -33,11 +33,12 @@ determinism and immutability guarantees.
 - `Directions` (array of `Direction` references)
 - `IsRepeatable` (applies to Ray/MultiRay)
 
-## Compilation Mapping (v1)
+## Compilation Mapping (v1.1)
 
 | Source Pattern            | Mapping Logic |
 |---------------------------|---------------|
 | `FixedPattern`            | `CompiledPattern.Fixed(steps)` |
+| `DirectionPattern`        | `CompiledPattern.Ray(direction, repeat)` |
 | `MultiDirectionPattern` (1 direction) | `CompiledPattern.Ray(dir, repeat)` |
 | `MultiDirectionPattern` (>1 directions) | `CompiledPattern.MultiRay(dirs, repeat)` |
 | `NullPattern`             | Ignored |
@@ -53,15 +54,17 @@ Resolution logic iterates compiled patterns for a piece and attempts to build a 
 4. Choose the shortest successful path when multiple candidates (deterministic tie by discovery order).
 5. Return `null` if no candidate reaches the target.
 
-## Parity Guarantees
+## Parity Guarantees (Expanded)
 
 Test coverage ensures:
 
 - Fixed sequences (2+ steps) produce identical paths (direct artifact construction parity test for clarity, no builder dependency).
-- Single and multi-direction repeatable and non-repeatable cases match legacy visitor.
+- DirectionPattern repeatable and non-repeatable cases match legacy visitor (single and multi-step attempts).
+- MultiDirectionPattern (single and multi-ray) repeatable and non-repeatable cases match legacy visitor.
 - Unreachable sequences yield null in both systems.
-- Null pattern yields null.
-- Chess integration (pawn double advance) parity with feature flag on.
+- Null / Any patterns ignored consistently (legacy may iterate but resolver outputs null equivalently).
+- Composite chess archetypes validated: rook (orthogonal slider), bishop (diagonal slider), queen (multi-ray selection / shortest path), knight (fixed L), pawn (single-step non-repeatable).
+- Tie-breaking: when multiple rays can reach target with same length, first discovered (legacy visitor order) maintained.
 
 ## Usage
 
@@ -76,13 +79,19 @@ var path = progress.ResolvePathCompiledFirst(piece, from, to); // compiled path
 
 Fallback (flag off) uses legacy visitor automatically.
 
-## Roadmap
+## Roadmap / Recent Additions
 
-- Add adjacency caching (tile index → outgoing relations by direction) to reduce dictionary lookups.
-- Extend compiler to support composite patterns (future pattern types) or optional segments.
-- Benchmark comparison: integrate into `PatternResolutionBaseline` once expanded to chess board dataset.
-- Allocation profiling & potential `TilePath` builder optimization.
-- Opportunistic inlining for hot loops in resolver once stable.
++- Added DirectionPattern compilation (Ray form, repeat flag preserved).
++- Added expanded parity test suite (`CompiledChessPatternParityTests`).
++- Added `PatternResolutionBenchmark` comparing legacy visitor vs compiled resolution across archetypes.
++- Adjacency caching scaffold behind `EnableCompiledPatternsAdjacencyCache` (not yet enabled by default).
+
+Planned:
+
++- Extend compiler to support conditional / composite future pattern types.
++- Expand benchmark dataset to full 8x8 chess board with randomized target sampling.
++- Allocation profiling & potential `TilePath` builder optimization.
++- Opportunistic inlining for hot loops in resolver once stable.
 
 ## Invariants
 

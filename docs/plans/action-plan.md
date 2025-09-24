@@ -14,7 +14,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; EventResult placeholder added; observer + perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
-| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection); adjacency cache scaffold + flag; direct-construction parity test added for Fixed pattern clarity |
+| 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
 | 4. Performance Data Layout & Hot Paths | NOT STARTED | No BoardShape / PieceMap / bitboards work begun |
 | 5. Concurrency & Simulation | NOT STARTED | Simulator API not started |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
@@ -41,7 +41,7 @@ Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 
 1. Rule Evaluation Engine Modernization (Items 1, 7, 9)
 2. Deterministic Randomness & State History Evolution (Items 2, 3, 14)
-3. Movement & Pattern Engine Compilation (Item 4, 10 partial)
+3. Movement & Pattern Engine Compilation (Item 4, 10 partial – DirectionPattern now supported)
 4. Performance Data Layout & Hot Path Optimization (Items 5, small refactors, bitboards (10))
 5. Concurrency & Simulation (Item 6)
 6. Observability & Diagnostics (Items 9, 12, 13)
@@ -80,7 +80,7 @@ Rationale:
 To mitigate overreach and maintain momentum:
 
 - DecisionPlan v1: fixed rule order, array iteration only (no multi-level mask layering yet).
-- Pattern compiler v1: only (a) fixed-step, (b) repeat-until-blocked (sliders), (c) single jump (knight). Defer conditional / compound patterns.
+- Pattern compiler v1: only (a) fixed-step, (b) repeat-until-blocked (sliders), (c) single jump (knight), (d) simple single-direction stride (DirectionPattern). Defer conditional / compound patterns.
 - Bitboards: chess module internal adapter; abort if <15% net gain on attack generation after two profiling runs.
 - Merkle hash: non-crypto xxHash128/BLAKE3-128 equivalent; stable canonical serialization (little-endian, sorted deterministic field ordering).
 - Dual-engine parity: legacy evaluator retained only inside test compilation (compile symbol) for golden comparisons—never shipped.
@@ -224,14 +224,14 @@ Deliverables (Status annotations in brackets):
 - Pattern IR: normalized representation (directions, repeats, terminals). **[COMPLETED – `CompiledPatternKind`, `CompiledPattern`]**
 - Compiler scaffold: per-piece table generation + service registration (emits empty lists). **[COMPLETED – population pending]**
 - Resolver: compiled attempt with visitor fallback. **[COMPLETED – behind `EnableCompiledPatterns`]**
-- Compiler population (translate existing `IPattern` instances to IR). **[PENDING]**
-- Performance benchmarks (visitor vs compiled). **[PENDING]**
-- Parity test suite (legacy vs compiled). **[IN PROGRESS – initial scaffold added]**
+- Compiler population (translate existing `IPattern` instances to IR). **[PARTIAL – FixedPattern, DirectionPattern, MultiDirectionPattern supported]**
+- Performance benchmarks (visitor vs compiled). **[PENDING – scaffold exists (`PatternResolutionBenchmark`)]**
+- Parity test suite (legacy vs compiled). **[PARTIAL – unit archetypes + chess integration parity green]**
 Acceptance Criteria:
 - All movement tests + parity suite green under compiled engine once populated. **[PENDING]**
 - ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
 Current Status:
-- Infra merged; feature off by default; parity scaffold guards legacy correctness prior to enabling compiled resolution.
+- Infra merged; feature off by default; unit parity (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; unreachable scenarios assert null parity (double-step pawn not modeled yet).
 Risks:
 - Premature optimization without representative workloads.
 Migration:

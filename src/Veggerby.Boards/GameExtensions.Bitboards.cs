@@ -25,27 +25,20 @@ public static partial class GameExtensions
         {
             occupancy = default; perPlayer = null; return false;
         }
-        if (progress.Engine.Capabilities?.Bitboards is not null && progress.Engine.Capabilities.Shape is not null)
+        // Bitboard snapshots are now internal to the acceleration context; expose only via occupancy masks when bitboards enabled.
+        // Provide minimal reconstruction using IOccupancyIndex when available.
+        if (progress.Engine.Capabilities?.Accel?.Occupancy is not null)
         {
-            // Use incremental snapshot
-            var snap = progress.Engine.Capabilities.Bitboards.Snapshot;
-            occupancy = new Internal.Bitboards.Bitboard64(snap.GlobalOccupancy);
+            var occ = progress.Engine.Capabilities.Accel.Occupancy;
+            // Global mask exposure (bitboards feature defines hash semantics external to index)
+            occupancy = new Internal.Bitboards.Bitboard64((occ as Internal.Occupancy.BitboardOccupancyIndex)?.GlobalMask ?? 0UL);
             perPlayer = new Dictionary<Artifacts.Player, Internal.Bitboards.Bitboard64>();
-            // Map per-player masks using layout mapping
-            var layout = progress.Engine.Capabilities.Bitboards.Layout;
             foreach (var player in progress.Game.Players)
             {
-                if (layout.TryGetPlayerIndex(player, out var pIdx) && pIdx < snap.PlayerOccupancy.Length)
-                {
-                    perPlayer[player] = new Internal.Bitboards.Bitboard64(snap.PlayerOccupancy[pIdx]);
-                }
+                var mask = (occ as Internal.Occupancy.BitboardOccupancyIndex)?.PlayerMask(player) ?? 0UL;
+                perPlayer[player] = new Internal.Bitboards.Bitboard64(mask);
             }
             return true;
-        }
-        // Legacy on-demand services (if still present for transitional period)
-        if (progress.Engine.Capabilities is not null && progress.Engine.Capabilities.Shape is not null)
-        {
-            var legacy = progress.Engine.Capabilities; // legacy BoardBitboardLayout services removed; fallback false
         }
         occupancy = default; perPlayer = null; return false;
     }

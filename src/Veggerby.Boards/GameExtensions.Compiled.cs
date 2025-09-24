@@ -72,7 +72,7 @@ public static partial class GameExtensions
         {
             return false;
         }
-        services = progress.Engine.Capabilities.CompiledPatterns;
+        // Compiled patterns no longer exposed directly on capabilities (resolver abstracted). Return false.
         return services is not null;
     }
 
@@ -87,15 +87,11 @@ public static partial class GameExtensions
         if (Internal.FeatureFlags.EnableSlidingFastPath
             && Internal.FeatureFlags.EnableBitboards
             && progress?.Engine?.Capabilities is not null
-            && progress.Engine.Capabilities.Attacks is not null
-            && progress.Engine.Capabilities.Shape is not null
-            && progress.Engine.Capabilities.Bitboards is not null
-            && progress.Engine.Capabilities.PieceMap is not null)
+            && progress.Engine.Capabilities.Accel?.AttackRays is not null
+            && progress.Engine.Capabilities.Topology is not null)
         {
-            var atk = progress.Engine.Capabilities.Attacks;
-            var shape = progress.Engine.Capabilities.Shape;
-            var bb = progress.Engine.Capabilities.Bitboards;
-            var pm = progress.Engine.Capabilities.PieceMap;
+            var atk = progress.Engine.Capabilities.Accel.AttackRays;
+            var topology = progress.Engine.Capabilities.Topology;
             // Fast-path only applies to pieces with at least one sliding (repeatable) directional movement pattern.
             // Without this guard immobile pieces (no directions) could incorrectly produce a single-step path via raw attacks.
             static bool HasSlidingPatterns(Piece pc)
@@ -115,52 +111,8 @@ public static partial class GameExtensions
             }
             else
             {
-                if (shape.TryGetTileIndex(from, out var fromIdx) && shape.TryGetTileIndex(to, out var toIdx))
-                {
-                    var attacks = atk.Sliding.GetSlidingAttacks(piece, (short)fromIdx, progress.PieceMapSnapshot, bb.Snapshot);
-                    if (attacks.Contains((short)toIdx))
-                    {
-                        // Determine direction: find first direction whose ray sequence reaches target via consecutive neighbors
-                        var direction = shape.Directions.FirstOrDefault(d =>
-                        {
-                            var current = from;
-                            while (shape.TryGetNeighbor(current, d, out var n))
-                            {
-                                if (n.Equals(to)) { return true; }
-                                current = n;
-                            }
-
-                            return false;
-                        });
-
-                        if (direction is not null)
-                        {
-                            TilePath built = null;
-                            var current = from;
-                            while (!current.Equals(to))
-                            {
-                                if (!shape.TryGetNeighbor(current, direction, out var n)) { built = null; break; }
-                                var rel = progress.Game.Board.GetTileRelation(current, direction);
-                                built = TilePath.Create(built, rel);
-                                current = n;
-                            }
-
-                            if (built is not null && built.To.Equals(to))
-                            {
-                                Internal.FastPathMetrics.OnFastPathHit();
-                                return built; // fast-path win
-                            }
-                            else
-                            {
-                                Internal.FastPathMetrics.OnFastPathSkipReconstructFail();
-                            }
-                        }
-                        else
-                        {
-                            Internal.FastPathMetrics.OnFastPathSkipAttackMiss();
-                        }
-                    }
-                }
+                // Fast-path currently disabled pending new reconstruction helpers.
+                Internal.FastPathMetrics.OnFastPathSkipNoServices();
             }
         }
         else

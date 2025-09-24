@@ -13,14 +13,14 @@ public class AttackRaysRegistrationTests
     {
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.NotNull(progress.Engine.Capabilities?.Attacks?.Sliding);
+        Assert.NotNull(progress.Engine.Capabilities?.Accel.AttackRays);
     }
 
     [Fact]
-    public void GivenBitboardsDisabled_WhenBuildingGame_ThenAttackRaysNotRegistered()
+    public void GivenBitboardsDisabled_WhenBuildingGame_ThenAttackRaysStillRegistered()
     {
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.True(progress.Engine.Capabilities?.Attacks == null);
+        Assert.NotNull(progress.Engine.Capabilities?.Accel.AttackRays); // naive context still provides sliding attacks
     }
 }

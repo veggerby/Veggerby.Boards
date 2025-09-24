@@ -24,9 +24,7 @@ public class GameProgress
     /// <param name="engine">The game engine hosting rules and phase graph.</param>
     /// <param name="state">The current game state.</param>
     /// <param name="events">The historical events (optional).</param>
-    /// <param name="pieceMapSnapshot">Optional piece map acceleration snapshot (internal) carried forward for incremental updates.</param>
-    /// <param name="bitboardSnapshot">Optional bitboard occupancy snapshot (global + per-player) carried forward for incremental updates.</param>
-    internal GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events, Internal.Layout.PieceMapSnapshot pieceMapSnapshot = null, Internal.Layout.BitboardSnapshot bitboardSnapshot = null)
+    internal GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
@@ -36,8 +34,7 @@ public class GameProgress
         State = state;
         Events = [.. (events ?? Enumerable.Empty<IGameEvent>())];
         Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
-        _pieceMapSnapshot = pieceMapSnapshot; // may be null if feature disabled
-        _bitboardSnapshot = bitboardSnapshot; // may be null if feature disabled
+        // Acceleration snapshots now encapsulated inside EngineCapabilities.Accel
     }
 
     /// <summary>
@@ -60,19 +57,7 @@ public class GameProgress
     /// </summary>
     public IEnumerable<IGameEvent> Events { get; }
 
-    private readonly Internal.Layout.PieceMapSnapshot _pieceMapSnapshot;
-
-    /// <summary>
-    /// Gets the acceleration PieceMap snapshot for this progress (internal experimental).
-    /// </summary>
-    internal Internal.Layout.PieceMapSnapshot PieceMapSnapshot => _pieceMapSnapshot;
-
-    private readonly Internal.Layout.BitboardSnapshot _bitboardSnapshot;
-
-    /// <summary>
-    /// Gets the incremental bitboard snapshot (global + per-player occupancy) if enabled.
-    /// </summary>
-    internal Internal.Layout.BitboardSnapshot BitboardSnapshot => _bitboardSnapshot;
+    // Removed internal snapshot exposure (non-leaky acceleration context now authoritative)
 
     /// <summary>
     /// Gets the root game definition.
@@ -87,20 +72,9 @@ public class GameProgress
     public GameProgress NewState(IEnumerable<IArtifactState> newStates)
     {
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
-        Internal.Layout.PieceMapSnapshot nextSnapshot = _pieceMapSnapshot;
-        Internal.Layout.BitboardSnapshot nextBb = _bitboardSnapshot;
-        if (Engine.Capabilities?.PieceMap is not null)
-        {
-            var shape = Engine.Capabilities.Shape;
-            // Full rebuild since we don't know which pieces changed.
-            nextSnapshot = Internal.Layout.PieceMapSnapshot.Build(Engine.Capabilities.PieceMap.Layout, State.Next(newStates), shape);
-        }
-
-        if (Engine.Capabilities?.Bitboards is not null && Engine.Capabilities.Shape is not null)
-        {
-            nextBb = Internal.Layout.BitboardSnapshot.Build(Engine.Capabilities.Bitboards.Layout, State.Next(newStates), Engine.Capabilities.Shape);
-        }
-        return new GameProgress(Engine, State.Next(newStates), Events, nextSnapshot, nextBb);
+        var newState = State.Next(newStates);
+        Engine.Capabilities?.Accel?.OnStateTransition(State, newState, null);
+        return new GameProgress(Engine, newState, Events);
     }
 
     /// <summary>
@@ -193,35 +167,7 @@ public class GameProgress
                         if (ruleCheck.Result == ConditionResult.Valid)
                         {
                             var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                            var nextSnapshot = progress._pieceMapSnapshot;
-                            var nextBb = progress._bitboardSnapshot;
-
-                            if (progress.Engine.Capabilities?.PieceMap is not null && progress.Engine.Capabilities.Shape is not null)
-                            {
-                                var pServices = progress.Engine.Capabilities.PieceMap;
-                                var shape = progress.Engine.Capabilities.Shape;
-                                if (evt is MovePieceGameEvent mpe)
-                                {
-                                    if (shape.TryGetTileIndex(mpe.From, out var fromIdx) && shape.TryGetTileIndex(mpe.To, out var toIdx))
-                                    {
-                                        nextSnapshot = nextSnapshot?.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx)
-                                            ?? Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
-                                        if (progress.Engine.Capabilities.Bitboards is not null)
-                                        {
-                                            nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape))
-                                                .UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, nextSnapshot, shape);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices.Layout, newState, shape);
-                                    if (progress.Engine.Capabilities.Bitboards is not null)
-                                    {
-                                        nextBb = Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape);
-                                    }
-                                }
-                            }
+                            progress.Engine.Capabilities?.Accel?.OnStateTransition(progress.State, newState, evt);
 
                             progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
 
@@ -230,7 +176,7 @@ public class GameProgress
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
 
-                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]), nextSnapshot, nextBb);
+                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
 
                             if (masksEnabled)
                             {
@@ -292,35 +238,7 @@ public class GameProgress
                     if (ruleCheck.Result == ConditionResult.Valid)
                     {
                         var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                        var nextSnapshot = progress._pieceMapSnapshot;
-                        var nextBb = progress._bitboardSnapshot;
-
-                        if (progress.Engine.Capabilities?.PieceMap is not null && progress.Engine.Capabilities.Shape is not null)
-                        {
-                            var pServices2 = progress.Engine.Capabilities.PieceMap;
-                            var shape2 = progress.Engine.Capabilities.Shape;
-                            if (evt is MovePieceGameEvent mpe2)
-                            {
-                                if (shape2.TryGetTileIndex(mpe2.From, out var fromIdx2) && shape2.TryGetTileIndex(mpe2.To, out var toIdx2))
-                                {
-                                    nextSnapshot = nextSnapshot?.UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2)
-                                        ?? Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
-                                    if (progress.Engine.Capabilities.Bitboards is not null)
-                                    {
-                                        nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape2))
-                                            .UpdateForMove(mpe2.Piece, (short)fromIdx2, (short)toIdx2, nextSnapshot, shape2);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices2.Layout, newState, shape2);
-                                if (progress.Engine.Capabilities.Bitboards is not null)
-                                {
-                                    nextBb = Internal.Layout.BitboardSnapshot.Build(progress.Engine.Capabilities.Bitboards.Layout, newState, shape2);
-                                }
-                            }
-                        }
+                        progress.Engine.Capabilities?.Accel?.OnStateTransition(progress.State, newState, evt);
                         progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
                         if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
@@ -328,7 +246,7 @@ public class GameProgress
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
 
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]), nextSnapshot, nextBb);
+                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
 
                         if (masksEnabled)
                         {
@@ -432,35 +350,8 @@ public class GameProgress
                     seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
                 }
 
-                var nextSnapshot = seed._pieceMapSnapshot;
-                var nextBb = seed._bitboardSnapshot;
-                if (seed.Engine.Capabilities?.PieceMap is not null && seed.Engine.Capabilities.Shape is not null)
-                {
-                    var pServices3 = seed.Engine.Capabilities.PieceMap;
-                    var shape3 = seed.Engine.Capabilities.Shape;
-                    if (e is MovePieceGameEvent mpe3)
-                    {
-                        if (shape3.TryGetTileIndex(mpe3.From, out var fromIdx3) && shape3.TryGetTileIndex(mpe3.To, out var toIdx3))
-                        {
-                            nextSnapshot = nextSnapshot?.UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3)
-                                ?? Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
-                            if (seed.Engine.Capabilities.Bitboards is not null)
-                            {
-                                nextBb = (nextBb ?? Internal.Layout.BitboardSnapshot.Build(seed.Engine.Capabilities.Bitboards.Layout, newStateLocal, shape3))
-                                    .UpdateForMove(mpe3.Piece, (short)fromIdx3, (short)toIdx3, nextSnapshot, shape3);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        nextSnapshot ??= Internal.Layout.PieceMapSnapshot.Build(pServices3.Layout, newStateLocal, shape3);
-                        if (seed.Engine.Capabilities.Bitboards is not null)
-                        {
-                            nextBb = Internal.Layout.BitboardSnapshot.Build(seed.Engine.Capabilities.Bitboards.Layout, newStateLocal, shape3);
-                        }
-                    }
-                }
-                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]), nextSnapshot, nextBb);
+                seed.Engine.Capabilities?.Accel?.OnStateTransition(seed.State, newStateLocal, e);
+                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
             }
             else if (ruleCheckLocal.Result == ConditionResult.Invalid)
             {

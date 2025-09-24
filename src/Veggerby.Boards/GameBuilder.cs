@@ -369,88 +369,63 @@ public abstract class GameBuilder
             decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
         }
 
-        EngineCapabilities capabilities = null;
-        // BoardShape adjacency layout (always build – lightweight; gated by flag for fast-path usage)
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
-        capabilities ??= new EngineCapabilities { Shape = shape };
-
-        // PieceMap layout + snapshot (experimental – enabled alongside bitboards or compiled patterns to support future acceleration)
-        if (FeatureFlags.EnableCompiledPatterns || FeatureFlags.EnableBitboards)
-        {
-            var pieceLayout = Veggerby.Boards.Internal.Layout.PieceMapLayout.Build(game);
-            var pieceSnapshot = Veggerby.Boards.Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
-            capabilities.PieceMap = new Veggerby.Boards.Internal.Layout.PieceMapServices(pieceLayout, pieceSnapshot);
-        }
+        // NEW capability wiring (sealed, non-leaky): Topology + PathResolver + AccelerationContext
+        var shape = Internal.Layout.BoardShape.Build(game.Board);
+        var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
 
         Internal.Paths.IPathResolver pathResolver = null;
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
-            Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache adjacency = null;
+            Internal.Compiled.BoardAdjacencyCache adjacency = null;
             if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
             {
-                adjacency = Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
+                adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
             }
 
             var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
-            capabilities.CompiledPatterns = new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver, adjacency);
-            pathResolver = new Internal.Paths.CompiledPathResolverAdapter(resolver);
-        }
-
-        // Bitboard acceleration (experimental): add layout + services when enabled and board fits in 64 tiles.
-        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
-        {
-            // Legacy bitboard services (non-incremental, rebuild-on-demand).
-            var legacyLayout = new Internal.Bitboards.BoardBitboardLayout(game.Board);
-            var legacyServices = new Internal.Bitboards.BitboardServices(legacyLayout);
-            // New incremental bitboard snapshot (global + per-player occupancy) built once and updated per move.
-            var bbLayout = Internal.Layout.BitboardLayout.Build(game);
-            var initialBbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
-            capabilities.Bitboards = new Internal.Layout.BitboardServices(bbLayout, initialBbSnapshot);
-
-            if (FeatureFlags.EnableBitboards && capabilities.PieceMap is not null)
-            {
-                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-                capabilities.Attacks = new Internal.Attacks.AttackGeneratorServices(sliding);
-            }
-        }
-
-        // Occupancy index registration (bitboard-backed when available else naive)
-        if (capabilities.Bitboards is not null && capabilities.Shape is not null)
-        {
-            capabilities.Occupancy = new Internal.Occupancy.BitboardOccupancyIndex(capabilities.Bitboards, capabilities.Shape, game, initialGameState);
+            var adapter = new Internal.Paths.CompiledPathResolverAdapter(resolver);
+            pathResolver = adapter;
         }
         else
         {
-            capabilities.Occupancy = new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState);
+            // Fallback simple visitor-based resolver
+            pathResolver = new Internal.Paths.SimplePatternPathResolver(game.Board);
         }
 
-        // Sliding fast-path decorator registration (after all base services wired)
-        if (Internal.FeatureFlags.EnableSlidingFastPath
-            && pathResolver is not null
-            && capabilities.Attacks is not null
-            && capabilities.Occupancy is not null
-            && capabilities.Shape is not null)
+        // Acceleration context selection
+        Internal.Acceleration.IAccelerationContext accel;
+        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
         {
-            pathResolver = new Internal.Paths.SlidingFastPathResolver(capabilities.Shape, capabilities.Attacks.Sliding, capabilities.Occupancy, pathResolver);
+            var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
+            var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
+            var bbLayout = Internal.Layout.BitboardLayout.Build(game);
+            var bbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
+            var bitboardServices = new Internal.Layout.BitboardServices(bbLayout, bbSnapshot);
+            var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bitboardServices, shape, game, initialGameState);
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            var attackServices = sliding; // implements IAttackRays
+            accel = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, shape, topology, occupancy, attackServices);
         }
-        capabilities.PathResolver = pathResolver;
+        else
+        {
+            var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState);
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            accel = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
+        }
 
+        // Sliding fast-path decorator layering if enabled (decorates chosen resolver)
+        if (Internal.FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
+        {
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accel.Occupancy, pathResolver);
+        }
+
+        var capabilities = new EngineCapabilities(topology, pathResolver, accel);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 
-        Veggerby.Boards.Internal.Layout.PieceMapSnapshot pmSnapshot = null;
-        Veggerby.Boards.Internal.Layout.BitboardSnapshot bbSnapshot = null;
-        if (capabilities.PieceMap is not null)
-        {
-            pmSnapshot = capabilities.PieceMap.Snapshot; // already built earlier
-        }
-
-        if (capabilities.Bitboards is not null)
-        {
-            bbSnapshot = capabilities.Bitboards.Snapshot;
-        }
-
-        _initialGameProgress = new GameProgress(engine, initialGameState, null, pmSnapshot, bbSnapshot);
+        // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)
+        _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;
     }

@@ -111,3 +111,4 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Incremental Bitboard snapshot integration (global + per-player occupancy) and dual update propagation.
 - Sliding attack generator (ray-based) + rook parity test.
 - Sliding attack fast-path integration ahead of compiled pattern resolver.
+- Sliding fast-path parity tests (rook horizontal, bishop diagonal, queen vertical) vs compiled-only reference (empty-ray scenarios) – establishes baseline before blocked/capture test expansion.

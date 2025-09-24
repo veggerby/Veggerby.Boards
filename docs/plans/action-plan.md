@@ -15,7 +15,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
 | 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
-| 4. Performance Data Layout & Hot Paths | PARTIAL | BoardShape + PieceMap incremental + Bitboard snapshot + sliding attack generator + sliding path fast-path; remaining: typed piece masks, benchmarks, Bitboard128 |
+| 4. Performance Data Layout & Hot Paths | PARTIAL | BoardShape (built), PieceMap incremental (integrated), Bitboard incremental snapshot (global + per-player), SlidingAttackGenerator (ray precompute), sliding path fast-path (ResolvePathCompiledFirst pre-compiled resolver), parity tests (rook/bishop/queen fast-path vs compiled-only). Remaining: performance benchmarks (fast-path vs compiled/legacy), blocked/capture parity cases, typed per-piece masks, Bitboard128 ( >64 tiles ), LINQ hot-spot sweep, mobility heuristics prototype. |
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
@@ -241,21 +241,35 @@ Migration:
 
 Deliverables (Status annotations in brackets):
 
-- Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[COMPLETED – built every game build; flag governs fast-path usage]**
-- `PieceMap` struct-of-arrays (ids, tile indices, owner indices). **[COMPLETED – initial snapshot + incremental move updates integrated]**
-- Incremental PieceMap update wired into `GameProgress` (DecisionPlan + legacy). **[COMPLETED]**
-- Replace LINQ enumerations in path & rule evaluation with for loops. **[PARTIAL – new code adheres; broader sweep pending]**
-- Identify micro hotspots via BenchmarkDotNet baseline. **[PARTIAL – baseline harness exists, analysis pending]**
-- Chess bitboard adapter (64-bit masks for occupancy, attacks) synced at evaluation entry. **[PENDING – next]**
-- Sliding attack generator using BoardShape + bitboards. **[PENDING]**
-- Incremental bitboard update path. **[PENDING]**
+- Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[COMPLETED – always built; flag controls exploitation]**
+- `PieceMap` struct-of-arrays + incremental move update path in `GameProgress`. **[COMPLETED]**
+- Incremental Bitboard snapshot (global + per-player occupancy) + dual snapshot propagation on move. **[COMPLETED]**
+- Sliding attack generator (precomputed directional rays + blocker aware traversal). **[COMPLETED]**
+- Sliding path fast-path (bitboards + attacks) integrated ahead of compiled resolver in `ResolvePathCompiledFirst`. **[COMPLETED]**
+- Fast-path parity tests (rook, bishop, queen) vs compiled-only reference (empty-ray scenarios). **[COMPLETED]**
+- Replace LINQ in new hot loops (attack generation, fast-path chain build). **[COMPLETED – broader legacy sweep pending]**
+- Benchmark harness (baseline present). **[COMPLETED – specific sliding benchmarks pending]**
+- Microbenchmarks for sliding fast-path vs compiled-only & legacy visitor. **[PENDING]**
+- Blocked / capture scenario parity suite (decide geometric vs occupancy semantics). **[PENDING]**
+- Typed per-piece occupancy masks (future selective attack pruning). **[PENDING]**
+- Bitboard128 / dual-mask strategy for >64 tile boards. **[PENDING]**
+- Mobility heuristic prototype leveraging bitboards (feed future evaluation module). **[PENDING]**
+- Full LINQ hot-spot sweep across legacy resolver and rule evaluation. **[PENDING]**
+
 Acceptance Criteria:
-- Benchmarks: resolve path & legal move generation 10–30× faster (target upper bound, accept ≥8× initial). **[PENDING]**
-- Allocation count in hot benchmarks < 5% of baseline. **[PENDING]**
+
+- Benchmarks show ≥5× improvement on representative sliding path resolutions (rook/bishop/queen) vs visitor baseline; target stretch 8–10×. **[PENDING]**
+- Path fast-path yields no parity regressions across empty-ray + (later) blocked/capture suites. **[PARTIAL – empty-ray covered]**
+- Hot allocation count <10% of baseline (initial) then <5% after sweep. **[PENDING]**
+
 Risks:
-- Bitboard sync overhead > savings (measure early). Mitigation: incremental delta application modeled after PieceMap path.
+
+- Diminishing returns if compiled resolver already near memory bandwidth limits – mitigate via focused per-direction metrics.
+- Misaligned semantics (geometric vs occupancy-aware) causing future rule ambiguity – mitigate by codifying spec before capture tests.
+
 Migration:
-- Keep bitboard + attack generation internal; expose only stable resolver improvements post parity.
+
+- All acceleration layers internal/flag-gated; fall back path remains compiled resolver → legacy visitor for unsupported patterns.
 
 ### 5. Concurrency & Simulation
 

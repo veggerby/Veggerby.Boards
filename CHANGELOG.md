@@ -134,6 +134,7 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Reaffirmed code style charter in new acceleration code (explicit braces, file-scoped namespaces, 4-space indentation, minimal LINQ in hot loops, immutable snapshots) and added internal test scaffolds (no-op phase + rule) without leaking abstractions publicly.
 - Granular fast-path metrics added and tests updated; style adherence maintained (no LINQ in added hot-path branches, explicit braces, no `goto`).
 - Sliding fast-path Parity V2: extended test matrix (adjacent friendly/enemy, diagonal bishop scenarios, multi-blocker permutations, zero-length request) added to `SlidingFastPathParityTests` exercising semantics charter edge cases (total tests now 462).
+- Sliding path resolution benchmark extended: added `FastPath` (with sliding fast-path flag), `CompiledWithBitboardsNoFastPath` (measures bitboards + compiled overhead), and `CompiledNoBitboards` (pure compiled) variants across occupancy densities (empty/quarter/half) enabling isolated cost attribution for each layer.
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

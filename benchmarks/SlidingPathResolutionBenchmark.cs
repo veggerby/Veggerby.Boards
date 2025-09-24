@@ -203,17 +203,48 @@ public class SlidingPathResolutionBenchmark
     [Benchmark]
     public int FastPath()
     {
-        // Ensure feature flags required for fast-path are on (benchmarks are internal; safe to toggle).
+        // Enable full fast-path stack.
         Internal.FeatureFlags.EnableBitboards = true;
-        Internal.FeatureFlags.EnableCompiledPatterns = true; // compiled used for fallback in fast-path path
+        Internal.FeatureFlags.EnableCompiledPatterns = true;
+        Internal.FeatureFlags.EnableSlidingFastPath = true;
+        var progress = SelectProgress();
+        return ResolveSet(progress);
+    }
 
-        var progress = Density switch
+    [Benchmark]
+    public int CompiledWithBitboardsNoFastPath()
+    {
+        // Bitboards + compiled patterns enabled, but sliding fast-path disabled (measures overhead neutrality).
+        Internal.FeatureFlags.EnableBitboards = true;
+        Internal.FeatureFlags.EnableCompiledPatterns = true;
+        Internal.FeatureFlags.EnableSlidingFastPath = false;
+        var progress = SelectProgress();
+        return ResolveSet(progress);
+    }
+
+    [Benchmark]
+    public int CompiledNoBitboards()
+    {
+        // Pure compiled resolver path (no bitboards).
+        Internal.FeatureFlags.EnableBitboards = false;
+        Internal.FeatureFlags.EnableCompiledPatterns = true;
+        Internal.FeatureFlags.EnableSlidingFastPath = false;
+        // Use empty progress (bitboards not required because we won't exercise fast-path); queries derived from shared game state.
+        return ResolveCompiledOnly();
+    }
+
+    private GameProgress SelectProgress()
+    {
+        return Density switch
         {
             "quarter" => _progressQuarter,
             "half" => _progressHalf,
             _ => _progressEmpty
         };
+    }
 
+    private int ResolveSet(GameProgress progress)
+    {
         int count = 0;
         foreach (var q in SelectQueries())
         {
@@ -223,7 +254,19 @@ public class SlidingPathResolutionBenchmark
                 count++;
             }
         }
+        return count;
+    }
 
+    private int ResolveCompiledOnly()
+    {
+        int count = 0;
+        foreach (var q in SelectQueries())
+        {
+            if (_compiled.TryResolve(q.piece, q.from, q.to, out var path) && path is not null && path.To.Equals(q.to))
+            {
+                count++;
+            }
+        }
         return count;
     }
 

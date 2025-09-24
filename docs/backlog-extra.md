@@ -120,3 +120,6 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Immobile piece guard (skip fast-path when no repeatable directional pattern) and structure refactor (removed interim `goto`).
 - Movement semantics charter (authoritative spec) established.
 - Granular fast-path metrics (NoServices / NotSlider / AttackMiss / ReconstructFail) + new `EnableSlidingFastPath` flag.
+- Parity V2 sliding scenarios (adjacent friendly/enemy, diagonal blocker/capture permutations, multi-blocker ordering, zero-length) added to `SlidingFastPathParityTests`.
+- Code style adherence audit performed for new acceleration & parity code (no `goto`, explicit braces, immutable snapshots).
+- Sliding benchmark variants added (FastPath / CompiledWithBitboardsNoFastPath / CompiledNoBitboards); pending documentation of measured deltas.

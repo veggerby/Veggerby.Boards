@@ -367,6 +367,9 @@ Performance Acceleration Tracking (Recent Progress):
 - Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
 - Movement semantics charter (`docs/movement-semantics.md`) authored – freezes sliding vs non-sliding rules, occupancy enforcement layer, and determinism guarantees ahead of Parity V2 test expansion.
 - Introduced `EnableSlidingFastPath` feature flag (default off pending Parity V2 + benchmarks) separating bitboard occupancy enablement from fast-path activation.
+- Parity V2 sliding test matrix implemented (adjacent friendly/enemy, mid-ray blockers, multi-blocker order permutations, zero-length request) – total test suite now 462; all fast-path vs compiled parity assertions green.
+- Style charter reaffirmed in new tests (explicit braces, file-scoped namespaces, no LINQ in engine hot-path code; LINQ confined to test assertions only).
+- Sliding benchmark extended (FastPath, CompiledWithBitboardsNoFastPath, CompiledNoBitboards) enabling isolation of bitboards vs sliding fast-path overhead; style charter respected (no additional LINQ in hot loops, deterministic feature flag toggling per variant).
 
 ## Metrics Dashboard (Targets)
 

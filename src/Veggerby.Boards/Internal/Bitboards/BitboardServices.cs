@@ -10,14 +10,9 @@ namespace Veggerby.Boards.Internal.Bitboards;
 /// <summary>
 /// Provides derived bitboard snapshots for a game state (piece occupancy, per-player occupancy) using a precomputed layout.
 /// </summary>
-internal sealed class BitboardServices
+internal sealed class BitboardServices(BoardBitboardLayout layout)
 {
-    public BoardBitboardLayout Layout { get; }
-
-    public BitboardServices(BoardBitboardLayout layout)
-    {
-        Layout = layout ?? throw new ArgumentNullException(nameof(layout));
-    }
+    public BoardBitboardLayout Layout { get; } = layout ?? throw new ArgumentNullException(nameof(layout));
 
     /// <summary>
     /// Builds an occupancy bitboard for all pieces in the provided state.

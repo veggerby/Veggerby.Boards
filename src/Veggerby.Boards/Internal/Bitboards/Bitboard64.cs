@@ -10,18 +10,16 @@ namespace Veggerby.Boards.Internal.Bitboards;
 /// Internal experimental structure behind <c>EnableBitboards</c> feature flag. Public surface area intentionally small to
 /// avoid premature commitment. All operations are branch-light and inline friendly; PopCount uses <see cref="BitOperations.PopCount(ulong)"/>.
 /// </remarks>
-public readonly struct Bitboard64 : IEquatable<Bitboard64>
+/// <remarks>
+/// Initializes a new <see cref="Bitboard64"/> with the provided mask.
+/// </remarks>
+/// <param name="mask">Raw 64-bit occupancy or feature bits.</param>
+public readonly struct Bitboard64(ulong mask) : IEquatable<Bitboard64>
 {
     /// <summary>
     /// Underlying 64-bit mask value.
     /// </summary>
-    public ulong Mask { get; }
-
-    /// <summary>
-    /// Initializes a new <see cref="Bitboard64"/> with the provided mask.
-    /// </summary>
-    /// <param name="mask">Raw 64-bit occupancy or feature bits.</param>
-    public Bitboard64(ulong mask) => Mask = mask;
+    public ulong Mask { get; } = mask;
 
     /// <summary>
     /// Gets a value indicating whether the bit at <paramref name="index"/> is set.

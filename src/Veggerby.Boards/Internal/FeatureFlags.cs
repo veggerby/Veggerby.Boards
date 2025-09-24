@@ -75,4 +75,12 @@ internal static class FeatureFlags
     /// exclusivity group once one entry in that group has successfully applied a rule for the current event.
     /// </summary>
     public static bool EnableDecisionPlanMasks { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the BoardShape adjacency layout fast-path is enabled for movement / pattern resolution.
+    /// When enabled and a <see cref="Layout.BoardShape"/> service is registered, resolvers will prefer its O(1) neighbor lookup over
+    /// scanning relations or using the compiled adjacency cache. This flag allows isolated benchmarking of BoardShape impact.
+    /// Default: false (will be toggled after performance validation and parity tests).
+    /// </summary>
+    public static bool EnableBoardShape { get; set; } = false;
 }

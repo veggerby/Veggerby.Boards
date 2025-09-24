@@ -16,8 +16,9 @@ public sealed class FeatureFlagScope : IDisposable
     private readonly bool _originalBitboards;
     private readonly bool _originalDebugParity;
     private readonly bool _originalMasks;
+    private readonly bool _originalBoardShape;
 
-    private FeatureFlagScope(bool originalDecisionPlan, bool originalStateHashing, bool originalCompiledPatterns, bool originalAdjacencyCache, bool originalBitboards, bool originalDebugParity, bool originalMasks)
+    private FeatureFlagScope(bool originalDecisionPlan, bool originalStateHashing, bool originalCompiledPatterns, bool originalAdjacencyCache, bool originalBitboards, bool originalDebugParity, bool originalMasks, bool originalBoardShape)
     {
         _originalDecisionPlan = originalDecisionPlan;
         _originalStateHashing = originalStateHashing;
@@ -26,6 +27,7 @@ public sealed class FeatureFlagScope : IDisposable
         _originalBitboards = originalBitboards;
         _originalDebugParity = originalDebugParity;
         _originalMasks = originalMasks;
+        _originalBoardShape = originalBoardShape;
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ public sealed class FeatureFlagScope : IDisposable
     /// <returns>Disposable scope.</returns>
     public static FeatureFlagScope DecisionPlan(bool enableDecisionPlan)
     {
-        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks);
+        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks, FeatureFlags.EnableBoardShape);
         FeatureFlags.EnableDecisionPlan = enableDecisionPlan;
         return scope;
     }
@@ -45,7 +47,7 @@ public sealed class FeatureFlagScope : IDisposable
     /// </summary>
     public static FeatureFlagScope StateHashing(bool enable)
     {
-        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks);
+        var scope = new FeatureFlagScope(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks, FeatureFlags.EnableBoardShape);
         FeatureFlags.EnableStateHashing = enable;
         return scope;
     }
@@ -53,8 +55,8 @@ public sealed class FeatureFlagScope : IDisposable
     /// <summary>
     /// Composite constructor allowing simultaneous toggling of multiple feature flags (used in integration style tests).
     /// </summary>
-    public FeatureFlagScope(bool? decisionPlan = null, bool? stateHashing = null, bool? compiledPatterns = null, bool? adjacencyCache = null, bool? bitboards = null, bool? debugParity = null, bool? decisionPlanMasks = null)
-        : this(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks)
+    public FeatureFlagScope(bool? decisionPlan = null, bool? stateHashing = null, bool? compiledPatterns = null, bool? adjacencyCache = null, bool? bitboards = null, bool? debugParity = null, bool? decisionPlanMasks = null, bool? boardShape = null)
+        : this(FeatureFlags.EnableDecisionPlan, FeatureFlags.EnableStateHashing, FeatureFlags.EnableCompiledPatterns, FeatureFlags.EnableCompiledPatternsAdjacencyCache, FeatureFlags.EnableBitboards, FeatureFlags.EnableDecisionPlanDebugParity, FeatureFlags.EnableDecisionPlanMasks, FeatureFlags.EnableBoardShape)
     {
         if (decisionPlan.HasValue) FeatureFlags.EnableDecisionPlan = decisionPlan.Value;
         if (stateHashing.HasValue) FeatureFlags.EnableStateHashing = stateHashing.Value;
@@ -63,6 +65,7 @@ public sealed class FeatureFlagScope : IDisposable
         if (bitboards.HasValue) FeatureFlags.EnableBitboards = bitboards.Value;
         if (debugParity.HasValue) FeatureFlags.EnableDecisionPlanDebugParity = debugParity.Value;
         if (decisionPlanMasks.HasValue) FeatureFlags.EnableDecisionPlanMasks = decisionPlanMasks.Value;
+        if (boardShape.HasValue) FeatureFlags.EnableBoardShape = boardShape.Value;
     }
 
     /// <inheritdoc />
@@ -75,5 +78,6 @@ public sealed class FeatureFlagScope : IDisposable
         FeatureFlags.EnableBitboards = _originalBitboards;
         FeatureFlags.EnableDecisionPlanDebugParity = _originalDebugParity;
         FeatureFlags.EnableDecisionPlanMasks = _originalMasks;
+        FeatureFlags.EnableBoardShape = _originalBoardShape;
     }
 }

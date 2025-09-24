@@ -21,14 +21,18 @@ public class CompiledChessPatternParityTests
         foreach (var p in piece.Patterns)
         {
             p.Accept(legacyVisitor);
+
             if (legacyVisitor.ResultPath is not null && legacyVisitor.ResultPath.To.Equals(to))
             {
                 break;
             }
         }
+
         var table = PatternCompiler.Compile(game);
-        var resolver = new CompiledPatternResolver(table, game.Board, null);
+        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
+        var resolver = new CompiledPatternResolver(table, game.Board, null, shape);
         resolver.TryResolve(piece, from, to, out var compiled);
+
         return (legacyVisitor.ResultPath, compiled);
     }
 

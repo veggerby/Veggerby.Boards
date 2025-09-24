@@ -21,6 +21,7 @@ public class PatternResolutionBenchmark
     private Game _gameCompiled = null!;
     private List<(Piece piece, Tile from, Tile to)> _queries = null!;
     private CompiledPatternResolver _resolver = null!;
+    private CompiledPatternResolver _resolverBoardShape = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -48,7 +49,9 @@ public class PatternResolutionBenchmark
 
         // Compiled variant (table + resolver)
         var table = PatternCompiler.Compile(_gameLegacy); // same game reference
-        _resolver = new CompiledPatternResolver(table, board, null);
+        var shape = Internal.Layout.BoardShape.Build(board);
+        _resolver = new CompiledPatternResolver(table, board, null, shape); // BoardShape passed but gate off via flag
+        _resolverBoardShape = new CompiledPatternResolver(table, board, null, shape);
         _gameCompiled = _gameLegacy; // alias; compilation is stateless aside from table
 
         _queries = new List<(Piece, Tile, Tile)>
@@ -90,5 +93,27 @@ public class PatternResolutionBenchmark
             if (_resolver.TryResolve(q.piece, q.from, q.to, out var p) && p is not null) count++;
         }
         return count;
+    }
+
+    [Benchmark]
+    public int Compiled_BoardShapeFastPath()
+    {
+        var previous = FeatureFlags.EnableBoardShape;
+        FeatureFlags.EnableBoardShape = true;
+
+        try
+        {
+            var count = 0;
+            foreach (var q in _queries)
+            {
+                if (_resolverBoardShape.TryResolve(q.piece, q.from, q.to, out var p) && p is not null) count++;
+            }
+
+            return count;
+        }
+        finally
+        {
+            FeatureFlags.EnableBoardShape = previous;
+        }
     }
 }

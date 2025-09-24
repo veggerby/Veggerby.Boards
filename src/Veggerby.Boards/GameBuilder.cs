@@ -370,6 +370,23 @@ public abstract class GameBuilder
         }
 
         EngineServices services = EngineServices.Empty;
+        // BoardShape adjacency layout (always build – lightweight; gated by flag for fast-path usage)
+        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
+        if (services == EngineServices.Empty)
+        {
+            services = new EngineServices();
+        }
+
+        services.Set(shape);
+
+        // PieceMap layout + snapshot (experimental – enabled alongside bitboards or compiled patterns to support future acceleration)
+        if (FeatureFlags.EnableCompiledPatterns || FeatureFlags.EnableBitboards)
+        {
+            var pieceLayout = Veggerby.Boards.Internal.Layout.PieceMapLayout.Build(game);
+            var pieceSnapshot = Veggerby.Boards.Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
+            services.Set(new Veggerby.Boards.Internal.Layout.PieceMapServices(pieceLayout, pieceSnapshot));
+        }
+
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
@@ -378,8 +395,8 @@ public abstract class GameBuilder
             {
                 adjacency = Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
             }
-            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency);
-            services = new EngineServices();
+
+            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
             services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver, adjacency));
         }
 

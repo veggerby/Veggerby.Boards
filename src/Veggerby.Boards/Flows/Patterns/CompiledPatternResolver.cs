@@ -2,17 +2,19 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Compiled;
+using Veggerby.Boards.Internal.Layout;
 
 namespace Veggerby.Boards.Flows.Patterns;
 
 /// <summary>
 /// Resolves a path using compiled patterns for a piece if available; returns null when no pattern matches.
 /// </summary>
-internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board board, BoardAdjacencyCache adjacency) : ICompiledPatternResolver
+internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board board, BoardAdjacencyCache adjacency, BoardShape shape) : ICompiledPatternResolver
 {
     private readonly CompiledPatternTable _table = table;
     private readonly Board _board = board;
     private readonly BoardAdjacencyCache _adjacency = adjacency;
+    private readonly BoardShape _shape = shape;
 
     public bool TryResolve(Piece piece, Tile from, Tile to, out TilePath path)
     {
@@ -103,6 +105,20 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
 
     private TileRelation Resolve(Tile from, Direction dir)
     {
+        // Fast path 1: BoardShape neighbor lookup (feature gated for isolated benchmarking)
+        if (FeatureFlags.EnableBoardShape && _shape is not null && _shape.TryGetNeighbor(from, dir, out var neighbor))
+        {
+            // Need to retrieve relation for path chain. Use adjacency cache if available, else board lookup.
+            if (FeatureFlags.EnableCompiledPatternsAdjacencyCache && _adjacency is not null && _adjacency.TryGet(from, dir, out var cachedRel))
+            {
+                return cachedRel;
+            }
+
+            // Fallback: board relation scan (rare when cache disabled). This scan is acceptable because BoardShape already confirmed existence.
+            return _board.GetTileRelation(from, dir);
+        }
+
+        // Fast path 2: existing adjacency cache
         if (FeatureFlags.EnableCompiledPatternsAdjacencyCache && _adjacency is not null && _adjacency.TryGet(from, dir, out var rel))
         {
             return rel;

@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 
 public class CompiledPatternParityTests
 {
-    private (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
+    private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy
         var legacyVisitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);

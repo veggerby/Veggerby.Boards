@@ -398,6 +398,8 @@ public abstract class GameBuilder
 
             var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
             services.Set(new Veggerby.Boards.Internal.Compiled.CompiledPatternServices(table, resolver, adjacency));
+            // Path resolver capability (first stage: compiled only). Sliding decorator will wrap later.
+            services.Set<Internal.Paths.IPathResolver>(new Internal.Paths.CompiledPathResolverAdapter(resolver));
         }
 
         // Bitboard acceleration (experimental): add layout + services when enabled and board fits in 64 tiles.
@@ -424,10 +426,38 @@ public abstract class GameBuilder
             {
                 var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
                 services.Set(new Internal.Attacks.AttackGeneratorServices(sliding));
+                // Register capability interface
+                services.Set<Internal.Attacks.IAttackRays>(sliding);
             }
         }
 
+        // Occupancy index registration (bitboard-backed when available else naive)
+        if (services.TryGet(out Veggerby.Boards.Internal.Layout.BitboardServices bbOcc) && services.TryGet(out Veggerby.Boards.Internal.Layout.BoardShape bsOcc))
+        {
+            services.Set<Internal.Occupancy.IOccupancyIndex>(new Internal.Occupancy.BitboardOccupancyIndex(bbOcc, bsOcc, game, initialGameState));
+        }
+        else
+        {
+            services.Set<Internal.Occupancy.IOccupancyIndex>(new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState));
+        }
+
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, services);
+
+        // Sliding fast-path decorator registration (after all base services wired)
+        if (Internal.FeatureFlags.EnableSlidingFastPath
+            && services.TryGet(out Internal.Paths.IPathResolver basePathResolver)
+            && services.TryGet(out Internal.Attacks.IAttackRays attackRays)
+            && services.TryGet(out Internal.Occupancy.IOccupancyIndex occIndex)
+            && services.TryGet(out Veggerby.Boards.Internal.Layout.BoardShape shapeForSliding))
+        {
+            // Replace registered path resolver with sliding decorator (idempotent if already decorated)
+            if (basePathResolver is not Internal.Paths.SlidingFastPathResolver)
+            {
+                basePathResolver = new Internal.Paths.SlidingFastPathResolver(shapeForSliding, attackRays, occIndex, basePathResolver);
+                services.Set(basePathResolver);
+            }
+        }
+
         Veggerby.Boards.Internal.Layout.PieceMapSnapshot pmSnapshot = null;
         Veggerby.Boards.Internal.Layout.BitboardSnapshot bbSnapshot = null;
         if (services.TryGet(out Veggerby.Boards.Internal.Layout.PieceMapServices pmServices))

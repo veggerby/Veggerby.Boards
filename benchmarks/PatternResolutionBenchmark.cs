@@ -79,13 +79,13 @@ public class PatternResolutionBenchmark
     public int LegacyVisitor()
     {
         var count = 0;
-        foreach (var q in _queries)
+        foreach (var (piece, from, to) in _queries)
         {
-            var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_gameLegacy.Board, q.from, q.to);
-            foreach (var p in q.piece.Patterns)
+            var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_gameLegacy.Board, from, to);
+            foreach (var p in piece.Patterns)
             {
                 p.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to))
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {
                     break;
                 }
@@ -100,9 +100,9 @@ public class PatternResolutionBenchmark
     public int Compiled()
     {
         var count = 0;
-        foreach (var q in _queries)
+        foreach (var (piece, from, to) in _queries)
         {
-            if (_resolver.TryResolve(q.piece, q.from, q.to, out var p) && p is not null)
+            if (_resolver.TryResolve(piece, from, to, out var p) && p is not null)
             {
                 count++;
             }
@@ -120,9 +120,9 @@ public class PatternResolutionBenchmark
         try
         {
             var count = 0;
-            foreach (var q in _queries)
+            foreach (var (piece, from, to) in _queries)
             {
-                if (_resolverBoardShape.TryResolve(q.piece, q.from, q.to, out var p) && p is not null)
+                if (_resolverBoardShape.TryResolve(piece, from, to, out var p) && p is not null)
                 {
                     count++;
                 }

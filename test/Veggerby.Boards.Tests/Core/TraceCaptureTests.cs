@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Tests.Core;
 
 public class TraceCaptureTests
 {
-    private GameProgress Build(bool trace, bool hashing)
+    private static GameProgress Build(bool trace, bool hashing)
     {
         FeatureFlags.EnableTraceCapture = trace;
         FeatureFlags.EnableStateHashing = hashing;

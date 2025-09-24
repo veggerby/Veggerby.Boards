@@ -159,7 +159,7 @@ public class SlidingPathResolutionBenchmark
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public static void IterationSetup()
     {
         // No per-iteration rebuild required; scenarios pre-built in GlobalSetup to isolate path resolution cost.
         // If future mutations are introduced, rebuild here to avoid skew from incremental updates being benchmarked.
@@ -169,13 +169,13 @@ public class SlidingPathResolutionBenchmark
     public int LegacyVisitor()
     {
         int count = 0;
-        foreach (var q in SelectQueries())
+        foreach (var (piece, from, to) in SelectQueries())
         {
-            foreach (var pattern in q.piece.Patterns)
+            foreach (var pattern in piece.Patterns)
             {
-                var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_game.Board, q.from, q.to);
+                var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_game.Board, from, to);
                 pattern.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(q.to))
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {
                     count++; break;
                 }
@@ -189,9 +189,9 @@ public class SlidingPathResolutionBenchmark
     public int Compiled()
     {
         int count = 0;
-        foreach (var q in SelectQueries())
+        foreach (var (piece, from, to) in SelectQueries())
         {
-            if (_compiled.TryResolve(q.piece, q.from, q.to, out var path) && path is not null)
+            if (_compiled.TryResolve(piece, from, to, out var path) && path is not null)
             {
                 count++;
             }
@@ -246,10 +246,10 @@ public class SlidingPathResolutionBenchmark
     private int ResolveSet(GameProgress progress)
     {
         int count = 0;
-        foreach (var q in SelectQueries())
+        foreach (var (piece, from, to) in SelectQueries())
         {
-            var path = progress.ResolvePathCompiledFirst(q.piece, q.from, q.to);
-            if (path is not null && path.To.Equals(q.to))
+            var path = progress.ResolvePathCompiledFirst(piece, from, to);
+            if (path is not null && path.To.Equals(to))
             {
                 count++;
             }
@@ -260,9 +260,9 @@ public class SlidingPathResolutionBenchmark
     private int ResolveCompiledOnly()
     {
         int count = 0;
-        foreach (var q in SelectQueries())
+        foreach (var (piece, from, to) in SelectQueries())
         {
-            if (_compiled.TryResolve(q.piece, q.from, q.to, out var path) && path is not null && path.To.Equals(q.to))
+            if (_compiled.TryResolve(piece, from, to, out var path) && path is not null && path.To.Equals(to))
             {
                 count++;
             }

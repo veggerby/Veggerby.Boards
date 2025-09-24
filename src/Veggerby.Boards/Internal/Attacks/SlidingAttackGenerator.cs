@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Internal.Attacks;
 /// <summary>
 /// Generates sliding attacks (ray-style movement) using precomputed direction rays and occupancy snapshot.
 /// </summary>
-internal sealed class SlidingAttackGenerator
+internal sealed class SlidingAttackGenerator : IAttackRays
 {
     private readonly BoardShape _shape;
     private readonly short[][] _rayTileIndices;
@@ -101,5 +101,46 @@ internal sealed class SlidingAttackGenerator
             }
         }
         return results;
+    }
+
+    public bool TryGetRays(Piece piece, Tile from, out ulong[] rays)
+    {
+        rays = Array.Empty<ulong>();
+        if (piece is null || from is null)
+        {
+            return false;
+        }
+
+        if (!_shape.TryGetTileIndex(from, out var fromIdx))
+        {
+            return false;
+        }
+
+        // Build rays as bitmasks per direction (stop at blockers not considered here—pure geometric rays)
+        var dirCount = _shape.DirectionCount;
+        var masks = new ulong[dirCount];
+        for (int d = 0; d < dirCount; d++)
+        {
+            var ray = _rayTileIndices[fromIdx * dirCount + d];
+            if (ray is null || ray.Length == 0)
+            {
+                continue;
+            }
+
+            ulong mask = 0UL;
+            for (int i = 0; i < ray.Length; i++)
+            {
+                var target = ray[i];
+                if (target >= 0)
+                {
+                    mask |= 1UL << target;
+                }
+            }
+
+            masks[d] = mask;
+        }
+
+        rays = masks;
+        return true;
     }
 }

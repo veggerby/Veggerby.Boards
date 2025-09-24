@@ -9,13 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added / Changed
 
 - Performance: Bitboards (occupancy) + sliding fast-path (ray attack + path reconstruction) ENABLED BY DEFAULT for boards with ≤64 tiles after Parity V2 (447 tests) and benchmark validation (≥4.6× empty rook path speedup). Can be disabled via `FeatureFlags` (`EnableBitboards`, `EnableSlidingFastPath`).
+- Convergence: Introduced `IOccupancyIndex` abstraction with dual registrations (`BitboardOccupancyIndex` when `EnableBitboards` active and board ≤64 tiles, otherwise `NaiveOccupancyIndex`) as first step toward unifying board vs bitboard acceleration layers (paves way for forthcoming `IPathResolver` / `IAttackRays`).
+- Convergence: Added `IAttackRays` capability (implemented by `SlidingAttackGenerator`) and conditional service registration; future `IPathResolver` decorator will consume both `IOccupancyIndex` + `IAttackRays`.
+- Convergence: Introduced `IPathResolver` (compiled resolver adapter) + scaffolded `SlidingFastPathResolver` decorator (fast-path reconstruction logic pending) establishing final capability seam before enabling full service-layer convergence.
 - Docs: Updated `configuration.md` with new defaults, quick disable snippet, and style reminder; added `docs/release-notes/acceleration-unreleased.md` and `docs/perf/bitboard128-design.md` (future >64 support design note).
 - Backlog: Appended future items (Bitboard128 implementation, typed masks, topology pruning, mobility heuristic, LINQ sweep) and reiterated code style constraints (no LINQ in hot loops, explicit braces, immutable state).
 
 ### Safety
 
 - Guard: Fast-path auto-skips on boards >64 tiles (new test `GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash`).
-
 
 ### Added
 

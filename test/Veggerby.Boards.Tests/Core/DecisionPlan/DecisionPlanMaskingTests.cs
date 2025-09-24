@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 public class DecisionPlanMaskingTests
 {
-    private GameProgress Build(bool enablePlan, bool enableMasks)
+    private static GameProgress Build(bool enablePlan, bool enableMasks)
     {
         using var _ = new FeatureFlagScope(decisionPlan: enablePlan, decisionPlanMasks: enableMasks);
         return new Tests.Core.Fakes.MaskingTestGameBuilder().Compile();

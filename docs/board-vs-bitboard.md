@@ -157,3 +157,64 @@ No public API changes anticipated; only internal layout & fast-path discriminati
 ---
 
 Last updated: 2025-09-24
+
+## 12. Convergence Strategy (Service Layer, Not Artifact Layer)
+
+Short answer: **Yes—converge at the *service* layer, not the *artifact* layer.** Keep `Board` as the single immutable topology artifact; present alternative acceleration data layouts (bitboards now, Bitboard128 later) behind narrow capability interfaces. This collapses “choose Board or Bitboard” into “always ask the same service,” preserving determinism and keeping acceleration optional.
+
+### 12.1 What to Converge (Interfaces)
+
+| Capability | Proposed Interface | Minimal Members (illustrative) | Implementations |
+|------------|-------------------|---------------------------------|-----------------|
+| Topology (adjacency, rays) | `IBoardShape` (already implicit) | `IEnumerable<Direction> Directions {get;}` / `TryGetNeighbor(tile,dir)` / `GetRays(tile)` | Backed by `BoardShape` only (no alternate impl needed) |
+| Occupancy / ownership | `IOccupancyIndex` | `bool IsEmpty(Tile)`, `bool IsOwnedBy(Tile, Player)`, `ulong GlobalMask`, `ulong PlayerMask(Player)` | `NaiveOccupancyIndex`, `Bitboard64OccupancyIndex`, future `Bitboard128OccupancyIndex` |
+| Sliding attack geometry | `IAttackRays` | `ReadOnlySpan<ulong> RaysFor(Tile)` (format internal) | `SlidingAttackGenerator` (topology-derived) |
+| Path resolution | `IPathResolver` | `TilePath? Resolve(Piece, Tile from, Tile to)` | `CompiledPatternResolver`, `SlidingFastPathResolver` (wraps & falls back) |
+
+Interfaces remain internal until stability; they’re seams for substitution, not public customization points.
+
+> Status: Landed interfaces: (1) `IOccupancyIndex` (`NaiveOccupancyIndex` / `BitboardOccupancyIndex`), (2) `IAttackRays` (`SlidingAttackGenerator`), and (3) initial `IPathResolver` (compiled-only adapter; sliding fast-path decorator scaffolded). Next step: complete fast-path reconstruction logic inside `SlidingFastPathResolver` to exploit rays + occupancy before fallback.
+
+### 12.2 Wiring (GameBuilder Sketch)
+
+```csharp
+// Pseudocode inside GameBuilder after Board constructed
+services.Set(boardShape);                // IBoardShape
+var occ = BuildOccupancyIndex(game, flags); // IOccupancyIndex (naive / bitboard64 / bitboard128)
+services.Set(occ);
+var rays = flags.EnableBitboards ? BuildAttackRays(boardShape) : NullAttackRays.Instance; // IAttackRays
+services.Set(rays);
+var compiled = new CompiledPatternResolver(...);              // always available
+IPathResolver resolver = compiled;
+if (flags.EnableSlidingFastPath && occ.SupportsSliding && rays.Available)
+{
+  resolver = new SlidingFastPathResolver(rays, occ, compiled); // decorator / fallback
+}
+services.Set(resolver);
+```
+
+Decision logic lives centrally; downstream code simply requests `IPathResolver` → determinism unaffected by presence/absence of acceleration.
+
+### 12.3 Contributor Guidance (Updated)
+
+- Use `IBoardShape` for geometry questions only.
+- Never special‑case bitboards in rules; request `IOccupancyIndex` and rely on its polymorphism.
+- Always go through `IPathResolver` when constructing movement; do not “manually” invoke fast-path helpers.
+- Avoid exposing raw masks outside internal layers—keep bit-level data an implementation detail.
+
+### 12.4 Risks & Mitigations
+
+| Risk | Mitigation |
+|------|------------|
+| Interface proliferation / over-abstraction | Keep method sets minimal; add only with benchmark + parity justification. |
+| Drift between naive and bitboard occupancy semantics | Run full parity suite twice (naive vs bitboard index) in CI. |
+| Hidden performance regressions in decorator chain | Metrics on `IPathResolver` attempts/hits + benchmark gates before enabling by default. |
+| Accidental public API bleed | Keep interfaces `internal` until two minor versions stable. |
+
+### 12.5 Future (Bitboard128 Drop-In)
+
+Add `Bitboard128OccupancyIndex` implementing `IOccupancyIndex`; `BuildOccupancyIndex` chooses based on tile count ranges (≤64 / 65–128 / else naive). No other caller changes required.
+
+---
+
+Last updated (convergence section added): 2025-09-24

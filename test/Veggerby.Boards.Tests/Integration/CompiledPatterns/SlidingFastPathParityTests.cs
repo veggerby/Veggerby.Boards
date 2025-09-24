@@ -1,7 +1,6 @@
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Tests.Utils;
 
@@ -10,17 +9,16 @@ using Xunit;
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 
 /// <summary>
-/// Parity tests ensuring the sliding attack fast-path inside <see cref="GameExtensions.ResolvePathCompiledFirst(GameProgress, Piece, Tile, Tile)"/>
-/// produces identical geometric paths as the legacy visitor for representative rook / bishop / queen sliders on an empty board.
+/// Parity tests ensuring sliding fast-path (bitboards + ray attacks) matches compiled resolver with
+/// occupancy semantics (blockers & captures) per charter, and that legacy fallback wrapped with
+/// occupancy filtering produces identical results.
 /// </summary>
-/// <remarks>
-/// Occupancy-sensitive scenarios (blocked rays, captures) are deferred until semantics are finalized for whether geometric path
-/// resolution should ignore blockers (as the legacy visitor does) or respect them (attack generator does). These tests constrain
-/// evaluation to empty-ray cases so both implementations must agree.
-/// </remarks>
 public class SlidingFastPathParityTests
 {
-    private sealed record PieceSpec(string Id, string Type, string FromTile);
+    private sealed record PieceSpec(string Id, string Type, string FromTile, string Owner)
+    {
+        public override string ToString() => $"{Id}:{Type}:{FromTile}:{Owner}";
+    }
 
     private sealed class SlidingTestBuilder : GameBuilder
     {
@@ -33,14 +31,11 @@ public class SlidingFastPathParityTests
 
         protected override void Build()
         {
-            // directions (cardinal + diagonals)
             AddDirection("north"); AddDirection("south"); AddDirection("east"); AddDirection("west");
             AddDirection("north-east"); AddDirection("north-west"); AddDirection("south-east"); AddDirection("south-west");
 
-            // players
             AddPlayer("white"); AddPlayer("black");
 
-            // tiles tile-a1..tile-h8
             var files = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
             for (int rank = 1; rank <= 8; rank++)
             {
@@ -50,7 +45,6 @@ public class SlidingFastPathParityTests
                 }
             }
 
-            // relations via fluent API
             System.Func<char, int, string> tileId = (f, r) => $"tile-{f}{r}";
             foreach (var file in files)
             {
@@ -68,10 +62,9 @@ public class SlidingFastPathParityTests
                 }
             }
 
-            // piece definitions
             foreach (var spec in _specs)
             {
-                var pd = AddPiece(spec.Id).WithOwner("white");
+                var pd = AddPiece(spec.Id).WithOwner(spec.Owner);
                 switch (spec.Type)
                 {
                     case "rook":
@@ -96,6 +89,8 @@ public class SlidingFastPathParityTests
                             .HasDirection("south-east").CanRepeat()
                             .HasDirection("south-west").CanRepeat();
                         break;
+                    case "immobile":
+                        break; // no directions
                     default: throw new System.InvalidOperationException("Unknown piece spec type");
                 }
                 pd.OnTile(spec.FromTile);
@@ -103,22 +98,21 @@ public class SlidingFastPathParityTests
         }
     }
 
-    private static TilePath ResolveWithFlags(PieceSpec spec, string target, bool bitboards, bool compiled)
+    private static TilePath ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
-        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true); // boardShape always on
-        var builder = new SlidingTestBuilder([spec]);
+        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
+        var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
-        var piece = progress.Game.GetPiece(spec.Id);
-        var from = progress.Game.GetTile(spec.FromTile);
+        var piece = progress.Game.GetPiece(moving.Id);
+        var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
         return progress.ResolvePathCompiledFirst(piece, from, to);
     }
 
-    private static void AssertParity(PieceSpec spec, string target)
+    private static void AssertParity(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        // reference = compiled patterns only (no bitboards => no sliding fast-path)
-        var reference = ResolveWithFlags(spec, target, bitboards: false, compiled: true);
-        var fast = ResolveWithFlags(spec, target, bitboards: true, compiled: true); // fast-path eligible
+        var reference = ResolveWithFlags(specs, moving, target, bitboards: false, compiled: true);
+        var fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
         if (reference is null)
         {
             Assert.Null(fast);
@@ -132,22 +126,79 @@ public class SlidingFastPathParityTests
     }
 
     [Fact]
-    public void GivenRook_WhenResolvingHorizontalRay_ThenFastPathMatchesLegacy()
+    public void GivenRook_EmptyHorizontalRay_Parity()
     {
-        // arrange / act
-        AssertParity(new PieceSpec("rook-1", "rook", "tile-d4"), "tile-h4");
-        // assert performed in helper
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        AssertParity([rook], rook, "tile-h4");
     }
 
     [Fact]
-    public void GivenBishop_WhenResolvingLongDiagonal_ThenFastPathMatchesLegacy()
+    public void GivenBishop_LongEmptyDiagonal_Parity()
     {
-        AssertParity(new PieceSpec("bishop-1", "bishop", "tile-c1"), "tile-g5");
+        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
+        AssertParity([bishop], bishop, "tile-g5");
     }
 
     [Fact]
-    public void GivenQueen_WhenResolvingVerticalRay_ThenFastPathMatchesLegacy()
+    public void GivenQueen_VerticalEmptyRay_Parity()
     {
-        AssertParity(new PieceSpec("queen-1", "queen", "tile-d4"), "tile-d8");
+        var queen = new PieceSpec("queen", "queen", "tile-d4", "white");
+        AssertParity([queen], queen, "tile-d8");
+    }
+
+    [Fact]
+    public void GivenRook_FriendlyBlockerMidRay_MoveBeyondBlocked()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
+        AssertParity([rook, friendly], rook, "tile-d8"); // null
+    }
+
+    [Fact]
+    public void GivenRook_FriendlyBlockerAtTarget_Invalid()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
+        AssertParity([rook, friendly], rook, "tile-d6"); // null
+    }
+
+    [Fact]
+    public void GivenRook_EnemyBlockerAsTarget_CapturePath()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-d6", "black");
+        AssertParity([rook, enemy], rook, "tile-d6"); // capture
+    }
+
+    [Fact]
+    public void GivenRook_EnemyBlockerMidRay_TargetBeyondBlocked()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-d6", "black");
+        AssertParity([rook, enemy], rook, "tile-d7");
+        AssertParity([rook, enemy], rook, "tile-d8");
+    }
+
+    [Fact]
+    public void GivenRook_FriendlyThenEnemy_FirstBlockerPrevails()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
+        var enemy = new PieceSpec("enemy", "immobile", "tile-d7", "black");
+        AssertParity([rook, friendly, enemy], rook, "tile-d7");
+    }
+
+    [Fact]
+    public void GivenRook_ShortRayLengthOne_Parity()
+    {
+        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
+        AssertParity([rook], rook, "tile-d5");
+    }
+
+    [Fact]
+    public void GivenImmobilePiece_NoPath()
+    {
+        var stone = new PieceSpec("stone", "immobile", "tile-d4", "white");
+        AssertParity([stone], stone, "tile-d5");
     }
 }

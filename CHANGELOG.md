@@ -121,6 +121,9 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Incremental Bitboard + SlidingAttackGenerator services added (GameBuilder registration + GameProgress dual-snapshot update path) adhering strictly to style & immutability rules.
 - Sliding attack fast-path path resolution (pre-compiled resolver) adhering to code style (no LINQ in tight loop aside from direction selection) and determinism guarantees.
 - Sliding fast-path parity tests (rook horizontal, bishop diagonal, queen vertical) comparing fast-path (bitboards + compiled) vs compiled-only reference ensuring geometric path equivalence under empty-ray scenarios (test suite now 440 tests).
+- Extended sliding fast-path parity tests adding blocker & capture scenarios (friendly blocker rejection, enemy capture terminal, earliest blocker precedence, non-slider negative) across rook/bishop/queen; test suite now 447 tests.
+- Occupancy semantics enforcement for compiled and legacy fallback path resolution (post-filter prevents passing through blockers; enemy capture allowed only at blocker tile) ensuring consistent geometric vs attack-path parity.
+- Sliding path resolution benchmark scaffold (`SlidingPathResolutionBenchmark`) comparing legacy visitor vs compiled resolver (fast-path measurement pending GameProgress harness) to baseline future acceleration gains.
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

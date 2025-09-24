@@ -67,10 +67,12 @@ public static partial class GameExtensions
         {
             return false;
         }
+
         if (progress?.Engine?.Services is null)
         {
             return false;
         }
+
         return progress.Engine.Services.TryGet(out services);
     }
 
@@ -101,8 +103,10 @@ public static partial class GameExtensions
                             if (n.Equals(to)) { return true; }
                             current = n;
                         }
+
                         return false;
                     });
+
                     if (direction is not null)
                     {
                         TilePath built = null;
@@ -114,6 +118,7 @@ public static partial class GameExtensions
                             built = TilePath.Create(built, rel);
                             current = n;
                         }
+
                         if (built is not null && built.To.Equals(to))
                         {
                             return built; // fast-path win
@@ -122,13 +127,60 @@ public static partial class GameExtensions
                 }
             }
         }
+
         if (progress.TryGetCompiledResolver(out var services))
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
             {
-                return compiledPath;
+                return ApplyOccupancySemantics(progress, piece, compiledPath);
             }
         }
-        return progress.Game.ResolvePathCompiledFirst(piece, from, to);
+
+        var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
+        return ApplyOccupancySemantics(progress, piece, legacy);
+    }
+
+    private static TilePath ApplyOccupancySemantics(GameProgress progress, Piece movingPiece, TilePath path)
+    {
+        if (path is null)
+        {
+            return null;
+        }
+
+        // Build occupancy (tile -> piece)
+        var occupancy = new System.Collections.Generic.Dictionary<Tile, Piece>();
+        foreach (var ps in progress.State.GetStates<PieceState>())
+        {
+            if (ps.CurrentTile is not null)
+            {
+                occupancy[ps.CurrentTile] = ps.Artifact;
+            }
+        }
+
+        var rels = path.Relations.ToArray();
+        for (int i = 0; i < rels.Length; i++)
+        {
+            var rel = rels[i];
+            var isLast = i == rels.Length - 1;
+            if (isLast)
+            {
+                if (occupancy.TryGetValue(rel.To, out var occ))
+                {
+                    if (occ.Owner.Equals(movingPiece.Owner))
+                    {
+                        return null; // cannot land on friendly piece
+                    }
+                }
+            }
+            else
+            {
+                if (occupancy.ContainsKey(rel.To))
+                {
+                    return null; // cannot pass through occupied square
+                }
+            }
+        }
+
+        return path;
     }
 }

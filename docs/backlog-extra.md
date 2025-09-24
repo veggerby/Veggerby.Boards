@@ -112,3 +112,6 @@ New items following initial Simulator API landing (core + metrics + observer):
 - Sliding attack generator (ray-based) + rook parity test.
 - Sliding attack fast-path integration ahead of compiled pattern resolver.
 - Sliding fast-path parity tests (rook horizontal, bishop diagonal, queen vertical) vs compiled-only reference (empty-ray scenarios) – establishes baseline before blocked/capture test expansion.
+- Sliding fast-path parity extension: blocker + capture scenarios (friendly blocker rejection, enemy capture terminal, multi-blocker earliest-stop) across rook, bishop, queen; negative non-slider coverage added; test suite now 447 tests.
+- Occupancy semantics enforcement for compiled & legacy fallback path resolution (post-filter ensures no pass-through of friendly or enemy blockers beyond first; enemy target capture allowed).
+- Sliding path resolution benchmark scaffold (legacy visitor vs compiled resolver) added (`SlidingPathResolutionBenchmark`) – fast-path (bitboards + attacks) measurement pending GameProgress harness integration.

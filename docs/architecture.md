@@ -101,3 +101,94 @@ pending performance measurements.
 - Layer sequencing using nested `GamePhase` trees.
 
 See `extensibility.md` for a step-by-step guide.
+
+## Sliding Path Semantics Charter
+
+This charter freezes the semantics used by the (compiled + fast-path) sliding movement resolver. It exists to ensure
+all acceleration layers (BoardShape, PieceMap, Bitboards, Sliding Fast-Path) remain correctness-first and that tests
+unambiguously capture expected behaviour.
+
+### Scope
+
+Applies to pieces whose movement is defined by directional, repeatable ray patterns (rook, bishop, queen–style). Does **not**
+alter semantics for non-sliders (knight / king fixed patterns, pawn special rules). Non-sliders must never trigger the
+sliding fast-path.
+
+### Path Resolution Responsibility
+
+`ResolvePath` for a sliding move is **occupancy-aware**:
+
+1. It returns the ordered list of tile relations (edges) from source to target **inclusive** when the target is reachable
+    under blocker rules below.
+2. It returns `null` (unreachable) when any blocker invalidates reaching the target under these rules.
+3. It never returns a partial path to a blocked square different from the requested target.
+
+This means higher-level rules do not re-check intermediate occupancy; they only validate end conditions (e.g., capture legality,
+check constraints, turn rules). Geometric-only fallback (legacy visitor) remains for patterns not supported by the compiled
+subsystem but must match these semantics for overlapping cases.
+
+### Blocker & Capture Semantics
+
+Given a source S and directional ray R toward prospective target T:
+
+| Situation | Outcome | Returned Path | Notes |
+|-----------|---------|---------------|-------|
+| Empty ray (no blockers before T) | Reachable | S→…→T | Standard move. |
+| Friendly blocker at B before T | Unreachable | null | Cannot move to or beyond friendly blocker. |
+| Friendly blocker exactly at T | Unreachable | null | Cannot end turn on a friendly-occupied square. |
+| Enemy blocker at B before T | Unreachable | null | Cannot jump enemy. Capture only if T == B. |
+| Enemy blocker exactly at T | Reachable (capture) | S→…→T | Path includes capture square, no beyond. |
+| Multiple blockers (first at B1, second at B2 later) | Determined solely by B1 | See above | First blocker decisively determines reachability. |
+
+Edge cases:
+
+- Zero-length movement (S==T) is never considered a sliding path.
+- Single-step rays (length 1) follow the same rules (effectively a fixed pattern) but may still benefit from fast-path skip logic.
+- Board edges simply truncate rays; absence of T in truncated ray ⇒ unreachable.
+
+### Multi-Blocker Rule
+
+Only the nearest blocker along a ray is examined; subsequent occupants are irrelevant because the ray terminates at the first
+blocker (capture or stop). This is enforced by the fast-path using the precomputed ray mask & incremental occupancy bitboards.
+
+### Authority of Data Structures
+
+- **PieceMap**: authoritative mapping from Piece Id → tile (identity + position). Used for rule evaluation & state reconstruction.
+- **Bitboards**: authoritative **occupancy shape** (which tiles are occupied / by which player) for acceleration decisions.
+   They are a *derived view*; if divergence were detected (invariant tests), PieceMap wins and bitboards must be recomputed.
+
+### Invariants
+
+1. `ResolvePath` must be deterministic: identical state + request ⇒ identical path or null.
+2. Fast-path and compiled-path must produce identical results for all supported slider scenarios (parity tests enforce this).
+3. Non-sliding pieces must bypass sliding fast-path entirely.
+4. No allocation on steady-state successful path resolutions (excluding transient test instrumentation).
+5. Blocking semantics above are exhaustive; new semantics require updating this charter **before** code changes.
+
+### Testing Strategy
+
+Parity tests MUST cover:
+
+1. Empty ray (rook, bishop, queen examples in orthogonal & diagonal directions).
+2. Friendly blocker mid-ray (unreachable).
+3. Enemy blocker mid-ray (unreachable target beyond blocker).
+4. Enemy blocker as target (capture path returned).
+5. Multiple blockers (first prevails).
+6. Edge truncated rays (target just outside board ⇒ null).
+7. Non-sliders (ensure fast-path not invoked; parity implicit with compiled or legacy resolver).
+
+### Performance Notes (Non-Normative)
+
+Bitboards (≤64 tiles) + precomputed directional rays enable O(1) reachability checks per ray via masked occupancy & trailing
+bit queries. This charter intentionally decouples semantics from optimization so future topology-specific fast paths (e.g.,
+orthogonal-only boards) can be added without semantic drift.
+
+### Future Extensions
+
+- Boards >64 tiles will introduce dual-word (Bitboard128) masks retaining identical outward semantics.
+- Topology classification (Orthogonal / Orthogonal+Diagonals / Arbitrary) may gate specialized micro-kernels; semantics remain constant.
+- Additional move constraints (e.g., chess check rules) remain layered above path semantics, not embedded here.
+
+---
+
+Any change to sliding movement behaviour MUST update this section first; test additions then codify new expectations.

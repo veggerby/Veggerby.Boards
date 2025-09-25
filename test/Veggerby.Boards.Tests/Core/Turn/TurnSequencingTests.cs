@@ -33,7 +33,7 @@ public class TurnSequencingCoreTests
     public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
     {
         // arrange
-    Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var initial = progress.State.GetStates<TurnState>().FirstOrDefault();
@@ -277,5 +277,40 @@ public class TurnSequencingCoreTests
         var activeAfterSecond = afterEnd2.GetStates<ActivePlayerState>().Single(x => x.IsActive).Artifact;
         activeAfterFirst.Should().NotBe(activeBefore);
         activeAfterSecond.Should().Be(activeBefore);
+    }
+
+    [Fact]
+    public void GivenTwoPasses_WhenSequencingEnabled_ThenPassStreakIsTwo()
+    {
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var passMutator = new TurnPassStateMutator();
+        var passEvent = new TurnPassEvent();
+        var afterFirst = passMutator.MutateState(progress.Engine, progress.State, passEvent);
+        var afterSecond = passMutator.MutateState(progress.Engine, afterFirst, passEvent);
+        var turnState = afterSecond.GetStates<TurnState>().First();
+        turnState.PassStreak.Should().Be(2);
+    }
+
+    [Fact]
+    public void GivenReplayEvent_WhenSequencingEnabled_ThenTurnAdvancesWithoutActiveRotationAndStreakResets()
+    {
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var replayMutator = new TurnReplayStateMutator();
+        var replayEvent = new TurnReplayEvent();
+        var activeBefore = progress.State.GetStates<ActivePlayerState>().FirstOrDefault(x => x.IsActive)?.Artifact;
+        var afterReplay = replayMutator.MutateState(progress.Engine, progress.State, replayEvent);
+        var turnState = afterReplay.GetStates<TurnState>().First();
+        turnState.TurnNumber.Should().Be(2);
+        turnState.Segment.Should().Be(TurnSegment.Start);
+        turnState.PassStreak.Should().Be(0);
+        var activeAfter = afterReplay.GetStates<ActivePlayerState>().FirstOrDefault(x => x.IsActive)?.Artifact;
+        if (activeBefore is not null)
+        {
+            activeAfter.Should().Be(activeBefore); // replay keeps same player
+        }
     }
 }

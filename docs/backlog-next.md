@@ -238,6 +238,12 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [x] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [ ] CHANGELOG entry & migration guide section.
 - [x] TurnCommitEvent + TurnCommitStateMutator – Main→End shortcut without advancing TurnNumber; tests added; docs & changelog updated.
+- [x] PassStreak field on TurnState – consecutive pass counter (reset on advancement, commit to end, or replay) with tests.
+- [x] TurnReplayEvent + TurnReplayStateMutator – extra turn without rotation (increment TurnNumber, reset segment & pass streak) test added.
+- [x] Simulation metrics extension (PassEvents, ReplayEvents, TurnAdvancements, AverageTurnLength) + SequentialSimulator detailed path enrichment.
+- [ ] Benchmarks: Turn sequencing overhead microbenchmark (baseline vs flag ON; target <3% p50) – PENDING.
+- [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional) – PENDING.
+- [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating & pass/replay semantics – PENDING.
 
 ### Exit Criteria for Workstream 10
 

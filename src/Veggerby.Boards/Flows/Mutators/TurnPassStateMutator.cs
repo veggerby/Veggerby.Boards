@@ -30,7 +30,7 @@ internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
             return gameState;
         }
 
-        var advancedTurnState = new TurnState(currentTurnState.Artifact, currentTurnState.TurnNumber + 1, TurnSegment.Start);
+        var advancedTurnState = new TurnState(currentTurnState.Artifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, currentTurnState.PassStreak + 1);
 
         var activePlayerStates = gameState.GetStates<ActivePlayerState>();
         var currentActive = activePlayerStates.FirstOrDefault(x => x.IsActive);

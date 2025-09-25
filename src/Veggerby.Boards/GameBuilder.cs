@@ -321,7 +321,7 @@ public abstract class GameBuilder
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
-    TurnArtifact turnArtifact = null;
+        TurnArtifact turnArtifact = null;
         if (Internal.FeatureFlags.EnableTurnSequencing)
         {
             turnArtifact = new TurnArtifact("turn-timeline");
@@ -351,7 +351,7 @@ public abstract class GameBuilder
         // Inject initial TurnState (turn 1, Start segment) only when sequencing enabled.
         if (turnArtifact is not null)
         {
-            var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start);
+            var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start, 0);
             baseStates.Add(initialTurnState);
         }
 

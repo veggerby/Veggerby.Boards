@@ -4,7 +4,9 @@ namespace Veggerby.Boards.Simulation;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
+using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
@@ -47,9 +49,7 @@ public static class SequentialSimulator
     public static PlayoutDetailedResult RunDetailed(GameProgress progress, PlayoutPolicy policy, PlayoutStopPredicate? stop = null, int maxDepth = 1024)
     {
         var with = RunWithMetrics(progress, policy, stop, maxDepth);
-        var r = with.Result;
-        var metrics = new PlayoutMetrics(r.AppliedEvents, 0, r.AppliedEvents + 1, r.AppliedEvents); // Placeholder mapping until rejection counting exposed publicly
-        return new PlayoutDetailedResult(with.Result, metrics, with.TerminalProgress);
+        return new PlayoutDetailedResult(with.Result, with.Metrics, with.TerminalProgress);
     }
 
     /// <summary>
@@ -76,6 +76,9 @@ public static class SequentialSimulator
         var applied = 0;
         var rejected = 0;
         var policyCalls = 0;
+        var passEvents = 0;
+        var replayEvents = 0;
+        var turnAdvancements = 0;
         PlayoutTerminalReason reason = PlayoutTerminalReason.None;
 
         while (depth < maxDepth)
@@ -94,6 +97,7 @@ public static class SequentialSimulator
                 break;
             }
 
+            var beforeTurn = current.State.GetStates<TurnState>().FirstOrDefault();
             var next = current.HandleEvent(nextEvent);
             if (ReferenceEquals(next.State, current.State))
             {
@@ -104,6 +108,22 @@ public static class SequentialSimulator
 
             applied++;
             current = next;
+            if (Internal.FeatureFlags.EnableTurnSequencing)
+            {
+                if (nextEvent is TurnPassEvent)
+                {
+                    passEvents++;
+                }
+                else if (nextEvent is TurnReplayEvent)
+                {
+                    replayEvents++;
+                }
+                var afterTurn = current.State.GetStates<TurnState>().FirstOrDefault();
+                if (beforeTurn is not null && afterTurn is not null && afterTurn.TurnNumber > beforeTurn.TurnNumber)
+                {
+                    turnAdvancements++;
+                }
+            }
             depth++;
         }
 
@@ -115,7 +135,8 @@ public static class SequentialSimulator
         // Map metrics into existing record model: Trace not captured for new simulator (empty list)
         var trace = Array.Empty<GameState>();
         var result = new PlayoutResult(progress, current, applied, reason, trace);
-        return new PlayoutResultWithProgress(result, current);
+        var metrics = new PlayoutMetrics(applied, rejected, policyCalls, applied, passEvents, replayEvents, turnAdvancements);
+        return new PlayoutResultWithProgress(result, current, metrics);
     }
 }
 
@@ -125,7 +146,7 @@ public static class SequentialSimulator
 /// <remarks>
 /// Initializes a new instance of the <see cref="PlayoutResultWithProgress"/> class.
 /// </remarks>
-public sealed class PlayoutResultWithProgress(PlayoutResult result, GameProgress terminalProgress)
+public sealed class PlayoutResultWithProgress(PlayoutResult result, GameProgress terminalProgress, PlayoutMetrics metrics)
 {
     /// <summary>
     /// Gets the structured playout result (metrics + terminal reason + depth).
@@ -136,6 +157,11 @@ public sealed class PlayoutResultWithProgress(PlayoutResult result, GameProgress
     /// Gets the terminal <see cref="GameProgress"/> produced by the playout.
     /// </summary>
     public GameProgress TerminalProgress { get; } = terminalProgress;
+
+    /// <summary>
+    /// Gets the metrics captured during the playout execution.
+    /// </summary>
+    public PlayoutMetrics Metrics { get; } = metrics;
 }
 
 /// <summary>

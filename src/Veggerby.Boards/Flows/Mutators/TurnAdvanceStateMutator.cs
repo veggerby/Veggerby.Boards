@@ -48,12 +48,12 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
         {
             // Not last segment: begin next segment instead of full advancement (will be separate mutator in future)
             var nextSegment = profile.Next(@event.Segment)!.Value;
-            var progressed = new TurnState(turnArtifact, currentTurnState.TurnNumber, nextSegment);
+            var progressed = new TurnState(turnArtifact, currentTurnState.TurnNumber, nextSegment, currentTurnState.PassStreak);
             return gameState.Next([progressed]);
         }
 
         // Last segment: advance numeric turn and reset to Start + rotate active player (if any)
-        var advancedTurnState = new TurnState(turnArtifact, currentTurnState.TurnNumber + 1, TurnSegment.Start);
+        var advancedTurnState = new TurnState(turnArtifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, 0);
 
         // Active player projection compatibility layer: rotate exactly one active player if states exist
         var activePlayerStates = gameState.GetStates<ActivePlayerState>();

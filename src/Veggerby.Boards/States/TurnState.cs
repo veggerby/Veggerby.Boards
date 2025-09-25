@@ -20,16 +20,22 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// <param name="artifact">Associated <see cref="TurnArtifact"/>.</param>
     /// <param name="turnNumber">Current (1-based) turn number.</param>
     /// <param name="segment">Current segment within the turn.</param>
+    /// <param name="passStreak">Current consecutive pass streak (0 for none).</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="turnNumber" /> &lt; 1.</exception>
-    public TurnState(TurnArtifact artifact, int turnNumber, TurnSegment segment) : base(artifact)
+    public TurnState(TurnArtifact artifact, int turnNumber, TurnSegment segment, int passStreak = 0) : base(artifact)
     {
         if (turnNumber < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(turnNumber), "Turn number must be >= 1");
         }
+        if (passStreak < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(passStreak), "Pass streak must be >= 0");
+        }
 
         TurnNumber = turnNumber;
         Segment = segment;
+        PassStreak = passStreak;
     }
 
     /// <summary>
@@ -41,6 +47,11 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// Gets the current segment inside the turn.
     /// </summary>
     public TurnSegment Segment { get; }
+
+    /// <summary>
+    /// Gets the current consecutive pass streak count (reset when a non-pass advancement occurs, incremented by pass event). Used by games like Go for two-pass termination.
+    /// </summary>
+    public int PassStreak { get; }
 
     /// <inheritdoc />
     public override bool Equals(object obj)
@@ -68,9 +79,10 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
 
         return Artifact.Equals(other.Artifact)
             && TurnNumber.Equals(other.TurnNumber)
-            && Segment.Equals(other.Segment);
+            && Segment.Equals(other.Segment)
+            && PassStreak.Equals(other.PassStreak);
     }
 
     /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(GetType(), Artifact, TurnNumber, Segment);
+    public override int GetHashCode() => HashCode.Combine(GetType(), Artifact, TurnNumber, Segment, PassStreak);
 }

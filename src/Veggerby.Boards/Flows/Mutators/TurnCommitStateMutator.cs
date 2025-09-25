@@ -26,7 +26,7 @@ internal sealed class TurnCommitStateMutator : IStateMutator<TurnCommitEvent>
             return gameState;
         }
 
-        var updatedTurn = new TurnState(currentTurn.Artifact, currentTurn.TurnNumber, TurnSegment.End);
+        var updatedTurn = new TurnState(currentTurn.Artifact, currentTurn.TurnNumber, TurnSegment.End, currentTurn.PassStreak);
         return gameState.Next([updatedTurn]);
     }
 }

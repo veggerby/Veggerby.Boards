@@ -122,7 +122,10 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
 /// <param name="rejected">Rejected candidate event count.</param>
 /// <param name="policyCalls">Number of policy invocations.</param>
 /// <param name="maxDepthObserved">Maximum depth reached (events applied).</param>
-public sealed class PlayoutMetrics(int applied, int rejected, int policyCalls, int maxDepthObserved)
+/// <param name="passEvents">Number of TurnPassEvent occurrences.</param>
+/// <param name="replayEvents">Number of TurnReplayEvent occurrences.</param>
+/// <param name="turnAdvancements">Number of numeric turn advancements observed.</param>
+public sealed class PlayoutMetrics(int applied, int rejected, int policyCalls, int maxDepthObserved, int passEvents, int replayEvents, int turnAdvancements)
 {
     /// <summary>
     /// Number of events successfully applied during the playout.
@@ -143,6 +146,26 @@ public sealed class PlayoutMetrics(int applied, int rejected, int policyCalls, i
     /// Maximum depth (number of applied events) observed at any point in the playout. Equal to <see cref="AppliedEvents"/> unless early termination semantics evolve.
     /// </summary>
     public int MaxDepthObserved { get; } = maxDepthObserved;
+
+    /// <summary>
+    /// Number of <see cref="Events.TurnPassEvent"/> occurrences applied in this playout (when turn sequencing enabled); 0 otherwise.
+    /// </summary>
+    public int PassEvents { get; } = passEvents;
+
+    /// <summary>
+    /// Number of <see cref="Events.TurnReplayEvent"/> occurrences applied in this playout (when turn sequencing enabled); 0 otherwise.
+    /// </summary>
+    public int ReplayEvents { get; } = replayEvents;
+
+    /// <summary>
+    /// Count of numeric turn advancements (TurnState.TurnNumber increases) observed. Useful for computing average turn length (AppliedEvents / TurnAdvancements when > 0).
+    /// </summary>
+    public int TurnAdvancements { get; } = turnAdvancements;
+
+    /// <summary>
+    /// Average events per turn for this playout (AppliedEvents / TurnAdvancements) when at least one advancement occurred; otherwise 0.
+    /// </summary>
+    public double AverageTurnLength => TurnAdvancements == 0 ? 0d : (double)AppliedEvents / TurnAdvancements;
 }
 
 /// <summary>
@@ -187,4 +210,16 @@ public sealed class PlayoutBatchDetailedResult(PlayoutBatchResult basic, IReadOn
     /// Average branching factor approximation = total policy calls / playout count (coarse; refined variant may divide by applied depth sum later).
     /// </summary>
     public double AverageBranchingFactor => Metrics.Count == 0 ? 0d : (double)TotalPolicyCalls / Metrics.Count;
+
+    /// <summary>Total pass events across all playouts.</summary>
+    public int TotalPassEvents => Metrics.Sum(m => m.PassEvents);
+
+    /// <summary>Total replay events across all playouts.</summary>
+    public int TotalReplayEvents => Metrics.Sum(m => m.ReplayEvents);
+
+    /// <summary>Total numeric turn advancements across all playouts.</summary>
+    public int TotalTurnAdvancements => Metrics.Sum(m => m.TurnAdvancements);
+
+    /// <summary>Average events per turn aggregated (sum applied / sum advancements) when at least one advancement occurred; otherwise 0.</summary>
+    public double AverageEventsPerTurn => TotalTurnAdvancements == 0 ? 0d : (double)TotalApplied / TotalTurnAdvancements;
 }

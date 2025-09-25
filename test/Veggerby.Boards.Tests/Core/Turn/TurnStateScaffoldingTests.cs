@@ -22,8 +22,15 @@ public class TurnStateScaffoldingTests
 
         // assert
         var turnState = state.GetStates<TurnState>().SingleOrDefault();
-        turnState.Should().NotBeNull();
-        turnState.TurnNumber.Should().Be(1);
-        turnState.Segment.Should().Be(TurnSegment.Start);
+        if (Boards.Internal.FeatureFlags.EnableTurnSequencing)
+        {
+            turnState.Should().NotBeNull();
+            turnState!.TurnNumber.Should().Be(1);
+            turnState.Segment.Should().Be(TurnSegment.Start);
+        }
+        else
+        {
+            turnState.Should().BeNull();
+        }
     }
 }

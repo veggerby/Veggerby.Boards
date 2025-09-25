@@ -184,7 +184,7 @@ TurnState Fields:
 
 ### Backward Compatibility & Migration
 
-Phase 0 (Flagged EXPERIMENTAL): Introduce TurnState behind feature flag `EnableTurnSequencing` with shadow emission (legacy path still drives active player). Parity tests compare active player & move legality.
+Phase 0 (Flagged EXPERIMENTAL): Introduce TurnState behind feature flag `EnableTurnSequencing` with conditional emission (artifact + state created only when flag ON; legacy path still drives active player when OFF). Parity tests compare active player & move legality.
 Phase 1: Migrate Backgammon doubling & active player rotation to TurnState; retain legacy active player states for parity.
 Phase 2: Remove legacy ActivePlayerState duplication (ActivePlayerState replaced or wrapped by TurnState projection) – AFTER parity benchmark stable.
 Phase 3: Introduce segment gating for Backgammon (Roll vs Move) & adopt for Chess minimal (Segment=Main only) with zero overhead.
@@ -235,6 +235,7 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional).
 - [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating.
 - [ ] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
+- [x] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [ ] CHANGELOG entry & migration guide section.
 - [x] TurnCommitEvent + TurnCommitStateMutator – Main→End shortcut without advancing TurnNumber; tests added; docs & changelog updated.
 

@@ -320,9 +320,13 @@ public abstract class GameBuilder
         var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
-        // Shadow mode turn timeline artifact (single instance). Exposed for future sequencing.
-        var turnArtifact = new TurnArtifact("turn-timeline");
-        artifacts.Add(turnArtifact);
+        // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
+    TurnArtifact turnArtifact = null;
+        if (Internal.FeatureFlags.EnableTurnSequencing)
+        {
+            turnArtifact = new TurnArtifact("turn-timeline");
+            artifacts.Add(turnArtifact);
+        }
 
         var board = new Board(BoardId, relations);
         var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
@@ -344,9 +348,12 @@ public abstract class GameBuilder
         baseStates.AddRange(pieceStates);
         baseStates.AddRange(diceStates);
 
-        // Inject initial TurnState (turn 1, Start segment) – shadow only, no rules reference yet.
-        var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start);
-        baseStates.Add(initialTurnState);
+        // Inject initial TurnState (turn 1, Start segment) only when sequencing enabled.
+        if (turnArtifact is not null)
+        {
+            var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start);
+            baseStates.Add(initialTurnState);
+        }
 
         var initialGameState = _seed.HasValue
             ? GameState.New([.. baseStates], Random.XorShiftRandomSource.Create(_seed.Value))

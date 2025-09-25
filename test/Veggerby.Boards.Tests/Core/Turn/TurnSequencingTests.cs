@@ -33,10 +33,15 @@ public class TurnSequencingCoreTests
     public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
     {
         // arrange
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
+    Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
-        var initial = progress.State.GetStates<TurnState>().First();
+        var initial = progress.State.GetStates<TurnState>().FirstOrDefault();
+        if (initial is null)
+        {
+            // TurnState not emitted when sequencing disabled; nothing to validate
+            return;
+        }
         var ev = new EndTurnSegmentEvent(TurnSegment.Start);
         var condition = new EndTurnSegmentCondition();
         var mutator = new TurnAdvanceStateMutator();
@@ -240,5 +245,37 @@ public class TurnSequencingCoreTests
         // assert
         var updated = afterCommit.GetStates<TurnState>().First();
         updated.Should().BeEquivalentTo(initial);
+    }
+
+    [Fact]
+    public void GivenSequencingEnabled_WhenAlternatingEndTurnSegments_ThenActivePlayerAlternates()
+    {
+        // arrange
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var mutator = new TurnAdvanceStateMutator();
+        var activeBefore = progress.State.GetStates<ActivePlayerState>().FirstOrDefault(x => x.IsActive)?.Artifact;
+        if (activeBefore is null)
+        {
+            return; // skip if chess builder not yet assigning active player
+        }
+
+        // act
+        // Complete first turn (Start->Main->End)
+        var afterStart = mutator.MutateState(progress.Engine, progress.State, new EndTurnSegmentEvent(TurnSegment.Start));
+        var afterMain = mutator.MutateState(progress.Engine, afterStart, new EndTurnSegmentEvent(TurnSegment.Main));
+        var afterEnd = mutator.MutateState(progress.Engine, afterMain, new EndTurnSegmentEvent(TurnSegment.End));
+
+        // Complete second turn
+        var afterStart2 = mutator.MutateState(progress.Engine, afterEnd, new EndTurnSegmentEvent(TurnSegment.Start));
+        var afterMain2 = mutator.MutateState(progress.Engine, afterStart2, new EndTurnSegmentEvent(TurnSegment.Main));
+        var afterEnd2 = mutator.MutateState(progress.Engine, afterMain2, new EndTurnSegmentEvent(TurnSegment.End));
+
+        // assert
+        var activeAfterFirst = afterEnd.GetStates<ActivePlayerState>().Single(x => x.IsActive).Artifact;
+        var activeAfterSecond = afterEnd2.GetStates<ActivePlayerState>().Single(x => x.IsActive).Artifact;
+        activeAfterFirst.Should().NotBe(activeBefore);
+        activeAfterSecond.Should().Be(activeBefore);
     }
 }

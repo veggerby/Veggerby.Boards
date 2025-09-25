@@ -1,8 +1,8 @@
 using System.Linq;
 
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Tests.TestHelpers;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.TestHelpers;
 
 namespace Veggerby.Boards.Tests.Chess;
 

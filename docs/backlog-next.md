@@ -214,8 +214,11 @@ Phase 4: Implement pass / replay semantics (Go, Ludo/Kalaha prototypes) as separ
 
 ### Tasks
 
-- [ ] TurnArtifact & TurnState definitions (immutable; XML docs; invariants in remarks).
-- [ ] TurnSegment enum + profile configuration builder.
+Style Reminder: All sequencing code must follow style charter (file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot mutators, immutable state). Deviations require `// STYLE-DEVIATION:` + CHANGELOG entry.
+
+- [x] TurnArtifact & TurnState definitions (immutable; XML docs; invariants in remarks) – scaffolding merged (shadow mode, no behavior change).
+- [x] TurnSegment enum (Start/Main/End) – initial minimal set (profile builder deferred).
+- [ ] TurnProfile configuration builder (declarative segment ordering & optional segments).
 - [ ] TurnAdvanceStateMutator (increment TurnNumber, maintain RoundNumber, rotate ActivePlayer, reset segment to Upkeep/Main depending profile).
 - [ ] Segment transition mutator(s): BeginSegment / EndSegment with validation conditions.
 - [ ] ActivePlayer projection compatibility layer (derive legacy ActivePlayerState from TurnState when flag ON).

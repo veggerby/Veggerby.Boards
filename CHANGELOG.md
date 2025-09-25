@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added (Unreleased)
+
+- Shadow-mode turn sequencing scaffolding: introduced `TurnSegment` enum, `TurnArtifact`, and `TurnState` with initial state injected at compile time (turn 1, Start). No behavioral changes yet; groundwork for future deterministic turn advancement and multi-phase gating.
+
 ### Added / Changed
 
 - Observability: Added feature-flagged evaluation observer batching (`EnableObserverBatching`). When enabled, high-frequency callbacks (`OnPhaseEnter`, `OnRuleEvaluated`, `OnRuleSkipped`, `OnStateHashed`) are buffered in a lightweight struct array and flushed on terminal callbacks (`OnRuleApplied` / `OnEventIgnored`) or capacity overflow. Preserves strict ordering while reducing dispatch overhead for large DecisionPlans. Disabled by default pending benchmark gating (target: ≤5% overhead vs direct dispatch on small plans; measurable reduction on large plans). Style charter adhered to (file-scoped namespace, explicit braces, no LINQ in hot loops, immutable data, zero per-callback allocations under capacity).

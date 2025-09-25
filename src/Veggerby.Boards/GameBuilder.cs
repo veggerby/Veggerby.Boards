@@ -318,7 +318,11 @@ public abstract class GameBuilder
         var dice = _diceDefinitions.Select(CreateDice).ToArray();
         var relations = _tileRelationDefinitions.Select(x => CreateTileRelation(x, tiles, directions)).ToArray();
         var pieces = _pieceDefinitions.Select(x => GameBuilder.CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
-        var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToArray();
+        var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
+
+        // Shadow mode turn timeline artifact (single instance). Exposed for future sequencing.
+        var turnArtifact = new Artifacts.TurnArtifact("turn-timeline");
+        artifacts.Add(turnArtifact);
 
         var board = new Board(BoardId, relations);
         var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
@@ -335,9 +339,18 @@ public abstract class GameBuilder
                 : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
             .ToList();
 
+        // Seed base states collection (pieces + dice)
+        var baseStates = new List<IArtifactState>();
+        baseStates.AddRange(pieceStates);
+        baseStates.AddRange(diceStates);
+
+        // Inject initial TurnState (turn 1, Start segment) – shadow only, no rules reference yet.
+        var initialTurnState = new States.TurnState(turnArtifact, 1, States.TurnSegment.Start);
+        baseStates.Add(initialTurnState);
+
         var initialGameState = _seed.HasValue
-            ? GameState.New([.. pieceStates, .. diceStates], Random.XorShiftRandomSource.Create(_seed.Value))
-            : GameState.New([.. pieceStates, .. diceStates]);
+            ? GameState.New([.. baseStates], Random.XorShiftRandomSource.Create(_seed.Value))
+            : GameState.New([.. baseStates]);
 
         // compile GamePhase root
 

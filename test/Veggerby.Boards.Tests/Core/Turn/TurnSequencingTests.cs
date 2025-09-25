@@ -173,4 +173,72 @@ public class TurnSequencingCoreTests
         response.Should().Be(ConditionResponse.Invalid);
         resultingState.GetStates<TurnState>().First().Segment.Should().Be(TurnSegment.Start);
     }
+
+    [Fact]
+    public void GivenAnySegment_WhenTurnPassEventApplied_ThenTurnAdvancesAndActivePlayerRotates()
+    {
+        // arrange
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var initialTurn = progress.State.GetStates<TurnState>().First();
+        var activePlayers = progress.State.GetStates<ActivePlayerState>().ToList();
+        var initialActive = activePlayers.FirstOrDefault(x => x.IsActive)?.Artifact;
+        var mutator = new TurnPassStateMutator();
+        var passEvent = new TurnPassEvent();
+
+        // act
+        var newState = mutator.MutateState(progress.Engine, progress.State, passEvent);
+
+        // assert
+        var updatedTurn = newState.GetStates<TurnState>().First();
+        updatedTurn.TurnNumber.Should().Be(initialTurn.TurnNumber + 1);
+        updatedTurn.Segment.Should().Be(TurnSegment.Start);
+        if (initialActive is not null)
+        {
+            var newActive = newState.GetStates<ActivePlayerState>().Single(x => x.IsActive).Artifact;
+            newActive.Should().NotBe(initialActive);
+        }
+    }
+
+    [Fact]
+    public void GivenMainSegment_WhenTurnCommitEventApplied_ThenSegmentTransitionsToEnd()
+    {
+        // arrange
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var advance = new TurnAdvanceStateMutator();
+        // Move Start -> Main
+        var afterStart = advance.MutateState(progress.Engine, progress.State, new EndTurnSegmentEvent(TurnSegment.Start));
+        var commitMutator = new TurnCommitStateMutator();
+        var commitEvent = new TurnCommitEvent();
+
+        // act
+        var afterCommit = commitMutator.MutateState(progress.Engine, afterStart, commitEvent);
+
+        // assert
+        var updated = afterCommit.GetStates<TurnState>().First();
+        updated.TurnNumber.Should().Be(1);
+        updated.Segment.Should().Be(TurnSegment.End);
+    }
+
+    [Fact]
+    public void GivenStartSegment_WhenTurnCommitEventApplied_ThenStateUnchanged()
+    {
+        // arrange
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var initial = progress.State.GetStates<TurnState>().First();
+        var commitMutator = new TurnCommitStateMutator();
+        var commitEvent = new TurnCommitEvent();
+
+        // act
+        var afterCommit = commitMutator.MutateState(progress.Engine, progress.State, commitEvent);
+
+        // assert
+        var updated = afterCommit.GetStates<TurnState>().First();
+        updated.Should().BeEquivalentTo(initial);
+    }
 }

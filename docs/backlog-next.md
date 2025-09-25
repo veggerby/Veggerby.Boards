@@ -218,6 +218,7 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 
 - [x] TurnArtifact & TurnState definitions (immutable; XML docs; invariants in remarks) – scaffolding merged (shadow mode, no behavior change).
 - [x] TurnSegment enum (Start/Main/End) – initial minimal set (profile builder deferred).
+- [x] TurnPassEvent + TurnPassStateMutator – explicit early termination primitive (advances TurnNumber, resets segment, rotates active player) implemented; groundwork for future pass/commit semantics.
 - [x] TurnProfile configuration builder (declarative segment ordering & optional segments) – minimal default (Start→Main→End) implemented; future builder extensibility deferred.
 - [x] TurnAdvanceStateMutator (increment TurnNumber, reset segment; ActivePlayer rotation deferred) – basic advancement behind feature flag.
 - [x] Segment transition condition + mutator path (EndTurnSegmentEvent + condition + advancement logic) – Begin/End events introduced; dedicated Begin mutator deferred (handled inside advancement logic for now).
@@ -225,7 +226,7 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [x] ActivePlayer projection compatibility layer (rotate legacy ActivePlayerState on terminal segment advancement; future TurnState authoritative projection pending).
 - [x] Backgammon: Gating implemented using DoublingDiceState.LastDoubledTurn (same-turn redouble blocked) – TurnState remains domain‑agnostic.
 - [x] Backgammon: Resolved abstraction decision – LastDoubledTurn retained on cube state (removed from TurnState).
-- [ ] Backgammon: Multi-turn doubling invariant tests (2→4→8), opponent-only redouble gating.
+- [x] Backgammon: Multi-turn doubling invariant tests (2→4→8), opponent-only redouble gating.
 - [ ] Chess: Minimal TurnState integration (Segment=Main) + parity tests vs legacy active player.
 - [ ] Go prototype: Pass handling + two-pass termination invariant.
 - [ ] Ludo/Kalaha prototype: Extra-turn (replay) semantics test.
@@ -235,6 +236,7 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating.
 - [ ] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [ ] CHANGELOG entry & migration guide section.
+- [x] TurnCommitEvent + TurnCommitStateMutator – Main→End shortcut without advancing TurnNumber; tests added; docs & changelog updated.
 
 ### Exit Criteria for Workstream 10
 

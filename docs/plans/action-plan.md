@@ -20,6 +20,8 @@
 >
 > Workstream 7 FINALIZATION (2025-09-25 latest): All non-deferred Developer Experience & Quality Gates granular tasks completed: chess castling blocked + capture invariants, property test acceptance criteria doc, feature flag isolation pattern doc, benchmark JSON schema draft, style enforcement stub, CONTRIBUTING cross-reference, event rejection guard, backlog grooming (monotonic wording removal). Deferred (non-blocking) items: multi-turn doubling sequence (awaiting richer turn semantics), deterministic chess opening helper, remaining path helper adoption sweep. Acceptance criteria met; Section 7 marked FINALIZED in `backlog-next.md`. Style charter reiterated (file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot loops, immutable state, deterministic transitions). Any future DX enhancements require explicit CHANGELOG entries and adherence to deviation annotation policy (`// STYLE-DEVIATION:`) if exceptions arise.
 >
+> Follow-Up (2025-09-25 later): Deterministic chess opening helper implemented (`DeterministicChessOpening` – minimal Ruy Lopez sequence) closing the optional deferred DX item; backlog and changelog updated; style charter reaffirmed (file-scoped namespaces, explicit braces, no hot-path LINQ, immutability, deterministic ordering). Remaining deferred DX items: multi-turn Backgammon doubling (dependent on TurnState), path helper adoption sweep.
+>
 > Style Re‑Emphasis (contextual to addendum): All benchmark modifications adhere to repository charter:
 >
 > 1. File-scoped namespaces only

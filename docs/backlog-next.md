@@ -95,7 +95,7 @@ Granular Breakdown / New Tasks (Updated – Workstream 7 FINALIZED 2025-09-25):
 - [x] CONTRIBUTING.md section referencing developer-experience doc & style deviation process.
 - [x] Event rejection mapping guard test (enum exhaustiveness) – prevents silent unclassified reasons.
 - [x] Feature flag test isolation pattern (FeatureFlagScope usage) doc with anti-pattern examples.
-- [ ] Deterministic chess opening sequence helper for reuse across invariants (reduces duplication & drift risk) – Optional (nice-to-have) now that key invariants landed.
+- [x] Deterministic chess opening sequence helper for reuse across invariants (reduces duplication & drift risk) – Optional (nice-to-have) now that key invariants landed.
 
 Acceptance Criteria for Section 7 Completion (FINALIZED 2025-09-25):
 

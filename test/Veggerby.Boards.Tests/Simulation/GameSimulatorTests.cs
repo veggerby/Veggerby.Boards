@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Simulation;
 using Veggerby.Boards.States;
+using Veggerby.Boards.States.Conditions;
 
 using Xunit;
 
@@ -66,7 +67,7 @@ public class GameSimulatorTests
             AddPlayer("p1");
             AddPiece("piece").WithOwner("p1").OnTile("a");
             AddGamePhase("phase")
-                .If<States.Conditions.NullGameStateCondition>()
+                .If<NullGameStateCondition>()
                 .Then()
                 .ForEvent<ToggleEvent>()
                 .Then()

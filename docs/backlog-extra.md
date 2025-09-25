@@ -1,6 +1,22 @@
 # Extra Backlog (Out-of-Plan Items)
 
-This file tracks auxiliary improvement ideas not explicitly covered in `docs/plans/action-plan.md`. Items here are lower priority or opportunistic; they may graduate into the formal plan once justified.
+This file tracks auxiliary improvement ideas not explicitly covered in `docs/plans/action-plan.md`.
+
+Active forward-looking work (remaining gate items) has been consolidated into `docs/backlog-next.md` to keep the strategic action plan lean. Only opportunistic / nice-to-have / deferred concepts remain here. Items may still graduate into the formal plan once justified.
+
+> **Style Charter Emphasis (2025-09-25)**
+> All future backlog items promoted from this file MUST respect engine style & determinism rules:
+>
+> 1. File-scoped namespaces only.
+> 2. Explicit braces on all control flow.
+> 3. No LINQ inside hot paths (mutators, evaluators, fast-path reconstruction, benchmarks critical loops).
+> 4. Immutability: never mutate existing GameState or ArtifactState; always produce a new snapshot or return original when no change.
+> 5. Deterministic outcomes: same input state + event => same result (hash + history) even under different feature flag combinations (except when a flag is explicitly altering algorithm path but should remain semantically identical).
+> 6. Allocation discipline: fast-path and benchmark critical loops allocation-free (stackalloc / pooling acceptable).
+> 7. Comprehensive tests: each rule/condition path (Valid, Invalid, Ignored, NotApplicable) covered when a new rule type is introduced.
+>
+> Deviations require inline justification and tracking in CHANGELOG under a Temporary Exceptions section.
+---
 
 ## Observability Enhancements
 

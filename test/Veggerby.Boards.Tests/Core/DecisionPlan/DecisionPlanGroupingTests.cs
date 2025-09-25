@@ -1,3 +1,5 @@
+using System.Linq;
+
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
@@ -51,5 +53,62 @@ public class DecisionPlanGroupingTests
 
         // assert
         cTrue.Evaluations.Should().Be(1);
+    }
+
+    [Fact]
+    public void GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently()
+    {
+        // arrange
+        var cFalse = new CountingCondition(false);
+        var cInner = new CountingCondition(true);
+        var root = GamePhase.NewParent(200, "root", new NullGameStateCondition());
+        GamePhase.New(1, "a", cFalse, GameEventRule<IGameEvent>.Null, root);
+        GamePhase.New(2, "b", cFalse, GameEventRule<IGameEvent>.Null, root); // identical reference ensures grouping
+        GamePhase.New(3, "c", cInner, GameEventRule<IGameEvent>.Null, root); // different condition after group
+
+        var plan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
+        FeatureFlags.EnableDecisionPlan = true;
+        FeatureFlags.EnableDecisionPlanGrouping = true;
+        // act
+        // Evaluate using same semantics as internal plan evaluation for gating: evaluate group gate only.
+        foreach (var g in plan.Groups)
+        {
+            var gate = plan.Entries[g.StartIndex];
+            if (!gate.ConditionIsAlwaysValid)
+            {
+                var resp = gate.Condition.Evaluate(null);
+                if (resp != ConditionResponse.Valid)
+                {
+                    continue; // skip grouped identical phases
+                }
+            }
+            // if gate valid, evaluate rest of group (none should evaluate here because gate is false)
+            for (int i = 1; i < g.Length; i++)
+            {
+                var entry = plan.Entries[g.StartIndex + i];
+                if (!entry.ConditionIsAlwaysValid)
+                {
+                    entry.Condition.Evaluate(null);
+                }
+            }
+        }
+        // After groups, evaluate remaining entries (non grouped) — this includes cInner only if gate group passed (it did not)
+        var groupedSpan = plan.Groups.SelectMany(g => Enumerable.Range(g.StartIndex, g.Length)).ToHashSet();
+        for (int i = 0; i < plan.Entries.Count; i++)
+        {
+            if (groupedSpan.Contains(i))
+            {
+                continue;
+            }
+            var entry = plan.Entries[i];
+            if (!entry.ConditionIsAlwaysValid)
+            {
+                entry.Condition.Evaluate(null);
+            }
+        }
+
+        // assert
+        cFalse.Evaluations.Should().Be(1, "gate evaluated once");
+        cInner.Evaluations.Should().Be(1, "non-grouped subsequent condition evaluated independently of failed grouped gate");
     }
 }

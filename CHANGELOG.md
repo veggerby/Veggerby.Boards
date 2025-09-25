@@ -158,12 +158,18 @@ Adjusted event rejection mapping: benign no state change without exception now r
 - Extended sliding fast-path parity tests adding blocker & capture scenarios (friendly blocker rejection, enemy capture terminal, earliest blocker precedence, non-slider negative) across rook/bishop/queen; test suite now 447 tests.
 - Occupancy semantics enforcement for compiled and legacy fallback path resolution (post-filter prevents passing through blockers; enemy capture allowed only at blocker tile) ensuring consistent geometric vs attack-path parity.
 - Sliding path resolution benchmark scaffold (`SlidingPathResolutionBenchmark`) comparing legacy visitor vs compiled resolver (fast-path measurement pending GameProgress harness) to baseline future acceleration gains.
+- DecisionPlan: Added explicit grouping negative test (`DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently`) clarifying that grouping optimization only elides duplicate identical-condition evaluations; downstream non-grouped conditions still evaluate (semantics documented in test).
+- Benchmarks: Introduced `EventKindFilteringBenchmark` (initial scaffold) measuring DecisionPlan evaluation with EventKind filtering flags toggled (next: add allocation counters and varied hit/miss distributions).
+- Timeline: Added initial `GameTimelineInvariantTests` scaffold (currently skipped) for undo/redo hash & reference invariants; pending reliable chess pawn path construction under compiled-first resolver.
+- Docs: Reiterated style charter (immutability, explicit braces, no hot-path LINQ) in `backlog-next.md` and annotated completed backlog items (grouping negative test, event kind benchmark scaffold).
 - Refactored temporary `goto` used during early fast-path guard introduction into structured branching (maintains identical semantics while aligning with style guidelines: no `goto` in production engine code).
 - Reaffirmed code style charter in new acceleration code (explicit braces, file-scoped namespaces, 4-space indentation, minimal LINQ in hot loops, immutable snapshots) and added internal test scaffolds (no-op phase + rule) without leaking abstractions publicly.
 - Granular fast-path metrics added and tests updated; style adherence maintained (no LINQ in added hot-path branches, explicit braces, no `goto`).
 - Sliding fast-path Parity V2: extended test matrix (adjacent friendly/enemy, diagonal bishop scenarios, multi-blocker permutations, zero-length request) added to `SlidingFastPathParityTests` exercising semantics charter edge cases (total tests now 462).
 - Sliding path resolution benchmark extended: added `FastPath` (with sliding fast-path flag), `CompiledWithBitboardsNoFastPath` (measures bitboards + compiled overhead), and `CompiledNoBitboards` (pure compiled) variants across occupancy densities (empty/quarter/half) enabling isolated cost attribution for each layer.
 - Sliding benchmarks executed: FastPath achieved 4.66× (empty), 2.49× (quarter), 1.59× (half) speedups vs compiled (and 3.48× / 1.94× / 1.20× vs legacy) with ~75% allocation reduction in best case; thresholds met—candidate to enable `EnableSlidingFastPath` by default in a subsequent change after soak.
+- Docs: Propagated style charter emphasis block into `backlog-extra.md` (list + deviation policy) and marked reiteration complete in `backlog-next.md` Hygiene section. Will mirror into `action-plan.md` on next strategic plan revision.
+- Tests: Timeline invariants test scaffold remains skipped pending reliable path resolution verification; follow-up commit will unskip once pawn single-step move path is deterministic under compiled-first + fast-path flags.
 
 ## [0.1.0] - Initial (Unreleased Tag)
 

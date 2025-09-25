@@ -2,6 +2,16 @@
 
 > Revision Addendum (2025-09-25, branch `feat/architecture-and-dx`): Completed migration to reentrant thread-safe `Infrastructure.FeatureFlagScope`; legacy non-thread-safe scope removed; guard test added to prevent reintroduction; documentation & changelog updated; style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability) re-emphasized across new infrastructure and parity code.
 >
+> Follow-Up Addendum (2025-09-25 later):
+>
+> - Added grouping invalid-gate negative test (`DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently`) clarifying semantics: grouping suppresses duplicate identical-condition re-evaluation only; unrelated subsequent conditions still evaluate.
+> - Introduced `EventKindFilteringBenchmark` scaffold (Move burst scenario) – pending allocation counters & mixed hit/miss distributions.
+> - Timeline undo/redo invariants test scaffold added but still skipped pending deterministic one-step pawn path helper (relation null under compiled-first + current flags).
+> - Propagated style charter emphasis blocks to `backlog-next.md` and `backlog-extra.md`; this action plan will carry a consolidated style appendix below for consistency.
+> - CHANGELOG updated accordingly (test rename, benchmark scaffold, style emphasis, timeline test pending).
+>
+> Consolidation (2025-09-25 later): Core Copilot operating guidance extracted to `docs/wip/copilot-action-plan.md` (augmenting `.github/copilot-instructions.md`). This document now defers granular backlog grooming to `backlog-next.md` (new) for remaining forward-looking items; completed or deprecated entries trimmed here to reduce noise.
+>
 > Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
 >
 > Revision Addendum (2025-09-21 later, same branch): Added timeline zipper (flagged), dual state hashing (64-bit FNV-1a + 128-bit xxHash128), extended `IEvaluationObserver` with `PhaseEnter`, `StateHashed`, and trace capture scaffold (in‑memory last-evaluation trace). Added hashing + observer overhead benchmarks and documentation updates. (Previous internal BugReport scaffold removed; future external reproduction tooling deferred to roadmap item 14.)
@@ -256,6 +266,25 @@ Deliverables (Status annotations in brackets):
 - Typed per-piece occupancy masks (future selective attack pruning). **[PENDING]**
 - Bitboard128 / dual-mask strategy for >64 tile boards. **[PENDING]**
 - Mobility heuristic prototype leveraging bitboards (feed future evaluation module). **[PENDING]**
+
+## Appendix: Consolidated Style Charter (Re-Emphasized 2025-09-25)
+
+All new or modified engine/core code (including tests & benchmarks) MUST adhere to:
+
+1. File-scoped namespaces only (no nested namespace blocks).
+2. Explicit braces for every control flow statement (no single-line implicit bodies).
+3. No LINQ in hot paths (mutators, evaluators, fast-path reconstruction, benchmark inner loops). Acceptable in test setup or non-critical doc tooling.
+4. Immutability: `GameState` and artifact state objects are never mutated in place; transitions must produce a new snapshot or return the original when no change.
+5. Determinism: identical prior state + identical event sequence + identical feature flag configuration must yield identical resulting state & hashes (64-bit + 128-bit) across platforms.
+6. Allocation discipline: hot-path success cases should allocate zero heap objects (use stackalloc / pooled buffers when required). Any intentional allocation in a hot path requires an inline comment with justification and a tracking item.
+7. Predictable evaluation order: rule evaluation side effects restricted to observer callbacks only; no hidden static caches outside explicit build-time structures.
+8. Tests follow AAA pattern (`// arrange`, `// act`, `// assert`) and cover each rule branch (Valid, Invalid, Ignored, NotApplicable) when introducing new rule types.
+9. XML documentation for all public APIs; invariants and determinism assumptions placed in `<remarks>`.
+10. Feature flag usage limited to controlled scope helpers (`FeatureFlagScope` in tests) or deterministic initialization in builders—no ad-hoc toggling in production pathways.
+
+Deviation Handling: Any temporary deviation must include `// STYLE-DEVIATION:` comment plus justification and must appear in the CHANGELOG under a Temporary Exceptions subsection until removed.
+
+This appendix centralizes style commitments already reiterated in `backlog-next.md` and `backlog-extra.md` to ensure a single authoritative summary within the strategic plan.
 - Full LINQ hot-spot sweep across legacy resolver and rule evaluation. **[PENDING]**
 
 Acceptance Criteria:
@@ -370,7 +399,7 @@ Performance Acceleration Tracking (Recent Progress):
 - Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
 - Movement semantics charter (`docs/movement-semantics.md`) authored – freezes sliding vs non-sliding rules, occupancy enforcement layer, and determinism guarantees ahead of Parity V2 test expansion.
 - Introduced `EnableSlidingFastPath` feature flag (default off pending Parity V2 + benchmarks) separating bitboard occupancy enablement from fast-path activation.
- - Capability seam finalized (`EngineCapabilities` aggregating Topology, PathResolver, AccelerationContext) replacing ad-hoc *Services lookups; fast-path & benchmarks now depend exclusively on this sealed immutable context.
+- Capability seam finalized (`EngineCapabilities` aggregating Topology, PathResolver, AccelerationContext) replacing ad-hoc *Services lookups; fast-path & benchmarks now depend exclusively on this sealed immutable context.
 - Incremental bitboard updates temporarily disabled (full rebuild fallback) pending extended parity soak; regression guard (`BitboardParityRegressionTests`) added.
 - Style charter re-emphasized for acceleration layer (no LINQ in hot loops, explicit braces, file-scoped namespaces, allocation-free fast-path success path).
 

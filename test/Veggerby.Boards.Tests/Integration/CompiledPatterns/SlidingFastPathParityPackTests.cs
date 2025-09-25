@@ -103,7 +103,7 @@ public class SlidingFastPathParityPackTests
 
     private static TilePath ResolveWithFlags(IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: compiled, bitboards: bitboards, boardShape: true);
+        using var scope = new FeatureFlagScope(compiledPatterns: compiled, bitboards: bitboards, boardShape: true);
         // Sliding fast-path is enabled by default; enabling bitboards triggers decorator eligibility. For clarity keep explicit intent:
         // (If repository defaults change later, tests remain deterministic via scope controlling bitboards prerequisite.)
         var builder = new PackBuilder(specs);

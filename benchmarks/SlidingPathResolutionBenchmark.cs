@@ -57,7 +57,7 @@ public class SlidingPathResolutionBenchmark
         var sw = new Direction("south-west");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
         var tiles = new List<Tile>();
-        var rels = new List<TileRelation>();
+        var relations = new List<TileRelation>();
 
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -76,47 +76,47 @@ public class SlidingPathResolutionBenchmark
             {
                 if (r < 8)
                 {
-                    rels.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                    relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
                 }
 
                 if (r > 1)
                 {
-                    rels.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                    relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
                 }
 
                 if (f < 'h')
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
                 }
 
                 if (f > 'a')
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
                 }
 
                 if (f < 'h' && r < 8)
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
                 }
 
                 if (f > 'a' && r < 8)
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
                 }
 
                 if (f < 'h' && r > 1)
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
                 }
 
                 if (f > 'a' && r > 1)
                 {
-                    rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
                 }
             }
         }
 
-        var board = new Board("bench-sliding-8x8", rels);
+        var board = new Board("bench-sliding-8x8", relations);
         var white = new Player("white"); var black = new Player("black");
 
         // Slider archetypes
@@ -173,7 +173,7 @@ public class SlidingPathResolutionBenchmark
         {
             foreach (var pattern in piece.Patterns)
             {
-                var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_game.Board, from, to);
+                var visitor = new ResolveTilePathPatternVisitor(_game.Board, from, to);
                 pattern.Accept(visitor);
                 if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {

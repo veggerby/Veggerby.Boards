@@ -10,9 +10,9 @@ namespace Veggerby.Boards.Tests.Core;
 
 public class TraceCaptureTests
 {
-    private static (Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope scope, GameProgress progress) Build(bool trace, bool hashing)
+    private static (Infrastructure.FeatureFlagScope scope, GameProgress progress) Build(bool trace, bool hashing)
     {
-        var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing, decisionPlan: false);
+        var scope = new Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing, decisionPlan: false);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return (scope, builder.Compile());
     }

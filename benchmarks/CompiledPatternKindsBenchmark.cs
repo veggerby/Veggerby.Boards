@@ -43,14 +43,14 @@ public class CompiledPatternKindsBenchmark
         var c = new Tile("c");
         var d = new Tile("d");
         var e = new Tile("e");
-        var rels = new List<TileRelation>
+        var relations = new List<TileRelation>
         {
             new(a,b,east), new(b,c,east),
             new(a,d,north), new(d,e,north),
             new(a,c,northEast) // diagonal skip
         };
 
-        var board = new Board("compiled-kinds-board", rels);
+        var board = new Board("compiled-kinds-board", relations);
         var player = new Player("pl");
 
         // Pattern archetypes

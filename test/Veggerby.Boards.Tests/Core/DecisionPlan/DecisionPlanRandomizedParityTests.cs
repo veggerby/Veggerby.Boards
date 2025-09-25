@@ -91,11 +91,11 @@ public class DecisionPlanRandomizedParityTests
         {
             GameProgress legacy;
             GameProgress plan;
-            using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: false))
+            using (new FeatureFlagScope(decisionPlan: false))
             {
                 legacy = new ChessGameBuilder().Compile();
             }
-            using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: true))
+            using (new FeatureFlagScope(decisionPlan: true))
             {
                 plan = new ChessGameBuilder().Compile();
             }

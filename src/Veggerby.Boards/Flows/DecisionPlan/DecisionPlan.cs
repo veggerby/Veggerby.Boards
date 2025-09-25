@@ -131,14 +131,14 @@ public sealed class DecisionPlan
             string inferred = null;
             if (string.IsNullOrEmpty(explicitGroup))
             {
-                var condAttr = phase.Condition?.GetType().GetCustomAttribute<Flows.Phases.ExclusiveGroupAttribute>();
+                var condAttr = phase.Condition?.GetType().GetCustomAttribute<ExclusiveGroupAttribute>();
                 if (condAttr is not null && !string.IsNullOrWhiteSpace(condAttr.GroupId))
                 {
                     inferred = condAttr.GroupId;
                 }
                 else
                 {
-                    var ruleAttr = phase.Rule?.GetType().GetCustomAttribute<Flows.Phases.ExclusiveGroupAttribute>();
+                    var ruleAttr = phase.Rule?.GetType().GetCustomAttribute<ExclusiveGroupAttribute>();
                     if (ruleAttr is not null && !string.IsNullOrWhiteSpace(ruleAttr.GroupId))
                     {
                         inferred = ruleAttr.GroupId;

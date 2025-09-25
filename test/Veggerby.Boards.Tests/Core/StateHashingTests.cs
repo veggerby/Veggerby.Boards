@@ -12,7 +12,7 @@ public class StateHashingTests
 {
     private static GameProgress Build(bool hashing)
     {
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(hashing: hashing);
+        using var scope = new FeatureFlagScope(hashing: hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return builder.Compile();
     }
@@ -45,7 +45,7 @@ public class StateHashingTests
     public void GivenSameSequence_WhenHashingEnabled_ThenFinalHashesMatch()
     {
         // arrange
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(hashing: true);
+        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";
@@ -67,7 +67,7 @@ public class StateHashingTests
     public void GivenDifferentEvents_WhenHashingEnabled_ThenFinalHashesDiffer()
     {
         // arrange
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(hashing: true);
+        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";
@@ -101,7 +101,7 @@ public class StateHashingTests
     public void GivenSameSequence_WhenHashingEnabled_ThenFinalHash128Match()
     {
         // arrange
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(hashing: true);
+        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";

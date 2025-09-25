@@ -34,8 +34,8 @@ public static class PolicyHelpers
                 var pieceState = state.GetState<PieceState>(piece);
                 var from = pieceState.CurrentTile;
                 // Acquire outgoing relations from board
-                var rels = game.Board.TileRelations.Where(r => r.From.Equals(from));
-                foreach (var rel in rels.OrderBy(r => r.To.Id, StringComparer.Ordinal))
+                var relations = game.Board.TileRelations.Where(r => r.From.Equals(from));
+                foreach (var rel in relations.OrderBy(r => r.To.Id, StringComparer.Ordinal))
                 {
                     TilePath path;
                     try

@@ -53,20 +53,21 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
                 return state; // same turn – blocked
             }
 
-            // Ownership must alternate: only opponent of current owner can redouble.
-            if (specialized.CurrentPlayer is null || activePlayer is null || !activePlayer.Equals(specialized.CurrentPlayer))
+            // Only the current owner (who must be on roll) may offer the next redouble in Backgammon cube semantics.
+            // Thus the active player must equal the current owner; otherwise gating blocks.
+            if (specialized.CurrentPlayer is null || activePlayer is null)
             {
-                // Only owner (the player who possesses cube) cannot redouble on their own turn; opponent triggers new doubling
-                // If active player equals owner we block.
-                if (activePlayer is not null && specialized.CurrentPlayer is not null && activePlayer.Equals(specialized.CurrentPlayer))
-                {
-                    return state;
-                }
+                return state; // cannot redouble without an owner or active player projection
+            }
+
+            if (!activePlayer.Equals(specialized.CurrentPlayer))
+            {
+                return state; // opponent (non-owner) attempting to redouble – blocked
             }
 
             var generatorRedouble = new DoublingDiceValueGenerator();
             var nextValue = generatorRedouble.GetValue(specialized);
-            var newOwner = inactivePlayer ?? specialized.CurrentPlayer; // transfer back to opponent (inactive at time of double)
+            var newOwner = inactivePlayer ?? specialized.CurrentPlayer; // ownership transfers to opponent
             var upgraded = new DoublingDiceState(DoublingDice, nextValue, newOwner, turnState.TurnNumber);
             return state.Next([upgraded]);
         }

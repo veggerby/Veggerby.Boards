@@ -29,7 +29,7 @@ public class GameTimelineInvariantTests
         return path!;
     }
 
-    private static Veggerby.Boards.Artifacts.Tile TryGetTile(GameProgress progress, string id)
+    private static Artifacts.Tile TryGetTile(GameProgress progress, string id)
     {
         try
         {

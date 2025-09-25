@@ -24,12 +24,12 @@ public class TraceObserverBatchOverheadBenchmark
 {
     private sealed class CountingObserver : IEvaluationObserver
     {
-        public void OnPhaseEnter(Flows.Phases.GamePhase phase, States.GameState state) { }
-        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, States.GameState state, int ruleIndex) { }
-        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, States.GameState beforeState, States.GameState afterState, int ruleIndex) { }
-        public void OnEventIgnored(IGameEvent @event, States.GameState state) { }
-        public void OnStateHashed(States.GameState state, ulong hash) { }
-        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, States.GameState state, int ruleIndex) { }
+        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state) { }
+        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { }
+        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
+        public void OnEventIgnored(IGameEvent @event, GameState state) { }
+        public void OnStateHashed(GameState state, ulong hash) { }
+        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
     }
 
     [Params(false, true)]
@@ -52,27 +52,27 @@ public class TraceObserverBatchOverheadBenchmark
             FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = false;
-            _baseline = new Chess.ChessGameBuilder().Compile();
+            _baseline = new ChessGameBuilder().Compile();
 
             FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = false;
-            _observer = new Chess.ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
+            _observer = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
             FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
             FeatureFlags.EnableTraceCapture = true;
             FeatureFlags.EnableObserverBatching = false;
-            _observerTrace = new Chess.ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
+            _observerTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
             FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = true;
-            _observerBatched = new Chess.ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
+            _observerBatched = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
             FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
             FeatureFlags.EnableTraceCapture = true;
             FeatureFlags.EnableObserverBatching = true;
-            _observerBatchedTrace = new Chess.ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
+            _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
             var piece = _baseline.Game.GetPiece("white-pawn-2");
             var from = _baseline.Game.GetTile("e2");

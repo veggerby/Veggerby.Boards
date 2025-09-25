@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Events;
 /// </summary>
 /// <remarks>
 /// Emitted (or requested) by external orchestration or future automatic rules when completing the prior segment.
-/// Validation rules ensure only the next valid segment (according to <see cref="States.TurnProfile"/>) is accepted.
+/// Validation rules ensure only the next valid segment (according to <see cref="TurnProfile"/>) is accepted.
 /// No direct state mutation occurs; a corresponding mutator interprets the event.
 /// </remarks>
 /// <remarks>

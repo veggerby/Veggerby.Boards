@@ -14,7 +14,7 @@ public class MobilityEvaluatorTests
     {
         // arrange
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, slidingFastPath: true);
-        var builder = new Veggerby.Boards.Chess.ChessGameBuilder();
+        var builder = new Boards.Chess.ChessGameBuilder();
         var progress = builder.Compile();
         var eval = MobilityEvaluator.TryCreate(progress.Engine.Capabilities);
         Assert.NotNull(eval); // bitboards active

@@ -13,7 +13,7 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 /// </summary>
 public class ChessDecisionPlanParityTests
 {
-    private static Veggerby.Boards.States.GameProgress ApplyOpening(Veggerby.Boards.States.GameProgress progress)
+    private static Boards.States.GameProgress ApplyOpening(Boards.States.GameProgress progress)
     {
         // Use extension Move which resolves shortest valid pattern path automatically; skip if path not found (returns original progress).
         // Valid double-step pawn advances from starting rank.
@@ -27,15 +27,15 @@ public class ChessDecisionPlanParityTests
     {
         // arrange
         var builderLegacy = new ChessGameBuilder();
-        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: false))
+        using (new FeatureFlagScope(decisionPlan: false))
         {
             var legacy = builderLegacy.Compile();
             legacy = ApplyOpening(legacy);
             var finalLegacy = legacy.State;
 
             var builderPlan = new ChessGameBuilder();
-            Veggerby.Boards.States.GameProgress plan;
-            using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: true))
+            Boards.States.GameProgress plan;
+            using (new FeatureFlagScope(decisionPlan: true))
             {
                 plan = builderPlan.Compile();
                 plan = ApplyOpening(plan);
@@ -45,10 +45,10 @@ public class ChessDecisionPlanParityTests
             // (Move assertions temporarily relaxed – focusing on overall piece parity below.)
             // Compare piece positions for all pieces
             // Compare all pieces registered in the game definition by id.
-            foreach (var piece in plan.Game.Artifacts.OfType<Veggerby.Boards.Artifacts.Piece>())
+            foreach (var piece in plan.Game.Artifacts.OfType<Boards.Artifacts.Piece>())
             {
-                var legacyPieceState = finalLegacy.GetState<Veggerby.Boards.States.PieceState>(piece);
-                var planPieceState = plan.State.GetState<Veggerby.Boards.States.PieceState>(piece);
+                var legacyPieceState = finalLegacy.GetState<Boards.States.PieceState>(piece);
+                var planPieceState = plan.State.GetState<Boards.States.PieceState>(piece);
                 if (legacyPieceState is null && planPieceState is null)
                 {
                     continue; // absent both sides

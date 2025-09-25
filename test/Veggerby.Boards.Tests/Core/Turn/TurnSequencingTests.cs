@@ -17,9 +17,9 @@ public class TurnSequencingCoreTests
 {
     private IDisposable EnableFlag()
     {
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
-        return new ResetFlag(() => Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
+        return new ResetFlag(() => Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
     }
 
     private sealed class ResetFlag(Action reset) : IDisposable
@@ -33,7 +33,7 @@ public class TurnSequencingCoreTests
     public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
     {
         // arrange
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var initial = progress.State.GetStates<TurnState>().First();

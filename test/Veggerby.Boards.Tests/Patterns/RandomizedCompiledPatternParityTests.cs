@@ -29,22 +29,22 @@ public class RandomizedCompiledPatternParityTests
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         for (int r = 1; r <= 8; r++) foreach (var f in files) tiles.Add(new Tile($"{f}{r}"));
         Tile T(char f, int r) => tiles[(r - 1) * 8 + (f - 'a')];
-        var rels = new List<TileRelation>();
+        var relations = new List<TileRelation>();
         foreach (var f in files)
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) rels.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) rels.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
-                if (f < 'h' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
-                if (f > 'a' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
-                if (f < 'h' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
-                if (f > 'a' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                if (f < 'h' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                if (f > 'a' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                if (f < 'h' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                if (f > 'a' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
             }
         }
-        var board = new Board("parity-board", rels);
+        var board = new Board("parity-board", relations);
         var white = new Player("white");
         var rook = new Piece("rook", white, [new DirectionPattern(north, true), new DirectionPattern(east, true), new DirectionPattern(south, true), new DirectionPattern(west, true)]);
         var bishop = new Piece("bishop", white, [new DirectionPattern(ne, true), new DirectionPattern(nw, true), new DirectionPattern(se, true), new DirectionPattern(sw, true)]);

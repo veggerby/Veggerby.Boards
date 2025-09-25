@@ -363,11 +363,11 @@ public partial class GameProgress
     }
 
     /// <summary>
-    /// Handles an event and returns a structured <see cref="Flows.Events.EventResult"/> indicating success or rejection reason.
+    /// Handles an event and returns a structured <see cref="EventResult"/> indicating success or rejection reason.
     /// </summary>
     /// <param name="event">Event to evaluate.</param>
     /// <returns>Typed handling result (never null).</returns>
-    public Flows.Events.EventResult HandleEventResult(IGameEvent @event)
+    public EventResult HandleEventResult(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 

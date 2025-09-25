@@ -26,7 +26,7 @@ public class FeatureFlagScopeConcurrencyTests
             bool newCompiled = (id % 3) == 0 ? !origCompiled : origCompiled;
             bool newHashing = (id % 5) == 0 ? !origHashing : origHashing;
 
-            using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: newDecision, compiledPatterns: newCompiled, hashing: newHashing))
+            using (new FeatureFlagScope(decisionPlan: newDecision, compiledPatterns: newCompiled, hashing: newHashing))
             {
                 // during scope: flags must equal requested values (no partial interleaving)
                 FeatureFlags.EnableDecisionPlan.Should().Be(newDecision);

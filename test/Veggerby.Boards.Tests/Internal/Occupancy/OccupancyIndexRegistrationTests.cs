@@ -14,7 +14,7 @@ public class OccupancyIndexRegistrationTests
 {
     private static (GameProgress progress, IOccupancyIndex occ) Build(bool bitboards)
     {
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: bitboards, compiledPatterns: true, boardShape: true);
+        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: true, boardShape: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var occ = progress.Engine.Capabilities?.AccelerationContext.Occupancy;

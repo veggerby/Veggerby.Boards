@@ -12,7 +12,7 @@ public class PathResolverRegistrationTests
     [Fact]
     public void GivenCompiledPatternsEnabled_WhenBuildingGame_ThenPathResolverRegistered()
     {
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
+        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         Assert.NotNull(progress.Engine.Capabilities);
         Assert.NotNull(progress.Engine.Capabilities.PathResolver);
@@ -21,7 +21,7 @@ public class PathResolverRegistrationTests
     [Fact]
     public void GivenCompiledPatternsDisabled_WhenBuildingGame_ThenFallbackPathResolverRegistered()
     {
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
+        using var scope = new FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         Assert.NotNull(progress.Engine.Capabilities);
         Assert.NotNull(progress.Engine.Capabilities.PathResolver); // simple visitor-based resolver

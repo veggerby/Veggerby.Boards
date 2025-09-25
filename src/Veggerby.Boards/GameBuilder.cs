@@ -321,7 +321,7 @@ public abstract class GameBuilder
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
         // Shadow mode turn timeline artifact (single instance). Exposed for future sequencing.
-        var turnArtifact = new Artifacts.TurnArtifact("turn-timeline");
+        var turnArtifact = new TurnArtifact("turn-timeline");
         artifacts.Add(turnArtifact);
 
         var board = new Board(BoardId, relations);
@@ -345,7 +345,7 @@ public abstract class GameBuilder
         baseStates.AddRange(diceStates);
 
         // Inject initial TurnState (turn 1, Start segment) – shadow only, no rules reference yet.
-        var initialTurnState = new States.TurnState(turnArtifact, 1, TurnSegment.Start);
+        var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start);
         baseStates.Add(initialTurnState);
 
         var initialGameState = _seed.HasValue

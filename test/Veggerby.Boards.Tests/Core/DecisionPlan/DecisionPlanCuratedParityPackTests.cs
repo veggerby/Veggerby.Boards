@@ -22,7 +22,7 @@ public class DecisionPlanCuratedParityPackTests
 
     private record ScenarioResult(Dictionary<string, string> PieceToTile, ulong? Hash, (ulong hi, ulong lo)? Hash128);
 
-    private static ScenarioResult Run(bool decisionPlan, System.Action<Veggerby.Boards.States.GameProgress> sequence, bool hashing)
+    private static ScenarioResult Run(bool decisionPlan, System.Action<GameProgress> sequence, bool hashing)
     {
         using var _ = new FeatureFlagScope(decisionPlan: decisionPlan, hashing: hashing, compiledPatterns: true);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
@@ -37,7 +37,7 @@ public class DecisionPlanCuratedParityPackTests
             var piece = progress.Game.GetPiece(id);
             if (piece != null)
             {
-                var ps = last.GetState<Veggerby.Boards.States.PieceState>(piece);
+                var ps = last.GetState<PieceState>(piece);
                 if (ps != null)
                 {
                     pieceMap[id] = ps.CurrentTile.Id;
@@ -47,7 +47,7 @@ public class DecisionPlanCuratedParityPackTests
         return new ScenarioResult(pieceMap, last.Hash, last.Hash128);
     }
 
-    private static IEnumerable<(string Name, System.Action<Veggerby.Boards.States.GameProgress> Sequence)> Scenarios()
+    private static IEnumerable<(string Name, System.Action<GameProgress> Sequence)> Scenarios()
     {
         yield return ("single-move", gp =>
         {
@@ -95,7 +95,7 @@ public class DecisionPlanCuratedParityPackTests
             foreach (var id in movable)
             {
                 var piece = gp.Game.GetPiece(id);
-                var state = gp.State.GetState<Veggerby.Boards.States.PieceState>(piece);
+                var state = gp.State.GetState<PieceState>(piece);
                 if (state == null)
                 {
                     continue;
@@ -124,7 +124,7 @@ public class DecisionPlanCuratedParityPackTests
 
     [Theory]
     [MemberData(nameof(ScenarioMatrix))]
-    public void GivenScenario_WhenDecisionPlanToggled_ThenExternalOutcomesMatch(string name, System.Action<Veggerby.Boards.States.GameProgress> sequence, bool hashing)
+    public void GivenScenario_WhenDecisionPlanToggled_ThenExternalOutcomesMatch(string name, System.Action<GameProgress> sequence, bool hashing)
     {
         // arrange
         var legacy = Run(false, sequence, hashing);

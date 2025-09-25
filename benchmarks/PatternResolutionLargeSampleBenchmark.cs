@@ -34,7 +34,7 @@ public class PatternResolutionLargeSampleBenchmark
         var north = new Direction("north"); var south = new Direction("south"); var east = new Direction("east"); var west = new Direction("west");
         var ne = new Direction("ne"); var nw = new Direction("nw"); var se = new Direction("se"); var sw = new Direction("sw");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
-        var tiles = new List<Tile>(); var rels = new List<TileRelation>();
+        var tiles = new List<Tile>(); var relations = new List<TileRelation>();
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         for (int r = 1; r <= 8; r++) foreach (var f in files) tiles.Add(new Tile($"{f}{r}"));
         Tile T(char f, int r) => tiles[(r - 1) * 8 + (f - 'a')];
@@ -42,17 +42,17 @@ public class PatternResolutionLargeSampleBenchmark
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) rels.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) rels.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
-                if (f < 'h' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
-                if (f > 'a' && r < 8) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
-                if (f < 'h' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
-                if (f > 'a' && r > 1) rels.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                if (f < 'h' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                if (f > 'a' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                if (f < 'h' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                if (f > 'a' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
             }
         }
-        var board = new Board("large-sample-board", rels);
+        var board = new Board("large-sample-board", relations);
         var white = new Player("white");
 
         // Representative pieces: rook, bishop, queen (sliders), knight (fixed jump), pawn (single step), king-like (multi-direction non-repeatable) for diversity.
@@ -89,7 +89,7 @@ public class PatternResolutionLargeSampleBenchmark
         int hits = 0;
         foreach (var (piece, from, to) in _queries)
         {
-            var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_game.Board, from, to);
+            var visitor = new ResolveTilePathPatternVisitor(_game.Board, from, to);
             foreach (var p in piece.Patterns)
             {
                 p.Accept(visitor);

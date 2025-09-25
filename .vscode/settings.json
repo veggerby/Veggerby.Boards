@@ -7,8 +7,18 @@
 		"**/project.lock.json": true
 	},
 	"cSpell.words": [
-		"Bitboard",
-		"Playout",
-		"Veggerby"
-	]
+        "bitboard",
+        "bitboards",
+        "diagnoser",
+        "LINQ",
+        "merkle",
+        "microbenchmark",
+        "microbenchmarks",
+        "multiset",
+        "playout",
+        "veggerby",
+        "workstream",
+        "workstreams",
+        "xunit"
+    ]
 }

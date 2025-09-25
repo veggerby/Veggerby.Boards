@@ -10,7 +10,7 @@ namespace Veggerby.Boards.Tests.Core.Turn;
 /// </summary>
 public class TurnStateScaffoldingTests
 {
-    [Xunit.Fact]
+    [Fact]
     public void GivenCompiledGame_WhenInspectingInitialState_ThenTurnStateIsPresent()
     {
         // arrange

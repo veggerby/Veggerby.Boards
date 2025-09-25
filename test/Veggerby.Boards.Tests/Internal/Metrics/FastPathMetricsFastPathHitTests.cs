@@ -31,7 +31,7 @@ public class FastPathMetricsFastPathHitTests
     {
         // arrange
         FastPathMetrics.Reset();
-        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path enabled by default
+        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path enabled by default
         var builder = new SimpleRookBoard();
         var progress = builder.Compile();
         var game = progress.Game;

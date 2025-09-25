@@ -37,14 +37,14 @@ public class PatternResolutionBenchmark
         var e = new Tile("e");
 
         // Chains: a->b->c (east), c->d->e (north), and diagonal a->c (ne), b->d (ne)
-        var rels = new List<TileRelation>
+        var relations = new List<TileRelation>
         {
             new(a,b,east), new(b,c,east),
             new(c,d,north), new(d,e,north),
             new(a,c,northEast), new(b,d,northEast)
         };
 
-        var board = new Board("pattern-bench-board", rels);
+        var board = new Board("pattern-bench-board", relations);
         var player = new Player("pl");
 
         // Archetype pieces
@@ -81,7 +81,7 @@ public class PatternResolutionBenchmark
         var count = 0;
         foreach (var (piece, from, to) in _queries)
         {
-            var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(_gameLegacy.Board, from, to);
+            var visitor = new ResolveTilePathPatternVisitor(_gameLegacy.Board, from, to);
             foreach (var p in piece.Patterns)
             {
                 p.Accept(visitor);

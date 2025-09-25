@@ -38,7 +38,7 @@ public class GameEngine
     /// </summary>
     internal IEvaluationObserver Observer { get; }
 
-    private readonly Veggerby.Boards.Internal.Tracing.EvaluationTrace _lastTrace;
+    private readonly Internal.Tracing.EvaluationTrace _lastTrace;
 
     /// <summary>
     /// Gets the optional capability set (may be null when no experimental subsystems enabled).
@@ -48,7 +48,7 @@ public class GameEngine
     /// <summary>
     /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
     /// </summary>
-    internal Veggerby.Boards.Internal.Tracing.EvaluationTrace LastTrace => _lastTrace;
+    internal Internal.Tracing.EvaluationTrace LastTrace => _lastTrace;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameEngine"/> class.

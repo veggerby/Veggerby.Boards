@@ -17,7 +17,7 @@ public class CompiledChessPatternParityTests
     private static (TilePath legacy, TilePath compiled) Resolve(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy (search each pattern until target reached)
-        var legacyVisitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
+        var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
         foreach (var p in piece.Patterns)
         {
             p.Accept(legacyVisitor);

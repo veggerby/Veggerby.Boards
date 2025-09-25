@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Internal.Occupancy;
 /// <summary>
 /// Bitboard backed occupancy index exposing O(1) emptiness and ownership checks.
 /// </summary>
-internal sealed class BitboardOccupancyIndex(BitboardLayout layout, BitboardSnapshot snapshot, BoardShape shape, Game game, GameState state) : IOccupancyIndex, Veggerby.Boards.Internal.Acceleration.IBitboardBackedOccupancy
+internal sealed class BitboardOccupancyIndex(BitboardLayout layout, BitboardSnapshot snapshot, BoardShape shape, Game game, GameState state) : IOccupancyIndex, Acceleration.IBitboardBackedOccupancy
 {
     private readonly BitboardLayout _layout = layout ?? throw new ArgumentNullException(nameof(layout));
     private BitboardSnapshot _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));

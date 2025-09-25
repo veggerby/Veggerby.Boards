@@ -100,7 +100,7 @@ internal static class FeatureFlags
 
     /// <summary>
     /// Gets or sets a value indicating whether topology pruning heuristics are enabled (skip precomputation / lookup for
-    /// directions not present in the board's <see cref="Internal.Layout.BoardTopology"/> classification). Intended to reduce
+    /// directions not present in the board's <see cref="Layout.BoardTopology"/> classification). Intended to reduce
     /// branching and iteration in mixed topology boards. Default: false until pruning parity and performance are validated.
     /// </summary>
     public static bool EnableTopologyPruning { get; set; } = false;

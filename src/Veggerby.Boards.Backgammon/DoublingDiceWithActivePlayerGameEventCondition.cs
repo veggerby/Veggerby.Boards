@@ -43,36 +43,35 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
         var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
         if (activePlayer is null)
         {
-            // Prevent premature doubling before the starting player has been established.
-            // Returning Ignore ensures the event is treated as not applicable rather than invalid (silent no-op semantics).
             return ConditionResponse.Ignore("No active player selected");
         }
 
-        // Before the first successful doubling only a generic DiceState<int> may exist → treat as unowned (allow first doubling).
-        var diceState = state.GetState<DoublingDiceState>(DoublingDice);
-        if (diceState is null)
-        {
-            return ConditionResponse.Valid; // first doubling attempt allowed
-        }
-
-        // If current owner is null (should not normally happen once specialized) treat as valid.
-        if (diceState.CurrentPlayer is null)
+        // First doubling allowed when no specialized cube state exists.
+        var specialized = state.GetState<DoublingDiceState>(DoublingDice);
+        if (specialized is null)
         {
             return ConditionResponse.Valid;
         }
 
-        // Owner attempting to immediately redouble within same turn is not allowed (should be rejected silently -> Fail so rule not applied).
-        if (diceState.CurrentPlayer.Equals(activePlayer.Artifact))
+        // Turn sequencing required (presence of TurnState is sufficient signal in shadow mode).
+        var turnState = state.GetStates<TurnState>().FirstOrDefault();
+        if (turnState is null)
         {
-            // Owner attempting immediate redouble within same turn; Ignore to preserve state (no exception or mutation).
-            return ConditionResponse.Ignore("Owner immediate redouble not allowed");
+            return ConditionResponse.Ignore("No turn state – redoubles inert");
         }
 
-        // If opponent attempting redouble in same turn (active player not changed yet) we should also ignore.
-        // We infer "same turn" by absence of any state change handing turn over; since no NextPlayer mutator ran,
-        // active player still the one from first doubling. Thus any subsequent attempt (from either side) within
-        // same state progression should be ignored.
-        return ConditionResponse.Ignore("Immediate redouble attempt within same turn");
-        // Opponent redouble validation will be reintroduced once explicit turn progression semantics added.
+        // Same-turn attempt blocked.
+        if (turnState.TurnNumber <= specialized.LastDoubledTurn)
+        {
+            return ConditionResponse.Ignore("Same turn redouble blocked");
+        }
+
+        // Owner must be the active player to redouble (offer); if not on roll yet, ignore.
+        if (!specialized.CurrentPlayer?.Equals(activePlayer.Artifact) ?? true)
+        {
+            return ConditionResponse.Ignore("Owner not active – cannot redouble yet");
+        }
+
+        return ConditionResponse.Valid;
     }
 }

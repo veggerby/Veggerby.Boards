@@ -12,7 +12,7 @@ namespace Veggerby.Boards.Tests.Chess;
 /// </summary>
 public class DeterministicOpeningTests
 {
-    [Xunit.Fact]
+    [Fact]
     public void GivenStandardChessGame_WhenApplyingDeterministicOpening_ThenPiecesReachExpectedSquares()
     {
         // arrange

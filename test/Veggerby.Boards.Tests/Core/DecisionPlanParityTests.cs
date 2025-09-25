@@ -14,7 +14,7 @@ public class DecisionPlanParityTests
 {
     private static GameProgress Build(bool enablePlan)
     {
-        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: enablePlan);
+        using var _ = new FeatureFlagScope(decisionPlan: enablePlan);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return builder.Compile();
     }

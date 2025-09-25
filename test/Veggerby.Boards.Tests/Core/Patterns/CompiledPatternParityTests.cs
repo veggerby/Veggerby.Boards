@@ -13,7 +13,7 @@ public class CompiledPatternParityTests
     private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy
-        var legacyVisitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
+        var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
         var single = piece.Patterns.Single();
         single.Accept(legacyVisitor);
         var legacy = legacyVisitor.ResultPath;
@@ -65,7 +65,7 @@ public class CompiledPatternParityTests
         var game = new Game(board, [player], [piece]);
 
         TilePath compiledOff;
-        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false))
+        using (new Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false))
         {
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();
@@ -75,7 +75,7 @@ public class CompiledPatternParityTests
 
         TilePath compiledOn;
         // Enable board shape fast path within a scope (extended scope supports boardShape flag)
-        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false, boardShape: true))
+        using (new Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false, boardShape: true))
         {
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();

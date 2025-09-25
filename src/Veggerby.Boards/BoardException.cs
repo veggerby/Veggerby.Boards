@@ -20,5 +20,5 @@ public class BoardException : Exception
     /// <summary>
     /// Initializes a new instance with an error message and inner exception.
     /// </summary>
-    public BoardException(string message, System.Exception inner) : base(message, inner) { }
+    public BoardException(string message, Exception inner) : base(message, inner) { }
 }

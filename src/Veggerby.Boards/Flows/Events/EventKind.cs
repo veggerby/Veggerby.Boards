@@ -61,7 +61,7 @@ internal static class EventKindClassifier
         return EventKind.Any; // fallback retains current broad classification
     }
 
-    public static EventKind ClassifyRule(Veggerby.Boards.Flows.Rules.IGameEventRule rule)
+    public static EventKind ClassifyRule(Rules.IGameEventRule rule)
     {
         if (rule is null)
         {

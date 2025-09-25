@@ -83,7 +83,7 @@ Finalization Note: Core simulation deliverables (sequential/parallel, phase 1 me
 
 Granular Breakdown / New Tasks (Updated – Workstream 7 FINALIZED 2025-09-25):
 
-- [ ] Backgammon: Multi-turn doubling invariant (ownership gating + redouble sequence 2→4→8→… until cap) – pending turn progression semantics (DEFERRED; not blocking Workstream 7 finalization).
+- [x] Backgammon: Multi-turn doubling invariant (ownership gating + redouble sequence 2→4→8→… until cap) – implemented with TurnState shadow sequencing (owner-on-roll redouble, ownership alternation, same-turn gating via DoublingDiceState.LastDoubledTurn). Property test added; previous deferral removed.
 - [x] Backgammon: Negative invariants – pre-active-player attempt & same-turn redouble covered (tests added); remaining scenarios (non-owner redouble, exceeding cap) pending richer turn semantics.
 - [x] Backgammon: Remove experimental `SelectActivePlayerRule` wrapper in favor of lightweight post-roll mutator (`SelectStartingPlayerStateMutator`). CHANGELOG + action plan updated; tests adjusted (no manual active player injection). Style charter reaffirmed (file-scoped namespaces, explicit braces, no hot-path LINQ, immutability, deterministic transitions).
 - [ ] Adopt `TestPathHelper.ResolveFirstValidPath` in any remaining observer / movement tests duplicating path resolution (grep for `ResolveTilePathPatternVisitor` outside helper file) – ensures single authoritative path logic (Residual hygiene; not gating finalization).

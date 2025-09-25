@@ -19,7 +19,7 @@ public static partial class GameExtensions
     /// <param name="occupancy">All-piece occupancy mask.</param>
     /// <param name="perPlayer">Optional per-player occupancy mapping.</param>
     /// <returns>True when bitboards available; otherwise false.</returns>
-    internal static bool TryGetBitboards(this GameProgress progress, out Internal.Bitboards.Bitboard64 occupancy, out Dictionary<Artifacts.Player, Internal.Bitboards.Bitboard64> perPlayer)
+    internal static bool TryGetBitboards(this GameProgress progress, out Bitboard64 occupancy, out Dictionary<Artifacts.Player, Bitboard64> perPlayer)
     {
         if (!FeatureFlags.EnableBitboards)
         {
@@ -31,12 +31,12 @@ public static partial class GameExtensions
         {
             var occ = progress.Engine.Capabilities.AccelerationContext.Occupancy;
             // Global mask exposure (bitboards feature defines hash semantics external to index)
-            occupancy = new Internal.Bitboards.Bitboard64((occ as Internal.Occupancy.BitboardOccupancyIndex)?.GlobalMask ?? 0UL);
-            perPlayer = new Dictionary<Artifacts.Player, Internal.Bitboards.Bitboard64>();
+            occupancy = new Bitboard64((occ as Internal.Occupancy.BitboardOccupancyIndex)?.GlobalMask ?? 0UL);
+            perPlayer = new Dictionary<Artifacts.Player, Bitboard64>();
             foreach (var player in progress.Game.Players)
             {
                 var mask = (occ as Internal.Occupancy.BitboardOccupancyIndex)?.PlayerMask(player) ?? 0UL;
-                perPlayer[player] = new Internal.Bitboards.Bitboard64(mask);
+                perPlayer[player] = new Bitboard64(mask);
             }
             return true;
         }

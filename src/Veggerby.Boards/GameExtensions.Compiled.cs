@@ -40,7 +40,7 @@ public static partial class GameExtensions
 
         foreach (var pat in piece.Patterns)
         {
-            var visitor = new Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
+            var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             pat.Accept(visitor);
             if (visitor.ResultPath is not null)
             {
@@ -186,11 +186,11 @@ public static partial class GameExtensions
             }
         }
 
-        var rels = path.Relations.ToArray();
-        for (int i = 0; i < rels.Length; i++)
+        var relations = path.Relations.ToArray();
+        for (int i = 0; i < relations.Length; i++)
         {
-            var rel = rels[i];
-            var isLast = i == rels.Length - 1;
+            var rel = relations[i];
+            var isLast = i == relations.Length - 1;
             if (isLast)
             {
                 if (occupancy.TryGetValue(rel.To, out var occ))

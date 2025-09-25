@@ -11,7 +11,7 @@ public class CompiledDirectionPatternParityTests
 {
     private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
-        var legacyVisitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
+        var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
         foreach (var p in piece.Patterns)
         {
             p.Accept(legacyVisitor);

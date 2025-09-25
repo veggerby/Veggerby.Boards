@@ -16,7 +16,7 @@ public class ChessBitboardTests
     public void GivenInitialChessPosition_WhenBitboardsEnabled_ThenOccupancyMatchesPieceCount()
     {
         // arrange
-        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: false, compiledPatterns: true, bitboards: true);
+        using var _ = new FeatureFlagScope(decisionPlan: false, compiledPatterns: true, bitboards: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 
@@ -25,7 +25,7 @@ public class ChessBitboardTests
 
         // assert
         Assert.True(ok);
-        Assert.Equal(progress.State.GetStates<Veggerby.Boards.States.PieceState>().Count(), occupancy.PopCount()); // all pieces occupy unique tiles
+        Assert.Equal(progress.State.GetStates<Boards.States.PieceState>().Count(), occupancy.PopCount()); // all pieces occupy unique tiles
         Assert.Equal(2, perPlayer.Count);
         var white = perPlayer.Single(k => k.Key.Id == "white").Value.PopCount();
         var black = perPlayer.Single(k => k.Key.Id == "black").Value.PopCount();

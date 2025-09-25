@@ -192,7 +192,7 @@ To mitigate overreach and maintain momentum:
 
 ### 1. Rule Evaluation Engine Modernization
 
-Deliverables (Status annotations in brackets):
+Deliverables (Status annotations in brackets) – Finalization Note (2025-09-25): Core modernization scope now considered COMPLETE (grouping, event kind filtering, manual + static exclusivity masking, debug parity dual-run, observer skip taxonomy). Remaining observer granularity refinements (invalid vs ignored differentiation, composite skip capture) deferred to Observability workstream and do not block engine graduation.
 
 - `DecisionPlan` immutable model: phases, rule table, pre-bound predicates, mutator delegate array. **[COMPLETED (parity subset – minimal model, no delegate table yet)]**
 - Phase reference caching in `DecisionPlanEntry` to eliminate runtime tree lookups. **[COMPLETED – micro-optimization]**

@@ -8,14 +8,16 @@ Scope: Only items not yet delivered and required before graduating DecisionPlan 
 
 COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work only.
 
-## 1. Rule Evaluation Engine Modernization
+## 1. Rule Evaluation Engine Modernization (FINALIZED)
 
 - [x] Static exclusivity inference (attribute-driven) feeding mask table (M2) – implemented with precedence (builder > phase definition > attribute). Flag-gated under `EnableDecisionPlanMasks`; parity unaffected.
-- [x] Grouping invalid-gate negative tests (ensure skipped entries unaffected). (Implemented: `DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently` – semantics clarified: non-grouped subsequent condition still evaluates.)
-- [x] EventKind filtering benchmark variants (heterogeneous inert state event + 50/50, 80/20, 20/80 distributions + evaluation counts; allocation commentary pending separate perf note). Style charter reaffirmed.
-- [x] EventKind filtering benchmark variants – allocation counts + distinct hit/miss distributions (FOLLOW-UP). (Metrics captured 2025-09-25; allocations neutral; 20/80 shows ~4.6% gain; others neutral/slight overhead. Perf note updated.)
-- [x] Debug parity overhead microbenchmark (dual-run cost quantification) – `DebugParityOverheadBenchmark` added.
-- [ ] Observer reason taxonomy enrichment (invalid vs ignored vs masked) – PARTIAL: `OnRuleSkipped` + `RuleSkipReason` (EventKindFiltered, ExclusivityMasked, GroupGateFailed) landed; remaining: distinct invalid vs ignored classification & composite skip capture tests.
+- [x] Grouping invalid-gate negative tests (ensure skipped entries unaffected). (Implemented: `DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently` – semantics clarified.)
+- [x] EventKind filtering benchmark variants (heterogeneous inert state event + 50/50, 80/20, 20/80 distributions + evaluation counts). Allocation commentary captured; style charter reaffirmed.
+- [x] EventKind filtering allocation & distribution follow-up (metrics captured 2025-09-25; perf note updated).
+- [x] Debug parity overhead microbenchmark – `DebugParityOverheadBenchmark` measuring dual-run cost.
+- [x] Observer skip reason taxonomy (OnRuleSkipped + RuleSkipReason: EventKindFiltered, ExclusivityMasked, GroupGateFailed). Follow-up (classification of invalid vs ignored vs masked nuance + composite skip capture tests) deferred to Observability backlog (migrated below) – core modernization considered complete.
+
+Outcome: Rule evaluation modernization feature set (grouping, event kind filtering, masking, static exclusivity inference, debug parity, observer skip taxonomy) is feature-complete for current release objectives. Any additional observer granularity or masking refinements treated as incremental diagnostics enhancements, not gating engine graduation.
 
 ## 2. Deterministic Randomness & State History
 
@@ -57,10 +59,9 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 - [ ] Roslyn analyzers: forbidden `System.Random`, mutable state mutation, FeatureFlags usage outside scopes.
 - [ ] Analyzer tests (happy/diagnostic/fix). (Fixers optional initially.)
 
-## 8. Module & API Versioning Strategy
+## 8. Public API Facade (Deferred)
 
-- [ ] Package metadata split & semantic version policy doc.
-- [ ] DTO v1 namespace skeleton (only when API facade reintroduced).
+Removed from active scope. Re-imagining (HTTP transport, DTO versioning policy) will occur under a future dedicated plan; no tasks tracked here.
 
 ## 9. Structural Refactors
 

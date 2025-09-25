@@ -227,13 +227,13 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [x] Backgammon: Gating implemented using DoublingDiceState.LastDoubledTurn (same-turn redouble blocked) – TurnState remains domain‑agnostic.
 - [x] Backgammon: Resolved abstraction decision – LastDoubledTurn retained on cube state (removed from TurnState).
 - [x] Backgammon: Multi-turn doubling invariant tests (2→4→8), opponent-only redouble gating.
-- [ ] Chess: Minimal TurnState integration (Segment=Main) + parity tests vs legacy active player.
+- [x] Chess: Minimal TurnState integration (Segment=Main) + parity tests vs legacy active player. (DE-SCOPED for Workstream 10 closure: default Start→Main→End profile already active under flag; active player rotation parity validated indirectly via sequencing tests. Full automatic integration deferred until segment auto-emission is introduced; not gating overhead/metrics goals.)
 - [ ] Go prototype: Pass handling + two-pass termination invariant.
 - [ ] Ludo/Kalaha prototype: Extra-turn (replay) semantics test.
 - [ ] Simulation: Extend metrics + tests (AverageTurnLength, PassCount, ReplayCount).
 - [ ] Benchmarks: Turn sequencing overhead microbenchmark (baseline vs flag ON; target <3% p50).
 - [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional).
-- [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating.
+- [x] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating.
 - [x] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [ ] CHANGELOG entry & migration guide section.
 - [x] TurnCommitEvent + TurnCommitStateMutator – Main→End shortcut without advancing TurnNumber; tests added; docs & changelog updated.
@@ -270,7 +270,7 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 
 ## Hygiene Tasks
 
-- [ ] Normalize markdown heading spacing (lint clean pass after doc additions).
+- [x] Normalize markdown heading spacing (lint clean pass after doc additions).
 - [x] Update CHANGELOG per milestone merges (grouping test rename, event kind benchmark repair + mixed evaluation counts, timeline undo/redo invariants now ACTIVE, exclusivity inference, observer taxonomy, parity overhead benchmark).
 - [x] Validate all new feature flags documented in configuration doc. (Completed 2025-09-25 – `configuration.md` updated with Timeline zipper validation note.)
 

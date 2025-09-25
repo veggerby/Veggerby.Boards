@@ -38,6 +38,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Benchmarks: Repaired and extended `EventKindFilteringBenchmark` (now includes mixed stream evaluation count variant) after prior file corruption; added lightweight counting observer leveraging updated `IEvaluationObserver` signatures.
 - Benchmarks: Extended `EventKindFilteringBenchmark` with heterogeneous inert state event (`BenchmarkStateNoOpEvent`) and distribution variants (50/50, 80/20, 20/80) to measure filtering sensitivity; horizontal rook oscillation path replaces invalid pawn back/forward sequence; adheres to style charter (file-scoped namespaces, explicit braces, no LINQ in hot loops, immutable state). Added preliminary allocation timing notes in `docs/perf/eventkind-filtering.md` (pending filtered mixed variant comparisons) to track evaluation count reductions and memory impact.
 
+- Deterministic RNG & State History: Workstream FINALIZED (2025-09-25) – added replay determinism acceptance test (`ReplayDeterminismTests.GivenSameSeedAndEventSequence_WhenReplayed_ThenFinalHashesMatch`) asserting identical 64-bit & 128-bit hashes + RNG seed for identical seed + event sequence; documented canonical RNG serialization ordering (Seed, Peek[0], Peek[1]) in `rng-and-timeline.md`; added workstream finalization note (external reproduction envelope, hash interning map, timeline diff utilities deferred).
+
 ### Safety
 
 - Guard: Fast-path auto-skips on boards >64 tiles (new test `GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash`).

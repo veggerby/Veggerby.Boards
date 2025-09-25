@@ -19,11 +19,13 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 
 Outcome: Rule evaluation modernization feature set (grouping, event kind filtering, masking, static exclusivity inference, debug parity, observer skip taxonomy) is feature-complete for current release objectives. Any additional observer granularity or masking refinements treated as incremental diagnostics enhancements, not gating engine graduation.
 
-## 2. Deterministic Randomness & State History
+## 2. Deterministic Randomness & State History (FINALIZED)
 
-- [ ] Replay harness (external tool spec stub; internal test: seed + event sequence reproduces hash).
+- [x] Replay determinism internal acceptance test (seed + event sequence reproduces 64/128-bit hash & seed) – `ReplayDeterminismTests` added.
 - [x] Undo/Redo zipper invariant tests (hash stability, idempotent redo after undo chain). (Active: tests enabled using deterministic rook oscillation path; hash + idempotent redo invariants validated.)
-- [ ] RNG state serialization doc fragment (canonical field ordering confirmation).
+- [x] RNG state serialization doc fragment (canonical field ordering: Seed, Peek[0], Peek[1]) added to `rng-and-timeline.md`.
+
+Outcome: Workstream objectives met for milestone (deterministic RNG, dual hashing, zipper invariants, replay acceptance, documented serialization ordering). Deferred enhancements (external reproduction envelope tooling, hash interning map, timeline diff utilities) tracked outside active slice; no further blocking tasks here.
 
 ## 3. Movement & Pattern Compilation
 

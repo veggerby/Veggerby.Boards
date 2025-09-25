@@ -1,6 +1,6 @@
 # Deterministic RNG & State Hashing (Phase 1 Scaffold)
 
-Status: RNG abstraction integrated; feature-flagged state hashing (64/128-bit) implemented; timeline zipper implemented (flag-gated) with undo/redo invariant tests active.
+Status: RNG abstraction integrated; feature-flagged state hashing (64/128-bit) implemented; timeline zipper implemented (flag-gated) with undo/redo invariant tests active. Replay determinism acceptance test added (2025-09-25) validating identical hashes & seed for identical seed + event sequence. RNG serialization ordering now documented (see Canonical RNG Serialization Ordering). Workstream FINALIZED for current milestone (external reproduction envelope remains deferred; future enhancements tracked in backlog).
 
 Components:
 
@@ -136,3 +136,52 @@ Next Steps:
 1. Add optional exporter returning immutable DTO or JSON directly.
 2. Integrate with planned replay harness for step-by-step divergence detection.
 3. Provide benchmark to quantify overhead (<5% target) with trace enabled vs disabled.
+
+## Canonical RNG Serialization Ordering
+
+The engine’s deterministic replay and hashing rely on a **stable, architecture‑agnostic ordering** when incorporating RNG data. The canonical ordering appended to the serialized artifact state sequence is:
+
+1. Seed (UInt64 little‑endian)
+2. Peek[0] (UInt32 little‑endian) – first value obtained via a non‑advancing peek
+3. Peek[1] (UInt32 little‑endian) – second sequential peek (as if two future `NextUInt32` calls were observed)
+
+Characteristics:
+
+- Peeks MUST NOT advance the underlying RNG state; they read a cloned working copy.
+- Endianness is fixed (little‑endian) irrespective of host platform.
+- The pair of peek values serve as a forward entropy fingerprint; altering RNG algorithm or seeding logic without updating these semantics is a breaking determinism change and requires a CHANGELOG entry.
+- Additional future RNG metadata (e.g., algorithm id) would be appended AFTER the current trio to preserve backwards compatibility.
+
+Rationale:
+
+Including two forward values instead of only the seed reduces risk of collisions between sequences that share a seed but diverge early due to feature flag differences or conditional dice consumption patterns.
+
+## Deterministic Replay Acceptance
+
+An automated test (`ReplayDeterminismTests.GivenSameSeedAndEventSequence_WhenReplayed_ThenFinalHashesMatch`) asserts:
+
+1. Building two game instances with identical seed `S`.
+2. Applying the same ordered event list `E[]`.
+3. Final `GameState.Hash` (64‑bit) and `GameState.Hash128` (128‑bit) and `GameState.Random.Seed` are identical between runs.
+
+Edge Considerations:
+
+- Tests run with hashing flag enabled to exercise full serialization path.
+- Event list chosen to produce deterministic state mutations (idempotent move sequence acceptable because hashing incorporates full state, not transition count).
+- Any future RNG algorithm upgrade must revalidate this invariant across platforms (Linux, Windows, ARM) before release.
+
+Failure Handling:
+
+- Divergence triggers investigation of: (a) non-deterministic ordering in serialization, (b) feature flag leakage between tests, (c) RNG implementation drift (endianness, arithmetic), or (d) hidden mutable global state.
+
+## Workstream Finalization Note (2025-09-25)
+
+The "Deterministic Randomness & State History" workstream has reached its scoped milestone objectives:
+
+- Deterministic RNG abstraction + seeding.
+- Dual (64/128-bit) state hashing with canonical binary serialization including RNG fingerprint.
+- Timeline zipper undo/redo invariants.
+- Deterministic replay acceptance test.
+- Documented canonical RNG serialization ordering.
+
+Deferred (tracked in backlog): external reproduction envelope tooling, hash interning map, 128-bit-only mode optimization, timeline diff utilities.

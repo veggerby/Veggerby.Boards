@@ -221,7 +221,7 @@ Risks & Mitigation:
 Migration Strategy:
 - Keep legacy evaluator for one release hidden behind `#if LEGACY_RULE_ENGINE` or configuration for A/B verification.
 
-### 2. Deterministic Randomness & State History Evolution
+### 2. Deterministic Randomness & State History Evolution (FINALIZED 2025-09-25)
 
 Deliverables (Status annotations in brackets):
 
@@ -232,15 +232,17 @@ Deliverables (Status annotations in brackets):
 <!-- Removed previous internal `BugReport` envelope scaffold: concept moved out of core; external tool will supply reproduction envelope per roadmap item 14. -->
 Acceptance Criteria:
 
-- Replaying same seed + events yields identical final hash and RNG state. **[PENDING – replay not implemented]**
-- Undo/Redo operations O(1) and hash-stable. **[PARTIAL – zipper present; formal tests pending]**
+- Replaying same seed + events yields identical final hash and RNG state. **[COMPLETED – automated test `ReplayDeterminismTests` asserts Hash, Hash128, Seed equality]**
+- Undo/Redo operations O(1) and hash-stable. **[COMPLETED – zipper invariants test suite active]**
 <!-- Removed internal replay harness item (now external responsibility). -->
 Risks:
 
-- Hash collisions (mitigate with 128-bit hash like xxHash128 or Blake2b incremental).
-- State size growth (dedupe identical state nodes via hash interning map optional in Phase 3).
+- Hash collisions (mitigated by dual 64/128-bit hashes; future optional 128-bit-only mode under consideration).
+- State size growth (hash interning map deferred – documented in backlog).
 Migration:
-- Hash initially optional; enable via feature toggle in builder.
+- Hash initially optional; enable via feature toggle in builder (will graduate to always-on once perf gates affirmed).
+
+Finalization Note: Scope for this milestone is COMPLETE. Remaining deferred enhancements (external reproduction envelope tooling, hash interning, timeline diff utilities) tracked under backlog and no longer gate engine graduation.
 
 ### 3. Movement & Pattern Engine Compilation
 

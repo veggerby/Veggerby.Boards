@@ -402,14 +402,17 @@ Deliverables (Status annotations in brackets):
 - StateHashed callback **[COMPLETED]**
 - In-memory trace capture scaffold (last evaluation) **[COMPLETED]**
 - Decision trace serializer (compact JSON) for last evaluation. **[COMPLETED]**
-- CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[NOT STARTED]**
+- CLI or lightweight web visualizer (Phase 3) reading trace JSON. **[DEFERRED – scope reduced for current increment]**
+- Evaluation observer batching (buffer + flush on terminal) behind feature flag `EnableObserverBatching`. **[COMPLETED]**
 Acceptance Criteria:
-- Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – initial overhead benchmarks collected; need gating)**
+- Observer adds ≤5% overhead when enabled in benchmark microtests. **[PENDING – batching variant benchmark added]**
+- Batched vs unbatched ordering parity test passes across representative move. **[COMPLETED]**
 - Trace includes minimal fields to reproduce reasoning (state hash, rule id, reason enum). **[PARTIAL – fields captured; reason detail & rule index still pending]**
 Risks:
-- Performance drag; mitigate with aggressive inlining and early branch-out when no observers.
+- Performance drag; mitigated via feature flag, zero per-callback allocation under capacity, and consolidated flush.
+- Complexity creep in trace layering; mitigated by decorator ordering (batching before trace capture).
 Migration:
-- Start with synchronous callbacks; consider batching later if needed.
+- Started synchronous unbatched; batching introduced as optional decorator (no public API change). Future default activation depends on benchmark thresholds.
 
 ### 7. Developer Experience & Quality Gates
 

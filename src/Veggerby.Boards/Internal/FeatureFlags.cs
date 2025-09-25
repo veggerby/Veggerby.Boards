@@ -111,4 +111,13 @@ internal static class FeatureFlags
     /// accidental reliance on an experimental subsystem. Default: false until determinism + perf validated.
     /// </summary>
     public static bool EnableSimulation { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether evaluation observer callbacks are batched before dispatch to the configured
+    /// <see cref="Flows.Observers.IEvaluationObserver"/>. When enabled, high-frequency callbacks (phase enter, rule evaluated, rule skipped)
+    /// are buffered and flushed when a terminal outcome for the current event is reached (rule applied or event ignored) or the buffer capacity is exceeded.
+    /// This reduces delegate invocation / virtual dispatch overhead in evaluation-intense scenarios (large plans) while preserving deterministic ordering.
+    /// Default: false (opt-in until benchmarks validate &lt;=5% overhead vs direct dispatch for small plans).
+    /// </summary>
+    public static bool EnableObserverBatching { get; set; } = false;
 }

@@ -82,6 +82,12 @@ public class GameEngine
         DecisionPlan = decisionPlan; // may be null (feature flag disabled)
         Capabilities = capabilities; // may be null (no experimental features)
         var baseObserver = observer ?? NullEvaluationObserver.Instance;
+        // Batching wraps the base observer first (prior to trace capture) so trace capture still receives ordered callbacks.
+        if (Internal.FeatureFlags.EnableObserverBatching)
+        {
+            baseObserver = new Internal.Observers.BatchingEvaluationObserver(baseObserver);
+        }
+
         if (Internal.FeatureFlags.EnableTraceCapture)
         {
             _lastTrace = new Internal.Tracing.EvaluationTrace();

@@ -49,17 +49,17 @@ public class ObserverOverheadBenchmark
         var builder1 = new Chess.ChessGameBuilder();
         _baseline = builder1.Compile();
 
-    FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
-    FeatureFlags.EnableObserverBatching = false;
-    _observer = new CountingObserver();
-    var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
-    _observed = builder2.Compile();
+        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+        FeatureFlags.EnableObserverBatching = false;
+        _observer = new CountingObserver();
+        var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
+        _observed = builder2.Compile();
 
-    FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
-    FeatureFlags.EnableObserverBatching = true;
-    _batchedObserver = new CountingObserver();
-    var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
-    _batched = builder3.Compile();
+        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+        FeatureFlags.EnableObserverBatching = true;
+        _batchedObserver = new CountingObserver();
+        var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
+        _batched = builder3.Compile();
 
         var piece = _baseline.Game.GetPiece("white-pawn-2");
         var from = _baseline.Game.GetTile("e2");

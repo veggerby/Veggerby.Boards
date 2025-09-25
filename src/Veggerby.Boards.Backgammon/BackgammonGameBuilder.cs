@@ -122,7 +122,9 @@ public class BackgammonGameBuilder : GameBuilder
                     .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2")))
                         .And<DiceValuesShouldBeDifferent>()
                     .Then()
-                        .Do<DiceStateMutator<int>>();
+                        .Do<DiceStateMutator<int>>()
+                        // Post-roll assign active player (only if dice differ and not already assigned)
+                        .Do<SelectStartingPlayerStateMutator>();
 
         AddGamePhase("dice has been rolled")
             .If(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.Any))
@@ -131,8 +133,7 @@ public class BackgammonGameBuilder : GameBuilder
                 .PreProcessEvent(game => new SingleStepMovePieceGameEventPreProcessor(new TileBlockedGameEventCondition(2, PlayerOption.Opponent), game.GetArtifacts<Dice>("dice-1", "dice-2")))
                 .All()
                 .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => new DiceGameEventCondition<int>(game.GetArtifacts<Dice>("doubling-dice")))
-                        .And(game => new DoublingDiceWithActivePlayerGameEventCondition(game.GetArtifact<Dice>("doubling-dice")))
+                    .If(game => new DoublingDiceWithActivePlayerGameEventCondition(game.GetArtifact<Dice>("doubling-dice")))
                     .Then()
                         .Do(game => new DoublingDiceStateMutator(game.GetArtifact<Dice>("doubling-dice")))
                 .ForEvent<MovePieceGameEvent>()

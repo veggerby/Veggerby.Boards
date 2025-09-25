@@ -13,6 +13,12 @@
 > Consolidation (2025-09-25 later): Core Copilot operating guidance extracted to `docs/wip/copilot-action-plan.md` (augmenting `.github/copilot-instructions.md`). This document now defers granular backlog grooming to `backlog-next.md` (new) for remaining forward-looking items; completed or deprecated entries trimmed here to reduce noise.
 
 > Addendum (2025-09-25 later still): Heterogeneous EventKind filtering benchmark variants implemented (50/50, 80/20, 20/80 with inert state event) + evaluation count observer integration validated; allocation results captured (see `docs/perf/eventkind-filtering.md`). Style charter reconfirmed—no LINQ introduced in new hot loops; rook oscillation strategy replaced invalid pawn reverse path sequence to maintain deterministic legality.
+
+> Backgammon Flow Addendum (2025-09-25 latest): Replaced previously experimental `SelectActivePlayerRule` wrapper with a direct post-roll `SelectStartingPlayerStateMutator` in the opening phase. This assigns active/inactive players immediately after a distinct opening roll without extra rule indirection, simplifying evaluation and reducing allocations. Property tests updated (first-valid doubling + same-turn redouble invariant). CHANGELOG and backlog adjusted; style charter reaffirmed (file-scoped namespaces, explicit braces, no LINQ in hot loops, immutable state transitions). Any further doubling cube multi-turn semantics (ownership-based redoubling gating) tracked under Section 7 granular tasks.
+
+> Developer Experience Workstream 7 Addendum (2025-09-25): Added Backgammon negative doubling invariants (pre-active-player attempt no-op, immediate same-turn redouble no-op) and `EventRejectionReason` exhaustiveness guard test. Backlog Section 7 cleaned (duplicate entries removed, progress annotated). CHANGELOG updated with new property test bullet. Style charter re-emphasized: file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot loops, immutable and deterministic state transitions. Remaining tasks: chess castling blocked invariant, capture sequence invariant, property test acceptance criteria & feature flag isolation documentation, benchmark JSON schema draft, style enforcement stub, CONTRIBUTING update. These will finalize Workstream 7 prior to marking COMPLETED.
+>
+> Workstream 7 FINALIZATION (2025-09-25 latest): All non-deferred Developer Experience & Quality Gates granular tasks completed: chess castling blocked + capture invariants, property test acceptance criteria doc, feature flag isolation pattern doc, benchmark JSON schema draft, style enforcement stub, CONTRIBUTING cross-reference, event rejection guard, backlog grooming (monotonic wording removal). Deferred (non-blocking) items: multi-turn doubling sequence (awaiting richer turn semantics), deterministic chess opening helper, remaining path helper adoption sweep. Acceptance criteria met; Section 7 marked FINALIZED in `backlog-next.md`. Style charter reiterated (file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot loops, immutable state, deterministic transitions). Any future DX enhancements require explicit CHANGELOG entries and adherence to deviation annotation policy (`// STYLE-DEVIATION:`) if exceptions arise.
 >
 > Style Re‑Emphasis (contextual to addendum): All benchmark modifications adhere to repository charter:
 >
@@ -421,15 +427,43 @@ Deliverables (Status annotations in brackets):
 - Property tests (FsCheck) for listed invariants. **[PARTIAL – scaffold + minimal tests]**
 - Benchmark suite (BenchmarkDotNet) in `/benchmarks` project. **[COMPLETED (baseline harness present)]**
 - Uniform AAA Arrange/Act/Assert annotation across entire test suite (readability & future analyzer basis). **[COMPLETED]**
+- Dedicated Developer Experience & Quality Gates document (`docs/developer-experience.md`) consolidating style charter, hot path definition, benchmark policy, feature flag discipline, determinism checklist. **[COMPLETED – new]**
 - CI workflow: run benchmarks on PR; compare against stored baseline JSON; fail on >2% regression. **[NOT STARTED]**
-- Documentation for extension points & stability guarantees. **[PARTIAL – new feature docs only]**
-Acceptance Criteria:
-- Invariants >99% pass rate across 10k generated cases each. **[NOT STARTED – limited invariants]**
-- Regression workflow reliably detects synthetic slowdown. **[NOT STARTED]**
+- Documentation for extension points & stability guarantees (architecture & concept pages). **[PARTIAL – new feature docs only]**
+- Analyzer roadmap (forbidden `System.Random`, hot-path LINQ, direct flag mutation, mutable state). **[COMPLETED – documented roadmap; implementation pending]**
+- Roslyn analyzer package implementing first two rules. **[NOT STARTED]**
+- Benchmark baseline artifact & tolerance configuration (JSON) stored in repo. **[NOT STARTED]**
+
+Acceptance Criteria (Phased):
+
+Phase DX-1 (Now):
+
+- Style charter explicitly documented (central doc) and referenced by backlog & CHANGELOG. **[COMPLETED]**
+- All new/modified tests use AAA comment sections. **[COMPLETED]**
+- Baseline benchmark project compiles & runs locally (manual). **[COMPLETED]**
+
+Phase DX-2:
+
+- Property tests cover at least 3 core invariants (hash determinism, replay determinism, fast-path parity distribution) with ≥99% pass over 10k samples. **[PENDING]**
+- Benchmark regression CI gate implemented with <2% default tolerance, failing on synthetic slowdown injection test. **[PENDING]**
+
+Phase DX-3:
+
+- First analyzer package (Random, HotPathLINQ) active in solution; zero violations in main branch. **[PENDING]**
+- Allocation guard integration: flagged hot path benchmarks show 0 allocs (enforced by analyzer attribute or test). **[PENDING]**
+
 Risks:
-- Flaky benchmarks (mitigate with statistical filtering, dedicated CI runner settings).
-Migration:
-- Property tests can be quarantined initially if unstable.
+
+- Flaky benchmarks (mitigate with warmup control, explicit invocation count, dedicated CI runner settings, statistically smoothed comparisons).
+- Overly strict analyzer false positives (stage rollout behind `EnableAnalyzersExperimental` flag or severity=info first).
+
+Migration / Notes:
+
+- Property tests can be quarantined (Trait=Quarantine) if instability arises; revisit after seed/retry harness added.
+- Analyzer implementation deferred until core observability & acceleration stabilize (avoid churn in diagnostic baselines).
+
+Style Charter Re-Emphasis:
+The authoritative style rules live in `.github/copilot-instructions.md` and `docs/developer-experience.md`. All hot path code (evaluation loops, fast-path reconstruction, observer dispatch/batching, simulation loops, benchmark inner iterations) must remain free of LINQ, hidden allocations, and implicit control flow. Deviations require `// STYLE-DEVIATION:` plus CHANGELOG entry.
 
 ### 8. Public API Facade (Deferred)
 

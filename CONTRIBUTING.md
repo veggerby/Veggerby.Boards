@@ -48,6 +48,8 @@ See `docs/` (architecture & core concepts) for authoritative model.
 9. Tests must follow AAA pattern and cover each new rule branch (Valid / Invalid / Ignore / NotApplicable).
 10. Format cleanliness: `dotnet format` should produce no changes before PR.
 
+For the complete authoritative charter (including hot path definition, property test acceptance criteria, and feature flag isolation pattern) see `docs/developer-experience.md`. Any intentional deviation MUST include `// STYLE-DEVIATION:` plus a CHANGELOG entry under Temporary Exceptions.
+
 ### Feature Flag Policy
 
 Feature flags represent transitional optimizations or experimental subsystems. To prevent semantic drift and scattered conditional logic:
@@ -64,6 +66,20 @@ Migration TODO (tracked in backlog): Replace remaining inline `FeatureFlags` con
 Deviations:
 
 - Any temporary inline branching requires `// STYLE-DEVIATION:` with rationale and a backlog reference. These must appear in the CHANGELOG Temporary Exceptions section until removed.
+
+### Property / Invariant Tests
+
+All property-style or invariant tests must:
+
+1. Be deterministic (fixed seed / deterministic sequence)
+2. Use AAA structuring with clear arrange/act/assert separation
+3. Scope feature flags via `FeatureFlagScope` only
+4. Avoid LINQ in per-iteration hot loops (allowed in aggregation)
+5. Assert both absence of unintended mutation and presence of intended effect
+6. Reuse canonical helpers instead of duplicating engine logic
+7. Document any tolerated randomness attempts (loop count + rationale)
+
+See `developer-experience.md` Section 12 for the authoritative, versioned list.
 
 ## Pull Requests
 

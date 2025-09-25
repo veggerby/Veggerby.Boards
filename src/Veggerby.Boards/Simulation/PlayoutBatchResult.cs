@@ -111,3 +111,95 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
         return ordered[index];
     }
 }
+
+/// <summary>
+/// Aggregated metrics for a single playout (captured only in detailed runs to avoid overhead otherwise).
+/// </summary>
+public sealed class PlayoutMetrics
+{
+    /// <summary>
+    /// Number of events successfully applied during the playout.
+    /// </summary>
+    public int AppliedEvents { get; }
+
+    /// <summary>
+    /// Number of candidate events rejected (either by rules or policy). May be zero if the policy does not expose rejected attempts.
+    /// </summary>
+    public int RejectedEvents { get; }
+
+    /// <summary>
+    /// Number of times the policy delegate was invoked to obtain the next event.
+    /// </summary>
+    public int PolicyCalls { get; }
+
+    /// <summary>
+    /// Maximum depth (number of applied events) observed at any point in the playout. Equal to <see cref="AppliedEvents"/> unless early termination semantics evolve.
+    /// </summary>
+    public int MaxDepthObserved { get; }
+
+    /// <summary>
+    /// Creates a new metrics snapshot.
+    /// </summary>
+    /// <param name="applied">Applied event count.</param>
+    /// <param name="rejected">Rejected candidate event count.</param>
+    /// <param name="policyCalls">Number of policy invocations.</param>
+    /// <param name="maxDepthObserved">Maximum depth reached (events applied).</param>
+    public PlayoutMetrics(int applied, int rejected, int policyCalls, int maxDepthObserved)
+    {
+        AppliedEvents = applied;
+        RejectedEvents = rejected;
+        PolicyCalls = policyCalls;
+        MaxDepthObserved = maxDepthObserved;
+    }
+}
+
+/// <summary>
+/// Detailed batch result including per-playout metrics and aggregate summaries.
+/// </summary>
+public sealed class PlayoutBatchDetailedResult
+{
+    /// <summary>
+    /// Basic batch result (playout results and simple statistics) that mirrors the non-detailed API for compatibility.
+    /// </summary>
+    public PlayoutBatchResult Basic { get; }
+
+    /// <summary>
+    /// Per-playout metrics captured during detailed execution.
+    /// </summary>
+    public IReadOnlyList<PlayoutMetrics> Metrics { get; }
+
+    /// <summary>
+    /// Indicates whether cancellation was requested mid-run and the batch is therefore partial.
+    /// </summary>
+    public bool CancellationRequested { get; }
+
+    /// <summary>
+    /// Total applied events across all playouts in this batch.
+    /// </summary>
+    public int TotalApplied => Metrics.Sum(m => m.AppliedEvents);
+
+    /// <summary>
+    /// Total rejected candidate events across all playouts.
+    /// </summary>
+    public int TotalRejected => Metrics.Sum(m => m.RejectedEvents);
+
+    /// <summary>
+    /// Total policy invocations across all playouts.
+    /// </summary>
+    public int TotalPolicyCalls => Metrics.Sum(m => m.PolicyCalls);
+
+    /// <summary>
+    /// Average branching factor approximation = total policy calls / playout count (coarse; refined variant may divide by applied depth sum later).
+    /// </summary>
+    public double AverageBranchingFactor => Metrics.Count == 0 ? 0d : (double)TotalPolicyCalls / Metrics.Count;
+
+    /// <summary>
+    /// Creates a new detailed batch result.
+    /// </summary>
+    public PlayoutBatchDetailedResult(PlayoutBatchResult basic, IReadOnlyList<PlayoutMetrics> metrics, bool cancellationRequested)
+    {
+        Basic = basic;
+        Metrics = metrics;
+        CancellationRequested = cancellationRequested;
+    }
+}

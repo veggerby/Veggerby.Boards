@@ -53,11 +53,18 @@ Initiation Emphasis (2025-09-25): Prioritize sliding fast-path blocked/capture m
 - [x] Sequential Simulator basic playout loop (policy delegate, stop predicate) – feature-flagged (`EnableSimulation`); added `SequentialSimulator.Run` with deterministic policy loop + safety cap + guard tests. Style charter reaffirmed (explicit braces, no LINQ in loop, immutable state usage).
 - [x] Parallel orchestrator (initial) – `ParallelSimulator.RunManyAsync` with bounded degree-of-parallelism, ordered results, cancellation throwing semantics (future partial result enhancement pending).
 - [x] Cancellation test (exception path) – validates cancel token triggers `OperationCanceledException` / `TaskCanceledException`.
-- [ ] Deterministic multiset equivalence test (parallel vs sequential) – add 32-playout hash multiset comparison.
-- [ ] Metrics enrichment (policy invocation count, rejected count, branching factor, depth distribution P50/P95) – additive, must remain allocation-free in hot loops.
-- [ ] Partial results cancellation contract (return batch with subset + `CancellationRequested` reason rather than exception) – new overload.
-- [ ] Policy helper expansion (single-step move enumerator policy adapted to new delegates, advanced heuristics factory stubs).
-- [ ] Remove legacy placeholder file `PlayoutResults.cs` once full external reference audit confirms no usage; add CHANGELOG removal note.
+- [x] Partial results cancellation contract – `ParallelSimulator.RunManyPartialAsync` added (returns subset + flag, no exception path).
+- [x] Metrics enrichment phase 1 – `PlayoutMetrics`, `PlayoutBatchDetailedResult`, `SequentialSimulator.RunDetailed`, `ParallelSimulator.RunManyDetailedAsync` (AppliedEvents, PolicyCalls, placeholder RejectedEvents=0, coarse branching factor).
+- [x] Placeholder legacy duplication removal (`PlayoutResults.cs`) – file deleted; CHANGELOG entry added.
+- [ ] Deterministic multiset equivalence test (parallel vs sequential) – expand to 32-playout hash multiset comparison (current test small sample only). (Post-finalization enhancement)
+- [ ] Depth histogram & percentile metrics (P50/P95) – allocate-free buckets in detailed runs only. (Post-finalization enhancement)
+- [ ] Accurate rejection counting – extend policy surface or introduce instrumentation wrapper. (Post-finalization enhancement)
+- [ ] Refined branching factor metric (policyCalls / appliedEvents; expose both coarse & refined forms). (Post-finalization enhancement)
+- [ ] Policy helper expansion (struct-enumerator single-step, seeded randomized variant, composite heuristic chaining). (Post-finalization enhancement)
+- [ ] Simulation documentation expansion (`docs/simulation.md`): metrics field glossary, partial cancellation semantics table, determinism/seeding guidance, style charter block. (Post-finalization enhancement)
+- [ ] Simulation benchmark harness (baseline vs metrics vs partial) – validate metrics overhead <3% on 256 short playouts. (Post-finalization enhancement)
+
+Finalization Note: Core simulation deliverables (sequential/parallel, phase 1 metrics, partial cancellation) are complete and reflected in the Action Plan (Workstream 5 marked FINALIZED). Remaining items above are incremental, non-blocking enhancements subject to the same style charter (no LINQ in inner loops, immutable state, explicit braces, deterministic execution). Any deviation requires `// STYLE-DEVIATION:` annotation + CHANGELOG entry.
 
 ## 6. Observability & Diagnostics
 

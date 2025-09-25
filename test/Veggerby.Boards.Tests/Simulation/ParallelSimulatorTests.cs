@@ -63,4 +63,60 @@ public class ParallelSimulatorTests
         // assert
         await Assert.ThrowsAnyAsync<OperationCanceledException>(act);
     }
+
+    [Fact]
+    public async Task GivenDetailedRunMany_WhenExecuted_ThenMetricsPresent()
+    {
+        // arrange
+        FeatureFlags.EnableSimulation = true;
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        static PlayoutPolicy PolicyFactory(int _) => _ => null; // zero applied events
+
+        // act
+        var detailed = await ParallelSimulator.RunManyDetailedAsync(progress, 3, PolicyFactory);
+
+        // assert
+        Assert.Equal(3, detailed.Basic.Results.Count);
+        Assert.Equal(3, detailed.Metrics.Count);
+        Assert.False(detailed.CancellationRequested);
+    }
+
+    [Fact]
+    public async Task GivenPartialCancellation_WhenUsingPartialAPI_ThenReturnsSubsetAndFlag()
+    {
+        // arrange
+        FeatureFlags.EnableSimulation = true;
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        using var cts = new CancellationTokenSource();
+        static PlayoutPolicy PolicyFactory(int _) => _ => null; // finishes instantly
+
+        // act
+        cts.Cancel();
+        var partial = await ParallelSimulator.RunManyPartialAsync(progress, 10, PolicyFactory, cancellationToken: cts.Token);
+
+        // assert
+        Assert.True(partial.CancellationRequested);
+        Assert.True(partial.Basic.Results.Count <= 10);
+    }
+
+    [Fact]
+    public async Task GivenMultipleDeterministicPlayouts_WhenComparingDetailedAndBasic_ThenStateHashesEquivalent()
+    {
+        // arrange
+        FeatureFlags.EnableSimulation = true;
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        static PlayoutPolicy PolicyFactory(int _) => _ => null;
+
+        // act
+        var basic = await ParallelSimulator.RunManyAsync(progress, 8, PolicyFactory);
+        var detailed = await ParallelSimulator.RunManyDetailedAsync(progress, 8, PolicyFactory);
+
+        // assert
+        var basicHashes = basic.Results.Select(r => r.Final.State.GetHashCode()).Order().ToArray();
+        var detailedHashes = detailed.Basic.Results.Select(r => r.Final.State.GetHashCode()).Order().ToArray();
+        Assert.Equal(basicHashes, detailedHashes);
+    }
 }

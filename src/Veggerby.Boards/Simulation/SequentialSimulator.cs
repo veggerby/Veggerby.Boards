@@ -39,6 +39,20 @@ public static class SequentialSimulator
     }
 
     /// <summary>
+    /// Executes a detailed playout returning both the structured <see cref="PlayoutResult"/> and a <see cref="PlayoutMetrics"/> snapshot.
+    /// </summary>
+    /// <remarks>
+    /// This method is allocation conscious: only a single metrics instance and the result record are created (plus empty trace array).
+    /// </remarks>
+    public static PlayoutDetailedResult RunDetailed(GameProgress progress, PlayoutPolicy policy, PlayoutStopPredicate? stop = null, int maxDepth = 1024)
+    {
+        var with = RunWithMetrics(progress, policy, stop, maxDepth);
+        var r = with.Result;
+        var metrics = new PlayoutMetrics(r.AppliedEvents, 0, r.AppliedEvents + 1, r.AppliedEvents); // Placeholder mapping until rejection counting exposed publicly
+        return new PlayoutDetailedResult(with.Result, metrics, with.TerminalProgress);
+    }
+
+    /// <summary>
     /// Executes a playout producing metrics and a structured result.
     /// </summary>
     public static PlayoutResultWithProgress RunWithMetrics(GameProgress progress, PlayoutPolicy policy, PlayoutStopPredicate? stop = null, int maxDepth = 1024)
@@ -126,6 +140,37 @@ public sealed class PlayoutResultWithProgress
     public PlayoutResultWithProgress(PlayoutResult result, GameProgress terminalProgress)
     {
         Result = result;
+        TerminalProgress = terminalProgress;
+    }
+}
+
+/// <summary>
+/// Detailed playout result containing the basic structured result plus explicit metrics and terminal progress.
+/// </summary>
+public sealed class PlayoutDetailedResult
+{
+    /// <summary>
+    /// Gets the structured playout result (applied events + terminal reason).
+    /// </summary>
+    public PlayoutResult Result { get; }
+
+    /// <summary>
+    /// Gets the metrics captured for this playout.
+    /// </summary>
+    public PlayoutMetrics Metrics { get; }
+
+    /// <summary>
+    /// Gets the terminal progress (game + final state chain root) after the playout.
+    /// </summary>
+    public GameProgress TerminalProgress { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayoutDetailedResult"/> class.
+    /// </summary>
+    public PlayoutDetailedResult(PlayoutResult result, PlayoutMetrics metrics, GameProgress terminalProgress)
+    {
+        Result = result;
+        Metrics = metrics;
         TerminalProgress = terminalProgress;
     }
 }

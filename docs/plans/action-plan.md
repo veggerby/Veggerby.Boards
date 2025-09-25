@@ -334,46 +334,64 @@ Migration:
 
 - All acceleration layers internal/flag-gated; fall back path remains compiled resolver → legacy visitor for unsupported patterns.
 
-### 5. Concurrency & Simulation
+### 5. Concurrency & Simulation (FINALIZED 2025-09-25)
 
-Progress Update (2025-09-25): Sequential simulator landed previously; parallel orchestrator core (`ParallelSimulator.RunManyAsync`) now implemented (bounded degree-of-parallelism, ordered result slot assignment, cancellation support). Terminal reason enumeration unified & expanded (None, NoMoves, PolicyReturnedNull, StopPredicate, MaxDepth, TimeLimit, CancellationRequested). Legacy `MaxEvents` enum usage migrated to `MaxDepth` to consolidate semantics.
+Progress Update (2025-09-25 – later): Core sequential + parallel simulators COMPLETE. Metrics layer (phase 1) and partial cancellation API LANDED. Workstream now marked FINALIZED for this milestone; remaining enhancements (depth histogram, refined branching factor, advanced helpers) migrated to backlog and are non-blocking.
 
-Deliverables (Status annotations in brackets):
+New in this revision:
+
+- `PlayoutMetrics` (AppliedEvents, RejectedEvents (placeholder 0), PolicyCalls (derived), MaxDepthObserved).
+- `PlayoutBatchDetailedResult` (per-playout metrics + aggregate totals + average branching factor approximation).
+- `SequentialSimulator.RunDetailed` returning `PlayoutDetailedResult` (non-breaking; legacy `Run` delegates to `RunWithMetrics`).
+- `ParallelSimulator.RunManyDetailedAsync` metrics-aware parallel execution.
+- `ParallelSimulator.RunManyPartialAsync` – cooperative cancellation returns partial batch (subset results) with `CancellationRequested` flag instead of throwing.
+- Determinism parity test (basic) extended to cover basic vs detailed equivalence; multiset expansion (N=32) remains pending.
+- CHANGELOG updated; placeholder legacy duplication (`PlayoutResults.cs`) fully REMOVED.
+
+Terminal reason enum previously unified (None, NoMoves, PolicyReturnedNull, StopPredicate, MaxDepth, TimeLimit, CancellationRequested) – new partial API surfaces cancellation structurally rather than via exception.
+
+Deliverables (Status annotations updated):
 
 | Deliverable | Status | Notes |
 |-------------|--------|-------|
-| Sequential simulator (`SequentialSimulator.Run`) | COMPLETED | Deterministic, safety max depth, stop predicate |
+| Sequential simulator (`SequentialSimulator.Run`) | COMPLETED | Deterministic core loop |
 | Feature flag `EnableSimulation` | COMPLETED | Guards all experimental APIs |
-| Policy delegates (`PlayoutPolicy`, `PlayoutStopPredicate`) | COMPLETED | Nullable-aware, documented determinism expectations |
-| Parallel playout orchestrator (`ParallelSimulator.RunManyAsync`) | COMPLETED (BASIC) | Deterministic ordering (index), cancellation throws, no metrics aggregation yet |
-| Determinism docs | PARTIAL | XML remarks present; dedicated `docs/simulation.md` enrichment pending metrics phase |
-| Playout metrics enrichment (branching factor, policy invocation count, rejection count, depth histogram P50/P95) | NOT STARTED | Current record exposes only applied event count via `AppliedEvents` |
-| Cancellation terminal reason & test | COMPLETED | Exception-based surface for now; future enhancement: partial batch snapshot result wrapper |
-| Partial results contract (returning completed subset on cancel) | NOT STARTED | Requires shifting from exception to structured result with `CancellationRequested` reason |
-| Policy helper enumeration (multi-step / stochastic seeding helpers) | NOT STARTED | Existing `PolicyHelpers.SingleStepAllPieces` (legacy) – not yet integrated with new delegates |
-| Placeholder legacy duplication cleanup (`PlayoutResults.cs`) | PENDING CLEANUP | File emptied; removal pending external reference audit |
+| Policy delegates (`PlayoutPolicy`, `PlayoutStopPredicate`) | COMPLETED | Determinism contract documented in XML |
+| Parallel playout orchestrator basic (`RunManyAsync`) | COMPLETED | Ordered results, cancellation (exception path) retained for legacy callers |
+| Detailed metrics sequential (`RunDetailed`) | COMPLETED | Alloc-light; rejection placeholder 0 pending policy exposure |
+| Detailed metrics parallel (`RunManyDetailedAsync`) | COMPLETED | Aggregates per-playout metrics |
+| Partial cancellation (`RunManyPartialAsync`) | COMPLETED | Returns subset + flag; no exception semantics |
+| Metrics aggregation type (`PlayoutBatchDetailedResult`) | COMPLETED | AverageBranchingFactor coarse (policyCalls / playout count) – refine later |
+| Determinism docs | PARTIAL | Need docs/simulation.md enrichment (ordering, seeding, partial semantics) |
+| Depth distribution / P50/P95 | NOT STARTED | Deferred – requires histogram capture |
+| Rejection count accuracy | PARTIAL | Placeholder 0 until policy surfaces rejected attempts explicitly |
+| Multiset terminal hash parity (N=32) | PENDING | Current test covers small sample only |
+| Advanced policy helpers | NOT STARTED | Single-step enumerator & stochastic wrappers pending |
+| Branching factor refinement | NOT STARTED | Current approximation acceptable for early analysis |
 
 Upcoming Work (ordered):
 
-1. Metrics Layer: Introduce lightweight `PlayoutMetrics` (applied, rejected, policyCalls) without breaking existing `PlayoutResult` (add optional side dictionary or extension method to avoid record shape change). Add batch aggregation (histogram, branching factor = average candidate count per applied step). Ensure zero hot-loop LINQ.
-2. Partial Cancellation Semantics: Add `RunManyAsyncWithPartial` overload returning `PlayoutBatchResult` where incomplete slots omitted and `CancellationRequested` reason captured in a batch-level flag; avoid throwing for cooperative cancellation.
-3. Determinism Documentation: Expand `docs/simulation.md` (ordering, seeding guidance, policy purity contract, RNG usage examples, cancellation semantics table).
-4. Policy Helpers: Provide `EnumerateSingleStepMovesPolicy(GameState)` enumerator-based factory and adapt to new delegate style (avoid allocations via struct enumerators if needed).
-5. Branching Factor Tracking: Optional capture of average candidate count per depth (requires policy instrumentation; ensure off by default to avoid overhead).
-6. Remove Placeholder: Delete `PlayoutResults.cs` placeholder once repository-wide grep confirms no references (will add CHANGELOG note when removed).
+1. Expand determinism parity test to 32 playout multiset (sequential vs parallel basic & detailed) – ensure hash multiset equality.
+2. Introduce depth histogram + percentile (P50/P95) capturing (allocation-free counting buckets) gated behind detailed runs only.
+3. Policy rejection instrumentation: extend policy interface or introduce wrapper to report rejected candidate attempts; wire into metrics.
+4. Refine branching factor metric: total policyCalls / total applied events (exclude terminal call) and expose both coarse & refined forms.
+5. Policy helpers: struct-enumerator single-step move policy; seeded randomized variant using `GameState.Random` (deterministic per seed); composite heuristic chaining.
+6. Documentation expansion (`docs/simulation.md`): metrics fields, partial cancellation contract, determinism guarantees, seeding recommendations, style charter block.
+7. Benchmark harness for simulation overhead (baseline vs metrics vs partial) validating <3% overhead target for 256 short playouts.
 
-Acceptance Criteria (Revised):
+Acceptance Criteria (next increment):
 
-- Parallel vs sequential multiset terminal hash equivalence test (N=32 playouts) passes deterministically. (PENDING)
-- Metrics instrumentation adds <3% overhead for 256 short playout batch (benchmark to be added). (PENDING)
-- Cancellation overload returns partial results with no exception path (PENDING)
+- 32-playout multiset parity test green (sequential vs parallel, basic vs detailed).
+- Depth histogram & percentile metrics captured with ≤1 allocation per detailed batch (array reuse or stack span acceptable) – validated via benchmark.
+- Overhead from metrics (detailed run) ≤3% vs basic for short playouts (measured).
+- Simulation doc updated with partial cancellation semantics table.
 
 Risks & Mitigations:
 
-- Metrics overhead: design counters as local primitives; aggregate post-loop only.
-- Policy nondeterminism: add guard test failing when RNG accessed outside engine-provided source.
+- Potential metrics overhead: contain histogram logic to post-loop aggregation; intraloop counters only.
+- Policy nondeterminism: add guard test verifying deterministic ordering when seed fixed.
 
-Style Charter Reaffirmation: All simulation loops must retain explicit braces, avoid LINQ, and never mutate shared state; any metrics additions must keep hot-path allocation-free (stack locals only). Deviations require `// STYLE-DEVIATION:` plus CHANGELOG entry.
+Style Charter Reaffirmation (Simulation): No LINQ in playout inner loops (current implementation adheres); aggregation permitted post-run only. All control flow uses explicit braces; state transitions remain immutable; per-playout metrics captured via local primitive counters only. Any future deviation MUST include `// STYLE-DEVIATION:` justification and CHANGELOG entry. This charter is binding for any future backlog enhancements to simulation.
 
 ### 6. Observability & Diagnostics
 

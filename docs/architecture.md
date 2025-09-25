@@ -26,6 +26,7 @@ Veggerby.Boards is organized into layered .NET projects:
 | Game | Immutable container linking Board + Players + Artifacts | `Game` |
 | State | Immutable snapshot of artifact states | `GameState`, `PieceState`, `DiceState<T>` |
 | Progress | Engine + current state + last event | `GameProgress` (in tests/usages) |
+| Capabilities | Immutable sealed acceleration seam (topology + path resolution + occupancy / attacks) | `EngineCapabilities` (Topology, PathResolver, AccelerationContext) |
 | Event | Intention to mutate state | `IGameEvent`, `MovePieceGameEvent`, `RollDiceGameEvent<T>` |
 | Mutator | Applies deterministic state change | `IStateMutator<T>` and implementations |
 | Condition | Gate logic (state / event validity) | `IGameStateCondition`, `IGameEventCondition` |
@@ -74,10 +75,7 @@ Rule.Check(event)
 Both modules demonstrate reuse of the same engine primitives:
 
 - Backgammon defines directional linear movement with dice-driven phases and multi-step conditional transitions (e.g., bar clearing, doubling logic).
-- Chess defines a dense 8×8 grid with pattern-based piece movement (directional + fixed multi-step patterns).
-      - Experimental compiled movement pattern subsystem (flag `EnableCompiledPatterns`) converts supported patterns
-         (`FixedPattern`, `MultiDirectionPattern`) into a lightweight IR (Fixed, Ray, MultiRay) resolved by a fast
-         table-driven resolver. Parity is enforced via test suite and can be inspected in `compiled-patterns.md`.
+- Chess defines a dense 8×8 grid with pattern-based piece movement (directional + fixed multi-step patterns). When the feature flag `EnableCompiledPatterns` is enabled supported patterns (`FixedPattern`, `MultiDirectionPattern`) are precompiled to an internal IR (Fixed, Ray, MultiRay) evaluated by a compiled resolver. Parity tests guarantee identical behaviour. Acceleration (compiled tables, occupancy indices, bitboards) is fully hidden behind the immutable capability seam; game modules never access these internals directly.
 
 ## Design Principles
 
@@ -88,10 +86,7 @@ Both modules demonstrate reuse of the same engine primitives:
 
 ### Emerging Optimization Synergy
 
-The DecisionPlan (phase ordering pre-compilation) and Compiled Movement Patterns are independent feature-flagged
-optimizations. Future synergy work may precompute rule movement dependencies allowing direct compiled path
-evaluation inside decision plan traversal, eliminating duplicate visitor passes. This remains a roadmap item
-pending performance measurements.
+The DecisionPlan (phase ordering pre-compilation) and compiled movement patterns are independent feature-flagged optimizations today. Future synergy work will layer a unified path resolution pipeline (sliding fast-path → compiled table lookup → visitor fallback) inside the internal path resolver without leaking additional surfaces. Any pre-binding of movement rays to decision plan nodes must still appear externally only as the existing `EngineCapabilities.PathResolver` behaviour.
 
 ## Extension Points
 
@@ -153,15 +148,16 @@ blocker (capture or stop). This is enforced by the fast-path using the precomput
 
 ### Authority of Data Structures
 
-- **PieceMap**: authoritative mapping from Piece Id → tile (identity + position). Used for rule evaluation & state reconstruction.
-- **Bitboards**: authoritative **occupancy shape** (which tiles are occupied / by which player) for acceleration decisions.
-   They are a *derived view*; if divergence were detected (invariant tests), PieceMap wins and bitboards must be recomputed.
+Acceleration internals are intentionally hidden. Public semantics derive solely from `GameState` and pattern definitions. Internal layouts (piece arrays, bitboards, precomputed rays) are derived caches; `GameState` remains the single source of truth and would trigger internal recomputation if divergence were ever detected.
+
+- Internal piece layout & occupancy indices (including bitboards when enabled) are NOT authoritative APIs.
+- Attack ray generation, compiled pattern tables and sliding fast-path shortcuts are implementation details that MUST preserve the chartered semantics. Tests assert parity; no external API relies on their shapes.
 
 ### Invariants
 
 1. `ResolvePath` must be deterministic: identical state + request ⇒ identical path or null.
-2. Fast-path and compiled-path must produce identical results for all supported slider scenarios (parity tests enforce this).
-3. Non-sliding pieces must bypass sliding fast-path entirely.
+2. All internal resolution layers (sliding fast-path, compiled resolver, visitor fallback) must produce identical results for supported slider scenarios (parity tests enforce this).
+3. Non-sliding pieces must bypass sliding-specific fast-path logic entirely.
 4. No allocation on steady-state successful path resolutions (excluding transient test instrumentation).
 5. Blocking semantics above are exhaustive; new semantics require updating this charter **before** code changes.
 

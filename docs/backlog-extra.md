@@ -134,3 +134,32 @@ Style reminder: all future acceleration work must keep hot paths allocation-free
 - Parity V2 sliding scenarios (adjacent friendly/enemy, diagonal blocker/capture permutations, multi-blocker ordering, zero-length) added to `SlidingFastPathParityTests`.
 - Code style adherence audit performed for new acceleration & parity code (no `goto`, explicit braces, immutable snapshots).
 - Sliding benchmark variants added (FastPath / CompiledWithBitboardsNoFastPath / CompiledNoBitboards); pending documentation of measured deltas.
+- Capability seam sealed: Engine acceleration consumers now obtain `Topology`, `PathResolver`, `AccelerationContext` via immutable `EngineCapabilities` context (service locator removed).
+- Incremental bitboard path temporarily disabled (fallback rebuild) – plan to re-enable with side-by-side incremental vs rebuild parity check + soak (see Fast-Path backlog).
+
+## Fast-Path Redesign Backlog (2025-09-24)
+
+- Dark mode instrumentation for sliding fast-path (compute + metrics, discard result) – ensure overhead <5% when disabled.
+- Rook-only activation flag slice (guard other slider archetypes).
+- Direction classifier metadata cache (per piece type) to avoid repeated pattern inspection.
+- Attack ray fetch micro-optimization (pre-sized small struct array, no LINQ, no iterator allocations).
+- Allocation-free path reconstruction (stackalloc span + length commit; copy to immutable array only when returning success path).
+- Extended skip reason enumeration & metrics wiring.
+- Randomized parity suite (≥10k cases) across blocker density tiers (empty, sparse, medium, dense) with deterministic RNG seeds.
+- Microbenchmark harness capturing per-direction latency (rook horizontal/vertical, bishop diagonal long/short, queen mixed) under occupancy permutations.
+- Allocation assertions in benchmarks (fail if hit allocates >0 objects).
+- Occupancy desync detection hook (assert bitboard vs naive occupancy on hit path while incremental updates disabled).
+- Re-enable incremental bitboard updates behind `EnableIncrementalBitboards` flag once parity soak passes (run regression test at high event volume).
+- Observer integration (optional) for FastPathResolved / FastPathSkipped events (deferred until overhead budget verified).
+- Remove dark mode + legacy scaffold after default ON and two green releases.
+
+## Style Reinforcement (Acceleration Code)
+
+- No LINQ in hot loops (fast-path, attack generation, reconstruction).
+- Explicit braces for all control flow (no single-line implicit bodies).
+- File-scoped namespaces only.
+- No `goto` usage.
+- Allocation-free success path (stackalloc or pooled structs only; no per-call heap unless fallback engaged).
+- Immutable state transitions; no mutation of existing GameState or snapshots.
+- Deterministic ordering for metrics and path construction.
+- XML `<remarks>` documenting invariants (blocker semantics, capture termination, occupancy parity requirement).

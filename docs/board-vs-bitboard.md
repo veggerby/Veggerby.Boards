@@ -4,7 +4,7 @@ This document clarifies the distinct roles of the high‑level `Board` domain mo
 
 ## 1. Conceptual Roles
 
-| Aspect | `Board` | Bitboards (`BitboardLayout` + `BitboardSnapshot` + services) |
+| Aspect | `Board` | Bitboards (`BitboardLayout` + `BitboardSnapshot`) |
 |--------|---------|--------------------------------------------------------------|
 | Abstraction Level | Domain / semantic | Low-level data layout (occupancy masks) |
 | Purpose | Capture immutable topology (tiles + directed relations / edges) | Provide constant‑time occupancy queries (global + per‑player) and enable fast sliding attack generation |
@@ -33,8 +33,7 @@ Bitboards are an internal acceleration layer comprising:
 - `BitboardSnapshot`: immutable snapshot holding:
   - `ulong Global` (all occupied tiles)
   - `ulong[] PerPlayer` (one mask per player) — currently only for ≤64 tile boards.
-- `BitboardServices`: wrapper publishing layout + current snapshot via `EngineCapabilities.Bitboards` (lookups inside fast‑path code).
-- (Legacy) `BoardBitboardLayout` + `BitboardServices` (non‑incremental) retained during transition; coexists but not authoritative.
+// (Legacy wrappers like `BitboardServices` have been removed; layout + snapshot now bind directly into the internal acceleration context.)
 
 These are constructed in `GameBuilder` only when:
 
@@ -74,24 +73,22 @@ Bitboards are strictly a cache/derived view. Any divergence would be a bug; pari
 
 ## 5. Engine Integration Decision Flow
 
-The `GameBuilder` wires services in this order:
+The `GameBuilder` composes capabilities in this order (internal only):
 
 1. Always create `BoardShape` (topology abstraction over `Board`).
-2. Optionally create `PieceMap` when compiled patterns or bitboards are enabled (supports future evaluators & owner lookups).
-3. Optionally compile patterns (`EnableCompiledPatterns`).
-4. Optionally create bitboard services when flag enabled AND tile count ≤64.
-5. If bitboards present, build sliding attack generator (requires `BoardShape`).
+2. Optionally compile patterns (`EnableCompiledPatterns`).
+3. If bitboards enabled and tile count ≤64 build layouts + snapshots + occupancy index + attack rays (all inside acceleration context).
+4. Construct path resolver (compiled or visitor) and optionally layer sliding fast-path (feature flagged) on top.
 
 At runtime, sliding path resolution proceeds:
 
 ```text
-ResolveSlidingPath:
-  FastPathMetrics.OnAttempt()
-  if (flags.EnableSlidingFastPath && bitboard + attack services present && piece is slider):
-      use attack rays + occupancy masks → reconstruct path
-      if success: metrics.FastPathHits++ return path
-      else: record specific skip (NoServices / NotSlider / AttackMiss / ReconstructFail)
-  Fallback: compiled resolver (patterns) → if absent then legacy visitor
+ResolveSlidingPath (conceptual):
+  if (sliding fast-path enabled AND internal bitboards present AND piece is slider):
+      attempt ray mask + occupancy reconstruction
+      if success: return path
+      else: fall through
+  Fallback chain: compiled resolver → visitor (legacy)
 ```
 
 The decision path ensures deterministic behavior: identical inputs produce identical outputs independent of acceleration availability.
@@ -103,7 +100,7 @@ Bitboards (and sliding fast-path) are skipped when:
 - Flag disabled (`EnableBitboards == false`).
 - Board has >64 tiles (current guard; future Bitboard128 extension).
 - Piece pattern is not a repeatable directional slider (e.g., knight, pawn single-step, fixed pattern piece).
-- Required services not registered (PieceMap or SlidingAttackGenerator missing) — metrics record `FastPathSkipNoServices`.
+// Legacy skip reason (services missing) removed with service-locator elimination; presence is now deterministic with feature flags.
 
 In all cases, the compiled pattern resolver (or legacy visitor) is authoritative fallback.
 

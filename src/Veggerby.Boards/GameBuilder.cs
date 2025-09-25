@@ -394,34 +394,36 @@ public abstract class GameBuilder
         }
 
         // Acceleration context selection
-        Internal.Acceleration.IAccelerationContext accel;
+        Internal.Acceleration.IAccelerationContext accelerationContext;
         if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
         {
             var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
             var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
             var bbLayout = Internal.Layout.BitboardLayout.Build(game);
             var bbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
-            var bitboardServices = new Internal.Layout.BitboardServices(bbLayout, bbSnapshot);
-            var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bitboardServices, shape, game, initialGameState);
+            // Bitboard occupancy index now built directly from layout + snapshot without wrapper service.
+            var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, shape, game, initialGameState);
+            // Ensure initial snapshot is bound so IsEmpty/IsOwnedBy reflect initial piece placement.
+            (occupancy as Internal.Acceleration.IBitboardBackedOccupancy)?.BindSnapshot(bbSnapshot);
             var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
             var attackServices = sliding; // implements IAttackRays
-            accel = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, shape, topology, occupancy, attackServices);
+            accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, shape, topology, occupancy, attackServices);
         }
         else
         {
             var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState);
             var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-            accel = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
+            accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
         }
 
         // Sliding fast-path decorator layering if enabled (decorates chosen resolver)
         if (Internal.FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
         {
             var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-            pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accel.Occupancy, pathResolver);
+            pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
         }
 
-        var capabilities = new EngineCapabilities(topology, pathResolver, accel);
+        var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 
         // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)

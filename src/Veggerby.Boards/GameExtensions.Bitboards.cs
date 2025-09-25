@@ -27,9 +27,9 @@ public static partial class GameExtensions
         }
         // Bitboard snapshots are now internal to the acceleration context; expose only via occupancy masks when bitboards enabled.
         // Provide minimal reconstruction using IOccupancyIndex when available.
-        if (progress.Engine.Capabilities?.Accel?.Occupancy is not null)
+        if (progress.Engine.Capabilities?.AccelerationContext?.Occupancy is not null)
         {
-            var occ = progress.Engine.Capabilities.Accel.Occupancy;
+            var occ = progress.Engine.Capabilities.AccelerationContext.Occupancy;
             // Global mask exposure (bitboards feature defines hash semantics external to index)
             occupancy = new Internal.Bitboards.Bitboard64((occ as Internal.Occupancy.BitboardOccupancyIndex)?.GlobalMask ?? 0UL);
             perPlayer = new Dictionary<Artifacts.Player, Internal.Bitboards.Bitboard64>();

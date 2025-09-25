@@ -18,7 +18,7 @@ namespace Veggerby.Boards.Tests.Internal.Metrics;
 public class FastPathMetricsTests
 {
     // NOTE: Fast path + compiled pattern metrics tests depend on legacy capability seams (Shape, Bitboards, PieceMap, Attacks).
-    // With the new sealed EngineCapabilities (Topology, PathResolver, Accel) and pending redesign of sliding fast-path,
+    // With the new sealed EngineCapabilities (Topology, PathResolver, AccelerationContext) and pending redesign of sliding fast-path,
     // these metrics need a new harness. Temporarily skipping tests to unblock refactor.
 
     [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]

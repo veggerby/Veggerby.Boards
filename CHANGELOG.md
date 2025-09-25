@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - Update: `SlidingFastPathResolver` now conditionally registered as a decorator (flag `EnableSlidingFastPath`) wrapping the compiled resolver when bitboard + attack ray + occupancy services are present. Currently a passthrough (fast-path reconstruction pending) – kept minimal to reduce subsequent diff surface. Style charter adhered to (file-scoped namespace, explicit braces, no LINQ in hot path).
 - Docs: Updated `configuration.md` with new defaults, quick disable snippet, and style reminder; added `docs/release-notes/acceleration-unreleased.md` and `docs/perf/bitboard128-design.md` (future >64 support design note).
 - Backlog: Appended future items (Bitboard128 implementation, typed masks, topology pruning, mobility heuristic, LINQ sweep) and reiterated code style constraints (no LINQ in hot loops, explicit braces, immutable state).
+- Architecture: Removed legacy EngineServices/service-locator usage; introduced sealed capability seam (`EngineCapabilities` exposing `Topology`, `PathResolver`, `AccelerationContext`) – all acceleration internals now accessed only via this immutable context.
+- Tests: Added explicit parity regression guard (`BitboardParityRegressionTests`) validating occupancy & piece map equivalence (replaces prior internal snapshot assertions) – supports safe future re‑enable of incremental bitboards.
+- Style: Reaffirmed repository style charter across updated docs (file-scoped namespaces, explicit braces, 4-space indentation, no LINQ in hot loops, immutable state, deterministic transitions).
 
 ### Safety
 
@@ -112,6 +115,9 @@ Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance AP
 - Compiled movement patterns feature flag default switched to enabled (comprehensive unit + integration + adjacency cache parity tests green; visitor legacy fallback retained for any unresolved patterns).
 `HandleEventResult` logic moved into core `GameProgress` (instance method) reducing indirection; extension method retained only for backward compatibility.
 Adjusted event rejection mapping: benign no state change without exception now returns `NotApplicable` (previously could surface `EngineInvariant`).
+
+- Bitboards: Incremental snapshot update path temporarily disabled (fallback full rebuild each transition) after detecting rare occupancy desync in new sealed capability wiring. Added parity regression test (`BitboardParityRegressionTests`) and flipped `EnableBitboards` default to `false` pending soak; will re-enable + restore incremental path once regression stays green.
+- Capability Seam: Legacy *Services references removed from fast-path & resolver code paths; `SlidingPathResolutionBenchmark` and future acceleration commits will rely solely on `EngineCapabilities` abstraction.
 
 - Centralized all package versions via Directory.Packages.props (removed inline versions).
 - README updated with roadmap reference.

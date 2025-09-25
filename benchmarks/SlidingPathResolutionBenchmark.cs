@@ -25,7 +25,7 @@ public class SlidingPathResolutionBenchmark
 {
     private Game _game = null!;
     private CompiledPatternResolver _compiled = null!;
-    private BoardShape _shape = null!;
+    private BoardShape _shape = null!; // internal topology primitive (still used locally for building acceleration)
     private List<(Piece piece, Tile from, Tile to)> _queriesEmpty = null!;
     private List<(Piece piece, Tile from, Tile to)> _queriesQuarter = null!;
     private List<(Piece piece, Tile from, Tile to)> _queriesHalf = null!;
@@ -304,24 +304,54 @@ public class SlidingPathResolutionBenchmark
             var state = GameState.New(artifactStates);
 
             // Build minimal services replicating builder compile path for acceleration features.
-            var capabilities = new EngineCapabilities { Shape = BoardShape.Build(_game.Board) };
-            // PieceMap + bitboards required for fast-path
-            var pieceLayout = PieceMapLayout.Build(_game);
-            var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, capabilities.Shape);
-            capabilities.PieceMap = new PieceMapServices(pieceLayout, pieceSnapshot);
-            if (_game.Board.Tiles.Count() <= 64)
+            // Build minimal capability triplet (Topology + PathResolver + AccelerationContext) matching production GameBuilder logic.
+            var topology = new Internal.Topology.BoardShapeTopologyAdapter(_shape);
+
+            // Path resolver (compiled patterns always enabled for benchmark scenarios to measure compiled vs fast-path cost).
+            Internal.Paths.IPathResolver pathResolver;
+            if (Internal.FeatureFlags.EnableCompiledPatterns)
             {
-                var bbLayout = BitboardLayout.Build(_game);
-                var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, capabilities.Shape);
-                capabilities.Bitboards = new BitboardServices(bbLayout, bbSnapshot);
-                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(capabilities.Shape);
-                capabilities.Attacks = new Internal.Attacks.AttackGeneratorServices(sliding);
+                var table = PatternCompiler.Compile(_game);
+                var resolver = new CompiledPatternResolver(table, _game.Board, null, _shape);
+                pathResolver = new Internal.Paths.CompiledPathResolverAdapter(resolver);
             }
+            else
+            {
+                pathResolver = new Internal.Paths.SimplePatternPathResolver(_game.Board);
+            }
+
+            // Acceleration context selection (mimic builder but only for occupancy + attacks; piece map + bitboards internal).
+            Internal.Acceleration.IAccelerationContext accelerationContext;
+            if (Internal.FeatureFlags.EnableBitboards && _game.Board.Tiles.Count() <= 64)
+            {
+                var pieceLayout = PieceMapLayout.Build(_game);
+                var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, _shape);
+                var bbLayout = BitboardLayout.Build(_game);
+                var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, _shape);
+                var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, _shape, _game, state);
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
+                accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, _shape, topology, occupancy, sliding);
+            }
+            else
+            {
+                var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(_game, state);
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
+                accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
+            }
+
+            // Optional sliding fast-path decoration respecting feature flag.
+            if (Internal.FeatureFlags.EnableSlidingFastPath)
+            {
+                var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
+                pathResolver = new Internal.Paths.SlidingFastPathResolver(_shape, sliding, accelerationContext.Occupancy, pathResolver);
+            }
+
+            var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
 
             // Minimal phase root (no rules needed for path resolution benchmark)
             var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
             var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-            return new GameProgress(engine, state, null, pieceSnapshot, capabilities.Bitboards?.Snapshot);
+            return new GameProgress(engine, state, null);
         }
 
         _progressEmpty = Build(new HashSet<Tile>());

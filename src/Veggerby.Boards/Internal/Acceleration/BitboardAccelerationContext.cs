@@ -44,19 +44,18 @@ internal sealed class BitboardAccelerationContext : IAccelerationContext
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {
-        // Optimize common MovePiece path for incremental update; fallback to rebuild for others.
-        if (evt is Flows.Events.MovePieceGameEvent mpe)
-        {
-            if (_shape.TryGetTileIndex(mpe.From, out var fromIdx) && _shape.TryGetTileIndex(mpe.To, out var toIdx))
-            {
-                // Update piece map first (authoritative validation of expected from index if needed)
-                var expectedFrom = _pieceMapSnapshot.GetTileIndex(mpe.Piece);
-                _pieceMapSnapshot = _pieceMapSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx);
-                _bitboardSnapshot = _bitboardSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, _pieceMapSnapshot, _shape);
-                (Occupancy as IBitboardBackedOccupancy)?.BindSnapshot(_bitboardSnapshot);
-                return;
-            }
-        }
+        // Incremental path temporarily disabled pending correctness investigation (occupancy desync).
+        // if (evt is Flows.Events.MovePieceGameEvent mpe)
+        // {
+        //     if (_shape.TryGetTileIndex(mpe.From, out var fromIdx) && _shape.TryGetTileIndex(mpe.To, out var toIdx))
+        //     {
+        //         var previousPieceMap = _pieceMapSnapshot;
+        //         _bitboardSnapshot = _bitboardSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, previousPieceMap, _shape);
+        //         _pieceMapSnapshot = _pieceMapSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx);
+        //         (Occupancy as IBitboardBackedOccupancy)?.BindSnapshot(_bitboardSnapshot);
+        //         return;
+        //     }
+        // }
 
         // Fallback full rebuild
         _pieceMapSnapshot = PieceMapSnapshot.Build(_pieceMapLayout, newState, _shape);

@@ -87,10 +87,10 @@ public static partial class GameExtensions
         if (Internal.FeatureFlags.EnableSlidingFastPath
             && Internal.FeatureFlags.EnableBitboards
             && progress?.Engine?.Capabilities is not null
-            && progress.Engine.Capabilities.Accel?.AttackRays is not null
+            && progress.Engine.Capabilities.AccelerationContext?.AttackRays is not null
             && progress.Engine.Capabilities.Topology is not null)
         {
-            var atk = progress.Engine.Capabilities.Accel.AttackRays;
+            var atk = progress.Engine.Capabilities.AccelerationContext.AttackRays;
             var topology = progress.Engine.Capabilities.Topology;
             // Fast-path only applies to pieces with at least one sliding (repeatable) directional movement pattern.
             // Without this guard immobile pieces (no directions) could incorrectly produce a single-step path via raw attacks.

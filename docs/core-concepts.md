@@ -37,6 +37,14 @@ matches. Parity tests ensure behavior is identical; if the flag is disabled the 
 
 `Game` aggregates the immutable structural model: `Board`, `Players`, and all `Artifact` instances. It does not track mutable positions or dice values—those live in `GameState`.
 
+## Engine Capabilities (Sealed Acceleration Seam)
+
+Compilation produces an internal immutable record:
+
+`EngineCapabilities(IBoardTopology Topology, IPathResolver PathResolver, IAccelerationContext AccelerationContext)`
+
+Only `Topology` (abstracted neighbor/topology queries) and `PathResolver` (movement pattern → concrete `TilePath`) are conceptually observable through engine behaviours. The acceleration context (`AccelerationContext`) encapsulates occupancy indices, attack ray caches, bitboards, and any fast/compiled resolution layers. These are implementation details; module authors must not depend on internal namespaces or data structures. Determinism and parity tests guarantee identical outward behaviour regardless of which internal layers are active (feature flags).
+
 ## GameState
 
 `GameState` is an immutable snapshot mapping each active `Artifact` to an `IArtifactState` such as:

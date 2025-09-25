@@ -10,10 +10,10 @@ namespace Veggerby.Boards.Internal.Occupancy;
 /// Simple occupancy index that queries the underlying <see cref="GameState"/> piece states each call.
 /// Used when bitboard acceleration is disabled or unsupported (>64 tiles).
 /// </summary>
-internal sealed class NaiveOccupancyIndex(Game game, GameState state) : IOccupancyIndex
+internal sealed class NaiveOccupancyIndex(Game game, GameState state) : IOccupancyIndex, INaiveMutableOccupancy
 {
     private readonly Game _game = game ?? throw new ArgumentNullException(nameof(game));
-    private readonly GameState _state = state ?? throw new ArgumentNullException(nameof(state));
+    private GameState _state = state ?? throw new ArgumentNullException(nameof(state));
 
     public bool IsEmpty(Tile tile)
     {
@@ -28,4 +28,17 @@ internal sealed class NaiveOccupancyIndex(Game game, GameState state) : IOccupan
     public ulong GlobalMask => 0UL; // Not supported (would require tile indexing mapping; callers treat 0 as absent)
 
     public ulong PlayerMask(Player player) => 0UL;
+
+    public void BindState(GameState state)
+    {
+        if (state is not null)
+        {
+            _state = state;
+        }
+    }
+}
+
+internal interface INaiveMutableOccupancy : IOccupancyIndex
+{
+    void BindState(GameState state);
 }

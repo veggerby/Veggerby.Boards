@@ -34,7 +34,7 @@ public class GameProgress
         State = state;
         Events = [.. (events ?? Enumerable.Empty<IGameEvent>())];
         Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
-        // Acceleration snapshots now encapsulated inside EngineCapabilities.Accel
+        // Acceleration snapshots now encapsulated inside EngineCapabilities.AccelerationContext
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class GameProgress
     {
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
         var newState = State.Next(newStates);
-        Engine.Capabilities?.Accel?.OnStateTransition(State, newState, null);
+        Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, null);
         return new GameProgress(Engine, newState, Events);
     }
 
@@ -167,7 +167,7 @@ public class GameProgress
                         if (ruleCheck.Result == ConditionResult.Valid)
                         {
                             var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                            progress.Engine.Capabilities?.Accel?.OnStateTransition(progress.State, newState, evt);
+                            progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
 
                             progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
 
@@ -238,7 +238,7 @@ public class GameProgress
                     if (ruleCheck.Result == ConditionResult.Valid)
                     {
                         var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                        progress.Engine.Capabilities?.Accel?.OnStateTransition(progress.State, newState, evt);
+                        progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
                         progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
                         if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
@@ -350,7 +350,7 @@ public class GameProgress
                     seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
                 }
 
-                seed.Engine.Capabilities?.Accel?.OnStateTransition(seed.State, newStateLocal, e);
+                seed.Engine.Capabilities?.AccelerationContext?.OnStateTransition(seed.State, newStateLocal, e);
                 return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
             }
             else if (ruleCheckLocal.Result == ConditionResult.Invalid)

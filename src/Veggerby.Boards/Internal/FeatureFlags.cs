@@ -28,7 +28,7 @@ internal static class FeatureFlags
     /// Gets or sets a value indicating whether bitboard occupancy acceleration is enabled for boards with &lt;=64 tiles.
     /// Default: true (parity + benchmarks validated). Automatically skipped internally for larger boards (services not registered).
     /// </summary>
-    public static bool EnableBitboards { get; set; } = true;
+    public static bool EnableBitboards { get; set; } = false; // temporarily disabled pending occupancy incremental fix
 
     /// <summary>
     /// Gets or sets a value indicating whether state hashing (Merkle style) is performed each transition.

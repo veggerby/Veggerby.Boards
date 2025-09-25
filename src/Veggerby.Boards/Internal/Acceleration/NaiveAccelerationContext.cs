@@ -21,7 +21,9 @@ internal sealed class NaiveAccelerationContext : IAccelerationContext
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {
-        // Intentionally no-op: naive occupancy indexes derive directly from GameState when queried.
-        // Future: hook metrics or lightweight invalidation signals if needed.
+        if (Occupancy is INaiveMutableOccupancy mutable)
+        {
+            mutable.BindState(newState);
+        }
     }
 }

@@ -367,6 +367,58 @@ Performance Acceleration Tracking (Recent Progress):
 - Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
 - Movement semantics charter (`docs/movement-semantics.md`) authored – freezes sliding vs non-sliding rules, occupancy enforcement layer, and determinism guarantees ahead of Parity V2 test expansion.
 - Introduced `EnableSlidingFastPath` feature flag (default off pending Parity V2 + benchmarks) separating bitboard occupancy enablement from fast-path activation.
+ - Capability seam finalized (`EngineCapabilities` aggregating Topology, PathResolver, AccelerationContext) replacing ad-hoc *Services lookups; fast-path & benchmarks now depend exclusively on this sealed immutable context.
+ - Incremental bitboard updates temporarily disabled (full rebuild fallback) pending extended parity soak; regression guard (`BitboardParityRegressionTests`) added.
+ - Style charter re-emphasized for acceleration layer (no LINQ in hot loops, explicit braces, file-scoped namespaces, allocation-free fast-path success path).
+
+### Fast-Path Redesign Addendum (2025-09-24)
+
+Goals (Phase FP-R1):
+
+- ≥3× speedup vs compiled resolver for empty sliding paths (rook/bishop/queen) – stretch 5×.
+- ≥1.5× speedup at half occupancy density.
+- Zero allocations on fast-path hit (validated via benchmark allocation column = 0 for hit scenarios).
+- Deterministic parity across ≥10k randomized sliding path resolutions (friendly/enemy blockers, capture terminals, zero-length, non-slider negative cases).
+
+Pipeline (Proposed Deterministic Chain):
+
+1. Eligibility Guard (board size ≤64, feature flag, piece pattern is sliding, services present)
+2. Direction Classification (orthogonal / diagonal / mixed) using compiled pattern metadata
+3. Attack Ray Fetch (IAttackRays) for each candidate direction
+4. Target Inclusion Check (early exit if target tile not on any ray)
+5. Ray Truncation at First Blocker (respect capture semantics: include enemy, exclude friendly)
+6. Path Reconstruction (allocate-free write into stack-based span, then materialize immutable list only if successful)
+7. Occupancy Validation (IOccupancyIndex parity – ensures no stale snapshot)
+8. Metrics Emission (Attempts, FastPathHits, SkipReason, HitLatencyTicks)
+9. Fallback (compiled resolver → legacy visitor if unresolved)
+
+Skip Reasons (enum – surfaced in metrics & future observer): NotSlider, FeatureDisabled, NoServices, TargetNotOnRay, FriendlyBlocker, ReconstructionFailed, ZeroLength, NonCardinalOrDiagonal.
+
+Rollout Phases:
+
+1. Dark Mode (compute + metrics only, result discarded) – validate stability & cost
+2. Rook-Only Activation (parity soak 24h)
+3. All Sliders (rook/bishop/queen) activation (parity soak 48h)
+4. Default ON (flip flag default) – retain compiled resolver fallback
+5. Legacy Scaffold Removal (remove unused branches & dead metrics)
+
+Validation & Tooling:
+
+- Extend parity test harness for randomized blocker & capture matrices (generate occupancy permutations with deterministic RNG seed).
+- Add allocation assertions in benchmark harness (fail test run if hit path allocates >0 objects when feature enabled).
+- Introduce micro-timer (Stopwatch.GetTimestamp diff) around steps 3–6 for per-stage profiling (internal only, compiled out in Release if overhead measurable).
+
+KPI Tracking Additions:
+
+- FastPathHitRate (must exceed 60% in empty / sparse benchmark scenarios).
+- FastPathMedianLatency (target <40% of compiled resolver latency for empty rook path).
+- SkipReasonDistribution (should predominantly be NotSlider or TargetNotOnRay – low ReconstructionFailed rate).
+
+Style Reinforcement:
+
+- Allocation-free loops, explicit braces, no LINQ, deterministic ordering, immutable returned path list.
+- All public surface unchanged; only internal resolver chain evolves.
+
 - Parity V2 sliding test matrix implemented (adjacent friendly/enemy, mid-ray blockers, multi-blocker order permutations, zero-length request) – total test suite now 462; all fast-path vs compiled parity assertions green.
 - Style charter reaffirmed in new tests (explicit braces, file-scoped namespaces, no LINQ in engine hot-path code; LINQ confined to test assertions only).
 - Sliding benchmark extended (FastPath, CompiledWithBitboardsNoFastPath, CompiledNoBitboards) enabling isolation of bitboards vs sliding fast-path overhead; style charter respected (no additional LINQ in hot loops, deterministic feature flag toggling per variant).

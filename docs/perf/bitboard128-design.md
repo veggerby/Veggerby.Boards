@@ -33,7 +33,7 @@ Indices ≥128 are unsupported (fast-path disabled gracefully if board tile coun
 
 ## Layout & Services
 
-`BitboardLayout` emits either `Bitboard64` or `Bitboard128` based on tile count. Internal enum `BitboardKind { Bits64, Bits128 }` governs the update path. `BitboardServices` carries the kind plus union-like storage. Downstream fast-path selects a specialized branch without virtual dispatch.
+`BitboardLayout` emits either `Bitboard64` or `Bitboard128` based on tile count. Internal enum `BitboardKind { Bits64, Bits128 }` governs the update path. Layout + snapshot instances flow directly into the acceleration context (legacy wrapper services removed). The fast-path selects a specialized branch without virtual dispatch.
 
 ## Update Path
 
@@ -51,7 +51,7 @@ Direction stepping loop remains unchanged; we still walk neighbor indices using 
 
 ## Fallback / Guard
 
-If board tile count >128: skip registering bitboard + sliding attack services; `EnableBitboards` effectively ignored (metrics: SkipNoServices). A forthcoming test will assert no exception and that fast-path attempts fall back to compiled resolver.
+If board tile count >128: skip building bitboard acceleration; `EnableBitboards` effectively ignored for that game. A forthcoming test will assert no exception and that path resolution falls back to compiled / visitor resolver.
 
 ## Risks
 

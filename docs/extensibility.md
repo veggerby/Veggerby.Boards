@@ -44,6 +44,22 @@ This guide walks through adding a new game or extending engine behavior.
 
 4. Call `Compile()` to obtain initial `GameProgress`.
 
+### Capability Seam (Read-Only Boundary)
+
+Game modules deliberately interact only with:
+
+- Structural definitions (players, tiles, relations, directions, artifacts, patterns)
+- Phases, rules, conditions, mutators
+- Public events (`IGameEvent` implementations)
+
+Acceleration internals (piece layouts, bitboards, occupancy / attack caches, compiled movement tables, fast-path resolvers) are hidden behind an immutable `EngineCapabilities` record exposed only via:
+
+- `Topology` – abstracted board neighbor/topology access
+- `PathResolver` – resolves movement patterns into concrete `TilePath` (respecting blockers)
+- `AccelerationContext` – internal acceleration context (not exposed to module code)
+
+Do NOT attempt to extend performance by reaching into internal namespaces; instead add new patterns, conditions or mutators. Performance features must be contributed inside the core engine respecting encapsulation.
+
 ## Creating Custom Movement Patterns
 
 If a piece requires movement not representable by current direction or fixed sequence patterns:

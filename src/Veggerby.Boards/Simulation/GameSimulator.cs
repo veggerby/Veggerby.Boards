@@ -177,7 +177,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
         {
             if (_options.ShouldStop(applied, started))
             {
-                var terminal = new PlayoutResult(progress, current, applied, _options.TimeLimit.HasValue ? PlayoutTerminalReason.TimeLimit : PlayoutTerminalReason.MaxEvents, trace);
+                var terminal = new PlayoutResult(progress, current, applied, _options.TimeLimit.HasValue ? PlayoutTerminalReason.TimeLimit : PlayoutTerminalReason.MaxDepth, trace);
                 ob.OnCompleted(terminal);
                 return terminal;
             }

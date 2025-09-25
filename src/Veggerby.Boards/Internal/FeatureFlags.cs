@@ -104,4 +104,11 @@ internal static class FeatureFlags
     /// branching and iteration in mixed topology boards. Default: false until pruning parity and performance are validated.
     /// </summary>
     public static bool EnableTopologyPruning { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the experimental simulation (sequential playout engine) features are enabled.
+    /// When disabled, simulator APIs will throw <see cref="System.InvalidOperationException"/> if invoked to prevent
+    /// accidental reliance on an experimental subsystem. Default: false until determinism + perf validated.
+    /// </summary>
+    public static bool EnableSimulation { get; set; } = false;
 }

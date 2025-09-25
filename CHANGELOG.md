@@ -118,32 +118,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Typed event handling result: Introduced `EventRejectionReason` enumeration and `EventResult` discriminated record struct (State, Applied, Reason, Message) with helper factories plus non-breaking `HandleEventResult` extension method on `GameProgress` that infers rejection causes (phase closed, not applicable, invalid ownership, path not found, rule rejected, invalid event, engine invariant). Initial mapping heuristics added for common `BoardException` messages; legacy `HandleEvent` API unchanged (backwards compatible). Basic tests (`EventResultTests`) covering accepted, ignored, and invalid ownership scenarios.
 Promoted `GameProgress.HandleEventResult(IGameEvent)` to first-class instance API (extension now `[Obsolete]` pass-through) and expanded rejection coverage with deterministic tests for `RuleRejected`, `PathNotFound`, and stable `NotApplicable` (no-op rule) scenarios. Mapping refined to classify benign no-op evaluations as `NotApplicable` instead of `EngineInvariant`.
 - Simulation API: Introduced `Veggerby.Boards.Simulation` namespace with:
-  - `IPlayoutPolicy` (deterministic candidate event source)
-  - `PlayoutOptions` (MaxEvents, TimeLimit, CaptureTrace)
-  - `GameSimulator` (single playout + parallel `PlayoutManyAsync` with bounded degree of parallelism & cancellation)
-  - Result types `PlayoutResult`, `PlayoutBatchResult`, and `PlayoutTerminalReason` classification (`NoMoves`, `MaxEvents`, `TimeLimit`).
-  - Concurrency-safe design leveraging immutable `GameProgress` snapshots (engine/state reuse) enabling Monte Carlo style rollouts / future search integrations.
-  - Initial unit tests covering termination (no moves), max event cap, parallel aggregation, and cancellation behavior.
-  - Documentation (`docs/simulation.md`) detailing design principles, usage examples, policy guidelines, tracing, and roadmap.
-  - Extended batch metrics: histogram, min/max/average applied events.
-  - Deterministic randomized candidate ordering support via `GameSimulator.WithRandomizedPolicy()` (Fisher-Yates using `GameState.Random`).
-  - Additional tests: time limit termination, histogram/metrics validation.
-  - Advanced metrics: variance, standard deviation, percentile accessor on `PlayoutBatchResult`.
-  - Composite policy chaining (`WithCompositePolicy`) enabling ordered fallback strategies.
-  - Playout diagnostics observer (`GameSimulator.IPlayoutObserver`) with per-step instrumentation hooks.
-  - Early-stop sequential batch (`PlayoutManyUntil`) supporting convergence / threshold termination predicates.
-  - Generic single-step legal move helper policy (`PolicyHelpers.SingleStepAllPieces`) enumerating deterministic movement candidates.
-  - Experimental bitboard acceleration scaffold (`Bitboard64`, `BoardBitboardLayout`, `BitboardServices`) behind `EnableBitboards` feature flag: provides occupancy + per-player occupancy masks for boards with <=64 tiles (initial Chess mapping tests added; no engine integration yet).
-  - BoardShape adjacency layout (tile index + directional neighbor arrays) constructed during game build (fast-path indexing for future path and attack generation optimizations; feature-flagged usage).
-  - PieceMap data layout (stable player & piece indices + per-piece tile index array + per-player piece counts) created at build when compiled patterns or bitboards are enabled.
-  - Incremental PieceMap snapshot updates integrated into `GameProgress` event handling (DecisionPlan + legacy paths) performing O(1) tile index mutation on move events without full rebuild.
-  - Incremental Bitboard occupancy snapshot (global + per-player) integrated into `GameProgress` alongside PieceMap when `EnableBitboards` is active (boards ≤64 tiles).
-  - Sliding attack generator (ray precomputation + blocker aware traversal) registered when bitboards enabled; initial rook parity test ensures correctness vs naive traversal.
-  - Sliding attack path resolution fast-path integrated into `GameProgress.ResolvePathCompiledFirst` (prior to compiled resolver) when bitboards + attack services present.
-  - Internal acceleration tests (`PieceMapIncrementalTests`) covering tile index update, mismatch no-op, and unaffected piece stability (test suite now 437 tests).
-  - `GameProgress` now internally carries acceleration snapshot (PieceMap) paving the way for upcoming bitboard + sliding attack generator integration.
-  - Board topology classification (`BoardTopology` enum) embedded in `BoardShape` build (Orthogonal / OrthogonalAndDiagonal / Arbitrary) with tests; enables future topology-specialized heuristics and benchmark segmentation.
-  - Sliding fast-path metrics instrumentation (`FastPathMetrics` internal counters + snapshot API) tracking Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits; accompanying unit tests (hit + skip scenarios) added.
+- Simulation API: Introduced `Veggerby.Boards.Simulation` namespace with:
+  - `EnableSimulation` feature flag (disabled by default) guarding experimental simulation components.
+  - `PlayoutPolicy` and `PlayoutStopPredicate` delegates (deterministic event selection & early termination control).
+  - `SequentialSimulator.Run` deterministic playout loop (hard safety cap default 1024 moves, early stop if policy returns null or produces no state change).
+  - Guard tests: disabled flag throws, deterministic terminal state equality with same seed/policy, stop predicate early termination.
+  - Style Charter Reaffirmation: explicit braces, no LINQ in loop, allocation-light (only per-iteration event object if policy allocates), pure state transitions.
+  - Docs: action plan Workstream 5 & backlog-next updated marking sequential simulator prototype complete; parallel orchestrator + metrics pending.
+  - Parallel playout orchestrator (`ParallelSimulator.RunManyAsync`) with bounded degree-of-parallelism, feature-flag gating, deterministic ordered result array (index-based) and cancellation support (throws `OperationCanceledException` / `TaskCanceledException`).
+  - Unified terminal reason enumeration (`PlayoutTerminalReason`) expanded (None, PolicyReturnedNull, StopPredicate, MaxDepth, CancellationRequested, TimeLimit) and legacy references updated (`MaxEvents` renamed to `MaxDepth`).
+  - Refactored duplicate interim simulation types (legacy `PlayoutResults.cs` neutralized as placeholder to avoid duplicate definitions) – future cleanup task to fully remove once downstream references confirmed absent.
+  - Added parallel determinism & cancellation tests (multiset terminal hash stability, cancellation throws) adhering to style charter (explicit braces, no hot-path LINQ, AAA test structure).
+  - Style Re-Emphasis: Simulation code paths follow repository rules (file-scoped namespaces, explicit braces, immutable states, deterministic outcomes); any future metrics enrichment must maintain zero hot-loop LINQ.
+- `IPlayoutPolicy` (deterministic candidate event source)
+- `PlayoutOptions` (MaxEvents, TimeLimit, CaptureTrace)
+- `GameSimulator` (single playout + parallel `PlayoutManyAsync` with bounded degree of parallelism & cancellation)
+- Result types `PlayoutResult`, `PlayoutBatchResult`, and `PlayoutTerminalReason` classification (`NoMoves`, `MaxEvents`, `TimeLimit`).
+- Concurrency-safe design leveraging immutable `GameProgress` snapshots (engine/state reuse) enabling Monte Carlo style rollouts / future search integrations.
+- Initial unit tests covering termination (no moves), max event cap, parallel aggregation, and cancellation behavior.
+- Documentation (`docs/simulation.md`) detailing design principles, usage examples, policy guidelines, tracing, and roadmap.
+- Extended batch metrics: histogram, min/max/average applied events.
+- Deterministic randomized candidate ordering support via `GameSimulator.WithRandomizedPolicy()` (Fisher-Yates using `GameState.Random`).
+- Additional tests: time limit termination, histogram/metrics validation.
+- Advanced metrics: variance, standard deviation, percentile accessor on `PlayoutBatchResult`.
+- Composite policy chaining (`WithCompositePolicy`) enabling ordered fallback strategies.
+- Playout diagnostics observer (`GameSimulator.IPlayoutObserver`) with per-step instrumentation hooks.
+- Early-stop sequential batch (`PlayoutManyUntil`) supporting convergence / threshold termination predicates.
+- Generic single-step legal move helper policy (`PolicyHelpers.SingleStepAllPieces`) enumerating deterministic movement candidates.
+- Experimental bitboard acceleration scaffold (`Bitboard64`, `BoardBitboardLayout`, `BitboardServices`) behind `EnableBitboards` feature flag: provides occupancy + per-player occupancy masks for boards with <=64 tiles (initial Chess mapping tests added; no engine integration yet).
+- BoardShape adjacency layout (tile index + directional neighbor arrays) constructed during game build (fast-path indexing for future path and attack generation optimizations; feature-flagged usage).
+- PieceMap data layout (stable player & piece indices + per-piece tile index array + per-player piece counts) created at build when compiled patterns or bitboards are enabled.
+- Incremental PieceMap snapshot updates integrated into `GameProgress` event handling (DecisionPlan + legacy paths) performing O(1) tile index mutation on move events without full rebuild.
+- Incremental Bitboard occupancy snapshot (global + per-player) integrated into `GameProgress` alongside PieceMap when `EnableBitboards` is active (boards ≤64 tiles).
+- Sliding attack generator (ray precomputation + blocker aware traversal) registered when bitboards enabled; initial rook parity test ensures correctness vs naive traversal.
+- Sliding attack path resolution fast-path integrated into `GameProgress.ResolvePathCompiledFirst` (prior to compiled resolver) when bitboards + attack services present.
+- Internal acceleration tests (`PieceMapIncrementalTests`) covering tile index update, mismatch no-op, and unaffected piece stability (test suite now 437 tests).
+- `GameProgress` now internally carries acceleration snapshot (PieceMap) paving the way for upcoming bitboard + sliding attack generator integration.
+- Board topology classification (`BoardTopology` enum) embedded in `BoardShape` build (Orthogonal / OrthogonalAndDiagonal / Arbitrary) with tests; enables future topology-specialized heuristics and benchmark segmentation.
+- Sliding fast-path metrics instrumentation (`FastPathMetrics` internal counters + snapshot API) tracking Attempts, FastPathHits, FastPathSkippedNoPrereq, CompiledHits, LegacyHits; accompanying unit tests (hit + skip scenarios) added.
 - Movement semantics charter (`docs/movement-semantics.md`) defining sliding, blockers, captures, reconstruction, and post-filter occupancy semantics.
 - `EnableSlidingFastPath` feature flag (gated until expanded parity and benchmarks) plus granular fast-path metrics (SkipNoServices, SkipNotSlider, SkipAttackMiss, SkipReconstructFail) extending legacy aggregate counters.
 - Immobile / non-sliding piece guard in sliding fast-path (skips raw attack path synthesis when no repeatable directional pattern present) preventing false positive single-step paths.

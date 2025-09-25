@@ -108,7 +108,7 @@ public class GameSimulatorTests
 
         // assert
         Assert.Equal(1, result.AppliedEvents);
-        Assert.Equal(PlayoutTerminalReason.MaxEvents, result.TerminalReason);
+        Assert.Equal(PlayoutTerminalReason.MaxDepth, result.TerminalReason);
         Assert.NotSame(progress.State, result.Final.State);
     }
 

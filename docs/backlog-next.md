@@ -50,10 +50,14 @@ Initiation Emphasis (2025-09-25): Prioritize sliding fast-path blocked/capture m
 
 ## 5. Concurrency & Simulation
 
-- [ ] Sequential Simulator basic playout loop (policy delegate, stop predicate) – feature-flagged.
-- [ ] Parallel orchestrator (deterministic seeding scheme) – soak tests.
-- [ ] Playout metrics (histogram P50/P95, branching factor capture, event counts).
-- [ ] Cancellation & partial results contract tests.
+- [x] Sequential Simulator basic playout loop (policy delegate, stop predicate) – feature-flagged (`EnableSimulation`); added `SequentialSimulator.Run` with deterministic policy loop + safety cap + guard tests. Style charter reaffirmed (explicit braces, no LINQ in loop, immutable state usage).
+- [x] Parallel orchestrator (initial) – `ParallelSimulator.RunManyAsync` with bounded degree-of-parallelism, ordered results, cancellation throwing semantics (future partial result enhancement pending).
+- [x] Cancellation test (exception path) – validates cancel token triggers `OperationCanceledException` / `TaskCanceledException`.
+- [ ] Deterministic multiset equivalence test (parallel vs sequential) – add 32-playout hash multiset comparison.
+- [ ] Metrics enrichment (policy invocation count, rejected count, branching factor, depth distribution P50/P95) – additive, must remain allocation-free in hot loops.
+- [ ] Partial results cancellation contract (return batch with subset + `CancellationRequested` reason rather than exception) – new overload.
+- [ ] Policy helper expansion (single-step move enumerator policy adapted to new delegates, advanced heuristics factory stubs).
+- [ ] Remove legacy placeholder file `PlayoutResults.cs` once full external reference audit confirms no usage; add CHANGELOG removal note.
 
 ## 6. Observability & Diagnostics
 

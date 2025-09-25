@@ -35,9 +35,40 @@ See `docs/` (architecture & core concepts) for authoritative model.
 - Remove unused usings.
 - Public: PascalCase, Private: _camelCase.
 
+### Code Style: Non-Negotiables (Fast Reference)
+
+1. File-scoped namespaces only (no nested namespace blocks).
+2. Explicit braces for every control flow statement (no single-line implicit bodies).
+3. Immutability: never mutate prior `GameState` or artifact state objects; always produce a new snapshot (pure mutators).
+4. Determinism: identical prior state + identical event sequence + identical feature flag configuration must yield identical resulting state & hashes.
+5. No LINQ in hot paths (rule evaluation loops, pattern/sliding resolution, hashing, mutator inner loops). Allowed in tests and setup code.
+6. Allocation discipline: zero allocations on the success path for core movement & rule evaluation (exceptions documented inline with `// STYLE-DEVIATION:`).
+7. No hidden global state; feature behavior selected via explicit capabilities or builder composition.
+8. Public APIs must have XML docs (invariants documented in `<remarks>`).
+9. Tests must follow AAA pattern and cover each new rule branch (Valid / Invalid / Ignore / NotApplicable).
+10. Format cleanliness: `dotnet format` should produce no changes before PR.
+
+### Feature Flag Policy
+
+Feature flags represent transitional optimizations or experimental subsystems. To prevent semantic drift and scattered conditional logic:
+
+Policy:
+
+- Express feature differences via capabilities / dependency injection (interfaces, strategy objects) rather than inline `if (FeatureFlags.X)` in business logic.
+- Inline flag checks are only acceptable for purely observational code (metrics / trace capture) that cannot alter observable semantics.
+- New flag introductions must provide: purpose, default, removal criteria, and parity / performance guard tests.
+- Parity tests MUST assert identical outcomes between enabled/disabled modes until the flag graduates (then removal is preferred over permanent branching).
+
+Migration TODO (tracked in backlog): Replace remaining inline `FeatureFlags` conditionals in compiled pattern resolver and fast-path resolution layers with capability abstractions (`IPathResolver` decorators / topology services) to reduce branching and centralize optimization seams.
+
+Deviations:
+
+- Any temporary inline branching requires `// STYLE-DEVIATION:` with rationale and a backlog reference. These must appear in the CHANGELOG Temporary Exceptions section until removed.
+
 ## Pull Requests
 
 Include in description:
+ 
 1. Problem / motivation
 2. Approach (new types? new phase? new mutator?)
 3. Tests added (list scenarios)

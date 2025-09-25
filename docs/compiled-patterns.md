@@ -108,3 +108,16 @@ See:
 - `ChessCompiledIntegrationParityTests`
 
 These collectively guard against behavioral drift.
+
+## Current Scope (2025-09-25)
+
+| Category | Patterns | Compilation Status | Notes |
+|----------|----------|--------------------|-------|
+| Compiled | `FixedPattern` | Fixed | Ordered steps mapped 1:1; non-repeatable |
+| Compiled | `DirectionPattern` | Ray | Single direction; repeat flag preserved |
+| Compiled | `MultiDirectionPattern` (1 dir) | Ray | Degenerates to Ray for efficiency |
+| Compiled | `MultiDirectionPattern` (>1 dirs) | MultiRay | Each direction treated independently; shortest winning path selected |
+| Runtime Only | `AnyPattern` | Not Compiled | Wildcard requires graph search; retained in visitor for future semantic evolution |
+| Runtime Only | `NullPattern` | Not Compiled | No-op placeholder; compiling would add no value |
+
+Determinism & Parity: Compiled resolution is an optimization layer only. The legacy visitor remains the semantic source of truth. Parity guard tests (`CompiledPatternScopeGuardTests`) assert current scope and will fail if unsupported patterns begin compiling without explicit design sign-off.

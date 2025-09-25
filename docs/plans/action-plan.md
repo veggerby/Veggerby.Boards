@@ -248,21 +248,31 @@ Finalization Note: Scope for this milestone is COMPLETE. Remaining deferred enha
 
 Deliverables (Status annotations in brackets):
 
-- Pattern IR: normalized representation (directions, repeats, terminals). **[COMPLETED – `CompiledPatternKind`, `CompiledPattern`]**
-- Compiler scaffold: per-piece table generation + service registration (emits empty lists). **[COMPLETED – population pending]**
-- Resolver: compiled attempt with visitor fallback. **[COMPLETED – behind `EnableCompiledPatterns`]**
-- Compiler population (translate existing `IPattern` instances to IR). **[PARTIAL – FixedPattern, DirectionPattern, MultiDirectionPattern supported]**
-- Performance benchmarks (visitor vs compiled). **[PENDING – scaffold exists (`PatternResolutionBenchmark`)]**
-- Parity test suite (legacy vs compiled). **[PARTIAL – unit archetypes + chess integration parity + adjacency cache parity green]**
+-- Pattern IR: normalized representation (directions, repeats, terminals). **[COMPLETED – `CompiledPatternKind`, `CompiledPattern`]**
+-- Compiler scaffold: per-piece table generation + service registration (emits empty lists). **[COMPLETED]**
+-- Resolver: compiled attempt with visitor fallback. **[COMPLETED – behind `EnableCompiledPatterns`]**
+-- Compiler population (translate existing `IPattern` instances to IR). **[COMPLETED – FixedPattern, DirectionPattern, MultiDirectionPattern mapped (Fixed/Ray/MultiRay)]**
+-- Performance benchmarks (visitor vs compiled). **[PENDING – scaffold exists (`PatternResolutionBenchmark`)]**
+-- Micro-benchmark per IR kind (Fixed/Ray/MultiRay) **[COMPLETED – `CompiledPatternKindsBenchmark`]**
+-- Parity test suite (legacy vs compiled). **[COMPLETED – archetypes + adjacency cache parity + scope guard tests]**
+-- Scope guard tests ensuring only supported kinds compile (AnyPattern / NullPattern explicitly ignored). **[COMPLETED – `CompiledPatternScopeGuardTests`]**
+-- Documentation of current compilation scope & determinism note. **[COMPLETED – `compiled-patterns.md` updated]**
 Acceptance Criteria:
-- All movement tests + parity suite green under compiled engine once populated. **[PENDING]**
+
+- All movement tests + parity suite green under compiled engine once populated. **[PARTIAL → CORE PARITY ACHIEVED (supported kinds)**; remaining work: broader randomized sample & edge semantics charter]
 - ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
 Current Status:
-- Infra merged; feature now ON by default (fixed, direction, multi-direction, chess archetypes) + integration parity (single-step pawn) validated; adjacency cache on/off parity validated; unreachable scenarios assert null parity (double-step pawn not modeled yet); visitor fallback retained for safety.
+- Infra merged; feature ON by default (Fixed, Direction, MultiDirection). Scope documented; AnyPattern / NullPattern intentionally uncompiled (runtime visitor only). New scope guard tests enforce contract. Visitor fallback retained for unsupported future kinds.
 Risks:
 - Premature optimization without representative workloads.
+- Accidental broadening of scope (guarded by scope tests).
 Migration:
 - `CompilePatterns()` invoked during game build; toggle to disable for troubleshooting.
+Next Steps:
+
+1. Edge-case semantics charter draft (blocked/capture for mixed repeat lengths) prior to expanding kinds.
+2. Conditional compilation heuristics investigation (board size / topology) behind capability seam.
+3. Randomized large-sample parity benchmark (≥1000 target resolutions) capturing distribution metrics to validate ≥5× target.
 
 ### 4. Performance Data Layout & Hot Path Optimization
 

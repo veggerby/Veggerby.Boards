@@ -33,6 +33,8 @@ into a lightweight intermediate representation (see `compiled-patterns.md`). Res
 table-driven lookup (`CompiledPatternResolver`) falling back to the visitor only when no compiled candidate path
 matches. Parity tests ensure behavior is identical; if the flag is disabled the legacy visitor always executes.
 
+Current scope and determinism guarantees are documented in `compiled-patterns.md`; the visitor remains the semantic source of truth for movement semantics (compiled layer is a transparent optimization).
+
 ## Game
 
 `Game` aggregates the immutable structural model: `Board`, `Players`, and all `Artifact` instances. It does not track mutable positions or dice values—those live in `GameState`.

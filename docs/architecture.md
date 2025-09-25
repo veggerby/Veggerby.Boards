@@ -74,8 +74,7 @@ Rule.Check(event)
 
 Both modules demonstrate reuse of the same engine primitives:
 
-- Backgammon defines directional linear movement with dice-driven phases and multi-step conditional transitions (e.g., bar clearing, doubling logic).
-- Chess defines a dense 8×8 grid with pattern-based piece movement (directional + fixed multi-step patterns). When the feature flag `EnableCompiledPatterns` is enabled supported patterns (`FixedPattern`, `MultiDirectionPattern`) are precompiled to an internal IR (Fixed, Ray, MultiRay) evaluated by a compiled resolver. Parity tests guarantee identical behaviour. Acceleration (compiled tables, occupancy indices, bitboards) is fully hidden behind the immutable capability seam; game modules never access these internals directly.
+The compiled pattern subsystem is an optimization layer only; the legacy visitor remains the semantic source of truth (parity guard tests enforce identical observable behaviour).
 
 ## Design Principles
 

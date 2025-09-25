@@ -32,6 +32,9 @@ Outcome: Workstream objectives met for milestone (deterministic RNG, dual hashin
 - [ ] Populate compiler for remaining pattern kinds (repeat expansions beyond current subset).
 - [ ] 5× parity & perf gate: finalize benchmark measuring visitor vs compiled across 1k random samples.
 - [ ] LINQ sweep legacy visitor (ensure no hot loop remains), add analyzer stub (optional).
+- [x] Micro-benchmarks per pattern kind (Fixed, Ray, MultiRay) vs visitor (latency + allocations). (Added `CompiledPatternKindsBenchmark` 2025-09-25.)
+- [ ] Edge-case semantics charter (blocked capture variants, repeat limit rationale) prior to broadening kinds.
+- [ ] Investigate conditional compilation heuristics (board size / topology) via capability seam (no inline flags).
 
 ## 4. Performance Data Layout & Hot Paths
 

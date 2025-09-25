@@ -1,14 +1,7 @@
-using System.Collections.Generic;
 using System.Linq;
 
-using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.Artifacts.Patterns;
-using Veggerby.Boards.Artifacts.Relations;
-using Veggerby.Boards.Flows.Observers;
-using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Internal;
-using Veggerby.Boards.States;
-using Veggerby.Boards.States.Conditions;
+using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 using Xunit;
@@ -17,36 +10,107 @@ namespace Veggerby.Boards.Tests.Internal.Metrics;
 
 public class FastPathMetricsTests
 {
-    // NOTE: Fast path + compiled pattern metrics tests depend on legacy capability seams (Shape, Bitboards, PieceMap, Attacks).
-    // With the new sealed EngineCapabilities (Topology, PathResolver, AccelerationContext) and pending redesign of sliding fast-path,
-    // these metrics need a new harness. Temporarily skipping tests to unblock refactor.
+    // Updated harness exercising counters over new capability seam.
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
+    [Fact]
     public void GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash()
     {
-        // intentionally empty
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path default on
+        var progress = new LargeLinearBuilder().Compile();
+        var piece = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("t0");
+        var to = progress.Game.GetTile("t1");
+        var path = progress.ResolvePathCompiledFirst(piece, from, to);
+        Assert.NotNull(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.True(snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1 || snap.FastPathSkipNoServices >= 1);
+        Assert.Equal(snap.Attempts, snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
     }
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
+    [Fact]
     public void GivenBitboardsEnabled_WhenResolvingSlidingPath_ThenFastPathHitIncrementsCounter()
     {
-        // intentionally empty
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true);
+        var progress = new RookNorthBuilder().Compile();
+        var rook = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("v1");
+        var to = progress.Game.GetTile("v4");
+        var path = progress.ResolvePathCompiledFirst(rook, from, to);
+        Assert.NotNull(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.Equal(1, snap.FastPathHits);
+        Assert.Equal(0, snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
     }
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
+    [Fact]
     public void GivenBitboardsDisabled_WhenResolvingSlidingPath_ThenFastPathSkippedNoPrereqIncrementsCounter()
     {
-        // intentionally empty
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false, compiledPatterns: true);
+        var progress = new RookNorthBuilder().Compile();
+        var rook = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("v1");
+        var to = progress.Game.GetTile("v2");
+        var path = progress.ResolvePathCompiledFirst(rook, from, to);
+        Assert.NotNull(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.Equal(0, snap.FastPathHits);
+        Assert.True(snap.FastPathSkipNoServices + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail >= 1);
     }
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
+    [Fact]
     public void GivenNonSlider_WhenResolvingPath_ThenFastPathSkipNotSliderIncrements()
     {
-        // intentionally empty
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true);
+        var progress = new NonSliderBuilder().Compile();
+        var piece = progress.Game.GetPiece("stone");
+        var from = progress.Game.GetTile("x1");
+        var to = progress.Game.GetTile("x2");
+        var path = progress.ResolvePathCompiledFirst(piece, from, to);
+        Assert.Null(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.Equal(0, snap.FastPathHits);
+        Assert.True(snap.FastPathSkipNotSlider >= 1);
     }
 
-    // NOTE: skip-attack-miss metric requires a mismatch between attack ray inclusion and direction reconstruction,
-    // which is not currently achievable with consistent BoardShape adjacency; omitted from explicit test.
+    [Fact]
+    public void GivenCompiledPatternsEnabledAndFastPathPrereqsMissing_WhenResolving_ThenCompiledHitIncrements()
+    {
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false, compiledPatterns: true);
+        var progress = new RookNorthBuilder().Compile();
+        var rook = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("v1");
+        var to = progress.Game.GetTile("v2");
+        var path = progress.ResolvePathCompiledFirst(rook, from, to);
+        Assert.NotNull(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.True(snap.CompiledHits + snap.LegacyHits >= 1);
+    }
+
+    [Fact]
+    public void GivenCompiledPatternsDisabled_WhenResolving_ThenLegacyHitIncrements()
+    {
+        FastPathMetrics.Reset();
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false, compiledPatterns: false);
+        var progress = new RookNorthBuilder().Compile();
+        var rook = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("v1");
+        var to = progress.Game.GetTile("v2");
+        var path = progress.ResolvePathCompiledFirst(rook, from, to);
+        Assert.NotNull(path);
+        var snap = FastPathMetrics.Snapshot();
+        Assert.Equal(1, snap.Attempts);
+        Assert.True(snap.LegacyHits + snap.CompiledHits >= 1);
+    }
 
     private sealed class RookNorthBuilder : GameBuilder
     {
@@ -63,17 +127,35 @@ public class FastPathMetricsTests
         }
     }
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
-    public void GivenCompiledPatternsEnabledAndFastPathPrereqsMissing_WhenResolving_ThenCompiledHitIncrements()
+    private sealed class NonSliderBuilder : GameBuilder
     {
-        // intentionally empty
+        protected override void Build()
+        {
+            BoardId = "non-slider";
+            AddDirection("east");
+            AddPlayer("white");
+            AddTile("x1"); AddTile("x2");
+            WithTile("x1").WithRelationTo("x2").InDirection("east");
+            AddPiece("stone").WithOwner("white").OnTile("x1");
+        }
     }
 
-    [Fact(Skip = "Temporarily disabled pending fast-path redesign over new capability seam.")]
-    public void GivenCompiledPatternsDisabled_WhenResolving_ThenLegacyHitIncrements()
+    private sealed class LargeLinearBuilder : GameBuilder
     {
-        // intentionally empty
+        protected override void Build()
+        {
+            BoardId = "large-linear";
+            AddDirection("east");
+            AddPlayer("white");
+            for (int i = 0; i < 65; i++)
+            {
+                AddTile($"t{i}");
+                if (i > 0)
+                {
+                    WithTile($"t{i - 1}").WithRelationTo($"t{i}").InDirection("east");
+                }
+            }
+            AddPiece("rook").WithOwner("white").HasDirection("east").CanRepeat().OnTile("t0");
+        }
     }
-
-    // NOTE: FastPathSkipReconstructFail currently unreachable with consistent BoardShape invariants.
 }

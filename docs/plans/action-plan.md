@@ -1,5 +1,7 @@
 # 2025-09-21 Strategic Architecture & DX Action Plan
 
+> Revision Addendum (2025-09-25, branch `feat/architecture-and-dx`): Completed migration to reentrant thread-safe `Infrastructure.FeatureFlagScope`; legacy non-thread-safe scope removed; guard test added to prevent reintroduction; documentation & changelog updated; style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability) re-emphasized across new infrastructure and parity code.
+>
 > Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
 >
 > Revision Addendum (2025-09-21 later, same branch): Added timeline zipper (flagged), dual state hashing (64-bit FNV-1a + 128-bit xxHash128), extended `IEvaluationObserver` with `PhaseEnter`, `StateHashed`, and trace capture scaffold (in‑memory last-evaluation trace). Added hashing + observer overhead benchmarks and documentation updates. (Previous internal BugReport scaffold removed; future external reproduction tooling deferred to roadmap item 14.)
@@ -364,16 +366,17 @@ Performance Acceleration Tracking (Recent Progress):
 
 - BoardShape now classifies board topology (Orthogonal / Orthogonal+Diagonal / Arbitrary) enabling future specialized move generation heuristics.
 - Sliding fast-path instrumentation (FastPathMetrics) added – captures attempt vs hit vs skip reasons and fallback (compiled/legacy) distribution for ongoing benchmark reporting. (Granular reasons added: NoServices, NotSlider, AttackMiss, ReconstructFail; aggregate backward compatible.)
+- Reentrant Feature Flag Scope: Unified thread-safe `FeatureFlagScope` (SemaphoreSlim + AsyncLocal depth + snapshot stack) adopted across entire test suite. Eliminates ad-hoc flag toggling, prevents interleaving during parallel test execution, and supports deterministic nested scope restoration. Concurrency stress test added (parallel tasks with distinct flag sets) ensuring isolation & final state restoration. Previous non-thread-safe helper marked for deprecation.
 - Immobile piece guard prevents erroneous fast-path single-step path synthesis (maintains determinism).
 - Movement semantics charter (`docs/movement-semantics.md`) authored – freezes sliding vs non-sliding rules, occupancy enforcement layer, and determinism guarantees ahead of Parity V2 test expansion.
 - Introduced `EnableSlidingFastPath` feature flag (default off pending Parity V2 + benchmarks) separating bitboard occupancy enablement from fast-path activation.
  - Capability seam finalized (`EngineCapabilities` aggregating Topology, PathResolver, AccelerationContext) replacing ad-hoc *Services lookups; fast-path & benchmarks now depend exclusively on this sealed immutable context.
- - Incremental bitboard updates temporarily disabled (full rebuild fallback) pending extended parity soak; regression guard (`BitboardParityRegressionTests`) added.
- - Style charter re-emphasized for acceleration layer (no LINQ in hot loops, explicit braces, file-scoped namespaces, allocation-free fast-path success path).
+- Incremental bitboard updates temporarily disabled (full rebuild fallback) pending extended parity soak; regression guard (`BitboardParityRegressionTests`) added.
+- Style charter re-emphasized for acceleration layer (no LINQ in hot loops, explicit braces, file-scoped namespaces, allocation-free fast-path success path).
 
-### Fast-Path Redesign Addendum (2025-09-24)
+### Fast-Path Redesign Addendum (2025-09-24 / Updated 2025-09-25)
 
-Goals (Phase FP-R1):
+Goals (Phase FP-R1): (Status Update 2025-09-25 – Curated Parity Pack Landed)
 
 - ≥3× speedup vs compiled resolver for empty sliding paths (rook/bishop/queen) – stretch 5×.
 - ≥1.5× speedup at half occupancy density.
@@ -402,7 +405,7 @@ Rollout Phases:
 4. Default ON (flip flag default) – retain compiled resolver fallback
 5. Legacy Scaffold Removal (remove unused branches & dead metrics)
 
-Validation & Tooling:
+Validation & Tooling (Update 2025-09-25):
 
 - Extend parity test harness for randomized blocker & capture matrices (generate occupancy permutations with deterministic RNG seed).
 - Add allocation assertions in benchmark harness (fail test run if hit path allocates >0 objects when feature enabled).
@@ -414,10 +417,13 @@ KPI Tracking Additions:
 - FastPathMedianLatency (target <40% of compiled resolver latency for empty rook path).
 - SkipReasonDistribution (should predominantly be NotSlider or TargetNotOnRay – low ReconstructionFailed rate).
 
-Style Reinforcement:
+Style Reinforcement (Reaffirmed in Parity Pack & Benchmark additions):
 
 - Allocation-free loops, explicit braces, no LINQ, deterministic ordering, immutable returned path list.
 - All public surface unchanged; only internal resolver chain evolves.
+
+Update (2025-09-25): Metrics ownership consolidated (single orchestrator extension); `SlidingFastPathResolver` slimmed to reconstruction-only; legacy traversal extracted to conditional partial (`GameProgress.Legacy`) and marked obsolete; invariant metrics test added; cleanup checklist introduced (`docs/cleanup/2025-fastpath-parity-checklist.md`).
+Update (2025-09-25 later): Curated Sliding Fast-Path Parity Pack (`SlidingFastPathParityPackTests`) added as CI gate (representative scenarios) complementing exhaustive suite; DecisionPlan vs Legacy benchmark added (`DecisionPlanVsLegacyBenchmark`) establishing quantitative baseline for forthcoming DecisionPlan optimization milestones.
 
 - Parity V2 sliding test matrix implemented (adjacent friendly/enemy, mid-ray blockers, multi-blocker order permutations, zero-length request) – total test suite now 462; all fast-path vs compiled parity assertions green.
 - Style charter reaffirmed in new tests (explicit braces, file-scoped namespaces, no LINQ in engine hot-path code; LINQ confined to test assertions only).

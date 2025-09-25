@@ -9,8 +9,9 @@ using Veggerby.Boards.Internal.Occupancy;
 namespace Veggerby.Boards.Internal.Paths;
 
 /// <summary>
-/// Decorator path resolver that first attempts a sliding fast-path using attack rays + occupancy,
-/// falling back to an inner compiled resolver when no fast-path applies or fails.
+/// Slim decorator responsible only for sliding path reconstruction (ray + occupancy) when the caller has already
+/// decided a fast-path attempt should occur. All attempt/skip metrics and gating logic live in the extension method
+/// (single ownership rule) to avoid double counting. If reconstruction fails, delegation to the inner resolver occurs.
 /// </summary>
 internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays, IOccupancyIndex occupancy, IPathResolver inner) : IPathResolver
 {
@@ -26,15 +27,8 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
             return null;
         }
 
-        // Determine if piece is a slider (repeatable directional pattern present)
-        bool isSlider = false;
-        foreach (var pattern in piece.Patterns)
-        {
-            if (pattern is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable) { isSlider = true; break; }
-            if (pattern is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { isSlider = true; break; }
-        }
-
-        if (isSlider && _rays is not null && _occupancy is not null && _shape is not null && _rays.TryGetRays(piece, from, out var rays))
+        // Caller enforces slider precondition & feature gating; this layer only attempts reconstruction.
+        if (_rays is not null && _occupancy is not null && _shape is not null && _rays.TryGetRays(piece, from, out var rays))
         {
             if (_shape.TryGetTileIndex(from, out var fromIdx) && _shape.TryGetTileIndex(to, out var toIdx))
             {
@@ -84,7 +78,6 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
         var currentIdx = fromIdx;
         var destIdx = toIdx;
         var direction = _shape.Directions[matchedDirection];
-        var globalMaskAvailable = _occupancy.GlobalMask != 0UL || _occupancy.GlobalMask == 0UL; // always accessible property; used to avoid repeated property calls
 
         while (true)
         {

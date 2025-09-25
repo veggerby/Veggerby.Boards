@@ -16,7 +16,7 @@ public class ChessCompiledIntegrationParityTests
     public void GivenCompiledPatternsEnabled_WhenResolvingPawnSingleAdvance_ThenPathMatchesLegacy()
     {
         // arrange (single square advance is supported; double is not modeled yet)
-        using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece("white-pawn-5"); // on e2
@@ -44,7 +44,7 @@ public class ChessCompiledIntegrationParityTests
     public void GivenCompiledPatternsEnabled_WhenResolvingPawnDoubleAdvance_ThenBothResolversReturnNull()
     {
         // arrange (double advance not represented by current pattern set)
-        using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece("white-pawn-5");

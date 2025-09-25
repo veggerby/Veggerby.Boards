@@ -6,7 +6,7 @@ using Veggerby.Boards; // for extension helpers
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States; // GameProgress
-using Veggerby.Boards.Tests.Utils;
+using Veggerby.Boards.Tests.Infrastructure;
 
 namespace Veggerby.Boards.Tests.Core.Bitboards;
 
@@ -76,7 +76,7 @@ public class BitboardParityRegressionTests
     public void GivenSequenceOfMoves_WhenBitboardsEnabled_ThenMasksMatchNaiveEnumeration()
     {
         // arrange
-        using var _ = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // bitboards ON
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true); // bitboards ON
         var progress = new ChessGameBuilder().Compile();
 
         // deterministic move sequence (single step pawn advances + a knight move)

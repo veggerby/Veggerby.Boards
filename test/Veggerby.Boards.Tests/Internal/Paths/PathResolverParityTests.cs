@@ -2,6 +2,7 @@ using System.Linq;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal.Paths;
+using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 using Xunit;
@@ -13,7 +14,7 @@ public class PathResolverParityTests
     [Fact]
     public void GivenRookMove_WhenResolvedThroughPathResolver_ThenGeometricPathReturned()
     {
-        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var rook = progress.Game.GetPiece("white-rook-1");
         var from = progress.Game.GetTile("tile-a1");
@@ -28,7 +29,7 @@ public class PathResolverParityTests
     [Fact]
     public void GivenKnightMove_WhenResolvedThroughPathResolver_ThenPathMatchesCompiled()
     {
-        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var knight = progress.Game.GetPiece("white-knight-1");
         var from = progress.Game.GetTile("tile-b1");

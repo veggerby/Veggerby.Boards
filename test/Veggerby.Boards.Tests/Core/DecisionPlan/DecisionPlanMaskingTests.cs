@@ -13,7 +13,7 @@ public class DecisionPlanMaskingTests
 {
     private static GameProgress Build(bool enablePlan, bool enableMasks)
     {
-        using var _ = new FeatureFlagScope(decisionPlan: enablePlan, decisionPlanMasks: enableMasks);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: enablePlan, decisionPlanMasks: enableMasks);
         return new Tests.Core.Fakes.MaskingTestGameBuilder().Compile();
     }
 

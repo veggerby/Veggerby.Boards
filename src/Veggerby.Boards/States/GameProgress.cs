@@ -16,7 +16,7 @@ namespace Veggerby.Boards.States;
 /// <see cref="GameProgress"/> is immutable; handling an event produces a new instance. This enables
 /// functional style evaluation and potential branching for analysis or AI without mutating prior history.
 /// </remarks>
-public class GameProgress
+public partial class GameProgress
 {
     /// <summary>
     /// Initializes a new <see cref="GameProgress"/> instance.
@@ -276,7 +276,10 @@ public class GameProgress
         // Debug parity (dual-run) – shadow legacy evaluation and compare resulting state snapshots.
         if (debugParityEnabled)
         {
+#if DEBUG || TESTS
+#pragma warning disable CS0618 // intentional legacy parity call
             var legacy = originalProgress.HandleEventLegacy(@event);
+#pragma warning restore CS0618
             var forceMismatch = Internal.Debug.DebugParityTestHooks.ForceMismatch; // test hook
             var equal = progress.State.Equals(legacy.State);
 
@@ -291,6 +294,9 @@ public class GameProgress
 
                 throw new BoardException($"DecisionPlan debug parity divergence detected (mismatched artifacts: {string.Join(", ", mismatching)}). ForceMismatch={(forceMismatch ? "true" : "false")}");
             }
+#else
+            // Parity requested but legacy handler not included in this build configuration.
+#endif
         }
 
         return progress;
@@ -305,61 +311,43 @@ public class GameProgress
     {
         ArgumentNullException.ThrowIfNull(@event);
 
-        // If there is no active phase, treat as phase closed (cannot apply any rule).
+        // If there is no active phase resolved for current state, treat as phase closed (no rule set is eligible).
         if (Phase is null)
         {
-            return Flows.Events.EventResult.Rejected(State, Flows.Events.EventRejectionReason.PhaseClosed, "No active phase accepts the event.");
+            return Flows.Events.EventResult.Rejected(State, Flows.Events.EventRejectionReason.PhaseClosed, "No active phase available for event.");
         }
 
-        return Internal.EventRejectionClassifier.Classify(this, @event);
-    }
-
-    /// <summary>
-    /// Legacy per-event tree traversal evaluation path (no DecisionPlan). Extracted for potential dual-run parity.
-    /// </summary>
-    private GameProgress HandleEventLegacy(IGameEvent @event)
-    {
-        var currentPhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
-        if (currentPhase is null)
+        var before = State;
+        try
         {
-            Engine.Observer.OnEventIgnored(@event, State);
-            return this;
+            var after = HandleEvent(@event); // may throw
+            if (!ReferenceEquals(before, after.State) && !before.Equals(after.State))
+            {
+                return Flows.Events.EventResult.Accepted(after.State);
+            }
+            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.NotApplicable, "No rule produced a state change.");
         }
-
-        var events = currentPhase.PreProcessEvent(this, @event);
-        return events.Aggregate(this, (seed, e) =>
+        catch (InvalidGameEventException ex)
         {
-            var phaseForEvent = seed.Engine.GamePhaseRoot.GetActiveGamePhase(seed.State);
-
-            if (phaseForEvent is null)
+            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.RuleRejected, ex.ConditionResponse?.Reason);
+        }
+        catch (BoardException ex)
+        {
+            var msg = ex.Message ?? string.Empty;
+            var reason = Flows.Events.EventRejectionReason.InvalidEvent;
+            if (msg.Contains("No valid dice state for path", StringComparison.OrdinalIgnoreCase))
             {
-                return seed; // nothing active; event ignored
+                reason = Flows.Events.EventRejectionReason.PathNotFound;
             }
-
-            seed.Engine.Observer.OnPhaseEnter(phaseForEvent, seed.State);
-            var ruleCheckLocal = phaseForEvent.Rule.Check(seed.Engine, seed.State, e);
-            seed.Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheckLocal, seed.State, 0);
-
-            if (ruleCheckLocal.Result == ConditionResult.Valid)
+            else if (msg.Contains("Invalid from tile", StringComparison.OrdinalIgnoreCase))
             {
-                var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
-                seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal, 0);
-
-                if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
-                {
-                    seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
-                }
-
-                seed.Engine.Capabilities?.AccelerationContext?.OnStateTransition(seed.State, newStateLocal, e);
-                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat([e]));
+                reason = Flows.Events.EventRejectionReason.InvalidOwnership;
             }
-            else if (ruleCheckLocal.Result == ConditionResult.Invalid)
-            {
-                throw new InvalidGameEventException(e, ruleCheckLocal, seed.Game, phaseForEvent, seed.State);
-            }
-
-            seed.Engine.Observer.OnEventIgnored(e, seed.State);
-            return seed;
-        });
+            return Flows.Events.EventResult.Rejected(before, reason, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.EngineInvariant, ex.Message);
+        }
     }
 }

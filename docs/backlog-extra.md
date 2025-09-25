@@ -26,6 +26,8 @@ This file tracks auxiliary improvement ideas not explicitly covered in `docs/pla
 - Adjacency cache on/off compiled pattern parity tests (representative chess archetypes). **COMPLETED**
 -- Enable compiled patterns by default after parity + cache validation. **COMPLETED**
 - Uniform AAA Arrange/Act/Assert comments across test suite — COMPLETED.
+- Reentrant FeatureFlagScope: Thread-safe, reentrant `FeatureFlagScope` (AsyncLocal nesting + global SemaphoreSlim + snapshot stack) implemented and adopted across all tests replacing manual flag toggling. Concurrency stress test validates isolation under parallel tasks with differing flag sets. Legacy simpler scope helper marked for deprecation/removal once downstream branches rebase.
+- Reentrant FeatureFlagScope: Thread-safe, reentrant `FeatureFlagScope` (AsyncLocal nesting + global SemaphoreSlim + snapshot stack) implemented and adopted across all tests replacing manual flag toggling. Concurrency stress test validates isolation under parallel tasks with differing flag sets. Legacy simpler scope helper fully removed (guard test ensures it cannot reappear). Style charter reaffirmed (explicit braces, file-scoped namespaces, no LINQ in hot paths, immutable transitions).
 - (Removed) Former BugReport replay harness concept replaced by future roadmap item 14 (external issue reproduction) – not in core code.
 - Deterministic seeding API (`GameBuilder.WithSeed`) **COMPLETED**
 - Dual-run test asserting trace sequence identical with/without hashing enabled **PENDING**
@@ -153,6 +155,24 @@ Style reminder: all future acceleration work must keep hot paths allocation-free
 - Observer integration (optional) for FastPathResolved / FastPathSkipped events (deferred until overhead budget verified).
 - Remove dark mode + legacy scaffold after default ON and two green releases.
 
+### Fast-Path Consolidation Updates (2025-09-25)
+
+Recent internal consolidation (not originally listed above) has landed:
+
+- Centralized fast-path metrics ownership (extension orchestrator); decorator no longer increments counters.
+- Invariant metrics test added ensuring counter algebra remains stable.
+- Legacy traversal isolated under conditional compilation (`GameProgress.Legacy`) and marked obsolete.
+- Internal cleanup/parity checklist authored (`docs/cleanup/2025-fastpath-parity-checklist.md`).
+- Slimmed `SlidingFastPathResolver` to reconstruction-only logic (precondition + metrics gating moved outward).
+
+Remaining follow-ups (migrate to main plan when ready):
+
+- Curated parity scenario pack (castling, en passant, promotion, multi-blocker capture) feeding dual-run harness.
+- Performance regression / latency distribution benchmark (DecisionPlan vs Legacy) prior to removal gate.
+  - (Update 2025-09-25) Initial quantitative baseline added (`DecisionPlanVsLegacyBenchmark`) – future tasks: add grouping/masking/event filtering enabled variants and allocation counters.
+- CI gating script to enforce parity pack green window (2 releases) before removing legacy & counters.
+  - (Update 2025-09-25) Curated Sliding Fast-Path Parity Pack (`SlidingFastPathParityPackTests`) now present – to be wired into CI minimal test matrix; exhaustive suite retained for nightly / full.
+
 ## Style Reinforcement (Acceleration Code)
 
 - No LINQ in hot loops (fast-path, attack generation, reconstruction).
@@ -162,4 +182,5 @@ Style reminder: all future acceleration work must keep hot paths allocation-free
 - Allocation-free success path (stackalloc or pooled structs only; no per-call heap unless fallback engaged).
 - Immutable state transitions; no mutation of existing GameState or snapshots.
 - Deterministic ordering for metrics and path construction.
+  - (Reaffirmed 2025-09-25) New parity pack & benchmark code audited: explicit braces, file-scoped namespaces, no LINQ in hot loops, immutable state; continues style charter enforcement.
 - XML `<remarks>` documenting invariants (blocker semantics, capture termination, occupancy parity requirement).

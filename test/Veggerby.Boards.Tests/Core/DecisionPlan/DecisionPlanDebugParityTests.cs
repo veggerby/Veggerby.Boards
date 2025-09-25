@@ -16,7 +16,7 @@ public class DecisionPlanDebugParityTests
     public void GivenSimpleMove_WhenDebugParityEnabled_ThenNoDivergence()
     {
         // arrange
-        using var _ = new FeatureFlagScope(decisionPlan: true, debugParity: true);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: true, debugParity: true);
         var progress = new ChessGameBuilder().Compile();
         var piece = progress.Game.GetPiece("white-pawn-5"); // located at e2
                                                             // use single-step advance (e2 -> e3) for deterministic, currently supported pawn movement
@@ -37,7 +37,7 @@ public class DecisionPlanDebugParityTests
     public void GivenForcedMismatch_WhenDebugParityEnabled_ThenException()
     {
         // arrange
-        using var _ = new FeatureFlagScope(decisionPlan: true, debugParity: true);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: true, debugParity: true);
         DebugParityTestHooks.ForceMismatch = true;
         var progress = new ChessGameBuilder().Compile();
         var piece = progress.Game.GetPiece("white-pawn-5");

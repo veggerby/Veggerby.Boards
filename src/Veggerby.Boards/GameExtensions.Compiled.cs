@@ -18,6 +18,12 @@ public static partial class GameExtensions
     /// </summary>
     public static TilePath ResolvePathCompiledFirst(this Game game, Piece piece, Tile from, Tile to)
     {
+        // Zero-length path requests are treated as no-op (null) – avoid constructing visitors which throw.
+        if (from == to)
+        {
+            return null;
+        }
+
         if (Internal.FeatureFlags.EnableCompiledPatterns && TryGetCompiledResolver(game, out var services))
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
@@ -26,16 +32,23 @@ public static partial class GameExtensions
             }
         }
 
-        // Legacy fallback (single pattern assumption retained)
-        var pattern = piece.Patterns.Count() == 1 ? piece.Patterns.First() : null; // minimal parity with prior Single() usage
-        if (pattern is null)
+        // Legacy fallback: iterate each declared pattern until one yields a path (supports multi-direction sliders).
+        if (piece is null || from is null || to is null)
         {
             return null;
         }
 
-        var visitor = new Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
-        pattern.Accept(visitor);
-        return visitor.ResultPath;
+        foreach (var pat in piece.Patterns)
+        {
+            var visitor = new Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
+            pat.Accept(visitor);
+            if (visitor.ResultPath is not null)
+            {
+                return visitor.ResultPath;
+            }
+        }
+
+        return null;
     }
 
     private static bool TryGetCompiledResolver(Game game, out CompiledPatternServices services)
@@ -81,61 +94,70 @@ public static partial class GameExtensions
     /// </summary>
     public static TilePath ResolvePathCompiledFirst(this GameProgress progress, Piece piece, Tile from, Tile to)
     {
-        // metrics attempt
-        Internal.FastPathMetrics.OnAttempt();
-        // Sliding attack fast-path (requires explicit feature flag + bitboards + services)
-        if (Internal.FeatureFlags.EnableSlidingFastPath
-            && Internal.FeatureFlags.EnableBitboards
-            && progress?.Engine?.Capabilities is not null
-            && progress.Engine.Capabilities.AccelerationContext?.AttackRays is not null
-            && progress.Engine.Capabilities.Topology is not null)
+        // Short-circuit zero-length requests for parity with legacy semantics.
+        if (from == to)
         {
-            var atk = progress.Engine.Capabilities.AccelerationContext.AttackRays;
-            var topology = progress.Engine.Capabilities.Topology;
-            // Fast-path only applies to pieces with at least one sliding (repeatable) directional movement pattern.
-            // Without this guard immobile pieces (no directions) could incorrectly produce a single-step path via raw attacks.
-            static bool HasSlidingPatterns(Piece pc)
-            {
-                foreach (var pat in pc.Patterns)
-                {
-                    if (pat is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable) { return true; }
-                    if (pat is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { return true; }
-                }
+            return null;
+        }
 
-                return false;
+        // Single source of truth for fast-path attempt / skip / hit metrics.
+        Internal.FastPathMetrics.OnAttempt();
+
+        var capabilities = progress?.Engine?.Capabilities;
+        var accel = capabilities?.AccelerationContext;
+        var topology = capabilities?.Topology;
+        var pathResolver = capabilities?.PathResolver; // may be a SlidingFastPathResolver decorator
+
+        bool pieceIsSlider = false;
+        if (piece is not null)
+        {
+            foreach (var pat in piece.Patterns)
+            {
+                if (pat is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable) { pieceIsSlider = true; break; }
+                if (pat is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { pieceIsSlider = true; break; }
             }
-            var canUseFastPath = HasSlidingPatterns(piece);
-            if (!canUseFastPath)
+        }
+
+        TilePath fastPath = null;
+        var fastPathAttempted = false;
+        // Fast-path reconstruction attempt (metrics gating centralized here).
+        if (Internal.FeatureFlags.EnableSlidingFastPath && Internal.FeatureFlags.EnableBitboards && pieceIsSlider && accel?.AttackRays is not null && topology is not null)
+        {
+            fastPathAttempted = true;
+            fastPath = pathResolver?.Resolve(piece, from, to, progress.State);
+        }
+
+        if (fastPathAttempted)
+        {
+            if (fastPath is not null)
+            {
+                Internal.FastPathMetrics.OnFastPathHit();
+                return ApplyOccupancySemantics(progress, piece, fastPath);
+            }
+            else
+            {
+                // Distinguish skip reasons: not on ray / reconstruct fail accounted for by absence of path.
+                // Currently we cannot differentiate AttackMiss vs ReconstructFail without extra signals; treat as attack miss.
+                Internal.FastPathMetrics.OnFastPathSkipAttackMiss();
+            }
+        }
+        else
+        {
+            if (!pieceIsSlider)
             {
                 Internal.FastPathMetrics.OnFastPathSkipNotSlider();
             }
             else
             {
-                // Fast-path currently disabled pending new reconstruction helpers.
                 Internal.FastPathMetrics.OnFastPathSkipNoServices();
-            }
-        }
-        else
-        {
-            // Distinguish missing services vs flag disabled
-            if (!Internal.FeatureFlags.EnableSlidingFastPath || !Internal.FeatureFlags.EnableBitboards)
-            {
-                Internal.FastPathMetrics.OnFastPathSkipNoServices();
-            }
-            else
-            {
-                Internal.FastPathMetrics.OnFastPathSkipNoServices(); // fallback generic classification
             }
         }
 
         // Compiled or legacy resolution path after optional fast-path attempt
-        if (progress.TryGetCompiledResolver(out var services))
+        if (progress.TryGetCompiledResolver(out var services) && services.Resolver.TryResolve(piece, from, to, out var compiledPath))
         {
-            if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
-            {
-                Internal.FastPathMetrics.OnCompiledHit();
-                return ApplyOccupancySemantics(progress, piece, compiledPath);
-            }
+            Internal.FastPathMetrics.OnCompiledHit();
+            return ApplyOccupancySemantics(progress, piece, compiledPath);
         }
 
         var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);

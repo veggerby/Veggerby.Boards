@@ -8,6 +8,9 @@ namespace Veggerby.Boards.Internal;
 /// </summary>
 internal static class FastPathMetrics
 {
+    // Invariant (validated by tests):
+    // Attempts == FastPathHits + CompiledHits + LegacyHits + (SkipNoServices + SkipNotSlider + SkipAttackMiss + SkipReconstructFail)
+    // Note: _fastPathSkippedNoPrereq retained for backward compatibility; it's the aggregate of some skip reasons and is not part of the invariant equation.
     private static long _attempts;
     private static long _fastPathHits;
     private static long _fastPathSkippedNoPrereq; // legacy aggregate (still incremented for backward compatibility)

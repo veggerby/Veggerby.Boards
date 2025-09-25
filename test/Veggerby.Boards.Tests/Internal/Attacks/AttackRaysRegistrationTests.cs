@@ -1,5 +1,6 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal.Attacks;
+using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 using Xunit;
@@ -11,7 +12,7 @@ public class AttackRaysRegistrationTests
     [Fact]
     public void GivenBitboardsEnabled_WhenBuildingGame_ThenAttackRaysRegistered()
     {
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         Assert.NotNull(progress.Engine.Capabilities?.AccelerationContext.AttackRays);
     }
@@ -19,7 +20,7 @@ public class AttackRaysRegistrationTests
     [Fact]
     public void GivenBitboardsDisabled_WhenBuildingGame_ThenAttackRaysStillRegistered()
     {
-        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         Assert.NotNull(progress.Engine.Capabilities?.AccelerationContext.AttackRays); // naive context still provides sliding attacks
     }

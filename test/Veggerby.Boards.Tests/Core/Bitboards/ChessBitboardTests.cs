@@ -3,6 +3,7 @@ using System.Linq;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Bitboards;
+using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 using Xunit;
@@ -15,7 +16,7 @@ public class ChessBitboardTests
     public void GivenInitialChessPosition_WhenBitboardsEnabled_ThenOccupancyMatchesPieceCount()
     {
         // arrange
-        using var _ = new FeatureFlagScope(decisionPlan: false, compiledPatterns: true, bitboards: true);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: false, compiledPatterns: true, bitboards: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 

@@ -5,6 +5,7 @@ using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Core;
@@ -13,7 +14,7 @@ public class DecisionPlanParityTests
 {
     private static GameProgress Build(bool enablePlan)
     {
-        using var _ = FeatureFlagScope.DecisionPlan(enablePlan);
+        using var _ = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: enablePlan);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return builder.Compile();
     }

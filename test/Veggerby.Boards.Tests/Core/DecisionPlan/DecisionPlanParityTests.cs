@@ -27,7 +27,7 @@ public class ChessDecisionPlanParityTests
     {
         // arrange
         var builderLegacy = new ChessGameBuilder();
-        using (new FeatureFlagScope(decisionPlan: false))
+        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: false))
         {
             var legacy = builderLegacy.Compile();
             legacy = ApplyOpening(legacy);
@@ -35,7 +35,7 @@ public class ChessDecisionPlanParityTests
 
             var builderPlan = new ChessGameBuilder();
             Veggerby.Boards.States.GameProgress plan;
-            using (new FeatureFlagScope(decisionPlan: true))
+            using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(decisionPlan: true))
             {
                 plan = builderPlan.Compile();
                 plan = ApplyOpening(plan);

@@ -65,7 +65,7 @@ public class CompiledPatternParityTests
         var game = new Game(board, [player], [piece]);
 
         TilePath compiledOff;
-        using (new Veggerby.Boards.Tests.Utils.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, boardShape: false))
+        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false))
         {
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();
@@ -74,12 +74,16 @@ public class CompiledPatternParityTests
         }
 
         TilePath compiledOn;
-        using (new Veggerby.Boards.Tests.Utils.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, boardShape: true))
+        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false))
         {
+            // Manually toggle BoardShape flag since Infrastructure scope doesn't expose it yet.
+            var prev = Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape;
+            Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape = true;
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();
             compiled.Should().NotBeNull();
             compiledOn = compiled;
+            Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape = prev;
         }
 
         compiledOn.Distance.Should().Be(compiledOff.Distance);

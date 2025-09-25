@@ -15,7 +15,7 @@ public class OccupancyBehaviorTests
     public void GivenMove_WhenHandled_ThenOccupancyReflectsVacatedAndNewTile()
     {
         // arrange
-        using var flags = new Veggerby.Boards.Tests.Utils.FeatureFlagScope(bitboards: false); // use naive occupancy for deterministic ground truth
+        using var flags = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false); // use naive occupancy for deterministic ground truth
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var game = progress.Game;

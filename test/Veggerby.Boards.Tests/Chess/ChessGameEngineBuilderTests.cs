@@ -2,7 +2,8 @@
 
 
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Tests.Utils;
+using Veggerby.Boards.Tests.Infrastructure;
+using Veggerby.Boards.Tests.Utils; // for extension methods like ShouldHaveTileWithRelations
 
 namespace Veggerby.Boards.Tests.Chess;
 

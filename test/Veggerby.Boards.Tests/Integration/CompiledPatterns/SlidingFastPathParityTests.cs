@@ -3,7 +3,7 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Internal;
-using Veggerby.Boards.Tests.Utils;
+using Veggerby.Boards.Tests.Infrastructure;
 
 using Xunit;
 
@@ -101,7 +101,7 @@ public class SlidingFastPathParityTests
 
     private static TilePath ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
-        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
         // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
         var prevSliding = FeatureFlags.EnableSlidingFastPath;
         FeatureFlags.EnableSlidingFastPath = bitboards;
@@ -110,6 +110,10 @@ public class SlidingFastPathParityTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
+        if (from == to)
+        {
+            return null; // zero-length request parity: treat as null path
+        }
         try
         {
             return progress.ResolvePathCompiledFirst(piece, from, to);
@@ -292,7 +296,7 @@ public class SlidingFastPathParityTests
 
     private static TilePath ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;
         FeatureFlags.EnableSlidingFastPath = true;
         var builder = new SlidingTestBuilder(specs);
@@ -306,7 +310,7 @@ public class SlidingFastPathParityTests
 
     private static TilePath ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
+        using var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;
         FeatureFlags.EnableSlidingFastPath = false;
         var builder = new SlidingTestBuilder(specs);

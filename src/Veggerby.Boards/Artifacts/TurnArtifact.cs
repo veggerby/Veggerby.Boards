@@ -11,13 +11,10 @@ namespace Veggerby.Boards.Artifacts;
 /// once sequencing logic is activated. Presence of this artifact enables future rules and mutators to
 /// evolve turns without overloading <see cref="Player"/> state.
 /// </remarks>
-public sealed class TurnArtifact : Artifact
+/// <remarks>
+/// Initializes a new instance of the <see cref="TurnArtifact"/> class.
+/// </remarks>
+/// <param name="id">Artifact identifier (stable, typically a fixed constant).</param>
+public sealed class TurnArtifact(string id) : Artifact(id)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TurnArtifact"/> class.
-    /// </summary>
-    /// <param name="id">Artifact identifier (stable, typically a fixed constant).</param>
-    public TurnArtifact(string id) : base(id)
-    {
-    }
 }

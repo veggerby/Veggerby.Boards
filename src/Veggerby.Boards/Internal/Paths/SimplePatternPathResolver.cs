@@ -9,14 +9,9 @@ namespace Veggerby.Boards.Internal.Paths;
 /// <summary>
 /// Fallback path resolver that iterates a piece's patterns using the existing <see cref="ResolveTilePathPatternVisitor"/> logic.
 /// </summary>
-internal sealed class SimplePatternPathResolver : IPathResolver
+internal sealed class SimplePatternPathResolver(Board board) : IPathResolver
 {
-    private readonly Board _board;
-
-    public SimplePatternPathResolver(Board board)
-    {
-        _board = board;
-    }
+    private readonly Board _board = board;
 
     public TilePath Resolve(Piece piece, Tile from, Tile to, GameState state)
     {

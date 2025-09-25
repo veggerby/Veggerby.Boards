@@ -218,9 +218,10 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 
 - [x] TurnArtifact & TurnState definitions (immutable; XML docs; invariants in remarks) – scaffolding merged (shadow mode, no behavior change).
 - [x] TurnSegment enum (Start/Main/End) – initial minimal set (profile builder deferred).
-- [ ] TurnProfile configuration builder (declarative segment ordering & optional segments).
-- [ ] TurnAdvanceStateMutator (increment TurnNumber, maintain RoundNumber, rotate ActivePlayer, reset segment to Upkeep/Main depending profile).
-- [ ] Segment transition mutator(s): BeginSegment / EndSegment with validation conditions.
+- [x] TurnProfile configuration builder (declarative segment ordering & optional segments) – minimal default (Start→Main→End) implemented; future builder extensibility deferred.
+- [x] TurnAdvanceStateMutator (increment TurnNumber, reset segment; ActivePlayer rotation deferred) – basic advancement behind feature flag.
+- [x] Segment transition condition + mutator path (EndTurnSegmentEvent + condition + advancement logic) – Begin/End events introduced; dedicated Begin mutator deferred (handled inside advancement logic for now).
+- [x] Minimal rule wiring (condition + mutator invocation path) validated via `TurnSequencingCoreTests`; automatic DecisionPlan registration deferred.
 - [ ] ActivePlayer projection compatibility layer (derive legacy ActivePlayerState from TurnState when flag ON).
 - [ ] Backgammon: Refactor doubling condition to use TurnState (Roll segment + LastDoubledTurn).
 - [ ] Backgammon: Move LastDoubledTurn field from cube state to TurnState or reference TurnState.TurnNumber in DoublingDiceState.

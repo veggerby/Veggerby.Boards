@@ -120,4 +120,12 @@ internal static class FeatureFlags
     /// Default: false (opt-in until benchmarks validate &lt;=5% overhead vs direct dispatch for small plans).
     /// </summary>
     public static bool EnableObserverBatching { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the experimental turn sequencing system (TurnProfile + segment
+    /// transition / advancement events) is enabled. When disabled, only the shadow <c>TurnState</c> is present and
+    /// no events or rules may alter its values (turn number remains 1, segment remains <see cref="States.TurnSegment.Start"/>).
+    /// Default: false until segment transition + advancement parity, determinism, and rule gating tests are complete.
+    /// </summary>
+    public static bool EnableTurnSequencing { get; set; } = false;
 }

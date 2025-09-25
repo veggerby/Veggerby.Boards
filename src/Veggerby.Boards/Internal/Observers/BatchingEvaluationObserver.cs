@@ -21,9 +21,9 @@ namespace Veggerby.Boards.Internal.Observers;
 /// A small struct buffer is used to avoid per-callback allocations. Buffer size chosen to cover common evaluation fan-out.
 /// Large plans will segment into multiple flushes but still retain ordering guarantees.
 /// </remarks>
-internal sealed class BatchingEvaluationObserver : IEvaluationObserver
+internal sealed class BatchingEvaluationObserver(IEvaluationObserver inner, int capacity = BatchingEvaluationObserver.DefaultCapacity) : IEvaluationObserver
 {
-    private readonly IEvaluationObserver _inner;
+    private readonly IEvaluationObserver _inner = inner ?? throw new ArgumentNullException(nameof(inner));
 
     // Event kinds; store minimal discriminated union for callback data
     private enum Kind : byte
@@ -51,16 +51,9 @@ internal sealed class BatchingEvaluationObserver : IEvaluationObserver
         public GameState State;
     }
 
-    private readonly Entry[] _buffer;
-    private int _count;
+    private readonly Entry[] _buffer = new Entry[capacity <= 8 ? DefaultCapacity : capacity];
+    private int _count = 0;
     private const int DefaultCapacity = 128; // heuristic: most event evaluations far below this
-
-    public BatchingEvaluationObserver(IEvaluationObserver inner, int capacity = DefaultCapacity)
-    {
-        _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-        _buffer = new Entry[capacity <= 8 ? DefaultCapacity : capacity];
-        _count = 0;
-    }
 
     private void Add(in Entry e)
     {

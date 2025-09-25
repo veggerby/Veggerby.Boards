@@ -24,7 +24,7 @@ public class CompiledDirectionPatternParityTests
 
         var legacy = legacyVisitor.ResultPath;
         var table = PatternCompiler.Compile(game);
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
+        var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var resolver = new CompiledPatternResolver(table, game.Board, null, shape);
         resolver.TryResolve(piece, from, to, out var compiled);
 

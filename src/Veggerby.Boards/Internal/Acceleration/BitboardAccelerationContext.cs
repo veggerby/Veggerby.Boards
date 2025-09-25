@@ -10,37 +10,25 @@ namespace Veggerby.Boards.Internal.Acceleration;
 /// <summary>
 /// Acceleration context maintaining internal bitboard + piece map snapshots, updating them incrementally where possible.
 /// </summary>
-internal sealed class BitboardAccelerationContext : IAccelerationContext
+internal sealed class BitboardAccelerationContext(
+    BitboardLayout bitboardLayout,
+    BitboardSnapshot bitboardSnapshot,
+    PieceMapLayout pieceMapLayout,
+    PieceMapSnapshot pieceMapSnapshot,
+    BoardShape shape,
+    IBoardTopology topology,
+    IOccupancyIndex occupancy,
+    IAttackRays attackRays) : IAccelerationContext
 {
-    private readonly BitboardLayout _bitboardLayout;
-    private BitboardSnapshot _bitboardSnapshot;
-    private readonly PieceMapLayout _pieceMapLayout;
-    private PieceMapSnapshot _pieceMapSnapshot;
-    private readonly BoardShape _shape; // needed for rebuilds
-    private readonly IBoardTopology _topology; // optional for future index resolution helpers
+    private readonly BitboardLayout _bitboardLayout = bitboardLayout;
+    private BitboardSnapshot _bitboardSnapshot = bitboardSnapshot;
+    private readonly PieceMapLayout _pieceMapLayout = pieceMapLayout;
+    private PieceMapSnapshot _pieceMapSnapshot = pieceMapSnapshot;
+    private readonly BoardShape _shape = shape; // needed for rebuilds
+    private readonly IBoardTopology _topology = topology; // optional for future index resolution helpers
 
-    public IOccupancyIndex Occupancy { get; }
-    public IAttackRays AttackRays { get; }
-
-    public BitboardAccelerationContext(
-        BitboardLayout bitboardLayout,
-        BitboardSnapshot bitboardSnapshot,
-        PieceMapLayout pieceMapLayout,
-        PieceMapSnapshot pieceMapSnapshot,
-        BoardShape shape,
-        IBoardTopology topology,
-        IOccupancyIndex occupancy,
-        IAttackRays attackRays)
-    {
-        _bitboardLayout = bitboardLayout;
-        _bitboardSnapshot = bitboardSnapshot;
-        _pieceMapLayout = pieceMapLayout;
-        _pieceMapSnapshot = pieceMapSnapshot;
-        _shape = shape;
-        _topology = topology;
-        Occupancy = occupancy;
-        AttackRays = attackRays;
-    }
+    public IOccupancyIndex Occupancy { get; } = occupancy;
+    public IAttackRays AttackRays { get; } = attackRays;
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {

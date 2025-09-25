@@ -8,16 +8,10 @@ namespace Veggerby.Boards.Internal.Acceleration;
 /// <summary>
 /// Acceleration context that performs no cached incremental updates beyond the underlying naive implementations.
 /// </summary>
-internal sealed class NaiveAccelerationContext : IAccelerationContext
+internal sealed class NaiveAccelerationContext(IOccupancyIndex occupancy, IAttackRays attackRays) : IAccelerationContext
 {
-    public IOccupancyIndex Occupancy { get; }
-    public IAttackRays AttackRays { get; }
-
-    public NaiveAccelerationContext(IOccupancyIndex occupancy, IAttackRays attackRays)
-    {
-        Occupancy = occupancy;
-        AttackRays = attackRays;
-    }
+    public IOccupancyIndex Occupancy { get; } = occupancy;
+    public IAttackRays AttackRays { get; } = attackRays;
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {

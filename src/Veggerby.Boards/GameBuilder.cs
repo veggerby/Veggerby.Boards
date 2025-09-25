@@ -317,7 +317,7 @@ public abstract class GameBuilder
         var directions = _directionDefinitions.Select(CreateTileRelationDirection).ToArray();
         var dice = _diceDefinitions.Select(CreateDice).ToArray();
         var relations = _tileRelationDefinitions.Select(x => CreateTileRelation(x, tiles, directions)).ToArray();
-        var pieces = _pieceDefinitions.Select(x => GameBuilder.CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
+        var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
         // Shadow mode turn timeline artifact (single instance). Exposed for future sequencing.
@@ -345,7 +345,7 @@ public abstract class GameBuilder
         baseStates.AddRange(diceStates);
 
         // Inject initial TurnState (turn 1, Start segment) – shadow only, no rules reference yet.
-        var initialTurnState = new States.TurnState(turnArtifact, 1, States.TurnSegment.Start);
+        var initialTurnState = new States.TurnState(turnArtifact, 1, TurnSegment.Start);
         baseStates.Add(initialTurnState);
 
         var initialGameState = _seed.HasValue
@@ -430,7 +430,7 @@ public abstract class GameBuilder
         }
 
         // Sliding fast-path decorator layering if enabled (decorates chosen resolver)
-        if (Internal.FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
+        if (FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
         {
             var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
             pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);

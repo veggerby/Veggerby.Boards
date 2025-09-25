@@ -91,6 +91,7 @@ It models **boards (graphs), artifacts (pieces, dice, players), immutable state,
 ## 6. Testing
 
 * Framework: xUnit + AwesomeAssertions.
+* Running: when running unit tests via `dotnet test` **never** use `--no-build` parameter.
 * Each rule branch covered: happy, edge, exception.
 * Deterministic: no hidden randomness (dice must use explicit `DiceState<T>`).
 * Example template:

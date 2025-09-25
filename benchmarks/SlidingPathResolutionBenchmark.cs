@@ -204,9 +204,9 @@ public class SlidingPathResolutionBenchmark
     public int FastPath()
     {
         // Enable full fast-path stack.
-        Internal.FeatureFlags.EnableBitboards = true;
-        Internal.FeatureFlags.EnableCompiledPatterns = true;
-        Internal.FeatureFlags.EnableSlidingFastPath = true;
+        FeatureFlags.EnableBitboards = true;
+        FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableSlidingFastPath = true;
         var progress = SelectProgress();
         return ResolveSet(progress);
     }
@@ -215,9 +215,9 @@ public class SlidingPathResolutionBenchmark
     public int CompiledWithBitboardsNoFastPath()
     {
         // Bitboards + compiled patterns enabled, but sliding fast-path disabled (measures overhead neutrality).
-        Internal.FeatureFlags.EnableBitboards = true;
-        Internal.FeatureFlags.EnableCompiledPatterns = true;
-        Internal.FeatureFlags.EnableSlidingFastPath = false;
+        FeatureFlags.EnableBitboards = true;
+        FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableSlidingFastPath = false;
         var progress = SelectProgress();
         return ResolveSet(progress);
     }
@@ -226,9 +226,9 @@ public class SlidingPathResolutionBenchmark
     public int CompiledNoBitboards()
     {
         // Pure compiled resolver path (no bitboards).
-        Internal.FeatureFlags.EnableBitboards = false;
-        Internal.FeatureFlags.EnableCompiledPatterns = true;
-        Internal.FeatureFlags.EnableSlidingFastPath = false;
+        FeatureFlags.EnableBitboards = false;
+        FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableSlidingFastPath = false;
         // Use empty progress (bitboards not required because we won't exercise fast-path); queries derived from shared game state.
         return ResolveCompiledOnly();
     }
@@ -309,7 +309,7 @@ public class SlidingPathResolutionBenchmark
 
             // Path resolver (compiled patterns always enabled for benchmark scenarios to measure compiled vs fast-path cost).
             Internal.Paths.IPathResolver pathResolver;
-            if (Internal.FeatureFlags.EnableCompiledPatterns)
+            if (FeatureFlags.EnableCompiledPatterns)
             {
                 var table = PatternCompiler.Compile(_game);
                 var resolver = new CompiledPatternResolver(table, _game.Board, null, _shape);
@@ -322,7 +322,7 @@ public class SlidingPathResolutionBenchmark
 
             // Acceleration context selection (mimic builder but only for occupancy + attacks; piece map + bitboards internal).
             Internal.Acceleration.IAccelerationContext accelerationContext;
-            if (Internal.FeatureFlags.EnableBitboards && _game.Board.Tiles.Count() <= 64)
+            if (FeatureFlags.EnableBitboards && _game.Board.Tiles.Count() <= 64)
             {
                 var pieceLayout = PieceMapLayout.Build(_game);
                 var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, _shape);
@@ -340,7 +340,7 @@ public class SlidingPathResolutionBenchmark
             }
 
             // Optional sliding fast-path decoration respecting feature flag.
-            if (Internal.FeatureFlags.EnableSlidingFastPath)
+            if (FeatureFlags.EnableSlidingFastPath)
             {
                 var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
                 pathResolver = new Internal.Paths.SlidingFastPathResolver(_shape, sliding, accelerationContext.Occupancy, pathResolver);

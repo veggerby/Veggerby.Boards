@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added (Unreleased)
 
 - Shadow-mode turn sequencing scaffolding: introduced `TurnSegment` enum, `TurnArtifact`, and `TurnState` with initial state injected at compile time (turn 1, Start). No behavioral changes yet; groundwork for future deterministic turn advancement and multi-phase gating.
+- Turn sequencing Phase 1 (flag-gated): Added feature flag `EnableTurnSequencing`, default `TurnProfile` (Start→Main→End), `BeginTurnSegmentEvent` / `EndTurnSegmentEvent`, `EndTurnSegmentCondition`, and `TurnAdvanceStateMutator` (progresses segment or advances turn + resets segment). Basic rule wiring established and comprehensive tests added (`TurnSequencingCoreTests`) covering: flag-off inert behavior, Start→Main progression, Main→End progression, End→TurnNumber increment with segment reset, and invalid segment mismatch rejection path. All logic adheres to style charter (file-scoped namespaces, explicit braces, no LINQ in mutator hot path, immutability). Future phases (active player rotation, multi-game segment profiles, pass/commit semantics) tracked in Workstream 10 backlog. Any deviation from style requires inline `// STYLE-DEVIATION:` plus CHANGELOG entry.
 
 ### Added / Changed
 

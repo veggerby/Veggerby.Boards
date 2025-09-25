@@ -30,8 +30,8 @@ public class ObserverBatchingTests
     public void GivenSingleMove_WhenBatchedEnabled_ThenOrderingMatchesUnbatched()
     {
         // arrange
-        Veggerby.Boards.Internal.FeatureFlags.EnableDecisionPlan = true; // ensure plan path (more callbacks)
-        Veggerby.Boards.Internal.FeatureFlags.EnableObserverBatching = false;
+        Boards.Internal.FeatureFlags.EnableDecisionPlan = true; // ensure plan path (more callbacks)
+        Boards.Internal.FeatureFlags.EnableObserverBatching = false;
         var rec1 = new RecordingObserver();
         var unbatched = new ChessGameBuilder().WithObserver(rec1).Compile();
 
@@ -43,7 +43,7 @@ public class ObserverBatchingTests
         unbatched = unbatched.HandleEvent(evt);
         var sequenceUnbatched = rec1.Entries.ToArray();
 
-        Veggerby.Boards.Internal.FeatureFlags.EnableObserverBatching = true;
+        Boards.Internal.FeatureFlags.EnableObserverBatching = true;
         var rec2 = new RecordingObserver();
         var batched = new ChessGameBuilder().WithObserver(rec2).Compile();
         // Re-resolve path for new game instance (cannot reuse path object bound to previous board)

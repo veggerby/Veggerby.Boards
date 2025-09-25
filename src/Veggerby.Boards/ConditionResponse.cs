@@ -30,15 +30,15 @@ public class ConditionResponse
     /// <summary>
     /// Shared instance representing an ignored/not-applicable result.
     /// </summary>
-    public static readonly ConditionResponse NotApplicable = ConditionResponse.New(ConditionResult.Ignore);
+    public static readonly ConditionResponse NotApplicable = New(ConditionResult.Ignore);
     /// <summary>
     /// Shared instance representing a valid result (no reason).
     /// </summary>
-    public static readonly ConditionResponse Valid = ConditionResponse.New(ConditionResult.Valid);
+    public static readonly ConditionResponse Valid = New(ConditionResult.Valid);
     /// <summary>
     /// Shared instance representing an invalid result (no reason).
     /// </summary>
-    public static readonly ConditionResponse Invalid = ConditionResponse.New(ConditionResult.Invalid);
+    public static readonly ConditionResponse Invalid = New(ConditionResult.Invalid);
 
     /// <summary>
     /// Gets the result classification.

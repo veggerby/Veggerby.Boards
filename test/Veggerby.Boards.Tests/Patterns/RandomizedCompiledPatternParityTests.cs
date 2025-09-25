@@ -65,7 +65,7 @@ public class RandomizedCompiledPatternParityTests
         var tiles = game.Board.Tiles.ToArray();
         var random = new System.Random(424242); // deterministic seed
         var table = PatternCompiler.Compile(game);
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
+        var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var compiled = new CompiledPatternResolver(table, game.Board, null, shape);
         const int samples = 2000;
 

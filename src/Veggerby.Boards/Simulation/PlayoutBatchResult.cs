@@ -115,63 +115,58 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
 /// <summary>
 /// Aggregated metrics for a single playout (captured only in detailed runs to avoid overhead otherwise).
 /// </summary>
-public sealed class PlayoutMetrics
+/// <remarks>
+/// Creates a new metrics snapshot.
+/// </remarks>
+/// <param name="applied">Applied event count.</param>
+/// <param name="rejected">Rejected candidate event count.</param>
+/// <param name="policyCalls">Number of policy invocations.</param>
+/// <param name="maxDepthObserved">Maximum depth reached (events applied).</param>
+public sealed class PlayoutMetrics(int applied, int rejected, int policyCalls, int maxDepthObserved)
 {
     /// <summary>
     /// Number of events successfully applied during the playout.
     /// </summary>
-    public int AppliedEvents { get; }
+    public int AppliedEvents { get; } = applied;
 
     /// <summary>
     /// Number of candidate events rejected (either by rules or policy). May be zero if the policy does not expose rejected attempts.
     /// </summary>
-    public int RejectedEvents { get; }
+    public int RejectedEvents { get; } = rejected;
 
     /// <summary>
     /// Number of times the policy delegate was invoked to obtain the next event.
     /// </summary>
-    public int PolicyCalls { get; }
+    public int PolicyCalls { get; } = policyCalls;
 
     /// <summary>
     /// Maximum depth (number of applied events) observed at any point in the playout. Equal to <see cref="AppliedEvents"/> unless early termination semantics evolve.
     /// </summary>
-    public int MaxDepthObserved { get; }
-
-    /// <summary>
-    /// Creates a new metrics snapshot.
-    /// </summary>
-    /// <param name="applied">Applied event count.</param>
-    /// <param name="rejected">Rejected candidate event count.</param>
-    /// <param name="policyCalls">Number of policy invocations.</param>
-    /// <param name="maxDepthObserved">Maximum depth reached (events applied).</param>
-    public PlayoutMetrics(int applied, int rejected, int policyCalls, int maxDepthObserved)
-    {
-        AppliedEvents = applied;
-        RejectedEvents = rejected;
-        PolicyCalls = policyCalls;
-        MaxDepthObserved = maxDepthObserved;
-    }
+    public int MaxDepthObserved { get; } = maxDepthObserved;
 }
 
 /// <summary>
 /// Detailed batch result including per-playout metrics and aggregate summaries.
 /// </summary>
-public sealed class PlayoutBatchDetailedResult
+/// <remarks>
+/// Creates a new detailed batch result.
+/// </remarks>
+public sealed class PlayoutBatchDetailedResult(PlayoutBatchResult basic, IReadOnlyList<PlayoutMetrics> metrics, bool cancellationRequested)
 {
     /// <summary>
     /// Basic batch result (playout results and simple statistics) that mirrors the non-detailed API for compatibility.
     /// </summary>
-    public PlayoutBatchResult Basic { get; }
+    public PlayoutBatchResult Basic { get; } = basic;
 
     /// <summary>
     /// Per-playout metrics captured during detailed execution.
     /// </summary>
-    public IReadOnlyList<PlayoutMetrics> Metrics { get; }
+    public IReadOnlyList<PlayoutMetrics> Metrics { get; } = metrics;
 
     /// <summary>
     /// Indicates whether cancellation was requested mid-run and the batch is therefore partial.
     /// </summary>
-    public bool CancellationRequested { get; }
+    public bool CancellationRequested { get; } = cancellationRequested;
 
     /// <summary>
     /// Total applied events across all playouts in this batch.
@@ -192,14 +187,4 @@ public sealed class PlayoutBatchDetailedResult
     /// Average branching factor approximation = total policy calls / playout count (coarse; refined variant may divide by applied depth sum later).
     /// </summary>
     public double AverageBranchingFactor => Metrics.Count == 0 ? 0d : (double)TotalPolicyCalls / Metrics.Count;
-
-    /// <summary>
-    /// Creates a new detailed batch result.
-    /// </summary>
-    public PlayoutBatchDetailedResult(PlayoutBatchResult basic, IReadOnlyList<PlayoutMetrics> metrics, bool cancellationRequested)
-    {
-        Basic = basic;
-        Metrics = metrics;
-        CancellationRequested = cancellationRequested;
-    }
 }

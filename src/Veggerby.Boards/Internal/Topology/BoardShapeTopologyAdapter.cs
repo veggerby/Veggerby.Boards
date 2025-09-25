@@ -7,14 +7,9 @@ namespace Veggerby.Boards.Internal.Topology;
 /// <summary>
 /// Adapter exposing a minimal topology interface over the internal <see cref="BoardShape"/> layout.
 /// </summary>
-internal sealed class BoardShapeTopologyAdapter : IBoardTopology
+internal sealed class BoardShapeTopologyAdapter(BoardShape shape) : IBoardTopology
 {
-    private readonly BoardShape _shape;
-
-    public BoardShapeTopologyAdapter(BoardShape shape)
-    {
-        _shape = shape;
-    }
+    private readonly BoardShape _shape = shape;
 
     public bool TryGetTileIndex(Tile tile, out short index)
     {

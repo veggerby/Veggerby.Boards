@@ -29,19 +29,19 @@ public class HashingOverheadBenchmark
     public void Setup()
     {
         // Baseline builder without hashing (toggle global flag)
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableStateHashing;
+        var original = Internal.FeatureFlags.EnableStateHashing;
         try
         {
-            Veggerby.Boards.Internal.FeatureFlags.EnableStateHashing = false;
+            Internal.FeatureFlags.EnableStateHashing = false;
             _withoutHashing = new ChessGameBuilder().Compile();
 
-            Veggerby.Boards.Internal.FeatureFlags.EnableStateHashing = true;
+            Internal.FeatureFlags.EnableStateHashing = true;
             _withHashing = new ChessGameBuilder().Compile();
         }
         finally
         {
             // restore to avoid affecting other benchmarks executed in same process
-            Veggerby.Boards.Internal.FeatureFlags.EnableStateHashing = original;
+            Internal.FeatureFlags.EnableStateHashing = original;
         }
 
         var from = _withHashing.Game.GetTile("e2");

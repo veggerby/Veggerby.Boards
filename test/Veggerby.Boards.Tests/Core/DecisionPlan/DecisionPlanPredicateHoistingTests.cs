@@ -21,7 +21,7 @@ public class DecisionPlanPredicateHoistingTests
         var leafOther = GamePhase.New(2, "other", new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, root);
 
         // act
-        var plan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
+        var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
 
         // assert
         plan.Entries.Should().NotBeEmpty();

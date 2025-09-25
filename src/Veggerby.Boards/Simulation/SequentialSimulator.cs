@@ -122,57 +122,44 @@ public static class SequentialSimulator
 /// <summary>
 /// Convenience wrapper pairing a structured playout result with the terminal progress chain.
 /// </summary>
-public sealed class PlayoutResultWithProgress
+/// <remarks>
+/// Initializes a new instance of the <see cref="PlayoutResultWithProgress"/> class.
+/// </remarks>
+public sealed class PlayoutResultWithProgress(PlayoutResult result, GameProgress terminalProgress)
 {
     /// <summary>
     /// Gets the structured playout result (metrics + terminal reason + depth).
     /// </summary>
-    public PlayoutResult Result { get; }
+    public PlayoutResult Result { get; } = result;
 
     /// <summary>
     /// Gets the terminal <see cref="GameProgress"/> produced by the playout.
     /// </summary>
-    public GameProgress TerminalProgress { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlayoutResultWithProgress"/> class.
-    /// </summary>
-    public PlayoutResultWithProgress(PlayoutResult result, GameProgress terminalProgress)
-    {
-        Result = result;
-        TerminalProgress = terminalProgress;
-    }
+    public GameProgress TerminalProgress { get; } = terminalProgress;
 }
 
 /// <summary>
 /// Detailed playout result containing the basic structured result plus explicit metrics and terminal progress.
 /// </summary>
-public sealed class PlayoutDetailedResult
+/// <remarks>
+/// Initializes a new instance of the <see cref="PlayoutDetailedResult"/> class.
+/// </remarks>
+public sealed class PlayoutDetailedResult(PlayoutResult result, PlayoutMetrics metrics, GameProgress terminalProgress)
 {
     /// <summary>
     /// Gets the structured playout result (applied events + terminal reason).
     /// </summary>
-    public PlayoutResult Result { get; }
+    public PlayoutResult Result { get; } = result;
 
     /// <summary>
     /// Gets the metrics captured for this playout.
     /// </summary>
-    public PlayoutMetrics Metrics { get; }
+    public PlayoutMetrics Metrics { get; } = metrics;
 
     /// <summary>
     /// Gets the terminal progress (game + final state chain root) after the playout.
     /// </summary>
-    public GameProgress TerminalProgress { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlayoutDetailedResult"/> class.
-    /// </summary>
-    public PlayoutDetailedResult(PlayoutResult result, PlayoutMetrics metrics, GameProgress terminalProgress)
-    {
-        Result = result;
-        Metrics = metrics;
-        TerminalProgress = terminalProgress;
-    }
+    public GameProgress TerminalProgress { get; } = terminalProgress;
 }
 
 #nullable disable

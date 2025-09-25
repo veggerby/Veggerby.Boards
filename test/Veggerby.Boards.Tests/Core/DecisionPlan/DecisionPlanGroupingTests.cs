@@ -34,7 +34,7 @@ public class DecisionPlanGroupingTests
         GamePhase.New(2, "b", cTrue, GameEventRule<IGameEvent>.Null, root);
         GamePhase.New(3, "c", cTrue, GameEventRule<IGameEvent>.Null, root);
 
-        var plan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
+        var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
         FeatureFlags.EnableDecisionPlan = true;
         FeatureFlags.EnableDecisionPlanGrouping = true;
 
@@ -66,7 +66,7 @@ public class DecisionPlanGroupingTests
         GamePhase.New(2, "b", cFalse, GameEventRule<IGameEvent>.Null, root); // identical reference ensures grouping
         GamePhase.New(3, "c", cInner, GameEventRule<IGameEvent>.Null, root); // different condition after group
 
-        var plan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
+        var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
         FeatureFlags.EnableDecisionPlan = true;
         FeatureFlags.EnableDecisionPlanGrouping = true;
         // act

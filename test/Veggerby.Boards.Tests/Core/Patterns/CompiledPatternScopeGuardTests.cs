@@ -49,7 +49,7 @@ public class CompiledPatternScopeGuardTests
     {
         var dir1 = new Direction("ab"); var dir2 = new Direction("bc");
         var compiled = CompileFor(new FixedPattern(new[] { dir1, dir2 }));
-        compiled.Patterns.Should().ContainSingle(p => p.Kind == Veggerby.Boards.Flows.Patterns.CompiledPatternKind.Fixed);
+        compiled.Patterns.Should().ContainSingle(p => p.Kind == CompiledPatternKind.Fixed);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class CompiledPatternScopeGuardTests
     {
         var dir = new Direction("ab");
         var compiled = CompileFor(new DirectionPattern(dir, isRepeatable: true));
-        compiled.Patterns.Should().ContainSingle(p => p.Kind == Veggerby.Boards.Flows.Patterns.CompiledPatternKind.Ray && p.IsRepeatable);
+        compiled.Patterns.Should().ContainSingle(p => p.Kind == CompiledPatternKind.Ray && p.IsRepeatable);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class CompiledPatternScopeGuardTests
     {
         var d1 = new Direction("ab"); var d2 = new Direction("ac");
         var compiled = CompileFor(new MultiDirectionPattern(new[] { d1, d2 }, isRepeatable: false));
-        compiled.Patterns.Should().ContainSingle(p => p.Kind == Veggerby.Boards.Flows.Patterns.CompiledPatternKind.MultiRay && !p.IsRepeatable);
+        compiled.Patterns.Should().ContainSingle(p => p.Kind == CompiledPatternKind.MultiRay && !p.IsRepeatable);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class CompiledPatternScopeGuardTests
         }
 
         var table = PatternCompiler.Compile(game);
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(board);
+        var shape = Boards.Internal.Layout.BoardShape.Build(board);
         var resolver = new CompiledPatternResolver(table, board, null, shape);
 
         resolver.TryResolve(piece, a, c, out var compiledFixed).Should().BeTrue();

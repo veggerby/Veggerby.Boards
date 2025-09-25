@@ -374,7 +374,7 @@ public partial class GameProgress
         // If there is no active phase resolved for current state, treat as phase closed (no rule set is eligible).
         if (Phase is null)
         {
-            return Flows.Events.EventResult.Rejected(State, Flows.Events.EventRejectionReason.PhaseClosed, "No active phase available for event.");
+            return EventResult.Rejected(State, EventRejectionReason.PhaseClosed, "No active phase available for event.");
         }
 
         var before = State;
@@ -383,31 +383,31 @@ public partial class GameProgress
             var after = HandleEvent(@event); // may throw
             if (!ReferenceEquals(before, after.State) && !before.Equals(after.State))
             {
-                return Flows.Events.EventResult.Accepted(after.State);
+                return EventResult.Accepted(after.State);
             }
-            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.NotApplicable, "No rule produced a state change.");
+            return EventResult.Rejected(before, EventRejectionReason.NotApplicable, "No rule produced a state change.");
         }
         catch (InvalidGameEventException ex)
         {
-            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.RuleRejected, ex.ConditionResponse?.Reason);
+            return EventResult.Rejected(before, EventRejectionReason.RuleRejected, ex.ConditionResponse?.Reason);
         }
         catch (BoardException ex)
         {
             var msg = ex.Message ?? string.Empty;
-            var reason = Flows.Events.EventRejectionReason.InvalidEvent;
+            var reason = EventRejectionReason.InvalidEvent;
             if (msg.Contains("No valid dice state for path", StringComparison.OrdinalIgnoreCase))
             {
-                reason = Flows.Events.EventRejectionReason.PathNotFound;
+                reason = EventRejectionReason.PathNotFound;
             }
             else if (msg.Contains("Invalid from tile", StringComparison.OrdinalIgnoreCase))
             {
-                reason = Flows.Events.EventRejectionReason.InvalidOwnership;
+                reason = EventRejectionReason.InvalidOwnership;
             }
-            return Flows.Events.EventResult.Rejected(before, reason, ex.Message);
+            return EventResult.Rejected(before, reason, ex.Message);
         }
         catch (Exception ex)
         {
-            return Flows.Events.EventResult.Rejected(before, Flows.Events.EventRejectionReason.EngineInvariant, ex.Message);
+            return EventResult.Rejected(before, EventRejectionReason.EngineInvariant, ex.Message);
         }
     }
 }

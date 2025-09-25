@@ -107,7 +107,7 @@ public class SlidingFastPathMicroBenchmark
         FeatureFlags.EnableBitboards = true; FeatureFlags.EnableSlidingFastPath = true; FeatureFlags.EnableCompiledPatterns = true;
         var progress = _progressEmpty;
         var target = _a5;
-        var probe = Internal.FastPathAllocationProbe.Start();
+        var probe = FastPathAllocationProbe.Start();
         bool result = false;
         for (int i = 0; i < 5000; i++)
         {

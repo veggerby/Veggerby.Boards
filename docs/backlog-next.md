@@ -27,13 +27,14 @@ Outcome: Rule evaluation modernization feature set (grouping, event kind filteri
 
 Outcome: Workstream objectives met for milestone (deterministic RNG, dual hashing, zipper invariants, replay acceptance, documented serialization ordering). Deferred enhancements (external reproduction envelope tooling, hash interning map, timeline diff utilities) tracked outside active slice; no further blocking tasks here.
 
-## 3. Movement & Pattern Compilation
+## 3. Movement & Pattern Compilation (CLOSED – Deferred Enhancements Only)
 
-- [ ] Populate compiler for remaining pattern kinds (repeat expansions beyond current subset).
-- [ ] 5× parity & perf gate: finalize benchmark measuring visitor vs compiled across 1k random samples.
+- [ ] Populate compiler for remaining pattern kinds (conditional/leaper/wildcard) – requires semantics charter update.
+- [ ] Throughput improvement target (≥5×) – deferred; revisit with topology pruning + heuristic gating.
 - [ ] LINQ sweep legacy visitor (ensure no hot loop remains), add analyzer stub (optional).
 - [x] Micro-benchmarks per pattern kind (Fixed, Ray, MultiRay) vs visitor (latency + allocations). (Added `CompiledPatternKindsBenchmark` 2025-09-25.)
-- [ ] Edge-case semantics charter (blocked capture variants, repeat limit rationale) prior to broadening kinds.
+- [x] Edge-case semantics charter (blocked capture variants, repeat limit rationale) prior to broadening kinds. (Added detailed section to `movement-semantics.md` 2025-09-25.)
+- [x] Large-sample randomized parity benchmark & test harness (`PatternResolutionLargeSampleBenchmark`, `RandomizedCompiledPatternParityTests`) – allocation reduction confirmed; latency regression noted and documented.
 - [ ] Investigate conditional compilation heuristics (board size / topology) via capability seam (no inline flags).
 
 ## 4. Performance Data Layout & Hot Paths

@@ -244,7 +244,7 @@ Migration:
 
 Finalization Note: Scope for this milestone is COMPLETE. Remaining deferred enhancements (external reproduction envelope tooling, hash interning, timeline diff utilities) tracked under backlog and no longer gate engine graduation.
 
-### 3. Movement & Pattern Engine Compilation
+### 3. Movement & Pattern Engine Compilation (CLOSING NOTE 2025-09-25)
 
 Deliverables (Status annotations in brackets):
 
@@ -257,22 +257,24 @@ Deliverables (Status annotations in brackets):
 -- Parity test suite (legacy vs compiled). **[COMPLETED – archetypes + adjacency cache parity + scope guard tests]**
 -- Scope guard tests ensuring only supported kinds compile (AnyPattern / NullPattern explicitly ignored). **[COMPLETED – `CompiledPatternScopeGuardTests`]**
 -- Documentation of current compilation scope & determinism note. **[COMPLETED – `compiled-patterns.md` updated]**
+-- Edge-case semantics charter (blocked/capture precedence, tie-breaking, reconstruction failure, determinism invariants) **[COMPLETED – `movement-semantics.md` extended 2025-09-25]**
 Acceptance Criteria:
 
 - All movement tests + parity suite green under compiled engine once populated. **[PARTIAL → CORE PARITY ACHIEVED (supported kinds)**; remaining work: broader randomized sample & edge semantics charter]
 - ≥5x faster pattern resolution on 1000 random moves. **[PENDING]**
 Current Status:
 - Infra merged; feature ON by default (Fixed, Direction, MultiDirection). Scope documented; AnyPattern / NullPattern intentionally uncompiled (runtime visitor only). New scope guard tests enforce contract. Visitor fallback retained for unsupported future kinds.
+- Edge-case semantics charter finalized – any future pattern scope expansion (e.g., conditional, leaper, wildcard expansion) MUST: (1) update charter, (2) add guard + parity tests, (3) include explicit CHANGELOG entry, (4) pass style charter (no hot-path LINQ, immutable, deterministic).
+- Large-sample (1000 randomized queries) benchmark added (`PatternResolutionLargeSampleBenchmark`) – first run shows compiled resolver achieving allocation reduction (~19% fewer MB) but not yet latency speedup vs visitor (1.02× slower on dense random endpoints). Indicates current heuristic mix (frequent negative lookups, early ray termination) diminishes benefits; micro-kernel still shows ~23% latency win per supported IR kind. Workstream closed with note that the ≥5× target is deferred pending additional acceleration layers (sliding fast-path, adjacency shape exploitation) and potential heuristic gating.
+- Randomized parity harness (`RandomizedCompiledPatternParityTests`) over 2000 deterministic random samples passes with zero mismatches, reinforcing semantic parity for current compiled scope.
 Risks:
 - Premature optimization without representative workloads.
 - Accidental broadening of scope (guarded by scope tests).
 Migration:
 - `CompilePatterns()` invoked during game build; toggle to disable for troubleshooting.
-Next Steps:
-
-1. Edge-case semantics charter draft (blocked/capture for mixed repeat lengths) prior to expanding kinds.
-2. Conditional compilation heuristics investigation (board size / topology) behind capability seam.
-3. Randomized large-sample parity benchmark (≥1000 target resolutions) capturing distribution metrics to validate ≥5× target.
+Closure & Deferred Work:
+- ≥5× aggregate throughput target deferred; will re-evaluate after integrating topology-aware pruning, blocked-path short-circuit heuristics, and potential leaper precomputation. Documented in backlog.
+- Remaining tasks (heuristics, LINQ sweep) migrated to backlog; workstream marked closed for current milestone (parity + documentation + representative benchmarks achieved).
 
 ### 4. Performance Data Layout & Hot Path Optimization
 

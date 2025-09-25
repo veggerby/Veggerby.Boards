@@ -10,12 +10,12 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 
 ## 1. Rule Evaluation Engine Modernization
 
-- [ ] Static exclusivity inference (attribute-driven) feeding mask table (M2) – gated by `EnableDecisionPlanMasks`.
+- [x] Static exclusivity inference (attribute-driven) feeding mask table (M2) – implemented with precedence (builder > phase definition > attribute). Flag-gated under `EnableDecisionPlanMasks`; parity unaffected.
 - [x] Grouping invalid-gate negative tests (ensure skipped entries unaffected). (Implemented: `DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently` – semantics clarified: non-grouped subsequent condition still evaluates.)
 - [x] EventKind filtering benchmark variants (heterogeneous inert state event + 50/50, 80/20, 20/80 distributions + evaluation counts; allocation commentary pending separate perf note). Style charter reaffirmed.
 - [x] EventKind filtering benchmark variants – allocation counts + distinct hit/miss distributions (FOLLOW-UP). (Metrics captured 2025-09-25; allocations neutral; 20/80 shows ~4.6% gain; others neutral/slight overhead. Perf note updated.)
-- [ ] Debug parity overhead microbenchmark (dual-run cost quantification).
-- [ ] Observer reason taxonomy enrichment (invalid vs ignored vs masked) – doc + tests.
+- [x] Debug parity overhead microbenchmark (dual-run cost quantification) – `DebugParityOverheadBenchmark` added.
+- [ ] Observer reason taxonomy enrichment (invalid vs ignored vs masked) – PARTIAL: `OnRuleSkipped` + `RuleSkipReason` (EventKindFiltered, ExclusivityMasked, GroupGateFailed) landed; remaining: distinct invalid vs ignored classification & composite skip capture tests.
 
 ## 2. Deterministic Randomness & State History
 
@@ -79,7 +79,7 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 ## Hygiene Tasks
 
 - [ ] Normalize markdown heading spacing (lint clean pass after doc additions).
-- [x] Update CHANGELOG per milestone merges (grouping test rename, event kind benchmark repair + mixed evaluation counts, timeline undo/redo invariants now ACTIVE).
+- [x] Update CHANGELOG per milestone merges (grouping test rename, event kind benchmark repair + mixed evaluation counts, timeline undo/redo invariants now ACTIVE, exclusivity inference, observer taxonomy, parity overhead benchmark).
 - [x] Validate all new feature flags documented in configuration doc. (Completed 2025-09-25 – `configuration.md` updated with Timeline zipper validation note.)
 
 ---

@@ -70,7 +70,6 @@ It models **boards (graphs), artifacts (pieces, dice, players), immutable state,
   * No direct coupling to game-specific logic.
 * **Modules (Backgammon, Chess)**
   Declarative builders only. Reuse core primitives.
-* **API (`Veggerby.Boards.Api`)**
 
   * Thin façade: build games, handle events, return DTOs.
   * No business logic beyond mapping.

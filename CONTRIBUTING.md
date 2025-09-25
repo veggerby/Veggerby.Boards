@@ -106,7 +106,6 @@ dotnet test test/Veggerby.Boards.Tests \
 | `src/Veggerby.Boards` | Core engine (artifacts, state, phases, rules, builder) |
 | `src/Veggerby.Boards.Backgammon` | Backgammon sample module |
 | `src/Veggerby.Boards.Chess` | Chess sample module |
-| `src/Veggerby.Boards.Api` | ASP.NET Core demo API |
 | `test/Veggerby.Boards.Tests` | Test suite (xUnit + AwesomeAssertions) |
 | `docs/` | Architecture, concepts, extensibility, API docs |
 | `.github/` | CI workflows |

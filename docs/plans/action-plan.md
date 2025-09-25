@@ -42,7 +42,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
 | 6. Observability & Diagnostics | PARTIAL | Observer + PhaseEnter + StateHashed + in-memory trace capture + JSON trace exporter; visualizer pending |
 | 7. Developer Experience & Quality Gates | PARTIAL | Baseline benchmark + property test scaffold; invariants & perf CI gate pending |
-| 8. Module & API Versioning Strategy | NOT STARTED | No versioned DTOs yet |
+| 8. Public API Facade (Deferred) | DEFERRED | Removed – to be re-imagined later |
 | 9. Small Structural Refactors | NOT STARTED | Refactors/de-analyzers not started |
 
 Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
@@ -69,7 +69,7 @@ Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 5. Concurrency & Simulation (Item 6)
 6. Observability & Diagnostics (Items 9, 12, 13)
 7. Developer Experience & Quality Gates (Items 11, 13, 15 + small refactors)
-8. Module & API Versioning Strategy (Item 8)
+8. Public API Facade (Deferred) (Item 8)
 9. Small Structural Refactors (LINQ removal, record structs, adjacency caches, no hidden globals)
 
 ## Phase Timeline
@@ -79,7 +79,7 @@ Legend: COMPLETED / PARTIAL / NOT STARTED (scope as defined in this plan).
 | Phase 1 Foundations | Deterministic Core & Plan Skeleton | 1,2,3 (initial), 7 (typedef scaffolding) | DecisionPlan prototype; IRandomSource integrated; Zipper state model behind feature flag; tests green |
 | Phase 2 Acceleration | Performance & Pattern Compilation | 3 (DFA complete), 4, 5 (sim proto), 10 (internal bitboards chess) | Benchmarks show >=5x faster path resolve; simulator runs parallel playouts deterministically |
 | Phase 3 Observability & DX | Traces, Visualizer, Property Tests | 6, 9 (observer hooks), 11,12,13 | Trace UI/MVP; invariants passing 100+ FsCheck cases; perf guardrail CI failing on regression |
-| Phase 4 Hardening & Ecosystem | Versioning & Stability | 8,15, refactors finalize | API v1 stable; extension point docs; migration guide published |
+| Phase 4 Hardening & Ecosystem | Stability & Packaging | 15, refactors finalize | Extension point docs; migration guide (HTTP facade deferred) |
 
 ## Sequencing Refinements (Post Review)
 
@@ -210,9 +210,11 @@ Upcoming / In-Progress Optimizations (Design Drafted in `decision-plan-optimizat
 
 - G1 Grouping: compile contiguous identical predicate phases into gated groups (feature flag `EnableDecisionPlanGrouping`). **[COMPLETED – gate evaluated once; no behavior drift; test added]**
 -- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[IN-PROGRESS – classifier + filtering path + initial tests added; expanded tagging & benchmarks pending]**
+- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[COMPLETED – classifier + filtering path + heterogeneous benchmark variants + metrics tests]**
 -- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[COMPLETED – runtime masking + tests]**
 -- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[COMPLETED – dual-run comparison + mismatch diagnostics + tests]**
 - M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[PENDING]**
+- M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[COMPLETED – precedence builder > phase definition > attribute; integrated into mask compilation]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).
 - Debug difficulty: include verbose validator to cross-check results in tests.
@@ -365,22 +367,17 @@ Risks:
 Migration:
 - Property tests can be quarantined initially if unstable.
 
-### 8. Module & API Versioning Strategy
+### 8. Public API Facade (Deferred)
 
-Deliverables (Status annotations in brackets):
+DEFERRED: The HTTP / ASP.NET-facing facade, versioned DTO namespaces, and related packaging/versioning tasks have been intentionally removed from the active strategic scope to reduce complexity and keep focus on deterministic core, performance, and observability. They will be re-imagined later under a dedicated plan once:
 
-> Note: The previous experimental ASP.NET API layer was intentionally removed to keep the core engine focused. Reintroduction (if desired) will happen as a separate optional package providing versioned DTOs after hashing & observer enhancements stabilize.
+1. DecisionPlan optimizations stabilize and legacy evaluator is retired.
+2. Observer overhead and trace formats are finalized.
+3. Simulation and hashing features reach documented stability.
 
-- Separate package metadata for Chess/Backgammon (csproj adjustments, semantic version scheme). **[NOT STARTED]**
-- Versioned DTO namespaces: `Veggerby.Boards.Api.V1.Models`. **[NOT STARTED]**
-- Changelog & migration guide for introducing v1. **[NOT STARTED]**
-Acceptance Criteria:
-- Existing clients (if any) compile unchanged; new versioned namespace exposed. **[NOT STARTED]**
-- Pack step produces distinct nupkgs. **[NOT STARTED]**
-Risks:
-- Namespace churn confusion; emphasize docs.
-Migration:
-- Provide type forwarders temporarily if needed.
+When revisited, the facade plan will define: version negotiation policy, DTO evolution rules, migration guidelines, and separation boundaries (engine vs transport). Until then, any previous stories referencing `Veggerby.Boards.Api` or versioned DTO namespaces are considered obsolete and are not tracked.
+
+Impact: Current integration surface = engine builders, events, observer, simulator, and future analyzers. External consumers should integrate directly via the engine library packages.
 
 ### 9. Small Structural Refactors
 
@@ -558,10 +555,7 @@ Update (2025-09-25 later): Curated Sliding Fast-Path Parity Pack (`SlidingFastPa
    - Story: FsCheck project setup
    - Story: invariants suite
    - Story: benchmark harness + CI gate
-8. EPIC: Versioning & Packaging
-   - Story: split module csproj packaging metadata
-   - Story: API DTO v1 namespace
-   - Story: publish pipeline updates
+8. (Deferred) HTTP / Public API Facade – removed from active backlog (will return as a standalone plan when re-imagined)
 9. EPIC: Structural Refactors
    - Story: record structs adoption
    - Story: adjacency cache keyed by hash

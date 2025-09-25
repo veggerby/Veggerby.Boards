@@ -60,7 +60,7 @@ Ad‑hoc inference (e.g., inspecting specialized cube state or absence of player
 - `bool IsReplay` (flag that this turn is an extra/replay following rule-driven condition)
 - `Player[] ProvisionalActors` (populated only in simultaneous commit collection)
 - `int LastActionEventIndex` (debug / replay anchor; optional)
-- `int LastDoubledTurn` (Backgammon – optionally stays on DoublingDiceState instead, referencing TurnNumber)
+// Removed: `LastDoubledTurn` no longer considered a core TurnState field (lives on `DoublingDiceState`).
 
 ## 4. Invariants
 
@@ -69,7 +69,7 @@ Ad‑hoc inference (e.g., inspecting specialized cube state or absence of player
 3. Determinism: Same prior state + identical ordered events yields identical TurnState sequence.
 4. Single active player except during Commit collection (when ActivePlayer may be null and ProvisionalActors non-empty).
 5. Segment transitions must match TurnProfile; illegal transitions → Invalid event.
-6. No redouble allowed in Backgammon when `currentTurn.TurnNumber == lastDoubledTurn`.
+6. No redouble allowed in Backgammon when `currentTurn.TurnNumber == DoublingDiceState.LastDoubledTurn` (gating implemented in cube mutator; TurnState remains domain-agnostic).
 7. Replay turns (e.g., extra Ludo roll) increment TurnNumber but maintain same ActivePlayer; RoundNumber unaffected until rotation.
 8. RoundNumber increments only after the final eligible player completes End segment (or Main if simplified profile excludes End).
 
@@ -121,7 +121,7 @@ Before:
 
 After:
 
-- Condition: `Segment == TurnSegment.Roll` AND `TurnNumber > LastDoubledTurn`.
+- Condition (future when Roll segment introduced): `Segment == TurnSegment.Roll` AND `TurnNumber > DoublingDiceState.LastDoubledTurn`.
 - Mutator sets `DoublingDiceState.LastDoubledTurn = currentTurn.TurnNumber`.
 - Immediate second attempt in same turn returns Ignore; multi-turn (2→4→8) tests explicit.
 
@@ -198,7 +198,7 @@ Benchmarks: Add `TurnSequencingOverheadBenchmark` comparing HandleEvent p50/p95 
 
 ## 17. Open Questions
 
-- Should `LastDoubledTurn` live on `DoublingDiceState` only (referencing TurnNumber) or inside TurnState? (Leaning: keep on cube state; isolates Backgammon domain specifics.)
+- Resolved: `LastDoubledTurn` lives on `DoublingDiceState` (kept out of core TurnState to avoid Backgammon-specific leakage).
 - Do we need a dedicated RoundAdvance event or implicit detection is sufficient at final player boundary? (Lean implicit with explicit test.)
 - Representation of provisional intents: store as lightweight command objects or hashed payload references? (Defer until Phase 5.)
 

@@ -75,8 +75,8 @@ public class BackgammonInvariants
         Xunit.Assert.NotNull(assignedOwner);
     }
 
-    [Xunit.Fact(Skip = "Pending Turn Sequencing Phase 2 (active player turn gating). Reason: Current engine intentionally prevents second same-turn doubling; test expectation assumes deferred gating removal. Until: 2025-10-15.")]
-    public void GivenDoublingDice_WhenRedoubleAttemptSameTurn_ThenValueIncreasesPendingTurnGating()
+    [Xunit.Fact]
+    public void GivenDoublingDice_WhenRedoubleAttemptSameTurn_ThenValueUnchanged()
     {
         // arrange
         var builder = new BackgammonGameBuilder();
@@ -102,14 +102,12 @@ public class BackgammonInvariants
         var owner = (afterFirst as DoublingDiceState)!.CurrentPlayer;
         Xunit.Assert.Equal(2, afterFirst.CurrentValue);
 
-        // act - second immediate doubling attempt (same turn). Expect Ignore -> unchanged.
+        // act - second immediate doubling attempt (same turn). Expect Ignore -> unchanged (gated by cube state LastDoubledTurn).
         var secondEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
         var attempt = progress.HandleEvent(secondEvent);
         var afterAttempt = attempt.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
-
-        // assert - current engine semantics still allow second doubling (turn gating deferred) -> value doubled again
-        Xunit.Assert.Equal(4, afterAttempt.CurrentValue);
-        // Ownership remains with original owner until turn change semantics implemented
+        // assert - unchanged (same turn redouble blocked)
+        Xunit.Assert.Equal(2, afterAttempt.CurrentValue);
         Xunit.Assert.Same(owner, (afterAttempt as DoublingDiceState)!.CurrentPlayer);
     }
 
@@ -130,7 +128,7 @@ public class BackgammonInvariants
         Xunit.Assert.IsType<DiceState<int>>(after); // still generic state (not specialized DoublingDiceState)
     }
 
-    [Xunit.Fact(Skip = "Pending Turn Sequencing Phase 2 refactor of DoublingDiceState (specialized state path changed). Reason: Cast from DiceState<int> to DoublingDiceState not valid after recent scaffolding; ownership semantics to be reintroduced via TurnState integration. Until: 2025-10-15.")]
+    [Xunit.Fact]
     public void GivenDoublingDiceOwned_WhenOwnerAttemptsImmediateRedouble_ThenUnchanged()
     {
         // arrange
@@ -147,8 +145,10 @@ public class BackgammonInvariants
                 break;
             }
         }
-        // First doubling (owner becomes inactive player)
-        progress = progress.RollDice("doubling-dice");
+
+        // First doubling (owner becomes inactive player) – must emit explicit event because helper skips doubling cube
+        var firstEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
+        progress = progress.HandleEvent(firstEvent);
         var afterFirst = progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
         var doublingState = (DoublingDiceState)afterFirst;
         var owner = doublingState.CurrentPlayer;
@@ -156,8 +156,7 @@ public class BackgammonInvariants
         Xunit.Assert.Equal(2, afterFirst.CurrentValue);
         // Determine owner player id to simulate owner attempting redouble: active player now should be opponent
         var active = progress.State.GetStates<ActivePlayerState>().Single(p => p.IsActive).Artifact;
-        // If active equals owner, swap expectation logic (should not normally happen as ownership transfers to non-active player)
-        // act - attempt immediate redouble by owner requires crafting a scenario where owner's turn again (not yet supported). We simulate by reusing same state (owner not active) -> still should remain unchanged due to condition (only owner or unowned allowed but mutator applied results no change because value doubling path requires opponent context). Second attempt still same turn semantics.
+        // If active equals owner, still proceed – redouble attempt should be ignored either way because same-turn gating uses cube LastDoubledTurn.
         var attemptEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
         var attempt = progress.HandleEvent(attemptEvent);
         var afterAttempt = attempt.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);

@@ -148,7 +148,7 @@ Goal: Introduce a deterministic, extensible, and feature-flag–gated turn / rou
 | Game | Needed Features |
 |------|-----------------|
 | Chess | Simple fixed order (White→Black), segments: Main only, optional Upkeep for future clocks; TurnNumber gates draw / fifty-move potential metrics. |
-| Backgammon | Fixed order; Roll segment precedes Move; Doubling permitted only in Roll (before first move) or start of opponent's future turn; cube gating uses LastDoubledTurn field. |
+| Backgammon | Fixed order; Roll segment precedes Move; Doubling permitted only in Roll (before first move) or start of opponent's future turn; cube gating uses DoublingDiceState.LastDoubledTurn. |
 | Go | Fixed order; no segments beyond Main; pass handling increments PassCount used to detect consecutive passes → end-of-game scoring phase. |
 | Ludo | Fixed order; Roll→Main; extra-turn rule (rolling 6) implemented as TurnReplay flag causing TurnAdvanceStateMutator to keep same ActivePlayer with incremented TurnNumber. |
 | Kalaha (Mancala) | Fixed order; sowing may grant extra turn → replay semantics like Ludo; capture + store scoring at end of turn; end condition when one side empty triggers scoring segment. |
@@ -168,13 +168,13 @@ TurnState Fields:
 - int PassCount (resets except in games like Go where consecutive passes tracked)
 - int LastActionEventIndex (debug / replay introspection; aids verifying no implicit actions)
 - Player[] ProvisionalActors (only populated in simultaneous commit mode)
-- int LastDoubledTurn (moved from DoublingDiceState? – alternatively keep there but reference TurnNumber; decision pending)
+// Removed from tentative TurnState core fields; LastDoubledTurn now lives solely on DoublingDiceState to avoid leaking Backgammon specifics.
 
 ### Event & Rule Integration
 
 - New events: BeginTurnSegmentEvent, EndTurnSegmentEvent, TurnPassEvent, TurnCommitEvent.
 - TurnProfile registers allowed segment transitions: (null→Upkeep? Upkeep→Roll? Roll→Main? Main→End) etc.
-- Conditions become simpler: DoublingDiceWithActivePlayerGameEventCondition -> additionally require Segment == Roll and TurnNumber > LastDoubledTurn.
+- Conditions become simpler: DoublingDiceWithActivePlayerGameEventCondition -> (future) additionally require Segment == Roll and TurnNumber > DoublingDiceState.LastDoubledTurn (once segment model extended beyond Start/Main/End and Roll introduced).
 - DecisionPlan can treat TurnState conditions as fast-path primitives (no LINQ). Potential future: mark them as static exclusivity mask bits (e.g., segment discriminators) for skip acceleration.
 
 ### Simulation & Metrics Hooks
@@ -222,9 +222,9 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [x] TurnAdvanceStateMutator (increment TurnNumber, reset segment; ActivePlayer rotation deferred) – basic advancement behind feature flag.
 - [x] Segment transition condition + mutator path (EndTurnSegmentEvent + condition + advancement logic) – Begin/End events introduced; dedicated Begin mutator deferred (handled inside advancement logic for now).
 - [x] Minimal rule wiring (condition + mutator invocation path) validated via `TurnSequencingCoreTests`; automatic DecisionPlan registration deferred.
-- [ ] ActivePlayer projection compatibility layer (derive legacy ActivePlayerState from TurnState when flag ON).
-- [ ] Backgammon: Refactor doubling condition to use TurnState (Roll segment + LastDoubledTurn).
-- [ ] Backgammon: Move LastDoubledTurn field from cube state to TurnState or reference TurnState.TurnNumber in DoublingDiceState.
+- [x] ActivePlayer projection compatibility layer (rotate legacy ActivePlayerState on terminal segment advancement; future TurnState authoritative projection pending).
+- [x] Backgammon: Gating implemented using DoublingDiceState.LastDoubledTurn (same-turn redouble blocked) – TurnState remains domain‑agnostic.
+- [x] Backgammon: Resolved abstraction decision – LastDoubledTurn retained on cube state (removed from TurnState).
 - [ ] Backgammon: Multi-turn doubling invariant tests (2→4→8), opponent-only redouble gating.
 - [ ] Chess: Minimal TurnState integration (Segment=Main) + parity tests vs legacy active player.
 - [ ] Go prototype: Pass handling + two-pass termination invariant.

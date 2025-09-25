@@ -32,24 +32,57 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
-        // If specialized state already exists we no-op (multi-turn redoubling deferred until turn sequencing implemented).
+        // Require active turn sequencing flag for multi-turn gating; if disabled behave as original single first doubling semantics.
+        var turnState = state.GetStates<TurnState>().FirstOrDefault();
+
+        var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive)?.Artifact;
+        var inactivePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => !x.IsActive)?.Artifact;
+
         var specialized = state.GetState<DoublingDiceState>(DoublingDice);
         if (specialized is not null)
         {
-            return state; // already doubled
+            // Already doubled before. If no turn state available we cannot perform multi-turn redouble logic.
+            if (turnState is null)
+            {
+                return state;
+            }
+
+            // Gated: allow redouble only if current turn number > last doubled turn on cube state.
+            if (turnState.TurnNumber <= specialized.LastDoubledTurn)
+            {
+                return state; // same turn – blocked
+            }
+
+            // Ownership must alternate: only opponent of current owner can redouble.
+            if (specialized.CurrentPlayer is null || activePlayer is null || !activePlayer.Equals(specialized.CurrentPlayer))
+            {
+                // Only owner (the player who possesses cube) cannot redouble on their own turn; opponent triggers new doubling
+                // If active player equals owner we block.
+                if (activePlayer is not null && specialized.CurrentPlayer is not null && activePlayer.Equals(specialized.CurrentPlayer))
+                {
+                    return state;
+                }
+            }
+
+            var generatorRedouble = new DoublingDiceValueGenerator();
+            var nextValue = generatorRedouble.GetValue(specialized);
+            var newOwner = inactivePlayer ?? specialized.CurrentPlayer; // transfer back to opponent (inactive at time of double)
+            var upgraded = new DoublingDiceState(DoublingDice, nextValue, newOwner, turnState.TurnNumber);
+            return state.Next([upgraded]);
         }
 
-        // Otherwise retrieve generic base state for first doubling.
-        var current = state.GetState<DiceState<int>>(DoublingDice);
-        if (current is null)
+        // First doubling path – operate on generic base state.
+        var baseState = state.GetState<DiceState<int>>(DoublingDice);
+        if (baseState is null)
         {
             throw new InvalidOperationException("Doubling dice state not initialized.");
         }
-        var nonActivePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => !x.IsActive);
+
         var generator = new DoublingDiceValueGenerator();
-        var newValue = generator.GetValue(current);
-        var owner = nonActivePlayer?.Artifact; // ownership transfers to opponent of active player
-        var newState = new DoublingDiceState(DoublingDice, newValue, owner);
-        return state.Next([newState]);
+        var value = generator.GetValue(baseState);
+        var firstOwner = inactivePlayer; // inactive player receives ownership
+        var lastTurn = turnState?.TurnNumber ?? 0;
+        var first = new DoublingDiceState(DoublingDice, value, firstOwner, lastTurn);
+        return state.Next([first]);
     }
 }

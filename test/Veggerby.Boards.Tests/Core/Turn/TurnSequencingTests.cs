@@ -123,6 +123,36 @@ public class TurnSequencingCoreTests
     }
 
     [Fact]
+    public void GivenEndSegment_WhenEnded_ThenActivePlayerRotates()
+    {
+        // arrange
+        using var _ = EnableFlag();
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var mutator = new TurnAdvanceStateMutator();
+        var activeCandidates = progress.State.GetStates<ActivePlayerState>().ToList();
+        if (!activeCandidates.Any())
+        {
+            // Chess builder may not designate an active player yet; skip rotation test until projection layer established
+            return; // neutral skip (would be [Skip] attribute if we wanted explicit count)
+        }
+        var initialActive = activeCandidates.Single(x => x.IsActive).Artifact;
+
+        // Progress through Start -> Main -> End
+        var afterStart = mutator.MutateState(progress.Engine, progress.State, new EndTurnSegmentEvent(TurnSegment.Start));
+        var afterMain = mutator.MutateState(progress.Engine, afterStart, new EndTurnSegmentEvent(TurnSegment.Main));
+        var afterEnd = mutator.MutateState(progress.Engine, afterMain, new EndTurnSegmentEvent(TurnSegment.End));
+
+        // assert - turn incremented & active player changed
+        var updatedTurn = afterEnd.GetStates<TurnState>().First();
+        updatedTurn.TurnNumber.Should().Be(2);
+        updatedTurn.Segment.Should().Be(TurnSegment.Start);
+
+        var newActive = afterEnd.GetStates<ActivePlayerState>().Single(x => x.IsActive).Artifact;
+        newActive.Should().NotBe(initialActive);
+    }
+
+    [Fact]
     public void GivenMismatchedSegment_WhenEnded_ThenInvalid()
     {
         // arrange

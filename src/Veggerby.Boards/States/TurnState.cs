@@ -20,7 +20,7 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// <param name="artifact">Associated <see cref="TurnArtifact"/>.</param>
     /// <param name="turnNumber">Current (1-based) turn number.</param>
     /// <param name="segment">Current segment within the turn.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="turnNumber"/> &lt; 1.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="turnNumber" /> &lt; 1.</exception>
     public TurnState(TurnArtifact artifact, int turnNumber, TurnSegment segment) : base(artifact)
     {
         if (turnNumber < 1)

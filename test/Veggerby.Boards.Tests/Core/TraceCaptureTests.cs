@@ -10,19 +10,19 @@ namespace Veggerby.Boards.Tests.Core;
 
 public class TraceCaptureTests
 {
-    private static GameProgress Build(bool trace, bool hashing)
+    private static (Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope scope, GameProgress progress) Build(bool trace, bool hashing)
     {
-        FeatureFlags.EnableTraceCapture = trace;
-        FeatureFlags.EnableStateHashing = hashing;
+        var scope = new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing, decisionPlan: false);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
-        return builder.Compile();
+        return (scope, builder.Compile());
     }
 
     [Fact]
     public void When_Trace_Disabled_LastTrace_Is_Null()
     {
         // arrange
-        var progress = Build(trace: false, hashing: true);
+        var (scope1, progress) = Build(trace: false, hashing: true);
+        using var _ = scope1;
 
         // act (no event handled; checking initial state)
 
@@ -34,7 +34,8 @@ public class TraceCaptureTests
     public void When_Trace_Enabled_LastTrace_Populated_After_Move()
     {
         // arrange
-        var progress = Build(trace: true, hashing: true);
+        var (scope2, progress) = Build(trace: true, hashing: true);
+        using var __ = scope2;
         var from = progress.Game.GetTile("tile-1");
         var to = progress.Game.GetTile("tile-2");
         var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
@@ -56,7 +57,8 @@ public class TraceCaptureTests
     public void Trace_Contains_PhaseEnter_Then_RuleEvaluated_Before_RuleApplied()
     {
         // arrange
-        var progress = Build(trace: true, hashing: false);
+        var (scope3, progress) = Build(trace: true, hashing: false);
+        using var ___ = scope3;
         var from = progress.Game.GetTile("tile-1");
         var to = progress.Game.GetTile("tile-2");
         var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));

@@ -74,16 +74,13 @@ public class CompiledPatternParityTests
         }
 
         TilePath compiledOn;
-        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false))
+        // Enable board shape fast path within a scope (extended scope supports boardShape flag)
+        using (new Veggerby.Boards.Tests.Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, decisionPlan: false, boardShape: true))
         {
-            // Manually toggle BoardShape flag since Infrastructure scope doesn't expose it yet.
-            var prev = Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape;
-            Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape = true;
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();
             compiled.Should().NotBeNull();
             compiledOn = compiled;
-            Veggerby.Boards.Internal.FeatureFlags.EnableBoardShape = prev;
         }
 
         compiledOn.Distance.Should().Be(compiledOff.Distance);

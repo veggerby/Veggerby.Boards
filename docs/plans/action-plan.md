@@ -6,11 +6,22 @@
 >
 > - Added grouping invalid-gate negative test (`DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently`) clarifying semantics: grouping suppresses duplicate identical-condition re-evaluation only; unrelated subsequent conditions still evaluate.
 > - Introduced `EventKindFilteringBenchmark` scaffold (Move burst scenario) – pending allocation counters & mixed hit/miss distributions.
-> - Timeline undo/redo invariants test scaffold added but still skipped pending deterministic one-step pawn path helper (relation null under compiled-first + current flags).
+> - Timeline undo/redo invariants tests IMPLEMENTED (deterministic one-step pawn path helper added) validating hash + reference stability across multi-cycle undo/redo.
 > - Propagated style charter emphasis blocks to `backlog-next.md` and `backlog-extra.md`; this action plan will carry a consolidated style appendix below for consistency.
 > - CHANGELOG updated accordingly (test rename, benchmark scaffold, style emphasis, timeline test pending).
 >
 > Consolidation (2025-09-25 later): Core Copilot operating guidance extracted to `docs/wip/copilot-action-plan.md` (augmenting `.github/copilot-instructions.md`). This document now defers granular backlog grooming to `backlog-next.md` (new) for remaining forward-looking items; completed or deprecated entries trimmed here to reduce noise.
+
+> Addendum (2025-09-25 later still): Heterogeneous EventKind filtering benchmark variants implemented (50/50, 80/20, 20/80 with inert state event) + evaluation count observer integration validated; allocation results captured (see `docs/perf/eventkind-filtering.md`). Style charter reconfirmed—no LINQ introduced in new hot loops; rook oscillation strategy replaced invalid pawn reverse path sequence to maintain deterministic legality.
+>
+> Style Re‑Emphasis (contextual to addendum): All benchmark modifications adhere to repository charter:
+>
+> 1. File-scoped namespaces only
+> 2. Explicit braces for all control flow
+> 3. No LINQ in hot loops (event generation & application)
+> 4. Immutable state transitions (no in-place mutation)
+> 5. Deterministic paths (rook oscillation chosen for reversible legality)
+> 6. Allocation awareness (no per-iteration allocations beyond fixed arrays)
 >
 > Revision Note (2025-09-21, branch `feat/architecture-and-dx`): Initial implementation landed for feature flags, DecisionPlan (parity mode), deterministic RNG scaffold, and documentation skeletons. Remaining items annotated below with status.
 >
@@ -25,7 +36,7 @@ This plan operationalizes the 15+ architectural and developer experience upgrade
 | Workstream | High-Level Status | Notes |
 |------------|-------------------|-------|
 | 1. Rule Evaluation Engine Modernization | PARTIAL | DecisionPlan parity path + grouping + EventKind filtering (Move/Roll/State/Phase with tests) + exclusivity metadata scaffold + masking runtime + debug parity dual-run + deterministic & randomized parity harnesses; typed EventResult + rejection reasons + `HandleEventResult` extension landed (non-breaking); observer perf targets pending |
-| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API (external reproduction envelope deferred – see roadmap item 14) |
+| 2. Deterministic Randomness & State History | PARTIAL | RNG + dual state hashing (64/128-bit) + timeline zipper + GameBuilder.WithSeed deterministic seeding API + undo/redo invariant tests (external reproduction envelope deferred – see roadmap item 14) |
 | 3. Movement & Pattern Engine Compilation | PARTIAL | IR + resolver scaffold; flag + services wired; compiler populated (Fixed + MultiDirection + Direction); adjacency cache scaffold + flag; parity tests added (Fixed/MultiDirection/Direction + chess archetype) + integration parity (pawn single + unreachable double) |
 | 4. Performance Data Layout & Hot Paths | PARTIAL → NEARING COMPLETE | BoardShape (built), PieceMap incremental (integrated), Bitboard incremental snapshot (global + per-player), SlidingAttackGenerator (ray precompute), sliding path fast-path (pre-compiled resolver), occupancy semantics charter, Parity V2 (blockers/captures/multi-block/edge/non-slider) tests, benchmarks published (FastPath default ON). Remaining: typed per-piece masks, Bitboard128 design & implementation (>64 tiles), LINQ legacy sweep, mobility heuristic, topology-based pruning heuristics. |
 | 5. Concurrency & Simulation | PARTIAL | Core Simulator API (single, parallel playouts), batch metrics (histogram/variance/percentiles), randomized + composite policies, observer hooks, early-stop sequential playout; legal move helper policy added. Pending: parallel early-stop, branching factor metrics doc, advanced policy heuristics. |
@@ -285,6 +296,7 @@ All new or modified engine/core code (including tests & benchmarks) MUST adhere 
 Deviation Handling: Any temporary deviation must include `// STYLE-DEVIATION:` comment plus justification and must appear in the CHANGELOG under a Temporary Exceptions subsection until removed.
 
 This appendix centralizes style commitments already reiterated in `backlog-next.md` and `backlog-extra.md` to ensure a single authoritative summary within the strategic plan.
+
 - Full LINQ hot-spot sweep across legacy resolver and rule evaluation. **[PENDING]**
 
 Acceptance Criteria:

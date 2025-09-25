@@ -8,7 +8,7 @@ This document describes the internal runtime feature flags controlling experimen
 - Explicit Opt-In: Except for features that pass full parity + benchmark acceptance (currently compiled patterns, bitboards + sliding fast-path for ≤64 tiles) defaults remain `false`.
 - Transience: Flags are short‑lived migration tools. Mature subsystems graduate; their flags are removed in a subsequent minor version after two stable releases.
 
-## Current Flags (2025-09-24)
+## Current Flags (2025-09-25)
 
 | Flag | Default | Purpose | Graduation Criteria | Notes |
 |------|---------|---------|---------------------|-------|
@@ -17,7 +17,7 @@ This document describes the internal runtime feature flags controlling experimen
 | EnableBitboards | true | Incremental bitboard occupancy + sliding attack generator foundation. | Net ≥15% improvement on sliding-heavy scenarios & parity across blocker/capture suites. | Auto-skipped for boards >64 tiles. |
 | EnableStateHashing | false | Deterministic 64/128-bit (xxHash128) state hash each transition. | Downstream consumers (replay / transposition) validated for cost. | Observer `OnStateHashed` fired when on. |
 | EnableTraceCapture | false | Capture last evaluation trace (phase enters, rule decisions, state hash). | Overhead ≤5% with tracing on; stable schema documented. | Trace cleared each event. |
-| EnableTimelineZipper | false | Immutable undo/redo chain (past/present/future) for state history. | Replay / branching algorithms integrate; memory profile stable. | Not yet integrated with simulator. |
+| EnableTimelineZipper | false | Immutable undo/redo chain (past/present/future) for state history (now validated by active undo/redo invariant tests). | Replay / branching algorithms integrate; memory profile stable. | Not yet integrated with simulator. |
 | EnableDecisionPlanGrouping | false | Evaluate identical predicate groups once (predicate hoisting). | Benchmark shows measurable reduction in predicate calls. | Depends on EnableDecisionPlan. |
 | EnableDecisionPlanEventFiltering | false | Skip plan entries whose declared EventKind does not match current event. | Filtering coverage >80% of rules + stable perf win. | Depends on EnableDecisionPlan. |
 | EnableDecisionPlanDebugParity | false | Dual-run legacy evaluator for divergence detection. | Zero mismatches across full suite for ≥2 releases. | High overhead; testing only. |
@@ -91,4 +91,4 @@ Mature acceleration features (compiled patterns, board shape, bitboards) may be 
 
 ---
 
-Last updated: 2025-09-24 (post cleanup; bitboards + sliding fast-path defaults ON)
+Last updated: 2025-09-25 (heterogeneous EventKind benchmarks + timeline invariants active)

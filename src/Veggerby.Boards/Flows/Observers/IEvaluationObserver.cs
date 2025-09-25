@@ -55,6 +55,16 @@ public interface IEvaluationObserver
     /// <param name="state">The hashed state.</param>
     /// <param name="hash">The computed hash value.</param>
     void OnStateHashed(GameState state, ulong hash);
+
+    /// <summary>
+    /// Called when a rule is skipped without evaluation due to an optimization (masking, filtering, grouping).
+    /// </summary>
+    /// <param name="phase">Phase owning the rule.</param>
+    /// <param name="rule">Skipped rule.</param>
+    /// <param name="reason">Reason for skip.</param>
+    /// <param name="state">Current state.</param>
+    /// <param name="ruleIndex">Rule index within decision plan ordering.</param>
+    void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex);
 }
 
 /// <summary>
@@ -93,6 +103,11 @@ public sealed class NullEvaluationObserver : IEvaluationObserver
 
     /// <inheritdoc />
     public void OnStateHashed(GameState state, ulong hash)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
     {
     }
 }

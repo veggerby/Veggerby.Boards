@@ -12,15 +12,15 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 
 - [ ] Static exclusivity inference (attribute-driven) feeding mask table (M2) – gated by `EnableDecisionPlanMasks`.
 - [x] Grouping invalid-gate negative tests (ensure skipped entries unaffected). (Implemented: `DecisionPlanGroupingTests.GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently` – semantics clarified: non-grouped subsequent condition still evaluates.)
-- [x] EventKind filtering benchmark variants (initial benchmark scaffold added: `EventKindFilteringBenchmark` – follow-up: add allocation counters & hit/miss scenarios).
-- [ ] EventKind filtering benchmark variants – allocation counts + distinct hit/miss distributions (FOLLOW-UP).
+- [x] EventKind filtering benchmark variants (heterogeneous inert state event + 50/50, 80/20, 20/80 distributions + evaluation counts; allocation commentary pending separate perf note). Style charter reaffirmed.
+- [x] EventKind filtering benchmark variants – allocation counts + distinct hit/miss distributions (FOLLOW-UP). (Metrics captured 2025-09-25; allocations neutral; 20/80 shows ~4.6% gain; others neutral/slight overhead. Perf note updated.)
 - [ ] Debug parity overhead microbenchmark (dual-run cost quantification).
 - [ ] Observer reason taxonomy enrichment (invalid vs ignored vs masked) – doc + tests.
 
 ## 2. Deterministic Randomness & State History
 
 - [ ] Replay harness (external tool spec stub; internal test: seed + event sequence reproduces hash).
-- [ ] Undo/Redo zipper invariant tests (hash stability, idempotent redo after undo chain). (Partial: test file added with TODO; current test skipped pending reliable chess pawn path construction.)
+- [x] Undo/Redo zipper invariant tests (hash stability, idempotent redo after undo chain). (Active: tests enabled using deterministic rook oscillation path; hash + idempotent redo invariants validated.)
 - [ ] RNG state serialization doc fragment (canonical field ordering confirmation).
 
 ## 3. Movement & Pattern Compilation
@@ -79,11 +79,11 @@ COMPLETED (in main plan) items removed. This file tracks ACTIVE + PENDING work o
 ## Hygiene Tasks
 
 - [ ] Normalize markdown heading spacing (lint clean pass after doc additions).
-- [x] Update CHANGELOG per milestone merges (pending PR: grouping test, event kind benchmark, timeline test scaffold + skip).
-- [ ] Validate all new feature flags documented in configuration doc.
+- [x] Update CHANGELOG per milestone merges (grouping test rename, event kind benchmark repair + mixed evaluation counts, timeline undo/redo invariants now ACTIVE).
+- [x] Validate all new feature flags documented in configuration doc. (Completed 2025-09-25 – `configuration.md` updated with Timeline zipper validation note.)
 
 ---
-Style Charter Reiteration (COMPLETED EMPHASIS): All new tests & benchmarks must honor core rules (file-scoped namespaces, explicit braces, deterministic outcomes, no LINQ in hot loops/benchmarks critical path, immutability). Any deviation requires justification inline. Style emphasis block propagated to `backlog-extra.md` and (pending) `action-plan.md`.
+Style Charter Reiteration (COMPLETED EMPHASIS): All new tests & benchmarks must honor core rules (file-scoped namespaces, explicit braces, deterministic outcomes, no LINQ in hot loops/benchmarks critical path, immutability). Any deviation requires justification inline. Style emphasis block propagated to `backlog-extra.md` and `action-plan.md`. Source of authority: `.github/copilot-instructions.md` (sections 2–5, 13) – changes must not contradict those invariants.
 
 ---
 This backlog intentionally lean. Items graduating into "Completed" will be pruned here and reflected only in the historical action plan revision notes.

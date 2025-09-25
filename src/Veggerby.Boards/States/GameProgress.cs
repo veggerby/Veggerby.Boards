@@ -89,7 +89,51 @@ public partial class GameProgress
         // Legacy path retains phase resolution per event when DecisionPlan feature flag is disabled or plan absent.
         if (Engine.DecisionPlan is null || !Internal.FeatureFlags.EnableDecisionPlan)
         {
+#if DEBUG || TESTS
             return HandleEventLegacy(@event);
+#else
+            // Legacy path compiled out – use DecisionPlan disabled semantics: treat as no-op unless phase rule applies.
+            // Mirror legacy behavior minimally by re-evaluating current phase rule directly.
+            var currentPhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
+            if (currentPhase is null)
+            {
+                Engine.Observer.OnEventIgnored(@event, State);
+                return this;
+            }
+            var events = currentPhase.PreProcessEvent(this, @event);
+            var progressLocal = this;
+            foreach (var e in events)
+            {
+                var phaseForEvent = progressLocal.Engine.GamePhaseRoot.GetActiveGamePhase(progressLocal.State);
+                if (phaseForEvent is null)
+                {
+                    continue;
+                }
+                Engine.Observer.OnPhaseEnter(phaseForEvent, progressLocal.State);
+                var ruleCheck = phaseForEvent.Rule.Check(progressLocal.Engine, progressLocal.State, e);
+                Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheck, progressLocal.State, 0);
+                if (ruleCheck.Result == ConditionResult.Valid)
+                {
+                    var newState = phaseForEvent.Rule.HandleEvent(progressLocal.Engine, progressLocal.State, e);
+                    Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, progressLocal.State, newState, 0);
+                    if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                    {
+                        Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                    }
+                    Engine.Capabilities?.AccelerationContext?.OnStateTransition(progressLocal.State, newState, e);
+                    progressLocal = new GameProgress(progressLocal.Engine, newState, progressLocal.Events.Concat(new[] { e }));
+                }
+                else if (ruleCheck.Result == ConditionResult.Invalid)
+                {
+                    throw new InvalidGameEventException(e, ruleCheck, progressLocal.Game, phaseForEvent, progressLocal.State);
+                }
+                else
+                {
+                    Engine.Observer.OnEventIgnored(e, progressLocal.State);
+                }
+            }
+            return progressLocal;
+#endif
         }
 
         // DecisionPlan parity path: iterate precompiled leaf phases in order, selecting first whose condition is valid.
@@ -117,6 +161,12 @@ public partial class GameProgress
                         var groupKind = Engine.DecisionPlan.SupportedKinds.Length > group.StartIndex ? Engine.DecisionPlan.SupportedKinds[group.StartIndex] : EventKind.Any;
                         if (groupKind != EventKind.Any && (groupKind & currentEventKind) == 0)
                         {
+                            for (var offset = 0; offset < group.Length; offset++)
+                            {
+                                var idx = group.StartIndex + offset;
+                                var skipEntry = Engine.DecisionPlan.Entries[idx];
+                                Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, idx);
+                            }
                             continue; // skip group
                         }
                     }
@@ -124,6 +174,12 @@ public partial class GameProgress
                     bool gateValid = gateEntry.ConditionIsAlwaysValid || gateEntry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid);
                     if (!gateValid)
                     {
+                        for (var offset = 0; offset < group.Length; offset++)
+                        {
+                            var idx = group.StartIndex + offset;
+                            var skipEntry = Engine.DecisionPlan.Entries[idx];
+                            Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.GroupGateFailed, progress.State, idx);
+                        }
                         continue; // skip entire group
                     }
 
@@ -136,6 +192,7 @@ public partial class GameProgress
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
                             if (root >= 0 && appliedGroupRoots.Contains(root))
                             {
+                                Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, index);
                                 continue; // another entry in this exclusivity group already applied
                             }
                         }
@@ -145,6 +202,7 @@ public partial class GameProgress
                             var ek = Engine.DecisionPlan.SupportedKinds.Length > index ? Engine.DecisionPlan.SupportedKinds[index] : EventKind.Any;
                             if (ek != EventKind.Any && (ek & currentEventKind) == 0)
                             {
+                                Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, index);
                                 continue;
                             }
                         }
@@ -212,6 +270,7 @@ public partial class GameProgress
                         var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
                         if (root >= 0 && appliedGroupRoots.Contains(root))
                         {
+                            Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, i);
                             continue;
                         }
                     }
@@ -221,6 +280,7 @@ public partial class GameProgress
                         var ek = Engine.DecisionPlan.SupportedKinds.Length > i ? Engine.DecisionPlan.SupportedKinds[i] : EventKind.Any;
                         if (ek != EventKind.Any && (ek & currentEventKind) == 0)
                         {
+                            Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, i);
                             continue;
                         }
                     }

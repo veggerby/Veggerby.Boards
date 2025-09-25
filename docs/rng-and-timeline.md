@@ -1,6 +1,6 @@
 # Deterministic RNG & State Hashing (Phase 1 Scaffold)
 
-Status: RNG abstraction integrated; feature-flagged state hashing scaffold implemented; timeline zipper pending.
+Status: RNG abstraction integrated; feature-flagged state hashing (64/128-bit) implemented; timeline zipper implemented (flag-gated) with undo/redo invariant tests active.
 
 Components:
 

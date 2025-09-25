@@ -29,6 +29,7 @@ public class ObserverOverheadBenchmark
         public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) => RuleAppliedCount++;
         public void OnEventIgnored(IGameEvent @event, GameState state) => EventIgnoredCount++;
         public void OnStateHashed(GameState state, ulong hash) => StateHashedCount++;
+        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
     }
 
     [Params(false, true)]

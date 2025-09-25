@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
@@ -126,7 +127,25 @@ public sealed class DecisionPlan
             }
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
             kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
-            exclusivity.Add(phase.ExclusivityGroup);
+            var explicitGroup = phase.ExclusivityGroup;
+            string inferred = null;
+            if (string.IsNullOrEmpty(explicitGroup))
+            {
+                var condAttr = phase.Condition?.GetType().GetCustomAttribute<Flows.Phases.ExclusiveGroupAttribute>();
+                if (condAttr is not null && !string.IsNullOrWhiteSpace(condAttr.GroupId))
+                {
+                    inferred = condAttr.GroupId;
+                }
+                else
+                {
+                    var ruleAttr = phase.Rule?.GetType().GetCustomAttribute<Flows.Phases.ExclusiveGroupAttribute>();
+                    if (ruleAttr is not null && !string.IsNullOrWhiteSpace(ruleAttr.GroupId))
+                    {
+                        inferred = ruleAttr.GroupId;
+                    }
+                }
+            }
+            exclusivity.Add(explicitGroup ?? inferred);
         }
     }
 

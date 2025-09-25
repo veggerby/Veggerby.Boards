@@ -109,4 +109,10 @@ internal sealed class TraceCaptureObserver(IEvaluationObserver inner, Evaluation
         _trace.Add(new TraceEntry(++_order, "StateHashed", null, null, null, null, null, null, hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnStateHashed(state, hash);
     }
+
+    public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+    {
+        _trace.Add(new TraceEntry(++_order, "RuleSkipped", phase?.Label, rule?.GetType().Name, null, null, reason.ToString(), ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _inner.OnRuleSkipped(phase, rule, reason, state, ruleIndex);
+    }
 }

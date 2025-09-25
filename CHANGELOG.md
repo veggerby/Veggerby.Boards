@@ -26,6 +26,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Maintenance: Introduced internal cleanup checklist for DecisionPlan / fast-path parity (`docs/cleanup/2025-fastpath-parity-checklist.md`).
 - Maintenance: Legacy event traversal isolated into partial `GameProgress.Legacy` (conditional `#if DEBUG || TESTS`) and marked `[Obsolete]`; production builds exclude legacy traversal once flags removed.
 - Refactor: Centralized fast-path metrics ownership in compiled-first resolution extension; `SlidingFastPathResolver` now pure reconstruction (no gating/metrics logic).
+- Tests: Activated timeline undo/redo invariants suite (single-step + multi-cycle) validating hash and reference stability of `GameTimeline` zipper under repeated push/undo/redo sequences; replaced prior skipped scaffold (helper ensures deterministic pawn path creation).
+- Benchmarks: Repaired and extended `EventKindFilteringBenchmark` (now includes mixed stream evaluation count variant) after prior file corruption; added lightweight counting observer leveraging updated `IEvaluationObserver` signatures.
+- Benchmarks: Extended `EventKindFilteringBenchmark` with heterogeneous inert state event (`BenchmarkStateNoOpEvent`) and distribution variants (50/50, 80/20, 20/80) to measure filtering sensitivity; horizontal rook oscillation path replaces invalid pawn back/forward sequence; adheres to style charter (file-scoped namespaces, explicit braces, no LINQ in hot loops, immutable state). Added preliminary allocation timing notes in `docs/perf/eventkind-filtering.md` (pending filtered mixed variant comparisons) to track evaluation count reductions and memory impact.
 
 ### Safety
 

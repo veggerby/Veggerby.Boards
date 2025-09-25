@@ -25,6 +25,7 @@ internal sealed class CountingEvaluationObserver : IEvaluationObserver
     public void OnRuleApplied(Veggerby.Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
     public void OnEventIgnored(IGameEvent @event, GameState state) { }
     public void OnStateHashed(GameState state, ulong hash) { }
+    public void OnRuleSkipped(Veggerby.Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
 }
 
 internal sealed class MetricsFilteringGameBuilder : GameBuilder

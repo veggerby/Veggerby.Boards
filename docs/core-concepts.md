@@ -75,6 +75,10 @@ Methods like `HandleEvent` return a new `GameProgress` with updated state.
 - `RollDiceGameEvent<T>` – Assign values to one or more dice simultaneously.
 - `NullGameEvent` – No-op placeholder.
 
+### Turn Sequencing (Experimental)
+
+Deterministic turn / segment / pass / replay semantics (including `TurnState`, `TurnPassEvent`, `TurnReplayEvent`, and `TurnCommitEvent`) are documented in `turn-sequencing.md` (feature flag `EnableTurnSequencing`). Until enabled, legacy active player rotation remains the authoritative mechanism. When migrating, prefer emitting explicit sequencing events instead of inferring temporal boundaries indirectly.
+
 ## Event Pre-Processing
 
 `IGameEventPreProcessor` can expand or transform an incoming event into derived events (e.g., single-step decomposition, validation path filtering). Phases list zero or more pre-processors.

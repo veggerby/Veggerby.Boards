@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
@@ -20,6 +19,12 @@ namespace Veggerby.Boards.Flows.Mutators;
 /// original <see cref="GameState"/> unchanged. No LINQ is used inside the tight branch except for simple sequencing
 /// which is not considered a hot path (turn boundary events are sparse relative to move events).
 /// </remarks>
+/// <summary>
+/// State mutator advancing the turn segment or, when at the final segment, incrementing the numeric turn and rotating the active player.
+/// </summary>
+/// <remarks>
+/// Optimized to avoid LINQ allocations in the hot path: simple loops replace <c>FirstOrDefault</c>/<c>Concat</c>/<c>SkipWhile</c> patterns.
+/// </remarks>
 internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEvent>
 {
     /// <inheritdoc />
@@ -31,11 +36,13 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
         }
 
         // Locate existing TurnState (shadow mode injects exactly one)
-        var currentTurnState = gameState.GetStates<TurnState>().FirstOrDefault();
-        if (currentTurnState is null)
+        TurnState currentTurnState = null;
+        foreach (var ts in gameState.GetStates<TurnState>())
         {
-            return gameState; // no turn state present
+            currentTurnState = ts; // only one expected; take first
+            break;
         }
+        if (currentTurnState is null) { return gameState; }
 
         var turnArtifact = currentTurnState.Artifact;
         if (currentTurnState.Segment != @event.Segment)
@@ -56,35 +63,41 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
         var advancedTurnState = new TurnState(turnArtifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, 0);
 
         // Active player projection compatibility layer: rotate exactly one active player if states exist
+        ActivePlayerState currentActive = null;
         var activePlayerStates = gameState.GetStates<ActivePlayerState>();
-        var currentActive = activePlayerStates.FirstOrDefault(x => x.IsActive);
-        if (currentActive is null || !activePlayerStates.Any())
+        foreach (var aps in activePlayerStates)
         {
-            return gameState.Next([advancedTurnState]);
+            if (aps.IsActive)
+            {
+                currentActive = aps; break;
+            }
         }
+        if (currentActive is null) { return gameState.Next([advancedTurnState]); }
 
-        // Determine next player in circular order
-        var players = engine.Game.Players;
-        if (players is null || !players.Any())
+        var playersEnumerable = engine.Game.Players;
+        if (playersEnumerable is null) { return gameState.Next([advancedTurnState]); }
+        // Materialize once to avoid multiple enumeration and enable indexing
+        Player[] players;
+        if (playersEnumerable is Player[] arr)
         {
-            return gameState.Next([advancedTurnState]);
+            players = arr;
         }
-
-        var nextPlayer = players
-            .Concat(players) // wrap
-            .SkipWhile(p => !p.Equals(currentActive.Artifact))
-            .Skip(1)
-            .First();
-
-        if (nextPlayer.Equals(currentActive.Artifact))
+        else
         {
-            // Single player edge case – still advance turn state only
-            return gameState.Next([advancedTurnState]);
+            var tempList = new System.Collections.Generic.List<Player>();
+            foreach (var p in playersEnumerable) { tempList.Add(p); }
+            players = tempList.ToArray();
         }
-
+        var total = players.Length;
+        if (total <= 1) { return gameState.Next([advancedTurnState]); }
+        var idx = -1;
+        for (var i = 0; i < total; i++) { if (players[i].Equals(currentActive.Artifact)) { idx = i; break; } }
+        if (idx == -1) { return gameState.Next([advancedTurnState]); }
+        var nextIndex = (idx + 1) % total;
+        var nextPlayer = players[nextIndex];
+        if (nextPlayer.Equals(currentActive.Artifact)) { return gameState.Next([advancedTurnState]); }
         var previousPlayerProjection = new ActivePlayerState(currentActive.Artifact, false);
         var nextPlayerProjection = new ActivePlayerState(nextPlayer, true);
-
         return gameState.Next([advancedTurnState, previousPlayerProjection, nextPlayerProjection]);
     }
 }

@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
@@ -14,6 +14,9 @@ namespace Veggerby.Boards.Flows.Mutators;
 /// This is a shortcut equivalent to ending all remaining segments in the current turn. It is inert
 /// when turn sequencing is disabled or no current <see cref="TurnState"/> exists.
 /// </remarks>
+/// <summary>
+/// State mutator applying a pass: increments numeric turn and pass streak, resets segment, rotates active player.
+/// </summary>
 internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
 {
     /// <inheritdoc />
@@ -24,38 +27,36 @@ internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
             return gameState;
         }
 
-        var currentTurnState = gameState.GetStates<TurnState>().FirstOrDefault();
-        if (currentTurnState is null)
-        {
-            return gameState;
-        }
+        TurnState currentTurnState = null;
+        foreach (var ts in gameState.GetStates<TurnState>()) { currentTurnState = ts; break; }
+        if (currentTurnState is null) { return gameState; }
 
         var advancedTurnState = new TurnState(currentTurnState.Artifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, currentTurnState.PassStreak + 1);
 
-        var activePlayerStates = gameState.GetStates<ActivePlayerState>();
-        var currentActive = activePlayerStates.FirstOrDefault(x => x.IsActive);
-        if (currentActive is null || !activePlayerStates.Any())
+        ActivePlayerState currentActive = null;
+        foreach (var aps in gameState.GetStates<ActivePlayerState>()) { if (aps.IsActive) { currentActive = aps; break; } }
+        if (currentActive is null) { return gameState.Next([advancedTurnState]); }
+        var playersEnumerable = engine.Game.Players;
+        if (playersEnumerable is null) { return gameState.Next([advancedTurnState]); }
+        Player[] players;
+        if (playersEnumerable is Player[] arr)
         {
-            return gameState.Next([advancedTurnState]);
+            players = arr;
         }
-
-        var players = engine.Game.Players;
-        if (players is null || !players.Any())
+        else
         {
-            return gameState.Next([advancedTurnState]);
+            var tempList = new System.Collections.Generic.List<Player>();
+            foreach (var p in playersEnumerable) { tempList.Add(p); }
+            players = tempList.ToArray();
         }
-
-        var nextPlayer = players
-            .Concat(players)
-            .SkipWhile(p => !p.Equals(currentActive.Artifact))
-            .Skip(1)
-            .First();
-
-        if (nextPlayer.Equals(currentActive.Artifact))
-        {
-            return gameState.Next([advancedTurnState]);
-        }
-
+        var total = players.Length;
+        if (total <= 1) { return gameState.Next([advancedTurnState]); }
+        var idx = -1;
+        for (var i = 0; i < total; i++) { if (players[i].Equals(currentActive.Artifact)) { idx = i; break; } }
+        if (idx == -1) { return gameState.Next([advancedTurnState]); }
+        var nextIndex = (idx + 1) % total;
+        var nextPlayer = players[nextIndex];
+        if (nextPlayer.Equals(currentActive.Artifact)) { return gameState.Next([advancedTurnState]); }
         var previousPlayerProjection = new ActivePlayerState(currentActive.Artifact, false);
         var nextPlayerProjection = new ActivePlayerState(nextPlayer, true);
         return gameState.Next([advancedTurnState, previousPlayerProjection, nextPlayerProjection]);

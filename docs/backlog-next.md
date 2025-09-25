@@ -234,16 +234,15 @@ Style Reminder: All sequencing code must follow style charter (file-scoped names
 - [ ] Benchmarks: Turn sequencing overhead microbenchmark (baseline vs flag ON; target <3% p50).
 - [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional).
 - [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating.
-- [ ] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [x] Feature flag scope tests (Ensure no TurnState emission when flag OFF).
 - [ ] CHANGELOG entry & migration guide section.
 - [x] TurnCommitEvent + TurnCommitStateMutator – Main→End shortcut without advancing TurnNumber; tests added; docs & changelog updated.
 - [x] PassStreak field on TurnState – consecutive pass counter (reset on advancement, commit to end, or replay) with tests.
 - [x] TurnReplayEvent + TurnReplayStateMutator – extra turn without rotation (increment TurnNumber, reset segment & pass streak) test added.
 - [x] Simulation metrics extension (PassEvents, ReplayEvents, TurnAdvancements, AverageTurnLength) + SequentialSimulator detailed path enrichment.
-- [ ] Benchmarks: Turn sequencing overhead microbenchmark (baseline vs flag ON; target <3% p50) – PENDING.
-- [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional) – PENDING.
-- [ ] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating & pass/replay semantics – PENDING.
+- [x] Benchmarks: Turn sequencing overhead microbenchmark (baseline vs flag ON; target <3% p50) – COMPLETED (2025-09-25) Result: OFF 8.472µs vs ON 8.563µs (Ratio 1.01 ~1.1% overhead, allocations identical 10.3 KB) – within target, no further optimization planned.
+- [ ] Hash parity / evolution tests (flag off vs on – document expected differences only where intentional) – PENDING (deferred; now lower priority given minimal overhead and no hash inputs added yet under disabled flag).
+- [x] Documentation: `turn-sequencing.md` + updates to `core-concepts.md` and `decision-plan.md` referencing turn gating & pass/replay semantics – COMPLETED (Performance section + cross-links added).
 
 ### Exit Criteria for Workstream 10
 

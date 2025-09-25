@@ -4,6 +4,10 @@ Status: Experimental (behind `FeatureFlags.EnableDecisionPlan`).
 
 The DecisionPlan is a precompiled linear list of leaf phases (condition + rule). Phase 1 provides parity only.
 
+## Interaction with Turn Sequencing (Experimental)
+
+Turn sequencing (see `turn-sequencing.md`) introduces additional events (`EndTurnSegmentEvent`, `TurnPassEvent`, `TurnReplayEvent`, `TurnCommitEvent`) and mutators. These participate in the plan like any other rule entries. Optimization stages (grouping, filtering, masks) must preserve deterministic ordering for sequencing events; parity tests cover presence / absence of `TurnState` when the sequencing flag toggles.
+
 Enable (before `Compile()`):
 
 ```csharp

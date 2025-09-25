@@ -4,7 +4,6 @@ namespace Veggerby.Boards.Simulation;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Events;
@@ -97,7 +96,14 @@ public static class SequentialSimulator
                 break;
             }
 
-            var beforeTurn = current.State.GetStates<TurnState>().FirstOrDefault();
+            // capture first TurnState (if any) before applying event – manual loop to avoid LINQ
+            TurnState? beforeTurn = null;
+            foreach (var ts in current.State.GetStates<TurnState>())
+            {
+                beforeTurn = ts;
+                break;
+            }
+
             var next = current.HandleEvent(nextEvent);
             if (ReferenceEquals(next.State, current.State))
             {
@@ -118,7 +124,15 @@ public static class SequentialSimulator
                 {
                     replayEvents++;
                 }
-                var afterTurn = current.State.GetStates<TurnState>().FirstOrDefault();
+
+                // capture TurnState after mutator
+                TurnState? afterTurn = null;
+                foreach (var ts in current.State.GetStates<TurnState>())
+                {
+                    afterTurn = ts;
+                    break;
+                }
+
                 if (beforeTurn is not null && afterTurn is not null && afterTurn.TurnNumber > beforeTurn.TurnNumber)
                 {
                     turnAdvancements++;

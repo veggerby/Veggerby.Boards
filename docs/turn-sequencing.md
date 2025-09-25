@@ -1,32 +1,27 @@
- Implementations:
-
-* `FixedOrderTurnOrderingStrategy` (round-robin stable order)
-* `DynamicRemovalTurnOrderingStrategy` (skips eliminated players)
-* `PriorityTurnOrderingStrategy` (player queue managed externally via state, e.g., initiative systems)
-## 15. Tasks (Condensed)
-
-* TurnArtifact + TurnState implementation.
-* TurnSegment enum + TurnProfile builder DSL.
-* TurnAdvanceStateMutator & Segment mutators.
-* Flag scaffolding + shadow emission (Phase 0).
-* Backgammon doubling refactor (Phase 1).
-* Removal of legacy active player path (Phase 2).
-* Segment gating for Backgammon (Phase 3).
-* Go pass logic (Phase 4).
-* Replay semantics (Ludo / Kalaha) (Phase 4).
-* Simultaneous commit (Phase 5).
-* Metrics & hashing integration.
-* Benchmarks & parity tests.
-* Documentation updates & migration guide.
-## 16. Risks & Mitigations
-
-* Performance regression: isolate logic to boundary mutators; microbenchmark gating.
-* Complexity explosion: small initial segment set; DSL validation; no dynamic reflection.
-* Hash churn: keep behind flag until stable + provide deterministic diff tooling.
-* Incomplete adoption: run shadow mode first to build confidence.
 # Turn Sequencing Model (Experimental – Flag `EnableTurnSequencing`)
 
-Status: Experimental (feature-flag gated). Hash inputs include the `TurnState` artifact when enabled; disabling the flag removes the artifact and may yield different state hashes for otherwise identical piece positions.
+> Status: Experimental (feature-flag gated). Hash inputs include the `TurnState` artifact when enabled; disabling the flag removes the artifact and may yield different state hashes for otherwise identical piece positions.
+
+This document defines the model, semantics, metrics, roadmap, and future expansion draft for deterministic turn sequencing. It consolidates prior draft sections and removes duplicated lists.
+
+## Quick Navigation
+
+* [Overview](#overview)
+* [Segments](#segments)
+* [Mutators & Semantics](#mutators--semantics)
+* [Metrics Integration](#metrics-integration)
+* [Feature Flag Behavior](#feature-flag-behavior)
+* [Invariants](#invariants)
+* [Hashing Impact](#hashing-impact)
+* [Future Roadmap](#future-roadmap)
+* [Style Charter Compliance](#style-charter-compliance)
+* [Testing](#testing)
+* [Implementation Strategies](#implementation-strategies)
+* [Unified Draft Extension (Motivation → Exit Criteria)](#unified-turn--round-sequencing-design-draft-extension)
+* [Risks & Mitigations](#risks--mitigations)
+* [Tasks (Condensed)](#15-tasks-condensed)
+
+---
 
 ## Overview
 
@@ -117,6 +112,27 @@ Sequencing code (events + mutators + metrics) adheres to repository style:
 
 Any required deviation MUST include `// STYLE-DEVIATION:` and a CHANGELOG entry.
 
+### Performance
+
+Benchmark (Chess pawn e2→e4, single move path) on Linux container (Intel i9-14900KF host):
+
+| Scenario | Mean | Ratio | Alloc | Gen0 |
+|----------|------|-------|-------|------|
+| Flag OFF (baseline) | 8.472 µs | 1.00 | 10.3 KB | 0.5493 |
+| Flag ON | 8.563 µs | 1.01 | 10.3 KB | 0.5493 |
+
+Observed overhead: ~1.1% (<3% budget) with no additional managed allocation.
+
+Run locally:
+
+`dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --filter "*TurnSequencingOverheadBenchmark*"`
+
+Potential future optimization triggers (only if >3% regression observed):
+
+* Remove per-advance player enumeration in mutators (convert to direct index arithmetic over cached player span).
+* Inline simple segment advancement paths to reduce branch cost.
+* Hoist pass/replay turn number detection into mutator return metadata to avoid duplicate TurnState scans.
+
 ## Testing
 
 Existing tests cover:
@@ -128,6 +144,16 @@ Existing tests cover:
 * Hash parity test (piece position parity vs hash divergence tolerance).
 
 Planned tests (pending future work): ordering strategy integration, multi-segment profiles, consecutive pass termination rule, replay rule injection from game modules.
+
+## Implementation Strategies
+
+Current & planned ordering strategies (see future DSL work):
+
+* `FixedOrderTurnOrderingStrategy` – stable round‑robin.
+* `DynamicRemovalTurnOrderingStrategy` – skips eliminated players.
+* `PriorityTurnOrderingStrategy` – externally managed priority/initiative queue.
+
+Additional (future) examples: score‑sorted, bidding priority, dynamic insertion based on triggers.
 
 ## Unified Turn & Round Sequencing Design (Draft Extension)
 
@@ -216,9 +242,9 @@ var profile = TurnProfile.Builder()
 
 Profile Metadata:
 
-- Segment list (ordered)
-- Optional simultaneous commit pairing
-- Replay enabled flag
+* Segment list (ordered)
+* Optional simultaneous commit pairing
+* Replay enabled flag
 
 * Segment-specific hooks (pre / post mutator injection lists) – minimal at start to avoid complexity.
 
@@ -228,8 +254,9 @@ Interface: `ITurnOrderingStrategy` with method `Player GetNextPlayer(GameState s
 
 Implementations:
 
-- `FixedOrderTurnOrderingStrategy` (round-robin stable order)
-- `DynamicRemovalTurnOrderingStrategy` (skips eliminated players)
+* `FixedOrderTurnOrderingStrategy` (round-robin stable order)
+* `DynamicRemovalTurnOrderingStrategy` (skips eliminated players)
+
 * `PriorityTurnOrderingStrategy` (player queue managed externally via state, e.g., initiative systems)
 
 * Future: `ScoreSortedTurnOrderingStrategy` (re-sorts at round boundaries)
@@ -313,27 +340,25 @@ Benchmarks: Add `TurnSequencingOverheadBenchmark` comparing HandleEvent p50/p95 
 
 ## 15. Tasks (Condensed)
 
-- TurnArtifact + TurnState implementation.
-- TurnSegment enum + TurnProfile builder DSL.
-- TurnAdvanceStateMutator & Segment mutators.
-- Flag scaffolding + shadow emission (Phase 0).
+* TurnArtifact + TurnState implementation.
+* TurnSegment enum + TurnProfile builder DSL.
+* TurnAdvanceStateMutator & Segment mutators.
+* Flag scaffolding + shadow emission (Phase 0).
 * Backgammon doubling refactor (Phase 1).
 * Removal of legacy active player path (Phase 2).
 * Segment gating for Backgammon (Phase 3).
 * Go pass logic (Phase 4).
 * Replay semantics (Ludo / Kalaha) (Phase 4).
 * Simultaneous commit (Phase 5).
-- Metrics & hashing integration.
-- Benchmarks & parity tests.
-
+* Metrics & hashing integration.
+* Benchmarks & parity tests.
 * Documentation updates & migration guide.
 
 ## 16. Risks & Mitigations
 
-- Performance regression: isolate logic to boundary mutators; microbenchmark gating.
+* Performance regression: isolate logic to boundary mutators; microbenchmark gating.
 * Complexity explosion: small initial segment set; DSL validation; no dynamic reflection.
 * Hash churn: keep behind flag until stable + provide deterministic diff tooling.
-
 * Incomplete adoption: run shadow mode first to build confidence.
 
 ## 17. Open Questions

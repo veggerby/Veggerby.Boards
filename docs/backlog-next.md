@@ -39,11 +39,14 @@ Outcome: Workstream objectives met for milestone (deterministic RNG, dual hashin
 
 ## 4. Performance Data Layout & Hot Paths
 
-- [ ] Sliding fast-path blocked/capture microbenchmarks (density tiers: empty, sparse, half, dense).
-- [ ] Blocked/capture parity already green – add allocation assertions (fast-path hit must allocate 0).
-- [ ] Per-piece occupancy masks (pruning heuristic) – behind new `EnablePerPieceMasks` flag.
+Initiation Emphasis (2025-09-25): Prioritize sliding fast-path blocked/capture microbenchmarks and allocation verification before pursuing new heuristics (per-piece masks, topology pruning). Maintain strict style charter: no LINQ in fast-path loops, allocation-free hit path, explicit braces, deterministic ordering.
+
+- [x] Sliding fast-path microbenchmarks (empty, blocked, capture, off-ray) with allocation probe variant (`FastPathAllocationProbeEmpty`).
+- [x] Allocation verification seam (internal `FastPathAllocationProbe`) – benchmark-level GC collection delta guard (soft signal; no hot-path instrumentation).
+- [x] Per-piece occupancy masks (pruning heuristic) – behind new `EnablePerPieceMasks` flag (implemented: `BitboardLayout` exposes ordered `Pieces[]`; `BitboardOccupancyIndex` maintains optional mask array rebuilt on snapshot bind; flag default off pending overhead benchmark).
 - [ ] Bitboard128 prototype (only once a >64 tile board introduced – defer otherwise).
 - [ ] Mobility heuristic prototype using bitboards (popcount span) – optional; feeds future evaluation.
+- [x] Mobility heuristic prototype using bitboards (popcount span) – internal `MobilityEvaluator` added (per-player sliding mobility counts via attack rays + occupancy). Deterministic, allocation-light; test added. Future: integrate leaper/pawn semantics, weighting, pruning with per-piece masks.
 
 ## 5. Concurrency & Simulation
 

@@ -90,4 +90,18 @@ internal static class FeatureFlags
     /// Default: true (comprehensive Parity V2 + benchmarks show >=4.6× speedup empty board, thresholds met). Can be toggled off for troubleshooting.
     /// </summary>
     public static bool EnableSlidingFastPath { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether per-piece occupancy masks are maintained (bitboard acceleration mode only).
+    /// When enabled, an additional mask per piece id is computed to allow fine-grained attack pruning / mobility heuristics.
+    /// Default: false (feature experimental; enable only when benchmarks confirm negligible overhead on move application).
+    /// </summary>
+    public static bool EnablePerPieceMasks { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether topology pruning heuristics are enabled (skip precomputation / lookup for
+    /// directions not present in the board's <see cref="Internal.Layout.BoardTopology"/> classification). Intended to reduce
+    /// branching and iteration in mixed topology boards. Default: false until pruning parity and performance are validated.
+    /// </summary>
+    public static bool EnableTopologyPruning { get; set; } = false;
 }

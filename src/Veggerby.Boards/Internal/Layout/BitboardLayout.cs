@@ -15,14 +15,26 @@ internal sealed class BitboardLayout
     private readonly Dictionary<Player, int> _playerToIndex;
     private readonly Dictionary<Piece, int> _pieceToIndex;
 
-    private BitboardLayout(Dictionary<Player, int> p2i, Dictionary<Piece, int> piece2i)
+    /// <summary>
+    /// Stable ordered player array (ordinal by id) matching indices used in occupancy bitboards.
+    /// </summary>
+    public Player[] Players { get; }
+
+    /// <summary>
+    /// Stable ordered piece array (ordinal by id) matching indices used for optional per-piece masks.
+    /// </summary>
+    public Piece[] Pieces { get; }
+
+    private BitboardLayout(Dictionary<Player, int> p2i, Dictionary<Piece, int> piece2i, Player[] players, Piece[] pieces)
     {
         _playerToIndex = p2i;
         _pieceToIndex = piece2i;
+        Players = players;
+        Pieces = pieces;
     }
 
-    public int PlayerCount => _playerToIndex.Count;
-    public int PieceCount => _pieceToIndex.Count;
+    public int PlayerCount => Players.Length;
+    public int PieceCount => Pieces.Length;
 
     public static BitboardLayout Build(Game game)
     {
@@ -30,10 +42,11 @@ internal sealed class BitboardLayout
 
         var players = new List<Player>(game.Players);
         players.Sort((a, b) => string.Compare(a.Id, b.Id, StringComparison.Ordinal));
-        var p2i = new Dictionary<Player, int>(players.Count);
-        for (int i = 0; i < players.Count; i++)
+        var playerArray = players.ToArray();
+        var p2i = new Dictionary<Player, int>(playerArray.Length);
+        for (int i = 0; i < playerArray.Length; i++)
         {
-            p2i[players[i]] = i;
+            p2i[playerArray[i]] = i;
         }
 
         // Include all pieces (ordered by id) – future filtering possible for piece-type specific bitboards.
@@ -43,13 +56,14 @@ internal sealed class BitboardLayout
             .OrderBy(p => p.Id, StringComparer.Ordinal)
             .ToList();
 
-        var piece2i = new Dictionary<Piece, int>(pieces.Count);
-        for (int i = 0; i < pieces.Count; i++)
+        var pieceArray = pieces.ToArray();
+        var piece2i = new Dictionary<Piece, int>(pieceArray.Length);
+        for (int i = 0; i < pieceArray.Length; i++)
         {
-            piece2i[pieces[i]] = i;
+            piece2i[pieceArray[i]] = i;
         }
 
-        return new BitboardLayout(p2i, piece2i);
+        return new BitboardLayout(p2i, piece2i, playerArray, pieceArray);
     }
 
     public bool TryGetPlayerIndex(Player player, out int index)

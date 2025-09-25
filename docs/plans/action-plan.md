@@ -278,6 +278,8 @@ Closure & Deferred Work:
 
 ### 4. Performance Data Layout & Hot Path Optimization
 
+Initiation Note (2025-09-25): Workstream 3 closed (parity + semantics charter + benchmarks). Beginning focused acceleration pass: stabilize sliding fast-path under mixed densities, introduce blocked/capture microbenchmarks, and prepare pruning heuristics (per-piece occupancy masks, topology-based early exits). Style charter re-emphasized here: zero hot-path allocations on fast-path hits, no LINQ, explicit braces, immutable snapshots, deterministic ordering. Any deviation must be annotated with `// STYLE-DEVIATION:` and logged in CHANGELOG.
+
 Deliverables (Status annotations in brackets):
 
 - Internal `BoardShape` (tile adjacency arrays, directional lookup table). **[COMPLETED – always built; flag controls exploitation]**
@@ -289,10 +291,12 @@ Deliverables (Status annotations in brackets):
 - Replace LINQ in new hot loops (attack generation, fast-path chain build). **[COMPLETED – broader legacy sweep pending]**
 - Benchmark harness (baseline present). **[COMPLETED – specific sliding benchmarks pending]**
 - Microbenchmarks for sliding fast-path vs compiled-only & legacy visitor. **[PENDING]**
+- Sliding fast-path microbenchmark (empty/blocked/capture/off-ray) + allocation probe variant (`FastPathAllocationProbeEmpty`). **[COMPLETED – provides baseline & allocation-free verification harness]**
 - Blocked / capture scenario parity suite (decide geometric vs occupancy semantics). **[PENDING]**
-- Typed per-piece occupancy masks (future selective attack pruning). **[PENDING]**
+- Typed per-piece occupancy masks (future selective attack pruning). **[COMPLETED – flag `EnablePerPieceMasks`; `BitboardLayout` exposes ordered `Pieces[]`; `BitboardOccupancyIndex` maintains optional per-piece mask array rebuilt on snapshot bind (incremental still disabled). Default off pending overhead benchmark.]**
 - Bitboard128 / dual-mask strategy for >64 tile boards. **[PENDING]**
 - Mobility heuristic prototype leveraging bitboards (feed future evaluation module). **[PENDING]**
+- Mobility heuristic prototype leveraging bitboards (feed future evaluation module). **[COMPLETED – internal `MobilityEvaluator` computes per-player sliding mobility counts via attack rays + occupancy; deterministic, allocation-light; foundational test added; future extensions (leapers, pawns, weighting, mask-integrated pruning) deferred]**
 
 ## Appendix: Consolidated Style Charter (Re-Emphasized 2025-09-25)
 

@@ -5,7 +5,7 @@ last_updated: 2025-09-26
 status_index:
   done: [1,2,3]
   partial: [4,5,6,7,8,9]
-  planned: []
+  planned: [10]
 ---
 
 # Workstreams Overview
@@ -21,5 +21,6 @@ status_index:
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |
 | 8 | Structural Refactors | partial | Timeline zipper + hashing scaffolding (flag-gated). |
 | 9 | Turn & Round Sequencing | partial | TurnState segmentation + overhead benchmark baseline. |
+| 10 | Chess Full Move Legality | planned | Full legality (state, generation, filtering, SAN completion). |
 
 Legend: done = acceptance met; partial = some acceptance outstanding; closed = intentionally deferred; planned = not yet started.

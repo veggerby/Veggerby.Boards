@@ -96,6 +96,16 @@
 
 ---
 
+### 10. Chess Full Move Legality
+
+🆕 **Planned.**
+
+* Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
+* Pending: implementation kickoff; acceptance & metrics defined in workstream file.
+* Risks: performance regressions in hot path if generation naive; test surface expansion (many edge cases) requiring careful property tests.
+
+---
+
 ## Cross-Cutting Gaps
 
 * **Feature Flag Governance:** Many flags experimental. Needs central table (Graduated / Experimental / Deprecated) with graduation criteria.

@@ -6,35 +6,77 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Breaking
+
+- Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
+
 ### Added
 
-- Package metadata (Description, PackageTags) for Core, Backgammon, Chess and API projects.
-- README packaged as NuGet readme (PackageReadmeFile) and included in artifacts.
-- Initial CHANGELOG following Keep a Changelog format.
-- Comprehensive XML documentation across public APIs (removed CS1591 suppression and achieved clean build with warnings-as-errors).
-- Strategic architecture & DX action plan (`docs/plans/action-plan.md`) outlining DecisionPlan, deterministic RNG, pattern compilation, observability, simulation, and versioning roadmap.
-- Internal feature flags scaffold (`FeatureFlags` class) to enable incremental rollout of upcoming engine subsystems.
-- Benchmark project scaffold (`Veggerby.Boards.Benchmarks`) with initial HandleEvent baseline harness.
-- Property tests project scaffold (`Veggerby.Boards.PropertyTests`) including first invariant placeholder.
+- **Turn Sequencing Framework (Workstream 10)**
+  Introduced `TurnState`, `TurnArtifact`, and `TurnSegment` for deterministic sequencing:
+  - Segment progression (`Start → Main → End`), turn number advancement, and active-player rotation.
+  - Events/mutators: `BeginTurnSegmentEvent`, `EndTurnSegmentEvent`, `TurnAdvanceStateMutator`, `TurnPassEvent`, `TurnCommitEvent`, `TurnReplayEvent`.
+  - Pass-streak counting and replay turns; metrics (pass/replay/turn length) and benchmark showing <3% overhead.
+
+- **Backgammon**
+  - Moved `LastDoubledTurn` to `DoublingDiceState`; blocks same-turn redoubles and supports multi-turn doubling (2→4→8).
+  - Gating enforces cube ownership by the active player and alternation across turns.
+
+- **DecisionPlan Modernization**
+  - Grouping of identical conditions, event-kind filtering, and exclusivity masking with **static exclusivity inference** (builder/phase/attribute).
+  - Observer extensions: batching mode, `OnRuleSkipped` with `RuleSkipReason`, and richer trace capture.
+  - Expanded parity and skip-reason tests.
+
+- **Simulation API**
+  - `SequentialSimulator` and `ParallelSimulator` with playout policies, stop predicates, cancellation, and detailed metrics (`PlayoutMetrics`, `PlayoutBatchResult`, `PlayoutBatchDetailedResult`).
+  - Deterministic, concurrency-safe rollouts. Documentation in `docs/simulation.md`.
+
+- **Movement & Pattern Compilation**
+  - Compiled support for `FixedPattern`, `DirectionPattern`, `MultiDirectionPattern`, with adjacency cache, targeted + randomized parity tests, semantics charter, and micro/large-sample benchmarks.
+  - Milestone closed; ≥5× aggregate throughput objective deferred pending heuristics.
+
+- **Acceleration & Performance**
+  - **Bitboards enabled by default** for boards ≤64 tiles. *Note:* incremental bitboard updates are temporarily disabled; the engine performs a full rebuild per transition until the incremental path is re-enabled.
+  - Sliding fast-path (ray attacks + path reconstruction) **enabled by default** after parity/benchmarks (≥4.6× best-case speedup).
+  - Per-piece occupancy masks (experimental, flag-gated) and a mobility evaluator prototype (bitboards + rays).
+  - New capability seam (`EngineCapabilities` with `Topology`, `PathResolver`, `AccelerationContext`) replaces legacy service-locator wiring.
+  - Extensive parity regression and performance benchmarks.
+
+- **Typed Event Results**
+  - `EventResult` discriminated type with `EventRejectionReason` for precise outcomes.
+  - Promoted `GameProgress.HandleEventResult` to first-class API.
+
+- **Deterministic RNG & State History**
+  - Deterministic replay tests, canonical RNG serialization, 64/128-bit state hashing, and finalized timeline zipper.
+  - Hashing overhead benchmarks.
+
+- **Developer Experience (DX)**
+  - `developer-experience.md` consolidating style charter, benchmark policy, and contribution workflow.
+  - Thread-safe `FeatureFlagScope` for deterministic test isolation.
+  - Lightweight style-enforcement stub.
+  - Expanded property-based invariants for chess/backgammon and a deterministic chess opening helper.
 
 ### Changed
 
-- Centralized all package versions via Directory.Packages.props (removed inline versions).
-- README updated with roadmap reference.
+- Compiled movement patterns **enabled by default**.
+- State hashing uses canonical binary serialization; added 128-bit xxHash128.
+- Incremental bitboard updates temporarily disabled (falls back to full rebuild per transition).
+- Consolidated package versions via `Directory.Packages.props`.
+- README and docs updated across acceleration, sequencing, and DX topics.
 
 ### Fixed
 
-- Resolved NU1008 central package version conflicts across solution.
-- Restored successful build by temporarily suppressing XML documentation warning CS1591 (to be removed once full docs are authored).
+- Package restore/version conflicts.
+- Completed XML documentation across public APIs; removed prior suppressions.
+- Unskipped test scaffolds and addressed parity regressions.
 
-### Internal / Maintenance
+### Maintenance
 
-- Partial XML documentation added for key engine classes (GameEngine, GameBuilder, game-specific builders, selected state artifacts).
-- Established groundwork for completing remaining public XML docs.
-- Removed temporary CS1591 suppression after completing full XML documentation coverage.
-- Added initial scaffolds for performance benchmarking and property-based invariant testing.
+- Fully removed legacy traversal code.
+- Added benchmarks, parity packs, and cleanup checklists for regression safety.
+- Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).
 
-## [0.1.0] - Initial (Unreleased Tag)
+## [0.1.0] – Initial
 
 - Initial codebase structure, game engine core, Backgammon and Chess modules, and test suite (354 tests passing).
 

@@ -1,10 +1,8 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 
-using Veggerby.Boards.Chess;
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
@@ -50,19 +48,5 @@ public class HandleEventBaseline
     public GameProgress MovePawnTwoSquares()
     {
         return _progress.HandleEvent(new MovePieceGameEvent(_whitePawn, _path));
-    }
-}
-
-/// <summary>
-/// Benchmark host program entry point.
-/// </summary>
-public static class Program
-{
-    /// <summary>
-    /// Main entry point launching the benchmark suite for the current assembly.
-    /// </summary>
-    public static void Main(string[] args)
-    {
-        BenchmarkRunner.Run<HandleEventBaseline>();
     }
 }

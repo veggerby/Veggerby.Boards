@@ -1,0 +1,113 @@
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.States;
+
+namespace Veggerby.Boards.Flows.Observers;
+
+/// <summary>
+/// Observer interface for instrumentation of rule evaluation and application within a game event handling cycle.
+/// </summary>
+/// <remarks>
+/// Implementations MUST be side-effect free with respect to game state mutation. They may record metrics, traces
+/// or diagnostics externally but must never alter <see cref="GameState"/>. All callbacks are optional; the engine
+/// guarantees they are invoked in deterministic order for identical inputs. Avoid heavy allocations.
+/// </remarks>
+public interface IEvaluationObserver
+{
+    /// <summary>
+    /// Called when evaluation for an event enters (considers) a phase before any rule checks occur.
+    /// </summary>
+    /// <param name="phase">Phase being entered.</param>
+    /// <param name="state">State at time of entry.</param>
+    void OnPhaseEnter(GamePhase phase, GameState state);
+    /// <summary>
+    /// Called after a rule's condition has been evaluated.
+    /// </summary>
+    /// <param name="phase">Active phase containing the rule.</param>
+    /// <param name="rule">The evaluated rule.</param>
+    /// <param name="response">Result of the condition evaluation.</param>
+    /// <param name="state">The game state at evaluation time.</param>
+    /// <param name="ruleIndex">Zero-based index of the rule within the evaluation ordering (DecisionPlan entry order or 0 for legacy single-rule phase).</param>
+    void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex);
+
+    /// <summary>
+    /// Called after a rule has been applied successfully producing a new game state.
+    /// </summary>
+    /// <param name="phase">Phase in which the rule was applied.</param>
+    /// <param name="rule">Applied rule.</param>
+    /// <param name="event">The triggering event.</param>
+    /// <param name="beforeState">State prior to application.</param>
+    /// <param name="afterState">Resulting state after application.</param>
+    /// <param name="ruleIndex">Zero-based index of the rule within the evaluation ordering (DecisionPlan entry order or 0 for legacy single-rule phase).</param>
+    void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex);
+
+    /// <summary>
+    /// Called when an event was ignored (no applicable rules in any active phase).
+    /// </summary>
+    /// <param name="event">Ignored event.</param>
+    /// <param name="state">State at the time of ignoring.</param>
+    void OnEventIgnored(IGameEvent @event, GameState state);
+
+    /// <summary>
+    /// Called after a new state hash has been computed (when state hashing feature flag enabled).
+    /// </summary>
+    /// <param name="state">The hashed state.</param>
+    /// <param name="hash">The computed hash value.</param>
+    void OnStateHashed(GameState state, ulong hash);
+
+    /// <summary>
+    /// Called when a rule is skipped without evaluation due to an optimization (masking, filtering, grouping).
+    /// </summary>
+    /// <param name="phase">Phase owning the rule.</param>
+    /// <param name="rule">Skipped rule.</param>
+    /// <param name="reason">Reason for skip.</param>
+    /// <param name="state">Current state.</param>
+    /// <param name="ruleIndex">Rule index within decision plan ordering.</param>
+    void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex);
+}
+
+/// <summary>
+/// No-op observer implementation avoiding null checks; used when no instrumentation is required.
+/// </summary>
+public sealed class NullEvaluationObserver : IEvaluationObserver
+{
+    /// <summary>
+    /// Singleton instance.
+    /// </summary>
+    public static readonly IEvaluationObserver Instance = new NullEvaluationObserver();
+
+    private NullEvaluationObserver()
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnEventIgnored(IGameEvent @event, GameState state)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnPhaseEnter(GamePhase phase, GameState state)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnStateHashed(GameState state, ulong hash)
+    {
+    }
+
+    /// <inheritdoc />
+    public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+    {
+    }
+}

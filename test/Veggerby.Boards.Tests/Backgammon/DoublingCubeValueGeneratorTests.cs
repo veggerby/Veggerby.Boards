@@ -1,7 +1,7 @@
 using System;
 
-using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Backgammon;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Backgammon;

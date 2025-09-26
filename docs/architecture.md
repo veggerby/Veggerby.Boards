@@ -1,99 +1,36 @@
-# Architecture Overview
+# Architecture
 
-Veggerby.Boards is organized into layered .NET projects:
+Layered design separating structural definition from runtime evaluation & optimization.
 
-- Core (`Veggerby.Boards`): Generic board game engine abstractions (Artifacts, State, Events, Rules, Phases, Mutators, Conditions, Builder).
-- Game Modules (`Veggerby.Boards.Backgammon`, `Veggerby.Boards.Chess`): Declarative game definitions built via specialized `GameBuilder` subclasses.
-- API (`Veggerby.Boards.Api`): ASP.NET Core wrapper that exposes game construction and progression through HTTP endpoints and mapping models.
-
-```
-+---------------------------+
-|        API Layer          |
-|  (DTO mapping / hosting)  |
-+-------------+-------------+
-              |
-+-------------v-------------+
-|        Game Modules       |
-|  Backgammon  |   Chess    |
-+-------------+-------------+
-              |
-+-------------v-------------+
-|           Core            |
-| Artifacts • State • Flow  |
-| Builder • Rules • Phases  |
-+---------------------------+
+```txt
+Game Modules (Chess, Backgammon, …)
+        ↓
+      Core Engine
+  (Artifacts • State • Rules • Phases • Builders)
+        ↓
+  Acceleration Layers (feature-flag gated)
 ```
 
-## Core Concepts at a Glance
+## Capability Seam
 
-| Concept | Responsibility | Key Types |
-|---------|----------------|-----------|
-| Artifact | Static domain element (Piece, Tile, Dice, Board, Player) | `Artifact`, `Piece`, `Dice`, `Board`, `Player`, `Tile` |
-| Game | Immutable container linking Board + Players + Artifacts | `Game` |
-| State | Immutable snapshot of artifact states | `GameState`, `PieceState`, `DiceState<T>` |
-| Progress | Engine + current state + last event | `GameProgress` (in tests/usages) |
-| Event | Intention to mutate state | `IGameEvent`, `MovePieceGameEvent`, `RollDiceGameEvent<T>` |
-| Mutator | Applies deterministic state change | `IStateMutator<T>` and implementations |
-| Condition | Gate logic (state / event validity) | `IGameStateCondition`, `IGameEventCondition` |
-| Rule | Couples event filtering + mutation | `IGameEventRule` + subclasses |
-| Phase | Conditional grouping of rules / pre-processing | `GamePhase`, `CompositeGamePhase` |
-| Builder | Declarative compilation of Game + initial State + Phases | `GameBuilder` and game-specific subclasses |
+`EngineCapabilities` exposes only: `Topology` (graph neighbor access), `PathResolver` (movement), and opaque internal acceleration context (not for module consumption). Guarantees: enabling or disabling acceleration does not change externally observable state transitions.
 
-## Lifecycle
+## Evaluation Flow
 
-1. A `GameBuilder` subclass declaratively defines players, tiles, relations, directions, pieces, dice, initial placements, and phases.
-2. `Compile()` produces a `GameEngine` + initial `GameState` wrapped in `GameProgress`.
-3. External code raises an `IGameEvent` (e.g., `MovePieceGameEvent`).
-4. Active `GamePhase` is resolved (`CompositeGamePhase` recurses to first matching leaf phase by state condition).
-5. Phase pre-processors optionally transform the original event into one or more derived events (e.g., path expansion).
-6. Each candidate event is checked by the phase's `IGameEventRule` chain (`Check` -> `ConditionResponse`).
-7. If valid, rule invokes before/after mutators to produce a new immutable `GameState`.
-8. A new `GameProgress` (engine + new state + last event) emerges.
-
-## Immutability & Identity
-
-- `Artifact` instances are identity-based; equality requires matching concrete type + Id.
-- `GameState` is persistent: each transition keeps a reference to previous state, enabling diffs via `CompareTo`.
-- Mutators never modify existing state in-place; they produce a new `GameState` through `Next()`.
-
-## Phase Resolution Strategy
-
-`CompositeGamePhase.GetActiveGamePhase(state)` traverses child phases returning the first leaf whose `IGameStateCondition` evaluates `Valid`. This enables hierarchical rule scoping (e.g., "initial roll" → "movement" → "resolution").
-
-## Event Handling Workflow (Simplified)
-
-```
-Submit Event
-   ↓
-Active Phase? (condition)
-   ↓ yes
-Pre-processors (0..n) => derived events
-   ↓
-Rule.Check(event)
-   ├─ Ignore → original state
-   ├─ NotApplicable → pass through (other rule)
-   └─ Valid → before mutator → after mutator → new GameState
-```
-
-## Backgammon vs Chess Modules
-
-Both modules demonstrate reuse of the same engine primitives:
-
-- Backgammon defines directional linear movement with dice-driven phases and multi-step conditional transitions (e.g., bar clearing, doubling logic).
-- Chess defines a dense 8×8 grid with pattern-based piece movement (directional + fixed multi-step patterns).
+1. External code submits an `IGameEvent`.
+2. Active phase resolved (first valid leaf).
+3. Pre-processors (0..n) expand event.
+4. DecisionPlan evaluates rules (respecting optimization flags) until a mutator applies or all rules exhausted.
+5. New immutable `GameState` produced (or original if no rule applied) → wrapped in new `GameProgress`.
 
 ## Design Principles
 
-- Declarative over imperative: Builders describe; engine compiles.
-- Separation of static structure (Artifacts) from dynamic behavior (State + Events + Rules).
-- Explicit gating via Conditions; no hidden side-effects.
-- Extensible through additive types (new Mutators / Conditions / Events) without modifying core engine.
+Determinism > raw speed; optimizations must prove parity. Immutability everywhere. Explicit gating via conditions. Small, pure mutators. No LINQ in hot paths.
 
-## Extension Points
+## Feature Flags & Evolution
 
-- Add new `IGameEvent` types for novel interactions.
-- Introduce `IStateMutator<T>` implementations for atomic state transitions.
-- Compose complex logic with `CompositeGameEventCondition` and `CompositeGameStateCondition`.
-- Layer sequencing using nested `GamePhase` trees.
+All experimental subsystems (compiled patterns, bitboards, sliding fast-path, decision plan masks, turn sequencing, hashing, trace capture, simulation) are individually flag-gated; safe default is conservative.
 
-See `extensibility.md` for a step-by-step guide.
+## Adding Modules
+
+Modules subclass `GameBuilder`; they do not reach into internal namespaces. See `extensibility.md`.

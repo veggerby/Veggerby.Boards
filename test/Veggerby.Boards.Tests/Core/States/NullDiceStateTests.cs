@@ -12,7 +12,7 @@ public class NullDiceStateTests
         [Fact]
         public void Should_create_dice_state()
         {
-            // assert
+            // arrange
             var dice = new Dice("dice");
 
             // act
@@ -25,7 +25,7 @@ public class NullDiceStateTests
         [Fact]
         public void Should_throw_when_null_dice()
         {
-            // assert
+            // arrange (nothing to arrange)
 
             // act
             var actual = () => new NullDiceState(null);

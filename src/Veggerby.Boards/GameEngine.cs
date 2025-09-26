@@ -1,6 +1,8 @@
 using System;
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Flows.DecisionPlan;
+using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Flows.Phases;
 
 namespace Veggerby.Boards;
@@ -26,12 +28,49 @@ public class GameEngine
     public GamePhase GamePhaseRoot { get; }
 
     /// <summary>
+    /// Gets the compiled decision plan (leaf phase ordering + rules). Always non-null (legacy traversal removed).
+    /// </summary>
+    internal DecisionPlan DecisionPlan { get; }
+
+    /// <summary>
+    /// Gets the evaluation observer used for instrumentation (never null).
+    /// </summary>
+    internal IEvaluationObserver Observer { get; }
+
+    private readonly Internal.Tracing.EvaluationTrace _lastTrace;
+
+    /// <summary>
+    /// Gets the optional capability set (may be null when no experimental subsystems enabled).
+    /// </summary>
+    internal EngineCapabilities Capabilities { get; }
+
+    /// <summary>
+    /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
+    /// </summary>
+    internal Internal.Tracing.EvaluationTrace LastTrace => _lastTrace;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GameEngine"/> class.
     /// </summary>
     /// <param name="game">Immutable structural aggregate.</param>
     /// <param name="gamePhaseRoot">Root game phase (composite or leaf).</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> or <paramref name="gamePhaseRoot"/> is null.</exception>
-    public GameEngine(Game game, GamePhase gamePhaseRoot)
+    /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
+    /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
+    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan, IEvaluationObserver observer = null)
+        : this(game, gamePhaseRoot, decisionPlan, observer, null)
+    {
+    }
+
+    /// <summary>
+    /// Internal constructor allowing capability injection (builder / tests).
+    /// </summary>
+    /// <param name="game">Immutable structural aggregate.</param>
+    /// <param name="gamePhaseRoot">Root game phase (composite or leaf).</param>
+    /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
+    /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
+    /// <param name="capabilities">Optional capability set (compiled patterns, bitboards, occupancy, etc.).</param>
+    internal GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan, IEvaluationObserver observer, EngineCapabilities capabilities)
     {
         ArgumentNullException.ThrowIfNull(game);
 
@@ -39,5 +78,25 @@ public class GameEngine
 
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
+        ArgumentNullException.ThrowIfNull(decisionPlan);
+        DecisionPlan = decisionPlan;
+        Capabilities = capabilities; // may be null (no experimental features)
+        var baseObserver = observer ?? NullEvaluationObserver.Instance;
+        // Batching wraps the base observer first (prior to trace capture) so trace capture still receives ordered callbacks.
+        if (Internal.FeatureFlags.EnableObserverBatching)
+        {
+            baseObserver = new Internal.Observers.BatchingEvaluationObserver(baseObserver);
+        }
+
+        if (Internal.FeatureFlags.EnableTraceCapture)
+        {
+            _lastTrace = new Internal.Tracing.EvaluationTrace();
+            Observer = new Internal.Tracing.TraceCaptureObserver(baseObserver, _lastTrace);
+        }
+        else
+        {
+            Observer = baseObserver;
+            _lastTrace = null;
+        }
     }
 }

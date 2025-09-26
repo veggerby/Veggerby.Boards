@@ -1,132 +1,48 @@
 # Core Concepts
 
-This document defines the foundational abstractions of Veggerby.Boards.
+Concise model reference. For architectural layering see `architecture.md`.
 
 ## Artifacts
 
-Artifacts are immutable identity objects composing the static topology and actors of a game:
+Immutable identities created in the builder: `Board`, `Tile`, `Piece`, `Dice`, `Player` (and custom). Equality = concrete type + Id.
 
-- `Board` – Graph of `TileRelation` edges over `Tile` nodes.
-- `Tile` – Positional node; related via directed `TileRelation` with a `Direction`.
-- `Piece` – Player-owned movable artifact defined by one or more movement `IPattern`s (directional or fixed sequences).
-- `Dice` – Randomizable artifact represented in state via `DiceState<T>`.
-- `Player` – Participant identity.
-- `CompositeArtifact` / other custom artifacts can extend capabilities.
+## Game & GameState
 
-Artifacts are created only during `GameBuilder.Build()` and aggregated into `Game`.
-
-## Patterns & Movement
-
-Piece mobility is abstracted through pattern objects:
-
-- `DirectionPattern` – Single direction, optionally repeatable (e.g., rook lines).
-- `MultiDirectionPattern` – Multiple directions merged, repeatable.
-- `FixedPattern` – Explicit sequence of directions (e.g., knight L-shape encoded as sequence pairs).
-- `NullPattern` – No movement (placeholder).
-
-Patterns are visited (e.g., `ResolveTilePathPatternVisitor`) to create a concrete `TilePath` at event time.
-
-## Game
-
-`Game` aggregates the immutable structural model: `Board`, `Players`, and all `Artifact` instances. It does not track mutable positions or dice values—those live in `GameState`.
-
-## GameState
-
-`GameState` is an immutable snapshot mapping each active `Artifact` to an `IArtifactState` such as:
-
-- `PieceState` (piece on a tile)
-- `DiceState<T>` (dice with a value)
-- `NullDiceState` (dice without a value yet)
-
-State transitions produce a new `GameState` retaining a pointer to its predecessor enabling diffing (`CompareTo`).
-
-## GameProgress
-
-Encapsulates:
-
-- `GameEngine` (structural + flow logic)
-- Current `GameState`
-- Last processed `IGameEvent` (nullable)
-
-Methods like `HandleEvent` (not shown here but used in API) return a new `GameProgress` with updated state.
+`Game`: structural aggregation (no mutable fields).
+`GameState`: immutable snapshot chain of artifact states (`PieceState`, `DiceState<T>`, etc.) with `Previous` link and comparison utilities.
 
 ## Events
 
-`IGameEvent` marks player or system intent. Provided events:
+Declarative intents: `MovePieceGameEvent`, `RollDiceGameEvent<T>`, plus feature/experimental events (turn sequencing). They never mutate state themselves.
 
-- `MovePieceGameEvent` – Move a specific `Piece` along a resolved `TilePath`.
-- `RollDiceGameEvent<T>` – Assign values to one or more dice simultaneously.
-- `NullGameEvent` – No-op placeholder.
+## Rules & Conditions
 
-## Event Pre-Processing
-
-`IGameEventPreProcessor` can expand or transform an incoming event into derived events (e.g., single-step decomposition, validation path filtering). Phases list zero or more pre-processors.
-
-## Conditions
-
-Two condition families regulate flow:
-
-- `IGameStateCondition` – Evaluates a `GameState` to enable/disable a `GamePhase`.
-- `IGameEventCondition` – Evaluates a proposed event inside a rule (`ConditionResponse.Valid | Invalid | Ignore | NotApplicable`).
-
-Composite variants (`CompositeGameStateCondition`, `CompositeGameEventCondition`) enable logical composition (Any, All, None).
-
-## Rules
-
-An `IGameEventRule` couples:
-
-- Applicability & validation logic (`Check`)
-- Before/after mutators (`IStateMutator<T>`) executed if valid
-
-`GameEventRule<T>` implements common plumbing (type filtering, ignore semantics). `SimpleGameEventRule` specializes with a single condition.
+`IGameEventRule` couples event filtering + condition evaluation + mutators. Conditions return `ConditionResponse` (`Valid`, `Invalid`, `Ignore`, `NotApplicable`). Composite forms support logical composition.
 
 ## Mutators
 
-`IStateMutator<T>` implementations apply deterministic transitions:
-
-- `MovePieceStateMutator` – Repositions a piece.
-- `DiceStateMutator<T>` – Assigns rolled value(s).
-- `NextPlayerStateMutator` – Advances active player tracking (via active player artifact state or condition interplay).
-- `ClearDiceStateMutator` – Clears consumed dice values.
-- Custom examples in Backgammon: `ClearToTileStateMutator`, `DoublingDiceStateMutator`.
-
-Mutators must be pure with respect to prior states (no side effects outside returned `GameState`).
+Pure transformations implementing `IStateMutator<TEvent>` returning either a *new* `GameState` or the original if no changes (idempotent outcome). No side effects; no in-place mutation.
 
 ## Phases
 
-`GamePhase` represents a conditional rule scope. A `CompositeGamePhase` nests multiple phases while providing a shared parent condition.
+Hierarchical (composite) conditional scopes. Phase resolution selects FIRST valid leaf (deterministic ordering). Pre-processors can expand an event into derived events before rule evaluation.
 
-Resolution finds the first leaf phase whose `IGameStateCondition` returns `Valid`.
+## DecisionPlan (Compiled Rule Pipeline)
 
-## Builder Pattern
+Rules and phases compile into a linear evaluation plan (see `decision-plan-and-acceleration.md`). Optimization flags may group, filter, and mask entries without changing semantics.
 
-`GameBuilder` collects declarative definitions:
+## Movement Patterns
 
-1. Players, directions, tiles, relations (graph edges), artifacts (pieces, dice, custom)
-2. Patterns for each piece (directional / fixed / repeatable)
-3. Initial placements and dice states
-4. Phases with nested rules and event handling chains
+Direction, MultiDirection, Fixed, (experimental compiled IR) produce candidate paths. Sliding fast-path & compiled patterns preserve semantics (movement charter). See `movement-and-patterns.md`.
 
-`Compile()` produces: `GameEngine` + initial `GameState` + root `GamePhase` tree wrapped inside `GameProgress`.
+## Determinism & Hashing
 
-## Equality & Integrity
+Optional hashing + RNG fingerprinting provide replay validation; identical inputs produce identical state hashes. See `determinism-rng-timeline.md`.
 
-- Artifacts: structural equality by type + Id.
-- States: equality by set equivalence of child artifact states.
-- Board integrity: all tiles derived from relation edges; invalid or empty relation sets rejected.
+## Extension Surface
 
-## Error Handling
+Add: new event, mutator, condition, phase wiring, or pattern type. Avoid relying on internal acceleration data structures; treat `EngineCapabilities.PathResolver` + topology as the boundary.
 
-Engine throws specialized exceptions (e.g., `BoardException`, `InvalidGameEventException`) when invariants are broken (invalid event application, construction errors).
+## Error & Rejection Handling
 
-## Extensibility Summary
-
-Add new interactions by introducing:
-
-- Artifact subtype (if identity-level distinction is required)
-- Event (`IGameEvent`)
-- Mutator(s) (`IStateMutator<T>`) for state evolution
-- Conditions (`IGameStateCondition` / `IGameEventCondition`) gating flow
-- Rules / Phases wiring them together via builder
-
-See `extensibility.md` for detailed steps.
+`HandleEventResult` returns structured reasons (see `diagnostics.md` table). Construction & invariant breaches throw specialized exceptions.

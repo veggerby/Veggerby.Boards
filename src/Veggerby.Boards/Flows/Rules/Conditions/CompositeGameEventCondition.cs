@@ -37,21 +37,43 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
     {
-        var results = ChildConditions.Select(x => x.Evaluate(engine, state, @event));
-        var ignoreAll = results.All(x => x.Result == ConditionResult.Ignore);
+        var results = ChildConditions.Select(x => x.Evaluate(engine, state, @event)).ToList();
 
-        if (ignoreAll)
+        // Short-circuit: if all ignore, propagate ignore (rule not applicable for this event).
+        if (results.All(x => x.Result == ConditionResult.Ignore))
         {
             return ConditionResponse.NotApplicable;
         }
 
-        var compositionResult = CompositeMode == CompositeMode.All
-            ? results.All(x => x.Result != ConditionResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
-            : results.Any(x => x.Result == ConditionResult.Valid);
+        if (CompositeMode == CompositeMode.All)
+        {
+            // In ALL mode we now require every condition to be explicitly Valid.
+            // Any Invalid fails. Any Ignore (with at least one Valid present, since all-ignore handled above)
+            // yields a NotApplicable to suppress the rule (treat as silently ignored move attempt).
+            if (results.Any(x => x.Result == ConditionResult.Invalid))
+            {
+                return ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
+            }
 
-        return compositionResult
-            ? ConditionResponse.Valid
-            : ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
+            if (results.Any(x => x.Result == ConditionResult.Ignore))
+            {
+                return ConditionResponse.NotApplicable;
+            }
+
+            return ConditionResponse.Valid; // all valid
+        }
+
+        // ANY mode (legacy semantics retained): at least one valid => valid, otherwise if all ignore => not applicable, else fail.
+        var anyValid = results.Any(x => x.Result == ConditionResult.Valid);
+        if (anyValid)
+        {
+            return ConditionResponse.Valid;
+        }
+        if (results.All(x => x.Result == ConditionResult.Ignore))
+        {
+            return ConditionResponse.NotApplicable;
+        }
+        return ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
     }
 
     /// <summary>

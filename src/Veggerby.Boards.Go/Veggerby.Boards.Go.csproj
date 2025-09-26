@@ -1,19 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <!-- Package Metadata -->
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <Description>Backgammon implementation components for Veggerby.Boards built atop the core engine.</Description>
-    <PackageTags>board-game;game-engine;immutable;rules-engine;backgammon</PackageTags>
-    <PackageId>Veggerby.Boards.Backgammon</PackageId>
-  </PropertyGroup>
-
-  <!-- Repository & Source Metadata -->
-  <PropertyGroup>
-    <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <Authors>Jesper Veggerby</Authors>
+    <Description>Veggerby.Boards Go module: immutable Go board (configurable size), stone placement &amp; pass events scaffolding.</Description>
+    <PackageTags>board-game;engine;go;weiqi;baduk</PackageTags>
+    <PackageId>Veggerby.Boards.Go</PackageId>
   </PropertyGroup>
 
   <!-- Build Determinism & SourceLink -->
@@ -56,7 +46,6 @@
     <!-- SourceLink reference (version managed centrally) -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
 
-    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
+    <ProjectReference Include="../Veggerby.Boards/Veggerby.Boards.csproj" />
   </ItemGroup>
-
 </Project>

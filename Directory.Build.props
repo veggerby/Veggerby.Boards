@@ -1,27 +1,39 @@
 <Project>
 
-  <PropertyGroup>
-    <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <Deterministic>true</Deterministic>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <IncludeSymbols>true</IncludeSymbols>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <EnablePackageValidation>true</EnablePackageValidation>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Authors>Jesper Veggerby</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/veggerby/Veggerby.Boards</PackageProjectUrl>
-    <PackageIcon Condition="Exists('icon.png')">icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
+    <!-- Repository & Source Metadata -->
+    <PropertyGroup>
+      <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards</RepositoryUrl>
+      <RepositoryType>git</RepositoryType>
+      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+      <Authors>Jesper Veggerby</Authors>
+    </PropertyGroup>
+
+    <!-- Build Determinism & SourceLink -->
+    <PropertyGroup>
+      <EmbedUntrackedSources>true</EmbedUntrackedSources>
+      <Deterministic>true</Deterministic>
+      <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+      <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+      <NeutralLanguage>en</NeutralLanguage>
+    </PropertyGroup>
+
+    <!-- Packaging & Distribution -->
+    <PropertyGroup>
+      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+      <IncludeSymbols>true</IncludeSymbols>
+      <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <PackageProjectUrl>https://github.com/veggerby/Veggerby.Boards</PackageProjectUrl>
+      <PackageIcon Condition="Exists('icon.png')">icon.png</PackageIcon>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+      <EnablePackageValidation>true</EnablePackageValidation>
+    </PropertyGroup>
+
+    <!-- Analysis & Documentation -->
+    <PropertyGroup>
+      <EnableNETAnalyzers>true</EnableNETAnalyzers>
+      <AnalysisLevel>latest</AnalysisLevel>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
 </Project>

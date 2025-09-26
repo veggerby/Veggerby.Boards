@@ -1,9 +1,9 @@
 ﻿using System.Text;
 
-
 using Veggerby.Boards;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
@@ -264,10 +264,23 @@ public class ChessGameBuilder : GameBuilder
         WithPiece("black-knight-2").OnTile("tile-g8");
         WithPiece("black-rook-2").OnTile("tile-h8");
 
+        // Chess specific extras (initial castling rights all true, no en-passant target, clocks reset)
+        WithState(new ChessStateExtras(
+            WhiteCanCastleKingSide: true,
+            WhiteCanCastleQueenSide: true,
+            BlackCanCastleKingSide: true,
+            BlackCanCastleQueenSide: true,
+            EnPassantTargetTileId: null,
+            HalfmoveClock: 0,
+            FullmoveNumber: 1,
+            MovedPieceIds: System.Array.Empty<string>()));
+
         AddGamePhase("move pieces")
             .If<NullGameStateCondition>()
                 .Then()
                     .ForEvent<MovePieceGameEvent>()
+                        .If<DestinationNotOwnPieceGameEventCondition>()
+                            .And<PathNotObstructedGameEventCondition>()
                     .Then()
                         .Do<MovePieceStateMutator>();
     }

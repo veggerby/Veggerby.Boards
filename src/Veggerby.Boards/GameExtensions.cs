@@ -9,6 +9,7 @@ using Veggerby.Boards.States;
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.Benchmarks")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.PropertyTests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("SimulationDemo")]
 
 namespace Veggerby.Boards;
 

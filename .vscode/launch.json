@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Veggerby.Boards.Api/bin/Debug/net8.0/Veggerby.Boards.Api.dll",
+            "program": "${workspaceFolder}/samples/SimulationDemo/bin/Debug/net9.0/SimulationDemo.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Veggerby.Boards.Api",
+            "cwd": "${workspaceFolder}/samples/SimulationDemo",
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"

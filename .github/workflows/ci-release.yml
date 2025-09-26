@@ -32,10 +32,11 @@ jobs:
         run: dotnet build Veggerby.Boards.sln --configuration Release --no-restore
       - name: Test (with coverage)
         run: >-
-          dotnet test test/Veggerby.Boards.Tests/Veggerby.Boards.Tests.csproj
+          dotnet test Veggerby.Boards.sln
           --configuration Release
           --no-build
           --collect:"XPlat Code Coverage"
+          --logger trx
           -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
       - name: Upload test results
         if: always()
@@ -146,9 +147,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
-          path: ./nupkg
+          path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish prerelease to GitHub Packages (PR)
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
 
@@ -167,13 +168,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
-          path: ./nupkg
+          path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish prerelease to GitHub Packages (main)
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
       - name: Publish prerelease to NuGet.org (main)
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
         env:
           NUGET_API_KEY: ${{ env.NUGET_API_KEY }}
 
@@ -192,12 +193,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
-          path: ./nupkg
+          path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish release to GitHub Packages (tag)
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+        run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
       - name: Publish release to NuGet.org (tag)
-        run: dotnet nuget push ./nupkg/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
         env:
           NUGET_API_KEY: ${{ env.NUGET_API_KEY }}

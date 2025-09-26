@@ -5,19 +5,6 @@
     <Description>Core engine for Veggerby.Boards: immutable board game modeling, artifact states, phases, rules and deterministic game state transitions.</Description>
     <PackageTags>board-game;game-engine;immutable;rules-engine;core</PackageTags>
     <PackageId>Veggerby.Boards</PackageId>
-    <Authors>Veggerby</Authors>
-    <Company>Veggerby</Company>
-    <PackageProjectUrl>https://github.com/veggerby/Veggerby.Boards</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageOutputPath>../../nupkgs</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

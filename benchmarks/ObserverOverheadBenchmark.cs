@@ -32,8 +32,9 @@ public class ObserverOverheadBenchmark
         public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
     }
 
+    // DecisionPlan flag removed from FeatureFlags; retain param placeholder to simulate two modes.
     [Params(false, true)]
-    public bool EnableDecisionPlan { get; set; }
+    public bool SimulatedPlanMode { get; set; }
 
     private GameProgress _baseline = null!;
     private GameProgress _observed = null!;
@@ -45,17 +46,18 @@ public class ObserverOverheadBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+        // legacy: toggled decision plan path removed; keep compile to warm caches
         var builder1 = new Chess.ChessGameBuilder();
         _baseline = builder1.Compile();
 
-        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+        // simulate alternative path via grouping/event filtering toggles for relative observer overhead context
+        FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
         FeatureFlags.EnableObserverBatching = false;
         _observer = new CountingObserver();
         var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
         _observed = builder2.Compile();
 
-        FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+        FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
         FeatureFlags.EnableObserverBatching = true;
         _batchedObserver = new CountingObserver();
         var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);

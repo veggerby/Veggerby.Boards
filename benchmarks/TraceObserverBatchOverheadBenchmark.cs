@@ -33,7 +33,7 @@ public class TraceObserverBatchOverheadBenchmark
     }
 
     [Params(false, true)]
-    public bool EnableDecisionPlan { get; set; }
+    public bool SimulatedPlanMode { get; set; }
 
     private GameProgress _baseline = null!;
     private GameProgress _observer = null!;
@@ -49,27 +49,27 @@ public class TraceObserverBatchOverheadBenchmark
         var originalBatch = FeatureFlags.EnableObserverBatching;
         try
         {
-            FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = false;
             _baseline = new ChessGameBuilder().Compile();
 
-            FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = false;
             _observer = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
             FeatureFlags.EnableTraceCapture = true;
             FeatureFlags.EnableObserverBatching = false;
             _observerTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
             FeatureFlags.EnableTraceCapture = false;
             FeatureFlags.EnableObserverBatching = true;
             _observerBatched = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlan = EnableDecisionPlan;
+            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
             FeatureFlags.EnableTraceCapture = true;
             FeatureFlags.EnableObserverBatching = true;
             _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();

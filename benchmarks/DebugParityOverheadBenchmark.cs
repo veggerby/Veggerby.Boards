@@ -22,19 +22,17 @@ public class DebugParityOverheadBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        FeatureFlags.EnableDecisionPlan = true;
+        // DecisionPlan core flag removed; simulate representative config via grouping + filtering + masks
         FeatureFlags.EnableDecisionPlanGrouping = true;
         FeatureFlags.EnableDecisionPlanEventFiltering = true; // representative config
         FeatureFlags.EnableDecisionPlanMasks = true;
 
         // Build baseline (parity disabled)
-        FeatureFlags.EnableDecisionPlanDebugParity = false;
+        // parity flag removed – treat baseline identical
         _baseline = new Chess.ChessGameBuilder().Compile();
 
         // Build parity-enabled
-        FeatureFlags.EnableDecisionPlanDebugParity = true;
         _parity = new Chess.ChessGameBuilder().Compile();
-        FeatureFlags.EnableDecisionPlanDebugParity = false; // reset default
 
         var piece = _baseline.Game.GetPiece("white-pawn-2");
         var from = _baseline.Game.GetTile("e2");
@@ -46,16 +44,13 @@ public class DebugParityOverheadBenchmark
     [Benchmark(Baseline = true)]
     public GameProgress HandleEvent_ParityDisabled()
     {
-        FeatureFlags.EnableDecisionPlanDebugParity = false;
         return _baseline.HandleEvent(_event);
     }
 
     [Benchmark]
     public GameProgress HandleEvent_ParityEnabled()
     {
-        FeatureFlags.EnableDecisionPlanDebugParity = true;
-        var gp = _parity.HandleEvent(_event);
-        FeatureFlags.EnableDecisionPlanDebugParity = false; // reset
-        return gp;
+        // simulate parity path (identical currently)
+        return _parity.HandleEvent(_event);
     }
 }

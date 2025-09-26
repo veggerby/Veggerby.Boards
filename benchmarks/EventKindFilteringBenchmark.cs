@@ -45,7 +45,7 @@ public class EventKindFilteringBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        FeatureFlags.EnableDecisionPlan = true;
+        // simulate plan grouping only (core plan flag removed)
         FeatureFlags.EnableDecisionPlanGrouping = true;
         FeatureFlags.EnableDecisionPlanEventFiltering = false; // baseline build
         _obsLegacy = new CountingObserver();

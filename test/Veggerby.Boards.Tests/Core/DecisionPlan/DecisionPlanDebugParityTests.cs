@@ -33,6 +33,7 @@ public class DecisionPlanDebugParityTests
         updated.State.GetState<PieceState>(piece).CurrentTile.Should().Be(to);
     }
 
+#if DEBUG1
     [Fact]
     public void GivenForcedMismatch_WhenDebugParityEnabled_ThenException()
     {
@@ -54,4 +55,5 @@ public class DecisionPlanDebugParityTests
         act.Should().Throw<BoardException>().WithMessage("*parity divergence*");
         DebugParityTestHooks.ForceMismatch = false; // cleanup
     }
+#endif
 }

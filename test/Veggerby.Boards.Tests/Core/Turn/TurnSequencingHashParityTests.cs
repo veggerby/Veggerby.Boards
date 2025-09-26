@@ -1,62 +1,87 @@
+using System;
 using System.Linq;
 
-using AwesomeAssertions; // assertion helpers
-
-using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.States; // GameProgress
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.States;
 
 using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Turn;
 
 /// <summary>
-/// Validates that enabling turn sequencing does not alter piece placement semantics while
-/// acknowledging an expected hash divergence (TurnState artifact presence changes canonical
-/// serialization). This guards against accidental piece state drift or unintended artifact
-/// omissions when toggling the feature flag.
+/// Validates piece placement parity and documents expected hash divergence caused solely by TurnState presence
+/// when the sequencing feature flag is enabled. Also exercises pass-based turn advancement as a stand‑in for a
+/// future single-segment (Main-only) profile; actual profile customization is deferred until the engine exposes
+/// a supported configuration hook.
 /// </summary>
 public class TurnSequencingHashParityTests
 {
-    [Fact]
-    public void GivenSameMoveSequence_WhenSequencingOnOff_ThenPieceStatesMatchAndHashesMayDiffer()
+    private sealed class FlagScope : IDisposable
     {
-        // arrange
-        GameProgress off;
-        GameProgress on;
+        private readonly bool _original;
+        public FlagScope(bool enable)
+        {
+            _original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+            Boards.Internal.FeatureFlags.EnableTurnSequencing = enable;
+        }
+        public void Dispose()
+        {
+            Boards.Internal.FeatureFlags.EnableTurnSequencing = _original;
+        }
+    }
 
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        try
+    private static GameProgress ApplyOpening(GameProgress progress)
+    {
+        progress = progress.Move("white-pawn-5", "e4");
+        progress = progress.Move("black-pawn-5", "e5");
+        return progress;
+    }
+
+    [Fact]
+    public void GivenSameMoves_WhenSequencingOffAndOn_ThenPiecePositionsMatchAndTurnStateExplainsHashDelta()
+    {
+        GameProgress offProgress;
+        GameProgress onProgress;
+
+        using (new FlagScope(false))
         {
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
-            off = new ChessGameBuilder().Compile();
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
-            on = new ChessGameBuilder().Compile();
+            offProgress = ApplyOpening(new ChessGameBuilder().Compile());
         }
-        finally
+        using (new FlagScope(true))
         {
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+            onProgress = ApplyOpening(new ChessGameBuilder().Compile());
         }
 
-        // act + assert baseline piece placement parity (no moves) to isolate hashing side effects only
-        var pawn = on.Game.GetPiece("white-pawn-2");
-        var offPawnState = off.State.GetStates<PieceState>().Single(ps => ps.Artifact.Equals(pawn));
-        var onPawnState = on.State.GetStates<PieceState>().Single(ps => ps.Artifact.Equals(pawn));
-        onPawnState.CurrentTile.Should().Be(offPawnState.CurrentTile, "initial piece position parity must hold regardless of sequencing flag");
+        var offPieces = offProgress.State.GetStates<PieceState>().OrderBy(p => p.Artifact.Id)
+            .Select(p => (p.Artifact.Id, p.CurrentTile.Id)).ToArray();
+        var onPieces = onProgress.State.GetStates<PieceState>().OrderBy(p => p.Artifact.Id)
+            .Select(p => (p.Artifact.Id, p.CurrentTile.Id)).ToArray();
 
-        // Hashes may differ due to added TurnState artifact when sequencing enabled.
-        // Explicitly assert either equality (future convergence if hashing excludes sequencing artifacts)
-        // or inequality with justification comment.
-        if (off.State.Hash == on.State.Hash)
+        onPieces.Should().BeEquivalentTo(offPieces, o => o.WithStrictOrdering());
+
+        var offHash = offProgress.State.Hash;
+        var onHash = onProgress.State.Hash;
+        if (offHash != onHash)
         {
-            // Accept equal (would indicate hashing excludes sequencing artifacts).
-            on.State.Hash.Should().Be(off.State.Hash);
+            offProgress.State.GetStates<TurnState>().Should().BeEmpty();
+            onProgress.State.GetStates<TurnState>().Should().NotBeEmpty();
         }
-        else
-        {
-            on.State.Hash.Should().NotBe(off.State.Hash, "TurnState artifact presence alters canonical serialization ordering");
-        }
+    }
+
+    [Fact]
+    public void GivenSequencingEnabled_WhenPassingTurn_ThenTurnNumberIncrementsAndSegmentResets()
+    {
+        using var _ = new FlagScope(true);
+        var progress = new ChessGameBuilder().Compile();
+        var before = progress.State.GetStates<TurnState>().FirstOrDefault();
+        before.Should().NotBeNull();
+        var mutator = new TurnPassStateMutator();
+        var updatedState = mutator.MutateState(progress.Engine, progress.State, new TurnPassEvent());
+        var after = updatedState.GetStates<TurnState>().First();
+        after.TurnNumber.Should().Be(before!.TurnNumber + 1);
+        after.Segment.Should().Be(TurnSegment.Start);
     }
 }

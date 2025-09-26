@@ -12,11 +12,6 @@ namespace Veggerby.Boards.Internal;
 /// </remarks>
 internal static class FeatureFlags
 {
-    /// <summary>
-    /// Gets or sets a value indicating whether the DecisionPlan executor replaces the legacy rule evaluation.
-    /// Parity-only in initial implementation (no optimizations yet).
-    /// </summary>
-    public static bool EnableDecisionPlan { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether compiled movement patterns (DFA) are used instead of the visitor pattern.
@@ -59,11 +54,6 @@ internal static class FeatureFlags
     /// </summary>
     public static bool EnableDecisionPlanEventFiltering { get; set; } = false;
 
-    /// <summary>
-    /// Gets or sets a value indicating whether DecisionPlan debug parity (shadow linear evaluation for verification) is enabled.
-    /// (Future – scaffolding only)
-    /// </summary>
-    public static bool EnableDecisionPlanDebugParity { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether the compiled pattern resolver should use a pre-built adjacency cache for (tile, direction) lookups.

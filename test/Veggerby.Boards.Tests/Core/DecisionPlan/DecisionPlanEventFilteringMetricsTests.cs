@@ -68,7 +68,7 @@ public class DecisionPlanEventFilteringMetricsTests
 {
     private static (GameProgress progress, CountingEvaluationObserver observer) Build(bool filtering)
     {
-        FeatureFlags.EnableDecisionPlan = true;
+        // DecisionPlan always enabled
         FeatureFlags.EnableDecisionPlanGrouping = true;
         FeatureFlags.EnableDecisionPlanEventFiltering = filtering;
         var observer = new CountingEvaluationObserver();

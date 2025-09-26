@@ -128,7 +128,6 @@ New flags (all default false):
 - `EnableDecisionPlanGrouping`
 - `EnableDecisionPlanMasks`
 - `EnableDecisionPlanEventFiltering`
-- `EnableDecisionPlanDebugParity` (forces shadow linear scan when true; asserts same outcome).
 
 ### 6. Incremental Rollout Phases
 

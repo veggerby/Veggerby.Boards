@@ -16,7 +16,7 @@ public class ChessBitboardTests
     public void GivenInitialChessPosition_WhenBitboardsEnabled_ThenOccupancyMatchesPieceCount()
     {
         // arrange
-        using var _ = new FeatureFlagScope(decisionPlan: false, compiledPatterns: true, bitboards: true);
+        using var _ = new FeatureFlagScope(compiledPatterns: true, bitboards: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 

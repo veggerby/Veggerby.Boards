@@ -28,8 +28,7 @@ public class GameEngine
     public GamePhase GamePhaseRoot { get; }
 
     /// <summary>
-    /// Gets the optional precompiled decision plan (leaf phase ordering + rules). Null until
-    /// feature flag <c>EnableDecisionPlan</c> is enabled at build time.
+    /// Gets the compiled decision plan (leaf phase ordering + rules). Always non-null (legacy traversal removed).
     /// </summary>
     internal DecisionPlan DecisionPlan { get; }
 
@@ -58,7 +57,7 @@ public class GameEngine
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> or <paramref name="gamePhaseRoot"/> is null.</exception>
     /// <param name="decisionPlan">Optional compiled decision plan (null when feature disabled).</param>
     /// <param name="observer">Evaluation observer (null replaced with <see cref="NullEvaluationObserver"/>).</param>
-    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan = null, IEvaluationObserver observer = null)
+    public GameEngine(Game game, GamePhase gamePhaseRoot, DecisionPlan decisionPlan, IEvaluationObserver observer = null)
         : this(game, gamePhaseRoot, decisionPlan, observer, null)
     {
     }
@@ -79,7 +78,8 @@ public class GameEngine
 
         Game = game;
         GamePhaseRoot = gamePhaseRoot;
-        DecisionPlan = decisionPlan; // may be null (feature flag disabled)
+        ArgumentNullException.ThrowIfNull(decisionPlan);
+        DecisionPlan = decisionPlan;
         Capabilities = capabilities; // may be null (no experimental features)
         var baseObserver = observer ?? NullEvaluationObserver.Instance;
         // Batching wraps the base observer first (prior to trace capture) so trace capture still receives ordered callbacks.

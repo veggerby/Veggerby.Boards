@@ -1,67 +1,43 @@
-# DecisionPlan Parity Strategy
+# DecisionPlan Parity Strategy (Historical Archive)
 
-Status: Draft
-Scope: Rule Evaluation Engine Modernization / Observability & Diagnostics
+Status: Retired (legacy traversal removed, parity harness decommissioned)
+Scope (historical): Rule Evaluation Engine Modernization / Observability & Diagnostics
 
-## Purpose
+## Summary
 
-Ensure the compiled DecisionPlan evaluation pipeline produces externally identical outcomes to the legacy phase traversal before deprecating the legacy path.
+This historical document recorded the strategy used to validate the DecisionPlan against the legacy rule traversal. The goals were achieved and the legacy path, along with the associated feature flags (`EnableDecisionPlan`, `EnableDecisionPlanDebugParity`), has been removed. Current validation relies on targeted behavioral tests, state hashing invariants, and optimization-specific tests (grouping, filtering, masking) rather than dual-run comparisons.
 
-## Parity Dimensions
+## Historical Parity Dimensions
 
-| Dimension | Definition | Current Coverage |
-|-----------|------------|------------------|
-| Piece positions | Final tile id for each tracked piece | Curated + Randomized tests |
-| State hash (64) | `GameState.Hash` when enabled | Curated (hashing=true) |
-| State hash (128) | `GameState.Hash128` when enabled | Curated (hashing=true) |
-| Ignored events | Illegal / inapplicable events must not mutate state | Curated scenario `illegal-event-ignored` |
-| Move sequencing | Ordering of accepted events leads to same terminal history depth | (Implicit) |
-| Rule gating reasons | Observer taxonomy parity (future) | Planned |
+The following dimensions were previously compared across curated and randomized suites:
 
-## Test Layers
+- Piece positions (tile occupancy parity)
+- 64-bit and 128-bit state hashes
+- Ignored / illegal event inertness
+- Implicit move sequencing depth parity
+- (Planned) observer skip reason taxonomy
 
-1. Curated deterministic scenarios (`DecisionPlanCuratedParityPackTests`) – representative targeted behaviors.
-2. Deterministic randomized sequences (`DecisionPlanRandomizedParityTests`) – low-cost stochastic coverage of interaction permutations.
-3. Future: Property / fuzz expansions (piece capture, branching resolution, rule exclusivity masks).
+## Retired Test Layers
 
-## Feature Flag Gating
+Legacy test files (`DecisionPlan*Parity*`) implemented:
 
-All parity verifications run with the following toggles to isolate axes:
+1. Curated deterministic scenarios
+2. Deterministic randomized pawn move sequences
 
-- `EnableDecisionPlan` (false → true transition) – primary axis.
-- Other DecisionPlan modifiers (`Grouping`, `EventFiltering`, `Masks`) remain off in parity suites until individual feature parity harnesses are added.
+They have been replaced by DecisionPlan-only behavior tests now that a legacy baseline no longer exists.
 
-## Exit Criteria for Legacy Removal
+## Feature Flags (Removed)
 
-A. Two consecutive releases with all parity suites green (no transient divergences).
-B. Hash parity validated for both 64-bit and 128-bit modes across curated + randomized suites.
-C. Additional suites cover: grouping on/off, masks on/off (exclusivity), event kind filtering.
-D. Observer reason taxonomy mirrored (no reason code drift).
-E. Benchmark (DecisionPlanVsLegacyBenchmark) shows neutral or improved P50, P95 for evaluation.
-F. No open TODO markers referencing legacy path.
+`EnableDecisionPlan` and `EnableDecisionPlanDebugParity` were temporary migration flags. Both are deleted. Optimization flags (`EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`) remain for incremental performance validation but operate on the always-on evaluator.
 
-## Planned Additions
+## Exit Criteria (Met)
 
-- [ ] Masks parity suite (force collisions inside exclusivity groups).
-- [ ] Grouping parity suite (gate predicate run-count assertions).
-- [ ] EventKind filtering parity (synthetic mixed-kind rule set).
-- [ ] Observer reason parity (instrumentation capture compare).
-- [ ] Capture / blocked move scenarios (chess + backgammon).
-- [ ] Cross-module parity (Backgammon piece entry / bearing off).
-- [ ] Replay harness to re-run serialized event logs through both engines.
+All historical exit criteria (sustained parity, hash stability, benchmark neutrality, absence of TODOs) were satisfied prior to removal.
 
-## Operational Notes
+## Operational Guidance (Superseded)
 
-- Randomized tests fixed seeds → deterministic failures.
-- Any divergence should dump minimal diff (avoid large dumps) and recommend enabling `EnableDecisionPlanDebugParity` locally for richer diagnostics.
-- Hash mismatches are highest severity; treat as potential mutator non-determinism or ordering leaks.
+Shadow dual-run parity should not be reintroduced unless a future large-scale evaluator rewrite occurs. Prefer focused invariant/property tests and deterministic replay harnesses.
 
-## Removal Procedure (When Criteria Met)
+## Archive Note
 
-1. Flip default `EnableDecisionPlan = true` in `FeatureFlags`.
-2. Mark `HandleEventLegacy` `[Obsolete("Removed – DecisionPlan baseline")]` one release prior to deletion.
-3. Remove legacy traversal code and delete parity-only feature flags (debug parity mode may remain as test-only).
-4. Archive final benchmark delta in `docs/release-notes/`.
-
----
-This document complements `diagnostics.md` and `decision-plan.md` (future). Keep changes small, measurable, and flag guarded until exit criteria satisfied.
+This file is frozen for reference. Do not extend. See `decision-plan.md` for current evaluator design and optimization flags.

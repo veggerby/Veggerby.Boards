@@ -84,60 +84,9 @@ public partial class GameProgress
     /// <returns>The resulting progress.</returns>
     public GameProgress HandleEvent(IGameEvent @event)
     {
-        var debugParityEnabled = Internal.FeatureFlags.EnableDecisionPlan && Internal.FeatureFlags.EnableDecisionPlanDebugParity;
-        var originalProgress = this; // capture starting snapshot for shadow evaluation
-        // Legacy path retains phase resolution per event when DecisionPlan feature flag is disabled or plan absent.
-        if (Engine.DecisionPlan is null || !Internal.FeatureFlags.EnableDecisionPlan)
-        {
-#if DEBUG || TESTS
-            return HandleEventLegacy(@event);
-#else
-            // Legacy path compiled out – use DecisionPlan disabled semantics: treat as no-op unless phase rule applies.
-            // Mirror legacy behavior minimally by re-evaluating current phase rule directly.
-            var currentPhase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
-            if (currentPhase is null)
-            {
-                Engine.Observer.OnEventIgnored(@event, State);
-                return this;
-            }
-            var events = currentPhase.PreProcessEvent(this, @event);
-            var progressLocal = this;
-            foreach (var e in events)
-            {
-                var phaseForEvent = progressLocal.Engine.GamePhaseRoot.GetActiveGamePhase(progressLocal.State);
-                if (phaseForEvent is null)
-                {
-                    continue;
-                }
-                Engine.Observer.OnPhaseEnter(phaseForEvent, progressLocal.State);
-                var ruleCheck = phaseForEvent.Rule.Check(progressLocal.Engine, progressLocal.State, e);
-                Engine.Observer.OnRuleEvaluated(phaseForEvent, phaseForEvent.Rule, ruleCheck, progressLocal.State, 0);
-                if (ruleCheck.Result == ConditionResult.Valid)
-                {
-                    var newState = phaseForEvent.Rule.HandleEvent(progressLocal.Engine, progressLocal.State, e);
-                    Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, progressLocal.State, newState, 0);
-                    if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
-                    {
-                        Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
-                    }
-                    Engine.Capabilities?.AccelerationContext?.OnStateTransition(progressLocal.State, newState, e);
-                    progressLocal = new GameProgress(progressLocal.Engine, newState, progressLocal.Events.Concat(new[] { e }));
-                }
-                else if (ruleCheck.Result == ConditionResult.Invalid)
-                {
-                    throw new InvalidGameEventException(e, ruleCheck, progressLocal.Game, phaseForEvent, progressLocal.State);
-                }
-                else
-                {
-                    Engine.Observer.OnEventIgnored(e, progressLocal.State);
-                }
-            }
-            return progressLocal;
-#endif
-        }
-
-        // DecisionPlan parity path: iterate precompiled leaf phases in order, selecting first whose condition is valid.
-        // Pre-processing still uses the currently active phase determined at construction (could be refined later
+        // DecisionPlan always enabled: iterate precompiled leaf phases in order, selecting first whose condition is valid.
+        var originalProgress = this; // retained for potential future shadow instrumentation (now legacy removed)
+        var debugParityEnabled = false; // legacy parity mode removed
         // to pre-process per candidate phase if needed). This maintains functional parity with legacy traversal.
         // Phase can be null if no active phase resolves for current state; in that case, skip pre-processing.
         var preProcessed = Phase is null ? [@event] : Phase.PreProcessEvent(this, @event);

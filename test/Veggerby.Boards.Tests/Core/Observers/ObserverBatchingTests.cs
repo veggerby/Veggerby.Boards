@@ -30,7 +30,7 @@ public class ObserverBatchingTests
     public void GivenSingleMove_WhenBatchedEnabled_ThenOrderingMatchesUnbatched()
     {
         // arrange
-        Boards.Internal.FeatureFlags.EnableDecisionPlan = true; // ensure plan path (more callbacks)
+        // DecisionPlan always enabled (legacy path removed)
         Boards.Internal.FeatureFlags.EnableObserverBatching = false;
         var rec1 = new RecordingObserver();
         var unbatched = new ChessGameBuilder().WithObserver(rec1).Compile();

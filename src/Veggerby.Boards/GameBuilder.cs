@@ -383,11 +383,8 @@ public abstract class GameBuilder
         }
 
         // combine
-        DecisionPlan decisionPlan = null;
-        if (FeatureFlags.EnableDecisionPlan)
-        {
-            decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
-        }
+        // DecisionPlan always compiled (legacy traversal removed)
+        var decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
 
         // NEW capability wiring (sealed, non-leaky): Topology + PathResolver + AccelerationContext
         var shape = Internal.Layout.BoardShape.Build(game.Board);

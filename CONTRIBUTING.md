@@ -48,6 +48,10 @@ See `docs/` (architecture & core concepts) for authoritative model.
 9. Tests must follow AAA pattern and cover each new rule branch (Valid / Invalid / Ignore / NotApplicable).
 10. Format cleanliness: `dotnet format` should produce no changes before PR.
 
+### DecisionPlan Graduation Notice
+
+The legacy rule traversal has been removed. All event handling uses the compiled DecisionPlan path. Do not add new conditional branches for a "legacy" evaluator—any future large-scale rewrite must introduce its own migration harness and temporary tests. Optimization flags (`EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`) are optional layers on the single evaluator and may themselves be removed once permanently enabled.
+
 For the complete authoritative charter (including hot path definition, property test acceptance criteria, and feature flag isolation pattern) see `docs/developer-experience.md`. Any intentional deviation MUST include `// STYLE-DEVIATION:` plus a CHANGELOG entry under Temporary Exceptions.
 
 ### Feature Flag Policy

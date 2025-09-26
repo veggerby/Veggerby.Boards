@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Breaking
+
+- Removed legacy rule traversal path and associated feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity`. The precompiled DecisionPlan evaluator is now the only execution path. Any code or tests toggling these flags must be updated (flags no longer exist). Debug parity dual-run scaffolding and tests (`DecisionPlan*Parity*`) were removed / neutralized. Benchmark `DebugParityOverheadBenchmark` will be pruned or refactored in a subsequent commit (tracked in backlog). Determinism and behavioral coverage are now enforced solely via DecisionPlan behavior tests and hash/parity invariants unrelated to legacy traversal.
+
 ### Added (Unreleased)
 
 - Shadow-mode turn sequencing scaffolding: introduced `TurnSegment` enum, `TurnArtifact`, and `TurnState` with initial state injected at compile time (turn 1, Start). No behavioral changes yet; groundwork for future deterministic turn advancement and multi-phase gating.

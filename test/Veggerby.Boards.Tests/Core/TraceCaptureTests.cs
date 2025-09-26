@@ -12,7 +12,7 @@ public class TraceCaptureTests
 {
     private static (Infrastructure.FeatureFlagScope scope, GameProgress progress) Build(bool trace, bool hashing)
     {
-        var scope = new Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing, decisionPlan: false);
+        var scope = new Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return (scope, builder.Compile());
     }

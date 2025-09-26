@@ -236,14 +236,13 @@ Upcoming / In-Progress Optimizations (Design Drafted in `decision-plan-optimizat
 -- G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[IN-PROGRESS – classifier + filtering path + initial tests added; expanded tagging & benchmarks pending]**
 - G2 Event Filtering: introduce `EventKind` tagging to skip irrelevant groups/entries (`EnableDecisionPlanEventFiltering`). **[COMPLETED – classifier + filtering path + heterogeneous benchmark variants + metrics tests]**
 -- M1 Manual Skip Masks: builder hints for mutually exclusive branches producing bitmask skip sets (`EnableDecisionPlanMasks`). **[COMPLETED – runtime masking + tests]**
--- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[COMPLETED – dual-run comparison + mismatch diagnostics + tests]**
+-- D Debug Parity: dual execution verification path (`EnableDecisionPlanDebugParity`). **[REMOVED – legacy traversal eliminated; harness retired]**
 - M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[PENDING]**
 - M2 Static Exclusivity Inference: attribute-driven automatic mask derivation. **[COMPLETED – precedence builder > phase definition > attribute; integrated into mask compilation]**
 Risks & Mitigation:
 - Complexity creep: keep plan structure minimal (arrays + bitsets). Stage features (start w/out short-circuit masks, add later).
 - Debug difficulty: include verbose validator to cross-check results in tests.
-Migration Strategy:
-- Keep legacy evaluator for one release hidden behind `#if LEGACY_RULE_ENGINE` or configuration for A/B verification.
+Migration Strategy (Historical): Legacy evaluator retained behind flags for A/B until DecisionPlan graduation. It has now been removed (no conditional code remains).
 
 ### 2. Deterministic Randomness & State History Evolution (FINALIZED 2025-09-25)
 

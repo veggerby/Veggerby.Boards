@@ -15,16 +15,14 @@ public sealed class FeatureFlagScope : IDisposable
 {
     private static readonly SemaphoreSlim Gate = new(1, 1);
     private static readonly AsyncLocal<int> Depth = new();
-    private static readonly AsyncLocal<Stack<(bool decisionPlan, bool grouping, bool filtering, bool debugParity, bool compiledPatterns, bool adjacencyCache, bool hashing, bool trace, bool timeline, bool masks, bool bitboards, bool boardShape, bool slidingFastPath)>> Snapshots = new();
+    private static readonly AsyncLocal<Stack<(bool grouping, bool filtering, bool compiledPatterns, bool adjacencyCache, bool hashing, bool trace, bool timeline, bool masks, bool bitboards, bool boardShape, bool slidingFastPath)>> Snapshots = new();
 
     private bool _disposed;
     private readonly bool _isOuter;
 
     public FeatureFlagScope(
-    bool? decisionPlan = null,
     bool? grouping = null,
     bool? filtering = null,
-    bool? debugParity = null,
     bool? compiledPatterns = null,
     bool? adjacencyCache = null,
     bool? hashing = null,
@@ -40,14 +38,12 @@ public sealed class FeatureFlagScope : IDisposable
         {
             Gate.Wait();
             _isOuter = true;
-            Snapshots.Value = new Stack<(bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool)>();
+            Snapshots.Value = new Stack<(bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool)>();
         }
 
         Snapshots.Value!.Push((
-            FeatureFlags.EnableDecisionPlan,
             FeatureFlags.EnableDecisionPlanGrouping,
             FeatureFlags.EnableDecisionPlanEventFiltering,
-            FeatureFlags.EnableDecisionPlanDebugParity,
             FeatureFlags.EnableCompiledPatterns,
             FeatureFlags.EnableCompiledPatternsAdjacencyCache,
             FeatureFlags.EnableStateHashing,
@@ -60,11 +56,6 @@ public sealed class FeatureFlagScope : IDisposable
 
         Depth.Value = depth + 1;
 
-        if (decisionPlan.HasValue)
-        {
-            FeatureFlags.EnableDecisionPlan = decisionPlan.Value;
-        }
-
         if (grouping.HasValue)
         {
             FeatureFlags.EnableDecisionPlanGrouping = grouping.Value;
@@ -73,11 +64,6 @@ public sealed class FeatureFlagScope : IDisposable
         if (filtering.HasValue)
         {
             FeatureFlags.EnableDecisionPlanEventFiltering = filtering.Value;
-        }
-
-        if (debugParity.HasValue)
-        {
-            FeatureFlags.EnableDecisionPlanDebugParity = debugParity.Value;
         }
 
         if (compiledPatterns.HasValue)
@@ -135,11 +121,9 @@ public sealed class FeatureFlagScope : IDisposable
 
         _disposed = true;
 
-        var (decisionPlan, grouping, filtering, debugParity, compiledPatterns, adjacencyCache, hashing, trace, timeline, masks, bitboards, boardShape, slidingFastPath) = Snapshots.Value!.Pop();
-        FeatureFlags.EnableDecisionPlan = decisionPlan;
+        var (grouping, filtering, compiledPatterns, adjacencyCache, hashing, trace, timeline, masks, bitboards, boardShape, slidingFastPath) = Snapshots.Value!.Pop();
         FeatureFlags.EnableDecisionPlanGrouping = grouping;
         FeatureFlags.EnableDecisionPlanEventFiltering = filtering;
-        FeatureFlags.EnableDecisionPlanDebugParity = debugParity;
         FeatureFlags.EnableCompiledPatterns = compiledPatterns;
         FeatureFlags.EnableCompiledPatternsAdjacencyCache = adjacencyCache;
         FeatureFlags.EnableStateHashing = hashing;

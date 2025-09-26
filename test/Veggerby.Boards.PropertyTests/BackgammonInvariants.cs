@@ -88,28 +88,21 @@ public class BackgammonInvariants
         var progress = builder.Compile();
         var cube = progress.Game.GetArtifact<Dice>("doubling-dice");
 
-        // Ensure starting player selected (distinct opening roll)
-        for (int i = 0; i < 5; i++)
-        {
-            progress = progress.RollDice("dice-1", "dice-2");
-            var startStates = progress.State.GetStates<DiceState<int>>().Where(s => s.Artifact.Id is "dice-1" or "dice-2").ToList();
-            if (startStates.Count == 2 && startStates[0].CurrentValue != startStates[1].CurrentValue)
-            {
-                break;
-            }
-        }
-
-        Assert.NotNull(progress.State.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive));
+        // Ensure starting player selected (distinct opening roll). If still not distinct after attempts, force one deterministic extra roll sequence.
+        progress = EnsureDistinctOpeningRoll(progress);
+        var activeBeforeFirst = progress.State.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
+        Assert.NotNull(activeBeforeFirst); // must have active player for doubling to proceed
 
         // First doubling (explicit event)
-        var firstEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
+        var baseCubeState = progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
+        var firstEvent = new RollDiceGameEvent<int>(baseCubeState);
         progress = progress.HandleEvent(firstEvent);
         var afterFirst = progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
         var owner = (afterFirst as DoublingDiceState)!.CurrentPlayer;
         Assert.Equal(2, afterFirst.CurrentValue);
 
         // act - second immediate doubling attempt (same turn). Expect Ignore -> unchanged (gated by cube state LastDoubledTurn).
-        var secondEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
+        var secondEvent = new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube));
         var attempt = progress.HandleEvent(secondEvent);
         var afterAttempt = attempt.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
 
@@ -145,19 +138,11 @@ public class BackgammonInvariants
         var progress = builder.Compile();
         var cube = progress.Game.GetArtifact<Dice>("doubling-dice");
 
-        // Ensure starting player selected
-        for (int i = 0; i < 5; i++)
-        {
-            progress = progress.RollDice("dice-1", "dice-2");
-            var startStates = progress.State.GetStates<DiceState<int>>().Where(s => s.Artifact.Id is "dice-1" or "dice-2").ToList();
-            if (startStates.Count == 2 && startStates[0].CurrentValue != startStates[1].CurrentValue)
-            {
-                break;
-            }
-        }
+        // Ensure starting player selected (distinct opening roll)
+        progress = EnsureDistinctOpeningRoll(progress);
 
         // First doubling (owner becomes inactive player) – must emit explicit event because helper skips doubling cube
-        var firstEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
+        var firstEvent = new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube));
         progress = progress.HandleEvent(firstEvent);
         var afterFirst = progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
         var doublingState = (DoublingDiceState)afterFirst;
@@ -169,7 +154,7 @@ public class BackgammonInvariants
         var active = progress.State.GetStates<ActivePlayerState>().Single(p => p.IsActive).Artifact;
 
         // If active equals owner, still proceed – redouble attempt should be ignored either way because same-turn gating uses cube LastDoubledTurn.
-        var attemptEvent = new RollDiceGameEvent<int>(new DiceState<int>(cube, 0));
+        var attemptEvent = new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube));
         var attempt = progress.HandleEvent(attemptEvent);
         var afterAttempt = attempt.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
         Assert.Equal(2, afterAttempt.CurrentValue);
@@ -210,7 +195,7 @@ public class BackgammonInvariants
             }
 
             // First doubling (2)
-            progress = progress.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(cube, 0)));
+            progress = progress.HandleEvent(new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube)));
             var afterFirst = (DoublingDiceState)progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
             Assert.Equal(2, afterFirst.CurrentValue);
             var firstOwner = afterFirst.CurrentPlayer;
@@ -220,7 +205,7 @@ public class BackgammonInvariants
             progress = new GameProgress(progress.Engine, advancedState, progress.Events);
 
             // Redouble by opponent (4)
-            progress = progress.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(cube, 0)));
+            progress = progress.HandleEvent(new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube)));
             var afterSecond = (DoublingDiceState)progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
             Assert.Equal(4, afterSecond.CurrentValue);
             var secondOwner = afterSecond.CurrentPlayer;
@@ -231,7 +216,7 @@ public class BackgammonInvariants
             progress = new GameProgress(progress.Engine, advancedState, progress.Events);
 
             // Third doubling (8)
-            progress = progress.HandleEvent(new RollDiceGameEvent<int>(new DiceState<int>(cube, 0)));
+            progress = progress.HandleEvent(new RollDiceGameEvent<int>(progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube)));
             var afterThird = (DoublingDiceState)progress.State.GetStates<DiceState<int>>().Single(s => s.Artifact == cube);
             Assert.Equal(8, afterThird.CurrentValue);
             Assert.NotSame(secondOwner, afterThird.CurrentPlayer);
@@ -243,5 +228,24 @@ public class BackgammonInvariants
         {
             Internal.FeatureFlags.EnableTurnSequencing = original;
         }
+    }
+
+    private static GameProgress EnsureDistinctOpeningRoll(GameProgress progress)
+    {
+        for (int i = 0; i < 8; i++) // allow a few extra deterministic attempts
+        {
+            progress = progress.RollDice("dice-1", "dice-2");
+            var startStates = progress.State.GetStates<DiceState<int>>().Where(s => s.Artifact.Id is "dice-1" or "dice-2").ToList();
+            if (startStates.Count == 2 && startStates[0].CurrentValue != startStates[1].CurrentValue)
+            {
+                var active = progress.State.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
+                if (active is not null)
+                {
+                    return progress; // success
+                }
+            }
+        }
+
+        return progress; // best effort; caller will assert active player
     }
 }

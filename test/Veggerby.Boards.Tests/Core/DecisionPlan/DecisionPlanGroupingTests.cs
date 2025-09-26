@@ -35,7 +35,7 @@ public class DecisionPlanGroupingTests
         GamePhase.New(3, "c", cTrue, GameEventRule<IGameEvent>.Null, root);
 
         var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
-        FeatureFlags.EnableDecisionPlan = true;
+        // DecisionPlan always enabled
         FeatureFlags.EnableDecisionPlanGrouping = true;
 
         // act (simulate evaluation loop using plan directly)
@@ -67,7 +67,7 @@ public class DecisionPlanGroupingTests
         GamePhase.New(3, "c", cInner, GameEventRule<IGameEvent>.Null, root); // different condition after group
 
         var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
-        FeatureFlags.EnableDecisionPlan = true;
+        // DecisionPlan always enabled
         FeatureFlags.EnableDecisionPlanGrouping = true;
         // act
         // Evaluate using same semantics as internal plan evaluation for gating: evaluate group gate only.

@@ -1,25 +1,14 @@
-# DecisionPlan (Experimental)
+# DecisionPlan
 
-Status: Experimental (behind `FeatureFlags.EnableDecisionPlan`).
+Status: Graduated (always on – legacy traversal removed in Unreleased breaking change).
 
-The DecisionPlan is a precompiled linear list of leaf phases (condition + rule). Phase 1 provides parity only.
+The DecisionPlan is a precompiled linear list of leaf phases (condition + rule). All event handling now flows exclusively through the compiled plan.
 
 ## Interaction with Turn Sequencing (Experimental)
 
 Turn sequencing (see `turn-sequencing.md`) introduces additional events (`EndTurnSegmentEvent`, `TurnPassEvent`, `TurnReplayEvent`, `TurnCommitEvent`) and mutators. These participate in the plan like any other rule entries. Optimization stages (grouping, filtering, masks) must preserve deterministic ordering for sequencing events; parity tests cover presence / absence of `TurnState` when the sequencing flag toggles.
 
-Enable (before `Compile()`):
-
-```csharp
-FeatureFlags.EnableDecisionPlan = true;
-```
-
-Goals (Phase 1):
-
-1. Parity with legacy traversal
-2. Stable indexes for upcoming observer/tracing
-
-Deferred (later phases): advanced predicate hoisting layers, automatic exclusivity inference, bitmask compression, caching heuristics.
+Historic Phase 1 goals (parity + stable indexes) are complete. Subsequent optimization layers (grouping, filtering, exclusivity masking) remain individually flag-gated. The former debug parity dual-run mode has been removed after sustained parity and the retirement of the legacy evaluator.
 
 ## Current Optimization Stages (Flag-Gated)
 
@@ -27,11 +16,9 @@ All optimizations are opt-in via discrete feature flags to preserve deterministi
 
 | Stage | Flag | Description |
 |-------|------|-------------|
-| Base Plan | `EnableDecisionPlan` | Linear precompiled leaf phase list (parity only) |
 | Grouping | `EnableDecisionPlanGrouping` | Collapses contiguous identical state predicate entries; evaluates predicate once per group |
 | Event Filtering | `EnableDecisionPlanEventFiltering` | Pre-classifies rules by coarse `EventKind` (e.g., Move, Roll) to skip non-relevant entries early |
 | Exclusivity Masks | `EnableDecisionPlanMasks` | Skips later entries whose exclusivity group root already produced an applied rule (mutual exclusion hint) |
-| Debug Parity | `EnableDecisionPlanDebugParity` | Dual-run: executes legacy evaluator in shadow; compares resulting state; throws on divergence (safety harness) |
 
 ### Exclusivity Groups & Masks
 
@@ -70,11 +57,9 @@ Observability:
 
 Disabling the flag reverts to legacy behavior with identical outcomes.
 
-### Debug Parity (Dual-Run Safety Harness)
+### Retired Debug Parity Harness
 
-When `EnableDecisionPlanDebugParity` is active, every handled event is also evaluated through the legacy traversal path (extracted as `HandleEventLegacy`). The resulting `GameState` instances are compared for structural equality. A mismatch raises a `BoardException` summarizing divergent artifact ids. A test-only hook `DebugParityTestHooks.ForceMismatch` can simulate a divergence to assert the safety net. This mode is intended for incremental rollout of additional optimizations (filtering, masking, hoisting) and should remain enabled in CI until all DecisionPlan stages have stable parity metrics.
-
-Overhead: Expected marginally higher due to duplicate evaluation; benchmarks to be added before graduating new optimization stages.
+The former dual-run debug parity mode (shadow legacy evaluation) was removed after sustained zero-diff operation and the deletion of the legacy traversal path. Divergence detection now relies on targeted behavioral tests and state hash invariants. Any future migration requiring a shadow comparison should introduce a purpose-built transient harness rather than reintroducing the old legacy path.
 
 ### EventKind Expansion (Preparation)
 

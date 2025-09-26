@@ -49,14 +49,12 @@ See `docs/core-concepts.md` for details.
 
 ## Architecture
 
-Layered solution:
+Layered solution (current repositories focus on engine + modules; HTTP facade removed for now):
 
 ```txt
 Game Modules (Backgammon, Chess)
                 ↓
             Core (artifacts • state • phases • rules)
-                ↓
-            API (demo HTTP exposure)
 ```
 
 More in `docs/architecture.md`.
@@ -71,19 +69,7 @@ More in `docs/architecture.md`.
 
 Step-by-step: `docs/extensibility.md`.
 
-## API Demo
-
-`Veggerby.Boards.Api` exposes a sample endpoint:
-
-```txt
-GET /api/games/{guid}
-    endsWith("1") => Backgammon (with simulated dice + move)
-    otherwise     => Chess initial state
-```
-
-Models map engine objects to simple DTOs (tiles, pieces, dice values, active player, etc.).
-
-Details: `docs/api-layer.md`.
+<!-- API layer temporarily removed; previous demo HTTP facade will return later as an optional package. -->
 
 ## Development
 

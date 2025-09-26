@@ -75,4 +75,12 @@ public interface IGamePhaseDefinition
     /// Adds an initial condition by constructing the type.
     /// </summary>
     IGamePhaseConditionDefinition If<T>() where T : IGameStateCondition, new();
+
+    /// <summary>
+    /// Assigns an exclusivity group identifier to this phase. Phases sharing the same non-null group are mutually exclusive
+    /// candidates enabling runtime masking (skipping later phases once one applies) when the corresponding feature flag is enabled.
+    /// </summary>
+    /// <param name="group">Group identifier (non-empty).</param>
+    /// <returns>The same phase definition for fluent chaining.</returns>
+    IGamePhaseDefinition Exclusive(string group);
 }

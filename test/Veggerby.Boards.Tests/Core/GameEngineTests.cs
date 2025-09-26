@@ -1,7 +1,5 @@
 using System;
 
-
-using Veggerby.Boards;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
@@ -23,7 +21,7 @@ public class GameEngineTests
             var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
             // act
-            var actual = new GameEngine(game, gamePhaseRoot);
+            var actual = new GameEngine(game, gamePhaseRoot, builder.Engine.DecisionPlan);
 
             // assert
             actual.Should().NotBeNull();
@@ -38,7 +36,8 @@ public class GameEngineTests
             var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
             // act
-            var actual = () => new GameEngine(null, gamePhaseRoot);
+            var dummyPlan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(gamePhaseRoot);
+            var actual = () => new GameEngine(null, gamePhaseRoot, dummyPlan);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("game");
@@ -52,7 +51,7 @@ public class GameEngineTests
             var game = builder.Game;
 
             // act
-            var actual = () => new GameEngine(game, null);
+            var actual = () => new GameEngine(game, null, builder.Engine.DecisionPlan);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("gamePhaseRoot");

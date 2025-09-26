@@ -35,9 +35,60 @@ See `docs/` (architecture & core concepts) for authoritative model.
 - Remove unused usings.
 - Public: PascalCase, Private: _camelCase.
 
+### Code Style: Non-Negotiables (Fast Reference)
+
+1. File-scoped namespaces only (no nested namespace blocks).
+2. Explicit braces for every control flow statement (no single-line implicit bodies).
+3. Immutability: never mutate prior `GameState` or artifact state objects; always produce a new snapshot (pure mutators).
+4. Determinism: identical prior state + identical event sequence + identical feature flag configuration must yield identical resulting state & hashes.
+5. No LINQ in hot paths (rule evaluation loops, pattern/sliding resolution, hashing, mutator inner loops). Allowed in tests and setup code.
+6. Allocation discipline: zero allocations on the success path for core movement & rule evaluation (exceptions documented inline with `// STYLE-DEVIATION:`).
+7. No hidden global state; feature behavior selected via explicit capabilities or builder composition.
+8. Public APIs must have XML docs (invariants documented in `<remarks>`).
+9. Tests must follow AAA pattern and cover each new rule branch (Valid / Invalid / Ignore / NotApplicable).
+10. Format cleanliness: `dotnet format` should produce no changes before PR.
+
+### DecisionPlan Graduation Notice
+
+The legacy rule traversal has been removed. All event handling uses the compiled DecisionPlan path. Do not add new conditional branches for a "legacy" evaluator—any future large-scale rewrite must introduce its own migration harness and temporary tests. Optimization flags (`EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`) are optional layers on the single evaluator and may themselves be removed once permanently enabled.
+
+For the complete authoritative charter (including hot path definition, property test acceptance criteria, and feature flag isolation pattern) see `docs/developer-experience.md`. Any intentional deviation MUST include `// STYLE-DEVIATION:` plus a CHANGELOG entry under Temporary Exceptions.
+
+### Feature Flag Policy
+
+Feature flags represent transitional optimizations or experimental subsystems. To prevent semantic drift and scattered conditional logic:
+
+Policy:
+
+- Express feature differences via capabilities / dependency injection (interfaces, strategy objects) rather than inline `if (FeatureFlags.X)` in business logic.
+- Inline flag checks are only acceptable for purely observational code (metrics / trace capture) that cannot alter observable semantics.
+- New flag introductions must provide: purpose, default, removal criteria, and parity / performance guard tests.
+- Parity tests MUST assert identical outcomes between enabled/disabled modes until the flag graduates (then removal is preferred over permanent branching).
+
+Migration TODO (tracked in backlog): Replace remaining inline `FeatureFlags` conditionals in compiled pattern resolver and fast-path resolution layers with capability abstractions (`IPathResolver` decorators / topology services) to reduce branching and centralize optimization seams.
+
+Deviations:
+
+- Any temporary inline branching requires `// STYLE-DEVIATION:` with rationale and a backlog reference. These must appear in the CHANGELOG Temporary Exceptions section until removed.
+
+### Property / Invariant Tests
+
+All property-style or invariant tests must:
+
+1. Be deterministic (fixed seed / deterministic sequence)
+2. Use AAA structuring with clear arrange/act/assert separation
+3. Scope feature flags via `FeatureFlagScope` only
+4. Avoid LINQ in per-iteration hot loops (allowed in aggregation)
+5. Assert both absence of unintended mutation and presence of intended effect
+6. Reuse canonical helpers instead of duplicating engine logic
+7. Document any tolerated randomness attempts (loop count + rationale)
+
+See `developer-experience.md` Section 12 for the authoritative, versioned list.
+
 ## Pull Requests
 
 Include in description:
+
 1. Problem / motivation
 2. Approach (new types? new phase? new mutator?)
 3. Tests added (list scenarios)
@@ -106,7 +157,6 @@ dotnet test test/Veggerby.Boards.Tests \
 | `src/Veggerby.Boards` | Core engine (artifacts, state, phases, rules, builder) |
 | `src/Veggerby.Boards.Backgammon` | Backgammon sample module |
 | `src/Veggerby.Boards.Chess` | Chess sample module |
-| `src/Veggerby.Boards.Api` | ASP.NET Core demo API |
 | `test/Veggerby.Boards.Tests` | Test suite (xUnit + AwesomeAssertions) |
 | `docs/` | Architecture, concepts, extensibility, API docs |
 | `.github/` | CI workflows |

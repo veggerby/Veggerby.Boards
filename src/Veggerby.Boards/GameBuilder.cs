@@ -7,9 +7,12 @@ using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Builder.Artifacts;
 using Veggerby.Boards.Builder.Phases;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards;
@@ -62,7 +65,7 @@ public abstract class GameBuilder
         return new Dice(dice.DiceId);
     }
 
-    private Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
+    private static Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
     {
         var player = !string.IsNullOrEmpty(piece.PlayerId)
             ? players.SingleOrDefault(x => string.Equals(x.Id, piece.PlayerId))
@@ -262,6 +265,35 @@ public abstract class GameBuilder
 
     private GameProgress _initialGameProgress;
 
+    private IEvaluationObserver _observer = NullEvaluationObserver.Instance;
+    private ulong? _seed; // deterministic RNG seed (optional)
+
+    /// <summary>
+    /// Sets a custom evaluation observer for instrumentation (optional).
+    /// </summary>
+    /// <param name="observer">Observer instance (null ignored, retains existing).</param>
+    /// <returns>Builder for fluent chaining.</returns>
+    public GameBuilder WithObserver(IEvaluationObserver observer)
+    {
+        if (observer is not null)
+        {
+            _observer = observer;
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Assigns a deterministic random seed for the initial <see cref="GameState"/>.
+    /// </summary>
+    /// <param name="seed">Seed value (0 permitted but discouraged as sentinel ambiguity; still applied).</param>
+    /// <returns>Builder for fluent chaining.</returns>
+    public GameBuilder WithSeed(ulong seed)
+    {
+        _seed = seed;
+        return this;
+    }
+
     /// <summary>
     /// Compiles the game definition into an executable <see cref="GameEngine"/> + initial <see cref="GameState"/>.
     /// </summary>
@@ -286,7 +318,15 @@ public abstract class GameBuilder
         var dice = _diceDefinitions.Select(CreateDice).ToArray();
         var relations = _tileRelationDefinitions.Select(x => CreateTileRelation(x, tiles, directions)).ToArray();
         var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
-        var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToArray();
+        var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
+
+        // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
+        TurnArtifact turnArtifact = null;
+        if (Internal.FeatureFlags.EnableTurnSequencing)
+        {
+            turnArtifact = new TurnArtifact("turn-timeline");
+            artifacts.Add(turnArtifact);
+        }
 
         var board = new Board(BoardId, relations);
         var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
@@ -303,7 +343,21 @@ public abstract class GameBuilder
                 : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
             .ToList();
 
-        var initialGameState = GameState.New([.. pieceStates, .. diceStates]);
+        // Seed base states collection (pieces + dice)
+        var baseStates = new List<IArtifactState>();
+        baseStates.AddRange(pieceStates);
+        baseStates.AddRange(diceStates);
+
+        // Inject initial TurnState (turn 1, Start segment) only when sequencing enabled.
+        if (turnArtifact is not null)
+        {
+            var initialTurnState = new TurnState(turnArtifact, 1, TurnSegment.Start, 0);
+            baseStates.Add(initialTurnState);
+        }
+
+        var initialGameState = _seed.HasValue
+            ? GameState.New([.. baseStates], Random.XorShiftRandomSource.Create(_seed.Value))
+            : GameState.New([.. baseStates]);
 
         // compile GamePhase root
 
@@ -329,7 +383,67 @@ public abstract class GameBuilder
         }
 
         // combine
-        var engine = new GameEngine(game, gamePhaseRoot);
+        // DecisionPlan always compiled (legacy traversal removed)
+        var decisionPlan = DecisionPlan.Compile(gamePhaseRoot);
+
+        // NEW capability wiring (sealed, non-leaky): Topology + PathResolver + AccelerationContext
+        var shape = Internal.Layout.BoardShape.Build(game.Board);
+        var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
+
+        Internal.Paths.IPathResolver pathResolver = null;
+        if (FeatureFlags.EnableCompiledPatterns)
+        {
+            var table = Flows.Patterns.PatternCompiler.Compile(game);
+            Internal.Compiled.BoardAdjacencyCache adjacency = null;
+            if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
+            {
+                adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
+            }
+
+            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
+            var adapter = new Internal.Paths.CompiledPathResolverAdapter(resolver);
+            pathResolver = adapter;
+        }
+        else
+        {
+            // Fallback simple visitor-based resolver
+            pathResolver = new Internal.Paths.SimplePatternPathResolver(game.Board);
+        }
+
+        // Acceleration context selection
+        Internal.Acceleration.IAccelerationContext accelerationContext;
+        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
+        {
+            var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
+            var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
+            var bbLayout = Internal.Layout.BitboardLayout.Build(game);
+            var bbSnapshot = Internal.Layout.BitboardSnapshot.Build(bbLayout, initialGameState, shape);
+            // Bitboard occupancy index now built directly from layout + snapshot without wrapper service.
+            var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, shape, game, initialGameState);
+            // Ensure initial snapshot is bound so IsEmpty/IsOwnedBy reflect initial piece placement.
+            (occupancy as Internal.Acceleration.IBitboardBackedOccupancy)?.BindSnapshot(bbSnapshot);
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            var attackServices = sliding; // implements IAttackRays
+            accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, shape, topology, occupancy, attackServices);
+        }
+        else
+        {
+            var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState);
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
+        }
+
+        // Sliding fast-path decorator layering if enabled (decorates chosen resolver)
+        if (FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
+        {
+            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
+        }
+
+        var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
+        var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
+
+        // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;

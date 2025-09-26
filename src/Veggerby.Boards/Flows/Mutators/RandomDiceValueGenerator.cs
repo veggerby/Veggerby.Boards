@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Veggerby.Boards.States;
 
-using Veggerby.Boards.States;
+using SystemRandom = System.Random;
 
 namespace Veggerby.Boards.Flows.Mutators;
 
@@ -16,7 +16,7 @@ namespace Veggerby.Boards.Flows.Mutators;
 /// <param name="maxValue">Inclusive upper bound.</param>
 public class RandomDiceValueGenerator(int minValue, int maxValue) : NumericDiceValueGenerator(minValue, maxValue)
 {
-    private readonly Random _random = new();
+    private readonly SystemRandom _random = new();
 
     /// <inheritdoc />
     public override int GetValue(IArtifactState currentState)

@@ -9,7 +9,7 @@ using Veggerby.Boards.Artifacts.Patterns;
 namespace Veggerby.Boards.Artifacts.Relations;
 
 /// <summary>
-/// Visitor that resolves a movement pattern (<see cref="Veggerby.Boards.Artifacts.Patterns.IPattern"/>) into a concrete <see cref="TilePath"/> between two tiles.
+/// Visitor that resolves a movement pattern (<see cref="IPattern"/>) into a concrete <see cref="TilePath"/> between two tiles.
 /// </summary>
 public class ResolveTilePathPatternVisitor : IPatternVisitor
 {

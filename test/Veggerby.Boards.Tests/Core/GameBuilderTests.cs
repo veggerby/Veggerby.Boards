@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
@@ -26,8 +25,11 @@ public class GameBuilderTests
             actual.State.Should().NotBeNull();
             actual.Engine.Should().NotBeNull();
 
-            actual.Game.Artifacts.Count().Should().Be(8);
-            actual.Game.Artifacts.Select(x => x.Id).Should().Equal(["piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x"]);
+            var expectedArtifacts = Boards.Internal.FeatureFlags.EnableTurnSequencing
+                ? new[] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x", "turn-timeline" }
+                : new[] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x" };
+            actual.Game.Artifacts.Count().Should().Be(expectedArtifacts.Length);
+            actual.Game.Artifacts.Select(x => x.Id).Should().Equal(expectedArtifacts);
 
             actual.Game.Players.Count().Should().Be(2);
             actual.Game.Players.Select(x => x.Id).Should().Equal(["player-1", "player-2"]);
@@ -80,7 +82,8 @@ public class GameBuilderTests
             // assert
             actual.State.Should().NotBeNull();
             actual.State.IsInitialState.Should().BeTrue();
-            actual.State.ChildStates.Count().Should().Be(5);
+            var expectedStateCount = Boards.Internal.FeatureFlags.EnableTurnSequencing ? 6 : 5;
+            actual.State.ChildStates.Count().Should().Be(expectedStateCount);
             actual.State.ChildStates.OfType<PieceState>().Count().Should().Be(3);
             actual.State.ChildStates.OfType<NullDiceState>().Count().Should().Be(1);
             actual.State.ChildStates.OfType<DiceState<int>>().Count().Should().Be(1);

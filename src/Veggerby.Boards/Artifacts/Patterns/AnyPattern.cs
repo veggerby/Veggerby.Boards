@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Artifacts.Patterns;
 
 /// <summary>
 /// Represents a wildcard pattern that by itself imposes no movement constraint.
-/// Actual interpretation is delegated to the visitor implementation.
+/// actual interpretation is delegated to the visitor implementation.
 /// </summary>
 public class AnyPattern : IPattern, IEquatable<AnyPattern>
 {

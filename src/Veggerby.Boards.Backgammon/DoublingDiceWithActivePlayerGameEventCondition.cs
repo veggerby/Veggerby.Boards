@@ -32,11 +32,46 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
-        var diceState = state.GetState<DoublingDiceState>(DoublingDice);
-        var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
+        // Ensure event specifically targets the doubling cube artifact (single dice state)
+        var newStates = @event.NewDiceStates.ToList();
+        var targetsDoublingCube = newStates.Count == 1 && newStates[0].Artifact.Equals(DoublingDice);
+        if (!targetsDoublingCube)
+        {
+            return ConditionResponse.Ignore("Event does not target doubling cube exclusively");
+        }
 
-        return diceState.CurrentPlayer is null || diceState.CurrentPlayer.Equals(activePlayer.Artifact)
-            ? ConditionResponse.Valid
-            : ConditionResponse.Fail("Doubling dice with opponent");
+        var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
+        if (activePlayer is null)
+        {
+            return ConditionResponse.Ignore("No active player selected");
+        }
+
+        // First doubling allowed when no specialized cube state exists.
+        var specialized = state.GetState<DoublingDiceState>(DoublingDice);
+        if (specialized is null)
+        {
+            return ConditionResponse.Valid;
+        }
+
+        // Turn sequencing required (presence of TurnState is sufficient signal in shadow mode).
+        var turnState = state.GetStates<TurnState>().FirstOrDefault();
+        if (turnState is null)
+        {
+            return ConditionResponse.Ignore("No turn state – redoubles inert");
+        }
+
+        // Same-turn attempt blocked.
+        if (turnState.TurnNumber <= specialized.LastDoubledTurn)
+        {
+            return ConditionResponse.Ignore("Same turn redouble blocked");
+        }
+
+        // Owner must be the active player to redouble (offer); if not on roll yet, ignore.
+        if (!specialized.CurrentPlayer?.Equals(activePlayer.Artifact) ?? true)
+        {
+            return ConditionResponse.Ignore("Owner not active – cannot redouble yet");
+        }
+
+        return ConditionResponse.Valid;
     }
 }

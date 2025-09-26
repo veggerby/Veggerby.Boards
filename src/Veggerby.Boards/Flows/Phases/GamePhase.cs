@@ -45,6 +45,11 @@ public class GamePhase
     public IGameEventRule Rule { get; }
 
     /// <summary>
+    /// Gets the optional exclusivity group identifier. Phases sharing a non-null value are mutually exclusive candidates for future masking optimization.
+    /// </summary>
+    public string ExclusivityGroup { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GamePhase"/> class.
     /// </summary>
     /// <param name="number">Sequential phase number (must be positive).</param>
@@ -53,7 +58,8 @@ public class GamePhase
     /// <param name="rule">Event rule applied when active.</param>
     /// <param name="parent">Optional parent composite phase.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
-    protected GamePhase(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
+    /// <param name="exclusivityGroup">Optional exclusivity group identifier (phases sharing a non-null value are mutually exclusive candidates).</param>
+    protected GamePhase(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors, string exclusivityGroup = null)
     {
         if (number <= 0)
         {
@@ -69,6 +75,7 @@ public class GamePhase
         Condition = condition;
         Rule = rule;
         PreProcessors = preProcessors;
+        ExclusivityGroup = exclusivityGroup;
 
         Parent = parent;
         parent?.Add(this);
@@ -114,10 +121,11 @@ public class GamePhase
     /// <param name="rule">Rule governing events.</param>
     /// <param name="parent">Optional parent composite.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
+    /// <param name="exclusivityGroup">Optional exclusivity group identifier (mutually exclusive phase grouping hint).</param>
     /// <returns>New phase.</returns>
-    public static GamePhase New(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null)
+    public static GamePhase New(int number, string label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase parent = null, IEnumerable<IGameEventPreProcessor> preProcessors = null, string exclusivityGroup = null)
     {
-        return new GamePhase(number, label, condition, rule, parent, preProcessors);
+        return new GamePhase(number, label, condition, rule, parent, preProcessors, exclusivityGroup);
     }
 
     /// <summary>

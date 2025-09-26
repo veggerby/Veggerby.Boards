@@ -1,6 +1,4 @@
-﻿using Veggerby.Boards;
-
-namespace Veggerby.Boards.Tests.Core.Fakes;
+﻿namespace Veggerby.Boards.Tests.Core.Fakes;
 
 public class TestForPathValidationGameBuilder(int? diceValue1, int? diceValue2) : GameBuilder
 {

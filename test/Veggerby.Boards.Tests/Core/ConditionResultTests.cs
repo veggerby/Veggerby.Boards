@@ -1,6 +1,4 @@
-﻿using Veggerby.Boards;
-
-namespace Veggerby.Boards.Tests.Core;
+﻿namespace Veggerby.Boards.Tests.Core;
 
 public class ConditionResultTests
 {
@@ -11,7 +9,7 @@ public class ConditionResultTests
         {
             // arrange
 
-            // act
+            // act (no action – static members)
 
             // assert
             ConditionResponse.Valid.Should().NotBeNull();

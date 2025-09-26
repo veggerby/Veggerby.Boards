@@ -1,16 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Tests do not need to generate XML docs or enforce missing documentation warnings -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591;1573;1574;1712</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../src/Veggerby.Boards/Veggerby.Boards.csproj" />
     <ProjectReference Include="../src/Veggerby.Boards.Chess/Veggerby.Boards.Chess.csproj" />
     <ProjectReference Include="../src/Veggerby.Boards.Backgammon/Veggerby.Boards.Backgammon.csproj" />
   </ItemGroup>
+
 </Project>

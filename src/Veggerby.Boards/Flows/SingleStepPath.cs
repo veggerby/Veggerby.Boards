@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.States;

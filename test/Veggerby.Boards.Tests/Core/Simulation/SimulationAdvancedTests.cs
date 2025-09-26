@@ -30,7 +30,10 @@ public class SimulationAdvancedTests
     {
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
-        // policy always moves piece from t1->t2 (valid and progresses) until max depth reached
+        // Policy attempts to move piece from t1->t2; however relation added is t2 -> t1 (reverse) so FirstOrDefault from current
+        // tile (t1) yields null immediately. Returning null at depth==0 results in terminal reason NoMoves (NOT PolicyReturnedNull).
+        // PolicyReturnedNull is only used when depth > 0 (some progress or at least a prior policy invocation advanced depth)
+        // and a subsequent null (or non-progress) occurs.
         var detailed = SequentialSimulator.RunDetailed(progress, state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
@@ -59,7 +62,7 @@ public class SimulationAdvancedTests
             var rel = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
             if (rel is null)
             {
-                return null;
+                return null; // depth still 0 in each playout -> NoMoves terminal reason
             }
             var path = new TilePath([rel]);
             return new MovePieceGameEvent(piece, path);

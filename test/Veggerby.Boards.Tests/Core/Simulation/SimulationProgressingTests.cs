@@ -30,7 +30,11 @@ public class SimulationProgressingTests
     {
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
-        // policy always selects the single forward relation (t1->t2) and emits a move
+        // Policy always selects the single forward relation (t1->t2) and emits exactly one move.
+        // Depth accounting:
+        //  - Before any policy call: depth = 0
+        //  - After first applied move: depth = 1 which equals maxDepth => terminal reason MaxDepth (NOT PolicyReturnedNull)
+        // This verifies the simulator prefers MaxDepth over other terminal reasons when depth reaches the cap right after applying a move.
         var detailed = SequentialSimulator.RunDetailed(progress, state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
@@ -52,9 +56,10 @@ public class SimulationProgressingTests
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Policy applies exactly one legal move (t1->t2) and then returns null on the next invocation.
-        // This exercises the distinction:
-        //  - First call: move applied (depth becomes 1)
-        //  - Second call: returns null with depth > 0 -> terminal reason PolicyReturnedNull
+        // Distinction logic:
+        //  - First call: move applied (depth becomes 1 < maxDepth -> continue)
+        //  - Second call: returns null while depth > 0; simulator emits PolicyReturnedNull (NOT NoMoves)
+        // NoMoves only occurs when first policy invocation (depth = 0) returns null (no progress at all).
         var call = 0;
         var detailed = SequentialSimulator.RunDetailed(progress, state =>
         {
@@ -124,6 +129,7 @@ public class SimulationProgressingTests
                     return new MovePieceGameEvent(piece, path);
                 }
                 call++;
+                // Returning null after at least one applied event -> PolicyReturnedNull (same semantics as sequential test)
                 return null;
             };
         }, maxDepth: 5);
@@ -147,7 +153,9 @@ public class SimulationProgressingTests
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Rejection scenario: first policy call emits a valid MovePieceGameEvent (applies). Second call emits a TurnPassEvent
-        // for which there is no rule in this phase, resulting in no state change (rejected) and terminal PolicyReturnedNull.
+        // for which there is no rule in this phase, resulting in no state change (rejected). The simulator treats the
+        // absence of progress (after a prior progress) as PolicyReturnedNull and increments RejectedEvents. This clarifies
+        // that rejection does not map to a distinct terminal reason; it influences metrics only.
         var piece = progress.Game.GetArtifacts<Piece>().First();
         int calls = 0;
         var detailed = SequentialSimulator.RunDetailed(progress, state =>

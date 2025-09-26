@@ -1,193 +1,49 @@
 # Extensibility Guide
 
-This guide walks through adding a new game or extending engine behavior.
+Practical steps for adding games & extending behavior (condensed).
 
-## Adding a New Game Module
+## New Game Checklist
 
-1. Create a new project `Veggerby.Boards.<GameName>` referencing `Veggerby.Boards`.
-2. Add a `<GameName>GameBuilder : GameBuilder` class.
-3. Inside `Build()`:
-   - Set `BoardId`.
-   - Define players (`AddPlayer("p1")`).
-   - Define directions (`AddDirection("north")`).
-   - Define tiles + relations:
+1. Subclass `GameBuilder`.
+2. Define players, directions, tiles & relations.
+3. Add artifacts (pieces with patterns, dice, custom).
+4. Place initial states (pieces on tiles, dice values/null).
+5. Define phases & rules (conditions + mutators).
+6. Compile & write tests (rule branches: Valid, Invalid, Ignore, NotApplicable).
 
-     ```csharp
-     var tile = AddTile("tile-a1");
-     tile.WithRelationTo("tile-a2").InDirection("north");
-     ```
+## Adding Events & Mutators
 
-   - Define artifacts (pieces, dice, custom):
+* Event: implement `IGameEvent` (payload only).
+* Rule: derive `GameEventRule<T>` or use simple rule builder.
+* Mutator: implement `IStateMutator<T>` returning new `GameState` (or original if no change). Keep logic tight & pure.
 
-     ```csharp
-     AddPiece("white-rook-1").WithOwner("white").HasDirection("north").CanRepeat();
-     AddDice("d6").HasNoValue();
-     ```
+## Conditions
 
-   - Set initial placements / dice values:
+Implement `IGameStateCondition` (phase gating) or `IGameEventCondition` (rule validation). Compose via composite helpers.
 
-     ```csharp
-     WithPiece("white-rook-1").OnTile("tile-a1");
-     WithDice("d6").HasValue(3); // optional
-     ```
+## Patterns
 
-   - Define phases with rules:
+Prefer existing pattern types; add new `IPattern` only if semantics cannot be expressed through direction/fixed combinations. Provide visitor + (optionally) compiled mapping.
 
-     ```csharp
-     AddGamePhase("movement")
-       .If<NullGameStateCondition>()
-       .Then()
-         .ForEvent<MovePieceGameEvent>()
-         .Then()
-           .Do<MovePieceStateMutator>();
-     ```
+## Exclusivity Groups
 
-4. Call `Compile()` to obtain initial `GameProgress`.
-
-### Capability Seam (Read-Only Boundary)
-
-Game modules deliberately interact only with:
-
-- Structural definitions (players, tiles, relations, directions, artifacts, patterns)
-- Phases, rules, conditions, mutators
-- Public events (`IGameEvent` implementations)
-
-Acceleration internals (piece layouts, bitboards, occupancy / attack caches, compiled movement tables, fast-path resolvers) are hidden behind an immutable `EngineCapabilities` record exposed only via:
-
-- `Topology` – abstracted board neighbor/topology access
-- `PathResolver` – resolves movement patterns into concrete `TilePath` (respecting blockers)
-- `AccelerationContext` – internal acceleration context (not exposed to module code)
-
-Do NOT attempt to extend performance by reaching into internal namespaces; instead add new patterns, conditions or mutators. Performance features must be contributed inside the core engine respecting encapsulation.
-
-## Creating Custom Movement Patterns
-
-If a piece requires movement not representable by current direction or fixed sequence patterns:
-
-- Combine existing direction patterns using `HasPattern("dir1", "dir2", ...)` for fixed sequences.
-- For dynamic logic (e.g., teleport, capture-dependent moves), introduce a new `IPattern` implementation + visitor support.
-
-## Adding a New Event Type
-
-1. Define an event class implementing `IGameEvent` with required payload.
-2. Add optional pre-processor(s) if the event expands into atomic sub-events.
-3. Create a rule: subclass `GameEventRule<YourEvent>` or use a `SimpleGameEventRule` factory.
-4. Add state mutators implementing `IStateMutator<YourEvent>`.
-5. Wire into a `GamePhase` via builder: `.ForEvent<YourEvent>() ...`.
-
-## Writing a State Mutator
-
-Implement:
-
-```csharp
-public class HealPieceStateMutator : IStateMutator<HealPieceGameEvent>
-{
-    public GameState MutateState(GameEngine engine, GameState gameState, HealPieceGameEvent @event)
-    {
-        // derive new artifact states (e.g., status flags) and return gameState.Next(newStates)
-    }
-}
-```
-
-Guidelines:
-
-- Do not mutate existing `IArtifactState` instances.
-- Return original `gameState` if no changes.
-- Validate invariants early; throw explicit exceptions on invalid conditions.
-
-## Adding Conditions
-
-- For state-driven phase activation: implement `IGameStateCondition`.
-- For event validation: implement a class deriving `IGameEventCondition` (pattern mirrors existing conditions like `TileBlockedGameEventCondition`).
-- Compose with provided composite helpers for logical AND / OR semantics.
-
-## Phases & Hierarchy
-
-Use a root composite to model macro stages (e.g., Setup → Main → Resolution). Each child adds specialized rules.
-
-Example:
-
-```csharp
-AddGamePhase("setup")
-  .If<InitialGameStateCondition>()
-  .Then()
-    .ForEvent<RollDiceGameEvent<int>>()
-      .Then()
-        .Do<DiceStateMutator<int>>();
-
-AddGamePhase("play")
-  .If<NullGameStateCondition>()
-  .Then()
-    .ForEvent<MovePieceGameEvent>()
-      .Then()
-        .Do<MovePieceStateMutator>();
-```
-
-### Exclusivity Groups (Optional Optimization Hint)
-
-You can declare that a set of phases are mutually exclusive candidates using the fluent `.Exclusive("group-id")` marker before attaching conditions:
-
-```csharp
-AddGamePhase("movement-a")
-  .Exclusive("movement-cycle")
-  .If<NullGameStateCondition>()
-  .Then()
-    .ForEvent<MovePieceGameEvent>()
-    .Then()
-      .Do<MovePieceStateMutator>();
-
-AddGamePhase("movement-b")
-  .Exclusive("movement-cycle")
-  .If<NullGameStateCondition>()
-  .Then()
-    .ForEvent<MovePieceGameEvent>()
-    .Then()
-      .Do<MovePieceStateMutator>();
-```
-
-When the `FeatureFlags.EnableDecisionPlanMasks` flag is enabled, once a rule in a given exclusivity group applies (produces a state change) subsequent phases sharing the same group id are skipped for that event evaluation. This can reduce redundant predicate checks in families where only one rule should ever apply (e.g., mutually exclusive movement modes).
-
-Guidelines:
-
-- Use small, descriptive group ids (kebab-case or snake_case preferred for readability).
-- Only group phases where applying more than one in a single evaluation would be either impossible or undesirable.
-- If ordering matters, define the most common/widest predicate first so masking short-circuits earlier.
-
-Disabling the mask flag preserves legacy evaluation (groups are ignored at runtime).
+Use `.Exclusive("id")` for mutually exclusive phase branches to enable optional masking optimization.
 
 ## Custom Artifacts
 
-If you need a new artifact kind (e.g., EnergyNode, TokenStack):
+Subclass `Artifact`, define state representation, and integrate through events + mutators. Keep identity semantics (type + id equality).
 
-1. Subclass `Artifact`.
-2. Provide definition method in builder (`AddArtifact("id").WithFactory(id => new EnergyNode(id))`).
-3. Create matching `IArtifactState` types if runtime properties vary (e.g., capacity, counters).
-4. Integrate via events + mutators.
+## Testing Guidelines
 
-## Debugging & Validation Tips
+* AAA pattern in tests.
+* One test per rule branch.
+* No randomness outside dice events.
+* Use provided helpers for path resolution rather than duplicating visitor logic.
 
-- Use `GameState.CompareTo(previousState)` to inspect changes.
-- Add focused tests per rule branch (Valid, Ignore, Invalid).
-- Keep mutators small; one concern per class increases composability.
+## Performance Discipline
 
-## When to Introduce New Abstractions
+Hot paths (movement, rule evaluation) must avoid LINQ & allocations; prefer loops and reusing arrays/spans when internal.
 
-Add new types ONLY if:
+## When Not to Extend
 
-- Multiple rules share logic that cannot be expressed with composition.
-- A new domain invariant emerges (e.g., stacking, capture zones).
-- Performance hotspots justify specialized structure.
-
-Avoid premature generalization—prefer clarity and explicitness.
-
-## Checklist Before Shipping a New Game Module
-
-- [ ] All phases defined and reachable.
-- [ ] All mutators covered by tests (happy + edge + failure).
-- [ ] No orphan directions or unreachable tiles.
-- [ ] Dice / random artifacts start in a deterministic state (explicit Null or seed strategy).
-<!-- API layer mapping step omitted (HTTP facade currently removed). -->
-
-## Next Steps
-
-See `core-concepts.md` for deeper semantic grounding. (HTTP exposure package will be reconsidered later.)
+Do NOT reach into internal acceleration contexts; request new public surface or contribute internally if needed.

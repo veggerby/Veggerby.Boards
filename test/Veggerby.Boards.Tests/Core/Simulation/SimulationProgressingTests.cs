@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
@@ -73,6 +74,98 @@ public class SimulationProgressingTests
         detailed.Result.TerminalReason.Should().Be(PlayoutTerminalReason.PolicyReturnedNull);
         detailed.Metrics.AppliedEvents.Should().Be(1);
         detailed.Metrics.PolicyCalls.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GivenParallelSimulator_WhenProgressingMovePolicyAndMaxDepth1_ThenEachPlayoutMaxDepthAndOneApplied()
+    {
+        FeatureFlags.EnableSimulation = true;
+        var progress = BuildProgress();
+        PlayoutPolicy policy = state =>
+        {
+            var piece = progress.Game.GetArtifacts<Piece>().First();
+            var pieceState = state.GetState<PieceState>(piece);
+            var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+            var path = new TilePath([rel]);
+            return new MovePieceGameEvent(piece, path);
+        };
+        var batch = await ParallelSimulator.RunManyDetailedAsync(progress, playoutCount: 3, policyFactory: _ => policy, maxDepth: 1);
+        batch.Basic.Results.Should().HaveCount(3);
+        foreach (var r in batch.Basic.Results)
+        {
+            r.TerminalReason.Should().Be(PlayoutTerminalReason.MaxDepth);
+            r.AppliedEvents.Should().Be(1);
+        }
+        foreach (var m in batch.Metrics)
+        {
+            m.AppliedEvents.Should().Be(1);
+            m.PolicyCalls.Should().Be(1);
+        }
+        batch.TotalApplied.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task GivenParallelSimulator_WhenPolicyReturnsNullAfterProgress_ThenPolicyReturnedNull()
+    {
+        FeatureFlags.EnableSimulation = true;
+        var progress = BuildProgress();
+        var batch = await ParallelSimulator.RunManyDetailedAsync(progress, playoutCount: 2, policyFactory: _ =>
+        {
+            var piece = progress.Game.GetArtifacts<Piece>().First();
+            int call = 0;
+            return state =>
+            {
+                if (call == 0)
+                {
+                    call++;
+                    var pieceState = state.GetState<PieceState>(piece);
+                    var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+                    var path = new TilePath([rel]);
+                    return new MovePieceGameEvent(piece, path);
+                }
+                call++;
+                return null;
+            };
+        }, maxDepth: 5);
+
+        foreach (var r in batch.Basic.Results)
+        {
+            r.TerminalReason.Should().Be(PlayoutTerminalReason.PolicyReturnedNull);
+            r.AppliedEvents.Should().Be(1);
+        }
+        foreach (var m in batch.Metrics)
+        {
+            m.AppliedEvents.Should().Be(1);
+            m.PolicyCalls.Should().Be(2);
+        }
+        batch.TotalApplied.Should().Be(2);
+    }
+
+    [Fact]
+    public void GivenSequentialSimulator_WhenPolicyEmitsIllegalMove_ThenPolicyReturnedNullAndRejectedIncremented()
+    {
+        FeatureFlags.EnableSimulation = true;
+        var progress = BuildProgress();
+        // Rejection scenario: first policy call emits a valid MovePieceGameEvent (applies). Second call emits a TurnPassEvent
+        // for which there is no rule in this phase, resulting in no state change (rejected) and terminal PolicyReturnedNull.
+        var piece = progress.Game.GetArtifacts<Piece>().First();
+        int calls = 0;
+        var detailed = SequentialSimulator.RunDetailed(progress, state =>
+        {
+            if (calls == 0)
+            {
+                calls++;
+                var pieceState = state.GetState<PieceState>(piece);
+                var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+                return new MovePieceGameEvent(piece, new TilePath([rel]));
+            }
+            calls++;
+            return new TurnPassEvent(); // unhandled -> rejected
+        }, maxDepth: 4);
+        detailed.Result.TerminalReason.Should().Be(PlayoutTerminalReason.PolicyReturnedNull);
+        detailed.Metrics.AppliedEvents.Should().Be(1);
+        detailed.Metrics.PolicyCalls.Should().Be(2);
+        detailed.Metrics.RejectedEvents.Should().Be(1);
     }
 
     private sealed class ProgressingMoveBuilder : GameBuilder

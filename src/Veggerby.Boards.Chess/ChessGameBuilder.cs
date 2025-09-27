@@ -119,6 +119,9 @@ public class ChessGameBuilder : GameBuilder
             }
         }
 
+        // NOTE: Previous design used a hidden sink tile for captures; replaced by explicit CapturedPieceState
+        // markers to avoid distorting board topology / bitboard density. Comment retained for historical context.
+
         AddPiece("white-queen")
             .WithOwner("white")
             .HasDirection("north").CanRepeat()
@@ -279,8 +282,15 @@ public class ChessGameBuilder : GameBuilder
             .If<NullGameStateCondition>()
                 .Then()
                     .ForEvent<MovePieceGameEvent>()
-                        .If<DestinationNotOwnPieceGameEventCondition>()
-                            .And<PathNotObstructedGameEventCondition>()
+                        // Capture: path unobstructed (intermediates) AND destination has opponent piece
+                        .If<PathNotObstructedGameEventCondition>()
+                            .And<DestinationHasOpponentPieceGameEventCondition>()
+                    .Then()
+                        .Do<CapturePieceStateMutator>()
+                    .ForEvent<MovePieceGameEvent>()
+                        // Normal move: path unobstructed AND destination empty
+                        .If<PathNotObstructedGameEventCondition>()
+                            .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
                         .Do<MovePieceStateMutator>();
     }

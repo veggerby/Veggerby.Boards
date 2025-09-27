@@ -44,6 +44,10 @@ public class ChessConditionDirectTests
         var engine = new ChessGameBuilder().Compile().Engine; // fresh engine for condition context
         var condition = new PathNotObstructedGameEventCondition();
 
+        // instrumentation assertions about path encoding
+        evt.Path.Distance.Should().BeGreaterThan(1, "a sliding move should have distance > 1");
+        evt.Path.Relations.Count().Should().BeGreaterThan(1, "resolver now emits per-step relations for sliding path");
+
         // act
         var result = condition.Evaluate(engine, state, evt);
 
@@ -58,6 +62,10 @@ public class ChessConditionDirectTests
         var (state, evt) = BuildEvent("white-queen", "tile-e2"); // tile occupied by white pawn
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationNotOwnPieceGameEventCondition();
+
+        // instrumentation: destination tile should have at least one friendly piece in state
+        state.GetPiecesOnTile(evt.To).Any(ps => ps.Owner?.Equals(evt.Piece.Owner) ?? false)
+            .Should().BeTrue("destination e2 must be occupied by a friendly pawn");
 
         // act
         var result = condition.Evaluate(engine, state, evt);

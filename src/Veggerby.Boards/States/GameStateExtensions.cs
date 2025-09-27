@@ -34,11 +34,25 @@ public static class GameStateExtensions
     /// <returns>Enumeration of piece artifacts.</returns>
     public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player owner = null)
     {
+        // Only material piece states (exclude captured)
         return [.. gameState
             .GetStates<PieceState>()
             .Where(x => x.CurrentTile.Equals(tile) && (owner is null || x.Artifact.Owner.Equals(owner)))
             .Select(x => x.Artifact)];
     }
+
+    /// <summary>
+    /// Gets the captured state for a specific piece or null if the piece is not captured.
+    /// </summary>
+    public static CapturedPieceState GetCapturedState(this GameState gameState, Piece piece)
+    {
+        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece)) as CapturedPieceState;
+    }
+
+    /// <summary>
+    /// Returns true if the supplied piece has a captured state present in this game state.
+    /// </summary>
+    public static bool IsCaptured(this GameState gameState, Piece piece) => gameState.GetCapturedState(piece) is not null;
 
     /// <summary>
     /// Retrieves a previously registered extras state (added via GameBuilder.WithState) or null when absent.

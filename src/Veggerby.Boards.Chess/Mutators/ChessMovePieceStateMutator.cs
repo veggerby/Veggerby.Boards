@@ -70,19 +70,19 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         {
             // fallback: alternate by half-move count encoded in FullmoveNumber & whose turn expectation
             // If mover is black, increment fullmove (black just moved)
-            activeId = @event.Piece.Id.StartsWith("white-") ? "white" : "black";
+            activeId = @event.Piece.Id.StartsWith("white-") ? ChessIds.Players.White : ChessIds.Players.Black;
         }
-        var fullmove = prevExtras.FullmoveNumber + (activeId == "black" ? 1 : 0);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
 
         // Castling rights revocation rules (movement):
         //  * Moving a king removes both rights for that color.
         //  * Moving a rook from its original starting square removes that side's right only.
-        bool whiteKingMoved = @event.Piece.Id == "white-king";
-        bool blackKingMoved = @event.Piece.Id == "black-king";
-        bool whiteRookFromA1 = @event.Piece.Id == "white-rook-1" && originalFromTile?.Id == "tile-a1";
-        bool whiteRookFromH1 = @event.Piece.Id == "white-rook-2" && originalFromTile?.Id == "tile-h1";
-        bool blackRookFromA8 = @event.Piece.Id == "black-rook-1" && originalFromTile?.Id == "tile-a8";
-        bool blackRookFromH8 = @event.Piece.Id == "black-rook-2" && originalFromTile?.Id == "tile-h8";
+        bool whiteKingMoved = @event.Piece.Id == ChessIds.Pieces.WhiteKing;
+        bool blackKingMoved = @event.Piece.Id == ChessIds.Pieces.BlackKing;
+        bool whiteRookFromA1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook1 && originalFromTile?.Id == "tile-a1";
+        bool whiteRookFromH1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook2 && originalFromTile?.Id == "tile-h1";
+        bool blackRookFromA8 = @event.Piece.Id == ChessIds.Pieces.BlackRook1 && originalFromTile?.Id == "tile-a8";
+        bool blackRookFromH8 = @event.Piece.Id == ChessIds.Pieces.BlackRook2 && originalFromTile?.Id == "tile-h8";
 
         var rightsAdjusted = RevokeRights(prevExtras, whiteKingMoved, blackKingMoved, whiteRookFromA1, whiteRookFromH1, blackRookFromA8, blackRookFromH8);
         var newExtras = rightsAdjusted with

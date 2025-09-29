@@ -31,18 +31,18 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        if (!@event.Piece.Id.EndsWith("-king")) { return ConditionResponse.Ignore("Not a king"); }
-        var isWhite = @event.Piece.Owner?.Id == "white";
-        var startId = isWhite ? "tile-e1" : "tile-e8";
+        if (!@event.Piece.Id.EndsWith(ChessIds.PieceSuffixes.King)) { return ConditionResponse.Ignore("Not a king"); }
+        var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
+        var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (@event.From?.Id != startId) { return ConditionResponse.Ignore("Not from initial square"); }
         if (@event.To is null) { return ConditionResponse.Ignore("Missing destination"); }
         var destId = @event.To.Id;
-        bool kingSide = destId == (isWhite ? "tile-g1" : "tile-g8");
-        bool queenSide = destId == (isWhite ? "tile-c1" : "tile-c8");
+        bool kingSide = destId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
+        bool queenSide = destId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
         if (!kingSide && !queenSide) { return ConditionResponse.Ignore("Not a castling target"); }
 
         // define the three squares to validate
-        var middle = kingSide ? (isWhite ? "tile-f1" : "tile-f8") : (isWhite ? "tile-d1" : "tile-d8");
+        var middle = kingSide ? (isWhite ? ChessIds.Tiles.F1 : ChessIds.Tiles.F8) : (isWhite ? ChessIds.Tiles.D1 : ChessIds.Tiles.D8);
         var targets = new string[3];
         targets[0] = startId; targets[1] = middle; targets[2] = destId;
 
@@ -50,43 +50,46 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         bool IsTarget(string id) => id == targets[0] || id == targets[1] || id == targets[2];
 
         // Early exit search: iterate opponent pieces and return as soon as any target is attacked.
-        var opponent = isWhite ? "black" : "white";
+        var opponent = isWhite ? ChessIds.Players.Black : ChessIds.Players.White;
         foreach (var ps in state.GetStates<PieceState>())
         {
             if (ps.Artifact.Owner?.Id != opponent) { continue; }
             var id = ps.Artifact.Id;
             var (file, rank) = Parse(ps.CurrentTile.Id);
 
-            if (id.Contains("pawn", StringComparison.Ordinal))
+            if (id.Contains(ChessIds.PieceSuffixes.Pawn, StringComparison.Ordinal))
             {
                 int dir = opponent == "white" ? 1 : -1;
-                if (CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) || CheckPawnAttack(file, rank, (char)(file - 1), rank + dir))
-                { return ConditionResponse.Fail("Castling path square under attack"); }
+                var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
+                if (pawnHit is not null) { return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack"); }
             }
-            else if (id.Contains("knight", StringComparison.Ordinal))
+            else if (id.Contains(ChessIds.PieceSuffixes.Knight, StringComparison.Ordinal))
             {
                 foreach (var (df, dr) in KnightOffsets)
                 {
                     var f = (char)(file + df); var r = rank + dr;
                     if (!IsOnBoard(f, r)) { continue; }
                     var tid = $"tile-{f}{r}";
-                    if (IsTarget(tid)) { return ConditionResponse.Fail("Castling path square under attack"); }
+                    if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
                 }
             }
-            else if (id.Contains("bishop", StringComparison.Ordinal))
+            else if (id.Contains(ChessIds.PieceSuffixes.Bishop, StringComparison.Ordinal))
             {
-                if (ScanSliding(engine, state, file, rank, DiagDirections, IsTarget)) { return ConditionResponse.Fail("Castling path square under attack"); }
+                var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
+                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.Contains("rook", StringComparison.Ordinal))
+            else if (id.Contains(ChessIds.PieceSuffixes.Rook, StringComparison.Ordinal))
             {
-                if (ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget)) { return ConditionResponse.Fail("Castling path square under attack"); }
+                var hit = ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
+                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.Contains("queen", StringComparison.Ordinal))
+            else if (id.Contains(ChessIds.PieceSuffixes.Queen, StringComparison.Ordinal))
             {
-                if (ScanSliding(engine, state, file, rank, DiagDirections, IsTarget) || ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget))
-                { return ConditionResponse.Fail("Castling path square under attack"); }
+                var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
+                hit ??= ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
+                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.EndsWith("-king", StringComparison.Ordinal))
+            else if (id.EndsWith(ChessIds.PieceSuffixes.King, StringComparison.Ordinal))
             {
                 for (int df = -1; df <= 1; df++)
                 {
@@ -96,7 +99,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                         var f = (char)(file + df); var r2 = rank + dr;
                         if (!IsOnBoard(f, r2)) { continue; }
                         var tid = $"tile-{f}{r2}";
-                        if (IsTarget(tid)) { return ConditionResponse.Fail("Castling path square under attack"); }
+                        if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
                     }
                 }
             }
@@ -105,15 +108,15 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         return ConditionResponse.Valid;
 
         // local helpers
-        bool CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
+        string CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
         {
-            if (!IsOnBoard(attackFile, attackRank)) { return false; }
+            if (!IsOnBoard(attackFile, attackRank)) { return null; }
             var tid = $"tile-{attackFile}{attackRank}";
-            return IsTarget(tid);
+            return IsTarget(tid) ? tid : null;
         }
     }
 
-    private static bool ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
+    private static string ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
     {
         foreach (var (df, dr) in directions)
         {
@@ -123,12 +126,12 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                 f = (char)(f + df); r += dr;
                 if (!IsOnBoard(f, r)) { break; }
                 var tid = $"tile-{f}{r}";
-                if (isTarget(tid)) { return true; }
+                if (isTarget(tid)) { return tid; }
                 var tile = engine.Game.GetTile(tid);
                 if (state.GetPiecesOnTile(tile).Any()) { break; }
             }
         }
-        return false;
+        return null;
     }
 
     private static (char file, int rank) Parse(string tileId) => (tileId[5], tileId[6] - '0');

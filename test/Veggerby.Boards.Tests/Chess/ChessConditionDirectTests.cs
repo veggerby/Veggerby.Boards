@@ -9,6 +9,8 @@ using Veggerby.Boards.States;
 
 using Xunit;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 public class ChessConditionDirectTests
@@ -40,7 +42,7 @@ public class ChessConditionDirectTests
     public void PathNotObstructed_Should_Ignore_Queen_D1_D4()
     {
         // arrange
-        var (state, evt) = BuildEvent("white-queen", "tile-d4"); // passes over d2 (occupied by pawn)
+        var (state, evt) = BuildEvent(WhiteQueen, "tile-d4"); // passes over d2 (occupied by pawn)
         var engine = new ChessGameBuilder().Compile().Engine; // fresh engine for condition context
         var condition = new PathNotObstructedGameEventCondition();
 
@@ -59,7 +61,7 @@ public class ChessConditionDirectTests
     public void DestinationNotOwnPiece_Should_Ignore_Queen_D1_D2()
     {
         // arrange
-        var (state, evt) = BuildEvent("white-queen", "tile-d2"); // tile occupied by white pawn
+        var (state, evt) = BuildEvent(WhiteQueen, "tile-d2"); // tile occupied by white pawn
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationNotOwnPieceGameEventCondition();
 

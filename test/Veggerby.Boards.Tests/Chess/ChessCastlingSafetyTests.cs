@@ -43,8 +43,8 @@ public class ChessCastlingSafetyTests
 
         // assert
         ex.Should().NotBeNull();
-    ex.Should().BeOfType<InvalidGameEventException>();
-    // Current implementation does not surface attacked square id in exception message; future improvement could assert message details.
+        ex.Should().BeOfType<InvalidGameEventException>();
+        // Current implementation does not surface attacked square id in exception message; future improvement could assert message details.
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
         // Rights must remain (castling was denied without moving king/rook)
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();

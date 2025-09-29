@@ -22,7 +22,7 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         }
 
         var ownerId = @event.Piece.Owner.Id;
-        var isWhite = ownerId == "white";
+        var isWhite = ownerId == ChessIds.Players.White;
         var toId = @event.Path!.To.Id;
         var isKingSide = toId == (isWhite ? "tile-g1" : "tile-g8");
         var isQueenSide = toId == (isWhite ? "tile-c1" : "tile-c8");
@@ -42,7 +42,7 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         var rookPiece = gameState
             .GetStates<PieceState>()
             .Select(s => s.Artifact)
-            .FirstOrDefault(p => p.Id == (isWhite ? (isKingSide ? "white-rook-2" : "white-rook-1") : (isKingSide ? "black-rook-2" : "black-rook-1")));
+            .FirstOrDefault(p => p.Id == (isWhite ? (isKingSide ? ChessIds.Pieces.WhiteRook2 : ChessIds.Pieces.WhiteRook1) : (isKingSide ? ChessIds.Pieces.BlackRook2 : ChessIds.Pieces.BlackRook1)));
         if (rookPiece is null)
         {
             return gameState; // inconsistent setup
@@ -66,7 +66,7 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         if (!movedSet.Contains(@event.Piece.Id)) { movedSet.Add(@event.Piece.Id); }
         if (!movedSet.Contains(rookPiece.Id)) { movedSet.Add(rookPiece.Id); }
 
-        var fullmove = extras.FullmoveNumber + (ownerId == "black" ? 1 : 0);
+        var fullmove = extras.FullmoveNumber + (ownerId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = extras with
         {
             EnPassantTargetTileId = null,

@@ -66,6 +66,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - En-passant scenario builder refined (optional auxiliary pawn) and tests aligned with canonical orientation (white moves north).
   - Basic castling support (no check/attack validation yet): standard king/queen placement (king on e-file), structural castling condition (rights, clear path, destination empty) with Invalid responses for malformed attempts, castling mutator moving king and rook and revoking rights, automatic rights revocation on king/rook movement. Tests added for kingside success and queenside blocked attempt.
 
+  - **Chess – Castling Safety & API Enhancements**
+    - Added `CastlingKingSafetyGameEventCondition` preventing castling while king is in check, or when intermediate/destination squares are attacked (evaluates start, transit, destination squares).
+    - Introduced explicit `GameExtensions.Castle(color, kingSide)` helper removing prior synthetic path hack from generic `Move` helper.
+    - Deterministic safety denial tests (king-side intermediate square attacked; queen-side destination square attacked) with rights preservation on denial.
+    - Optimized attack enumeration (early exit, static direction arrays, no per-move hash set allocations) reducing transient allocations during safety checks.
+    - Castling failure messages now include the specific attacked square id.
+
 ### Changed
 
 - Compiled movement patterns **enabled by default**.
@@ -73,6 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Incremental bitboard updates temporarily disabled (falls back to full rebuild per transition).
 - Consolidated package versions via `Directory.Packages.props`.
 - README and docs updated across acceleration, sequencing, and DX topics.
+- Chess castling implementation evolved from provisional structural-only version to full safety-gated variant with explicit API and performance-tuned attack scanning.
 
 ### Fixed
 

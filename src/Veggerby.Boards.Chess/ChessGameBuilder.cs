@@ -33,12 +33,12 @@ public class ChessGameBuilder : GameBuilder
         // Game
         BoardId = "chess";
 
-        AddPlayer("white");
-        AddPlayer("black");
+        AddPlayer(ChessIds.Players.White);
+        AddPlayer(ChessIds.Players.Black);
 
         // Explicit active player projection: white begins.
-        WithActivePlayer("white", true);
-        WithActivePlayer("black", false);
+        WithActivePlayer(ChessIds.Players.White, true);
+        WithActivePlayer(ChessIds.Players.Black, false);
 
         // Canonical orientation: white pieces move toward increasing rank numbers (north), black toward decreasing (south).
         // Directions are declared once; semantics in conditions/mutators use this canonical mapping.
@@ -131,8 +131,8 @@ public class ChessGameBuilder : GameBuilder
         // NOTE: Previous design used a hidden sink tile for captures; replaced by explicit CapturedPieceState
         // markers to avoid distorting board topology / bitboard density. Comment retained for historical context.
 
-        AddPiece("white-queen")
-            .WithOwner("white")
+        AddPiece(ChessIds.Pieces.WhiteQueen)
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").CanRepeat()
             .HasDirection("east").CanRepeat()
             .HasDirection("west").CanRepeat()
@@ -142,8 +142,8 @@ public class ChessGameBuilder : GameBuilder
             .HasDirection("south-east").CanRepeat()
             .HasDirection("south-west").CanRepeat();
 
-        AddPiece("white-king")
-            .WithOwner("white")
+        AddPiece(ChessIds.Pieces.WhiteKing)
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").Done()
             .HasDirection("east").Done()
             .HasDirection("west").Done()
@@ -153,8 +153,8 @@ public class ChessGameBuilder : GameBuilder
             .HasDirection("south-east").Done()
             .HasDirection("south-west").Done();
 
-        AddPiece("black-queen")
-            .WithOwner("black")
+        AddPiece(ChessIds.Pieces.BlackQueen)
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("north").CanRepeat()
             .HasDirection("east").CanRepeat()
             .HasDirection("west").CanRepeat()
@@ -164,8 +164,8 @@ public class ChessGameBuilder : GameBuilder
             .HasDirection("south-east").CanRepeat()
             .HasDirection("south-west").CanRepeat();
 
-        AddPiece("black-king")
-            .WithOwner("black")
+        AddPiece(ChessIds.Pieces.BlackKing)
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("north").Done()
             .HasDirection("east").Done()
             .HasDirection("west").Done()
@@ -178,7 +178,7 @@ public class ChessGameBuilder : GameBuilder
         for (int i = 1; i <= 8; i++)
         {
             AddPiece($"white-pawn-{i}")
-                .WithOwner("white")
+                .WithOwner(ChessIds.Players.White)
                 // White forward = north (towards rank 8). Patterns are structural; legality gated by rule chain.
                 .HasDirection("north").Done()
                 .HasPattern("north")
@@ -187,7 +187,7 @@ public class ChessGameBuilder : GameBuilder
                 .HasDirection("north-west").Done();
 
             AddPiece($"black-pawn-{i}")
-                .WithOwner("black")
+                .WithOwner(ChessIds.Players.Black)
                 // Black forward = south (towards rank 1).
                 .HasDirection("south").Done()
                 .HasPattern("south")
@@ -199,14 +199,14 @@ public class ChessGameBuilder : GameBuilder
         for (int i = 1; i <= 8; i++)
         {
             AddPiece($"white-rook-{i}")
-                .WithOwner("white")
+                .WithOwner(ChessIds.Players.White)
                 .HasDirection("north").CanRepeat()
                 .HasDirection("east").CanRepeat()
                 .HasDirection("south").CanRepeat()
                 .HasDirection("west").CanRepeat();
 
             AddPiece($"white-knight-{i}")
-                .WithOwner("white")
+                .WithOwner(ChessIds.Players.White)
                 .HasPattern("west", "north", "north")
                 .HasPattern("west", "south", "south")
                 .HasPattern("east", "north", "north")
@@ -217,21 +217,21 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern("south", "west", "west");
 
             AddPiece($"white-bishop-{i}")
-                .WithOwner("white")
+                .WithOwner(ChessIds.Players.White)
                 .HasDirection("north-east").CanRepeat()
                 .HasDirection("north-west").CanRepeat()
                 .HasDirection("south-east").CanRepeat()
                 .HasDirection("south-west").CanRepeat();
 
             AddPiece($"black-rook-{i}")
-                .WithOwner("black")
+                .WithOwner(ChessIds.Players.Black)
                 .HasDirection("north").CanRepeat()
                 .HasDirection("east").CanRepeat()
                 .HasDirection("south").CanRepeat()
                 .HasDirection("west").CanRepeat();
 
             AddPiece($"black-knight-{i}")
-                .WithOwner("black")
+                .WithOwner(ChessIds.Players.Black)
                 .HasPattern("west", "north", "north")
                 .HasPattern("west", "south", "south")
                 .HasPattern("east", "north", "north")
@@ -242,7 +242,7 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern("south", "west", "west");
 
             AddPiece($"black-bishop-{i}")
-                .WithOwner("black")
+                .WithOwner(ChessIds.Players.Black)
                 .HasDirection("north-east").CanRepeat()
                 .HasDirection("north-west").CanRepeat()
                 .HasDirection("south-east").CanRepeat()
@@ -250,43 +250,43 @@ public class ChessGameBuilder : GameBuilder
         }
 
         // State
-        WithPiece("white-rook-1").OnTile("tile-a1");
-        WithPiece("white-knight-1").OnTile("tile-b1");
-        WithPiece("white-bishop-1").OnTile("tile-c1");
+        WithPiece(ChessIds.Pieces.WhiteRook1).OnTile("tile-a1");
+        WithPiece(ChessIds.Pieces.WhiteKnight1).OnTile("tile-b1");
+        WithPiece(ChessIds.Pieces.WhiteBishop1).OnTile("tile-c1");
         // Standard placement: queen on d-file, king on e-file
-        WithPiece("white-queen").OnTile("tile-d1");
-        WithPiece("white-king").OnTile("tile-e1");
-        WithPiece("white-bishop-2").OnTile("tile-f1");
-        WithPiece("white-knight-2").OnTile("tile-g1");
-        WithPiece("white-rook-2").OnTile("tile-h1");
+        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile("tile-d1");
+        WithPiece(ChessIds.Pieces.WhiteKing).OnTile("tile-e1");
+        WithPiece(ChessIds.Pieces.WhiteBishop2).OnTile("tile-f1");
+        WithPiece(ChessIds.Pieces.WhiteKnight2).OnTile("tile-g1");
+        WithPiece(ChessIds.Pieces.WhiteRook2).OnTile("tile-h1");
 
-        WithPiece("white-pawn-1").OnTile("tile-a2");
-        WithPiece("white-pawn-2").OnTile("tile-b2");
-        WithPiece("white-pawn-3").OnTile("tile-c2");
-        WithPiece("white-pawn-4").OnTile("tile-d2");
-        WithPiece("white-pawn-5").OnTile("tile-e2");
-        WithPiece("white-pawn-6").OnTile("tile-f2");
-        WithPiece("white-pawn-7").OnTile("tile-g2");
-        WithPiece("white-pawn-8").OnTile("tile-h2");
+        WithPiece(ChessIds.Pieces.WhitePawn1).OnTile("tile-a2");
+        WithPiece(ChessIds.Pieces.WhitePawn2).OnTile("tile-b2");
+        WithPiece(ChessIds.Pieces.WhitePawn3).OnTile("tile-c2");
+        WithPiece(ChessIds.Pieces.WhitePawn4).OnTile("tile-d2");
+        WithPiece(ChessIds.Pieces.WhitePawn5).OnTile("tile-e2");
+        WithPiece(ChessIds.Pieces.WhitePawn6).OnTile("tile-f2");
+        WithPiece(ChessIds.Pieces.WhitePawn7).OnTile("tile-g2");
+        WithPiece(ChessIds.Pieces.WhitePawn8).OnTile("tile-h2");
 
-        WithPiece("black-pawn-1").OnTile("tile-a7");
-        WithPiece("black-pawn-2").OnTile("tile-b7");
-        WithPiece("black-pawn-3").OnTile("tile-c7");
-        WithPiece("black-pawn-4").OnTile("tile-d7");
-        WithPiece("black-pawn-5").OnTile("tile-e7");
-        WithPiece("black-pawn-6").OnTile("tile-f7");
-        WithPiece("black-pawn-7").OnTile("tile-g7");
-        WithPiece("black-pawn-8").OnTile("tile-h7");
+        WithPiece(ChessIds.Pieces.BlackPawn1).OnTile("tile-a7");
+        WithPiece(ChessIds.Pieces.BlackPawn2).OnTile("tile-b7");
+        WithPiece(ChessIds.Pieces.BlackPawn3).OnTile("tile-c7");
+        WithPiece(ChessIds.Pieces.BlackPawn4).OnTile("tile-d7");
+        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile("tile-e7");
+        WithPiece(ChessIds.Pieces.BlackPawn6).OnTile("tile-f7");
+        WithPiece(ChessIds.Pieces.BlackPawn7).OnTile("tile-g7");
+        WithPiece(ChessIds.Pieces.BlackPawn8).OnTile("tile-h7");
 
-        WithPiece("black-rook-1").OnTile("tile-a8");
-        WithPiece("black-knight-1").OnTile("tile-b8");
-        WithPiece("black-bishop-1").OnTile("tile-c8");
+        WithPiece(ChessIds.Pieces.BlackRook1).OnTile("tile-a8");
+        WithPiece(ChessIds.Pieces.BlackKnight1).OnTile("tile-b8");
+        WithPiece(ChessIds.Pieces.BlackBishop1).OnTile("tile-c8");
         // Standard placement: queen on d-file, king on e-file
-        WithPiece("black-queen").OnTile("tile-d8");
-        WithPiece("black-king").OnTile("tile-e8");
-        WithPiece("black-bishop-2").OnTile("tile-f8");
-        WithPiece("black-knight-2").OnTile("tile-g8");
-        WithPiece("black-rook-2").OnTile("tile-h8");
+        WithPiece(ChessIds.Pieces.BlackQueen).OnTile("tile-d8");
+        WithPiece(ChessIds.Pieces.BlackKing).OnTile("tile-e8");
+        WithPiece(ChessIds.Pieces.BlackBishop2).OnTile("tile-f8");
+        WithPiece(ChessIds.Pieces.BlackKnight2).OnTile("tile-g8");
+        WithPiece(ChessIds.Pieces.BlackRook2).OnTile("tile-h8");
 
         // Chess specific extras (initial castling rights all true, no en-passant target, clocks reset)
         WithState(new ChessStateExtras(

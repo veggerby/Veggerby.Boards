@@ -50,9 +50,9 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
         }
         catch
         {
-            activeId = @event.Piece.Id.StartsWith("white-") ? "white" : "black";
+            activeId = @event.Piece.Id.StartsWith("white-") ? ChessIds.Players.White : ChessIds.Players.Black;
         }
-        var fullmove = prevExtras.FullmoveNumber + (activeId == "black" ? 1 : 0);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
         // Determine captured piece (present in updated state as a CapturedPieceState newly added by inner mutator)
         // We inspect difference between previous and updated piece states to infer captured artifact & its last tile.
         var previousPieceStates = gameState.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
@@ -67,12 +67,12 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
             }
         }
 
-        bool whiteKingCaptured = capturedPieceId == "white-king"; // extreme edge, typically game over
-        bool blackKingCaptured = capturedPieceId == "black-king";
-        bool whiteRookA1Captured = capturedPieceId == "white-rook-1"; // only original squares matter; if rook moved then rights already revoked
-        bool whiteRookH1Captured = capturedPieceId == "white-rook-2";
-        bool blackRookA8Captured = capturedPieceId == "black-rook-1";
-        bool blackRookH8Captured = capturedPieceId == "black-rook-2";
+        bool whiteKingCaptured = capturedPieceId == ChessIds.Pieces.WhiteKing; // extreme edge, typically game over
+        bool blackKingCaptured = capturedPieceId == ChessIds.Pieces.BlackKing;
+        bool whiteRookA1Captured = capturedPieceId == ChessIds.Pieces.WhiteRook1; // only original squares matter; if rook moved then rights already revoked
+        bool whiteRookH1Captured = capturedPieceId == ChessIds.Pieces.WhiteRook2;
+        bool blackRookA8Captured = capturedPieceId == ChessIds.Pieces.BlackRook1;
+        bool blackRookH8Captured = capturedPieceId == ChessIds.Pieces.BlackRook2;
 
         var rightsAdjusted = RevokeRights(prevExtras, false, false, false, false, false, false,
             whiteRookA1Captured, whiteRookH1Captured, blackRookA8Captured, blackRookH8Captured, whiteKingCaptured, blackKingCaptured);

@@ -101,6 +101,7 @@
 🆕 **Planned.**
 
 * Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
+  * Progress update: Castling rights + safety filter (start/intermediate/destination attack checks) implemented with optimized attack scanning; explicit `Castle` helper replaces synthetic path hack. Remaining: full move generation API, promotion, mate/stalemate evaluation, SAN completion (#, =Q, e.p.).
 * Pending: implementation kickoff; acceptance & metrics defined in workstream file.
 * Risks: performance regressions in hot path if generation naive; test surface expansion (many edge cases) requiring careful property tests.
 

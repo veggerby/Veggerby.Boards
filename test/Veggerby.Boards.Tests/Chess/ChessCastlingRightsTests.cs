@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 
+using Veggerby.Boards;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
@@ -66,8 +67,8 @@ public class ChessCastlingRightsTests
         progress = progress.Move("black-pawn-6", "f6"); // ensure turn returns to white for castle attempt
 
         // act
-        var exKingSide = Record.Exception(() => progress = progress.Move("white-king", "g1"));
-        var exQueenSide = Record.Exception(() => progress = progress.Move("white-king", "c1"));
+        var exKingSide = Record.Exception(() => progress = progress.Castle("white", kingSide: true));
+        var exQueenSide = Record.Exception(() => progress = progress.Castle("white", kingSide: false));
 
         // assert
         exKingSide.Should().NotBeNull();

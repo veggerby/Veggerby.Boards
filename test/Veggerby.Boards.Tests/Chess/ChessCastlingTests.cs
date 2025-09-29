@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 
+using Veggerby.Boards;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
@@ -27,8 +28,8 @@ public class ChessCastlingTests
         // 3. Bishop f1 -> e2 (vacates f1 now that e2 is empty)
         progress = progress.Move("white-bishop-2", "e2");
         progress = progress.Move("black-pawn-3", "c6");
-        // Attempt castling: king e1 -> g1
-        progress = progress.Move("white-king", "g1");
+        // Attempt castling using explicit helper
+        progress = progress.Castle("white", kingSide: true);
         // assert
         var king = progress.Game.GetPiece("white-king");
         var rook = progress.Game.GetPiece("white-rook-2");
@@ -46,7 +47,7 @@ public class ChessCastlingTests
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State;
         // act & assert (malformed castling attempt should raise invalid event exception due to path blockage)
-        var ex = Record.Exception(() => progress = progress.Move("white-king", "c1"));
+        var ex = Record.Exception(() => progress = progress.Castle("white", kingSide: false));
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged

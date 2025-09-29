@@ -307,6 +307,7 @@ public class ChessGameBuilder : GameBuilder
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             .And<CastlingGameEventCondition>()
+                            .And<CastlingKingSafetyGameEventCondition>()
                     .Then()
                         .Do<CastlingMoveMutator>()
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))

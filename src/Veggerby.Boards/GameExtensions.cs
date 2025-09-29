@@ -115,35 +115,6 @@ public static partial class GameExtensions
         var toTile = progress.Game.GetTile(toTileId);
         var state = progress.State.GetState<PieceState>(piece);
 
-        // Temporary chess castling support: synthesize horizontal two-square king path from original square (e1/e8) to g/c file.
-        // This preserves generic Move call sites in tests until a dedicated chess pre-processor API is introduced.
-        if (piece.Id.EndsWith("-king"))
-        {
-            var fromTileId = state.CurrentTile.Id;
-            var white = piece.Owner?.Id == "white";
-            var kingStart = white ? "tile-e1" : "tile-e8";
-            if (fromTileId == kingStart && (toTile.Id == (white ? "tile-g1" : "tile-g8") || toTile.Id == (white ? "tile-c1" : "tile-c8")))
-            {
-                char fromFile = fromTileId[5];
-                char toFile = toTile.Id[5];
-                int step = fromFile < toFile ? 1 : -1;
-                var rank = fromTileId[6];
-                var relations = new System.Collections.Generic.List<TileRelation>();
-                var dirId = step == 1 ? "east" : "west";
-                var direction = new Direction(dirId);
-                var current = state.CurrentTile;
-                for (char f = (char)(fromFile + step); ; f = (char)(f + step))
-                {
-                    var nextTile = progress.Game.GetTile($"tile-{f}{rank}");
-                    relations.Add(new TileRelation(current, nextTile, direction));
-                    current = nextTile;
-                    if (f == toFile) { break; }
-                }
-                var syntheticPath = new TilePath(relations);
-                var castleEvent = new MovePieceGameEvent(piece, syntheticPath);
-                return progress.HandleEvent(castleEvent);
-            }
-        }
         var path = piece.Patterns.Select(pattern =>
         {
             var visitor = new ResolveTilePathPatternVisitor(progress.Engine.Game.Board, state.CurrentTile, toTile);
@@ -157,6 +128,46 @@ public static partial class GameExtensions
         }
 
         var @event = new MovePieceGameEvent(piece, path);
+        return progress.HandleEvent(@event);
+    }
+
+    /// <summary>
+    /// Explicit chess castling helper (king side or queen side) removing reliance on synthetic path inside generic Move.
+    /// </summary>
+    /// <param name="progress">Game progress.</param>
+    /// <param name="color">"white" or "black".</param>
+    /// <param name="kingSide">True for king-side, false for queen-side.</param>
+    public static GameProgress Castle(this GameProgress progress, string color, bool kingSide)
+    {
+        var kingId = color + "-king";
+        var game = progress.Game;
+        var king = game.GetPiece(kingId);
+        var kingState = progress.State.GetState<PieceState>(king);
+        var start = kingState.CurrentTile.Id;
+        var expectedStart = color == "white" ? "tile-e1" : "tile-e8";
+        if (start != expectedStart) { return progress; }
+        var destination = color == "white"
+            ? (kingSide ? game.GetTile("tile-g1") : game.GetTile("tile-c1"))
+            : (kingSide ? game.GetTile("tile-g8") : game.GetTile("tile-c8"));
+
+        // Build horizontal path relations (two steps toward rook)
+        char fromFile = start[5];
+        char toFile = destination.Id[5];
+        int step = fromFile < toFile ? 1 : -1;
+        var rank = start[6];
+        var relations = new List<TileRelation>();
+        var dirId = step == 1 ? "east" : "west";
+        var direction = new Direction(dirId);
+        var current = kingState.CurrentTile;
+        for (char f = (char)(fromFile + step); ; f = (char)(f + step))
+        {
+            var nextTile = game.GetTile($"tile-{f}{rank}");
+            relations.Add(new TileRelation(current, nextTile, direction));
+            current = nextTile;
+            if (f == toFile) { break; }
+        }
+        var path = new TilePath(relations);
+        var @event = new MovePieceGameEvent(king, path);
         return progress.HandleEvent(@event);
     }
 }

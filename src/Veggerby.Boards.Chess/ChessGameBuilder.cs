@@ -250,43 +250,43 @@ public class ChessGameBuilder : GameBuilder
         }
 
         // State
-        WithPiece(ChessIds.Pieces.WhiteRook1).OnTile("tile-a1");
-        WithPiece(ChessIds.Pieces.WhiteKnight1).OnTile("tile-b1");
-        WithPiece(ChessIds.Pieces.WhiteBishop1).OnTile("tile-c1");
+        WithPiece(ChessIds.Pieces.WhiteRook1).OnTile(ChessIds.Tiles.A1);
+        WithPiece(ChessIds.Pieces.WhiteKnight1).OnTile(ChessIds.Tiles.B1);
+        WithPiece(ChessIds.Pieces.WhiteBishop1).OnTile(ChessIds.Tiles.C1);
         // Standard placement: queen on d-file, king on e-file
-        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile("tile-d1");
-        WithPiece(ChessIds.Pieces.WhiteKing).OnTile("tile-e1");
-        WithPiece(ChessIds.Pieces.WhiteBishop2).OnTile("tile-f1");
-        WithPiece(ChessIds.Pieces.WhiteKnight2).OnTile("tile-g1");
-        WithPiece(ChessIds.Pieces.WhiteRook2).OnTile("tile-h1");
+        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile(ChessIds.Tiles.D1);
+        WithPiece(ChessIds.Pieces.WhiteKing).OnTile(ChessIds.Tiles.E1);
+        WithPiece(ChessIds.Pieces.WhiteBishop2).OnTile(ChessIds.Tiles.F1);
+        WithPiece(ChessIds.Pieces.WhiteKnight2).OnTile(ChessIds.Tiles.G1);
+        WithPiece(ChessIds.Pieces.WhiteRook2).OnTile(ChessIds.Tiles.H1);
 
-        WithPiece(ChessIds.Pieces.WhitePawn1).OnTile("tile-a2");
-        WithPiece(ChessIds.Pieces.WhitePawn2).OnTile("tile-b2");
-        WithPiece(ChessIds.Pieces.WhitePawn3).OnTile("tile-c2");
-        WithPiece(ChessIds.Pieces.WhitePawn4).OnTile("tile-d2");
-        WithPiece(ChessIds.Pieces.WhitePawn5).OnTile("tile-e2");
-        WithPiece(ChessIds.Pieces.WhitePawn6).OnTile("tile-f2");
-        WithPiece(ChessIds.Pieces.WhitePawn7).OnTile("tile-g2");
-        WithPiece(ChessIds.Pieces.WhitePawn8).OnTile("tile-h2");
+        WithPiece(ChessIds.Pieces.WhitePawn1).OnTile(ChessIds.Tiles.A2);
+        WithPiece(ChessIds.Pieces.WhitePawn2).OnTile(ChessIds.Tiles.B2);
+        WithPiece(ChessIds.Pieces.WhitePawn3).OnTile(ChessIds.Tiles.C2);
+        WithPiece(ChessIds.Pieces.WhitePawn4).OnTile(ChessIds.Tiles.D2);
+        WithPiece(ChessIds.Pieces.WhitePawn5).OnTile(ChessIds.Tiles.E2);
+        WithPiece(ChessIds.Pieces.WhitePawn6).OnTile(ChessIds.Tiles.F2);
+        WithPiece(ChessIds.Pieces.WhitePawn7).OnTile(ChessIds.Tiles.G2);
+        WithPiece(ChessIds.Pieces.WhitePawn8).OnTile(ChessIds.Tiles.H2);
 
-        WithPiece(ChessIds.Pieces.BlackPawn1).OnTile("tile-a7");
-        WithPiece(ChessIds.Pieces.BlackPawn2).OnTile("tile-b7");
-        WithPiece(ChessIds.Pieces.BlackPawn3).OnTile("tile-c7");
-        WithPiece(ChessIds.Pieces.BlackPawn4).OnTile("tile-d7");
-        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile("tile-e7");
-        WithPiece(ChessIds.Pieces.BlackPawn6).OnTile("tile-f7");
-        WithPiece(ChessIds.Pieces.BlackPawn7).OnTile("tile-g7");
-        WithPiece(ChessIds.Pieces.BlackPawn8).OnTile("tile-h7");
+        WithPiece(ChessIds.Pieces.BlackPawn1).OnTile(ChessIds.Tiles.A7);
+        WithPiece(ChessIds.Pieces.BlackPawn2).OnTile(ChessIds.Tiles.B7);
+        WithPiece(ChessIds.Pieces.BlackPawn3).OnTile(ChessIds.Tiles.C7);
+        WithPiece(ChessIds.Pieces.BlackPawn4).OnTile(ChessIds.Tiles.D7);
+        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile(ChessIds.Tiles.E7);
+        WithPiece(ChessIds.Pieces.BlackPawn6).OnTile(ChessIds.Tiles.F7);
+        WithPiece(ChessIds.Pieces.BlackPawn7).OnTile(ChessIds.Tiles.G7);
+        WithPiece(ChessIds.Pieces.BlackPawn8).OnTile(ChessIds.Tiles.H7);
 
-        WithPiece(ChessIds.Pieces.BlackRook1).OnTile("tile-a8");
-        WithPiece(ChessIds.Pieces.BlackKnight1).OnTile("tile-b8");
-        WithPiece(ChessIds.Pieces.BlackBishop1).OnTile("tile-c8");
+        WithPiece(ChessIds.Pieces.BlackRook1).OnTile(ChessIds.Tiles.A8);
+        WithPiece(ChessIds.Pieces.BlackKnight1).OnTile(ChessIds.Tiles.B8);
+        WithPiece(ChessIds.Pieces.BlackBishop1).OnTile(ChessIds.Tiles.C8);
         // Standard placement: queen on d-file, king on e-file
-        WithPiece(ChessIds.Pieces.BlackQueen).OnTile("tile-d8");
-        WithPiece(ChessIds.Pieces.BlackKing).OnTile("tile-e8");
-        WithPiece(ChessIds.Pieces.BlackBishop2).OnTile("tile-f8");
-        WithPiece(ChessIds.Pieces.BlackKnight2).OnTile("tile-g8");
-        WithPiece(ChessIds.Pieces.BlackRook2).OnTile("tile-h8");
+        WithPiece(ChessIds.Pieces.BlackQueen).OnTile(ChessIds.Tiles.D8);
+        WithPiece(ChessIds.Pieces.BlackKing).OnTile(ChessIds.Tiles.E8);
+        WithPiece(ChessIds.Pieces.BlackBishop2).OnTile(ChessIds.Tiles.F8);
+        WithPiece(ChessIds.Pieces.BlackKnight2).OnTile(ChessIds.Tiles.G8);
+        WithPiece(ChessIds.Pieces.BlackRook2).OnTile(ChessIds.Tiles.H8);
 
         // Chess specific extras (initial castling rights all true, no en-passant target, clocks reset)
         WithState(new ChessStateExtras(

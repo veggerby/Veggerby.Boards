@@ -41,10 +41,7 @@ public sealed class GameTimeline
     /// </summary>
     public static GameTimeline Create(GameState initial)
     {
-        if (initial is null)
-        {
-            throw new ArgumentNullException(nameof(initial));
-        }
+        ArgumentNullException.ThrowIfNull(initial);
         return new GameTimeline(ImmutableArray<GameState>.Empty, initial, ImmutableArray<GameState>.Empty);
     }
 
@@ -53,10 +50,7 @@ public sealed class GameTimeline
     /// </summary>
     public GameTimeline Push(GameState next)
     {
-        if (next is null)
-        {
-            throw new ArgumentNullException(nameof(next));
-        }
+        ArgumentNullException.ThrowIfNull(next);
         var newPast = Past.Add(Present);
         return new GameTimeline(newPast, next, ImmutableArray<GameState>.Empty);
     }

@@ -26,9 +26,9 @@ public static class BackgammonBoardRenderer
     /// <param name="writer">Destination text writer.</param>
     public static void Write(Game game, GameState state, TextWriter writer)
     {
-        if (game is null) { throw new ArgumentNullException(nameof(game)); }
-        if (state is null) { throw new ArgumentNullException(nameof(state)); }
-        if (writer is null) { throw new ArgumentNullException(nameof(writer)); }
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(writer);
 
         // Aggregate piece counts by point
         var pointCounts = new Dictionary<string, (int white, int black)>();

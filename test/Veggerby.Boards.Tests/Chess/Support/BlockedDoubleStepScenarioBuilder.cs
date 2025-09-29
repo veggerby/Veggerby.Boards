@@ -18,12 +18,12 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
     {
         BoardId = "chess-blocked-double-step";
 
-        AddPlayer("white");
-        AddPlayer("black");
+        AddPlayer(ChessIds.Players.White);
+        AddPlayer(ChessIds.Players.Black);
 
         // Active player: white to move.
-        WithActivePlayer("white", true);
-        WithActivePlayer("black", false);
+        WithActivePlayer(ChessIds.Players.White, true);
+        WithActivePlayer(ChessIds.Players.Black, false);
 
         // Directions
         AddDirection("north");
@@ -56,7 +56,7 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
 
         // White test pawn with standard patterns
         AddPiece("white-pawn-test")
-            .WithOwner("white")
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").Done()
             .HasPattern("north")
             .HasPattern("north", "north")
@@ -65,11 +65,11 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
 
         // Blocking piece (use a black knight to ensure NonPawnGameEventCondition for any incidental filtering) placed on intermediate square e3
         AddPiece("black-knight-blocker")
-            .WithOwner("black")
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("north").Done(); // minimal direction to satisfy construction
 
-        WithPiece("white-pawn-test").OnTile("tile-e2");
-        WithPiece("black-knight-blocker").OnTile("tile-e3");
+        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
+        WithPiece("black-knight-blocker").OnTile(ChessIds.Tiles.E3);
 
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
 

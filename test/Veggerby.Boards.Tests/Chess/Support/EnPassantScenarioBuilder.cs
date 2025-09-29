@@ -25,12 +25,12 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
     {
         BoardId = "chess-en-passant-scenario";
 
-        AddPlayer("white");
-        AddPlayer("black");
+        AddPlayer(ChessIds.Players.White);
+        AddPlayer(ChessIds.Players.Black);
 
         // Active player projections: white starts, black inactive.
-        WithActivePlayer("white", true);
-        WithActivePlayer("black", false);
+        WithActivePlayer(ChessIds.Players.White, true);
+        WithActivePlayer(ChessIds.Players.Black, false);
 
         // Reuse canonical directions
         AddDirection("north");
@@ -63,7 +63,7 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
 
         // Structural pawn patterns (white north, black south)
         AddPiece("white-pawn-test")
-            .WithOwner("white")
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").Done()
             .HasPattern("north")
             .HasPattern("north", "north")
@@ -71,7 +71,7 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
             .HasDirection("north-west").Done();
 
         AddPiece("black-pawn-test")
-            .WithOwner("black")
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("south").Done()
             .HasPattern("south")
             .HasPattern("south", "south")
@@ -81,7 +81,7 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
         if (_includeAuxiliaryBlackPawn)
         {
             AddPiece("black-pawn-aux")
-                .WithOwner("black")
+                .WithOwner(ChessIds.Players.Black)
                 .HasDirection("south").Done()
                 .HasPattern("south")
                 .HasPattern("south", "south")
@@ -90,11 +90,11 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
         }
 
         // Initial placement: white pawn on e2, black pawn on d4 (ready to capture e3 after double-step)
-        WithPiece("white-pawn-test").OnTile("tile-e2");
-        WithPiece("black-pawn-test").OnTile("tile-d4");
+        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
+        WithPiece("black-pawn-test").OnTile(ChessIds.Tiles.D4);
         if (_includeAuxiliaryBlackPawn)
         {
-            WithPiece("black-pawn-aux").OnTile("tile-h7");
+            WithPiece("black-pawn-aux").OnTile(ChessIds.Tiles.H7);
         }
 
         // Chess extras baseline

@@ -2,6 +2,7 @@ using System.Linq;
 
 using AwesomeAssertions;
 
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Builders;
 
@@ -23,10 +24,10 @@ public class ChessCapturedStateTests
 
         // assert
         progress.State.IsCaptured(blackPawn).Should().BeTrue("black pawn must be marked captured");
-        var destTile = progress.Game.GetTile("tile-e7");
+        var destTile = progress.Game.GetTile(ChessIds.Tiles.E7);
         progress.State.GetPiecesOnTile(destTile).Any(p => p.Equals(blackPawn))
             .Should().BeFalse("captured piece should not appear on destination tile occupancy");
         var queenState = progress.State.GetState<PieceState>(queen);
-        queenState.CurrentTile.Id.Should().Be("tile-e7");
+        queenState.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
     }
 }

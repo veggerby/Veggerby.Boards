@@ -1,4 +1,5 @@
 using Veggerby.Boards;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
@@ -15,8 +16,8 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
     protected override void Build()
     {
         BoardId = "chess-capture-mini";
-        AddPlayer("white");
-        AddPlayer("black");
+        AddPlayer(ChessIds.Players.White);
+        AddPlayer(ChessIds.Players.Black);
         AddDirection("north"); // increasing rank toward black side
         AddDirection("south"); // toward white side
 
@@ -37,16 +38,16 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
 
         // Pieces (queen sliding north/south; target pawn stationary facing south for consistency though direction irrelevant here)
         AddPiece("white-queen")
-            .WithOwner("white")
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").CanRepeat()
             .HasDirection("south").CanRepeat();
 
         AddPiece("black-pawn-5")
-            .WithOwner("black")
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("south");
 
-        WithPiece("white-queen").OnTile("tile-e1");
-        WithPiece("black-pawn-5").OnTile("tile-e7");
+        WithPiece("white-queen").OnTile(ChessIds.Tiles.E1);
+        WithPiece("black-pawn-5").OnTile(ChessIds.Tiles.E7);
 
         AddGamePhase("move")
             .If<NullGameStateCondition>()

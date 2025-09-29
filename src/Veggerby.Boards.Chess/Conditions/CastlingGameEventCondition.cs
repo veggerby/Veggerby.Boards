@@ -31,7 +31,7 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         // Only consider king pieces by id convention
-        if (!@event.Piece.Id.EndsWith("-king"))
+        if (!@event.Piece.Id.EndsWith(ChessIds.PieceSuffixes.King))
         {
             return ConditionResponse.Ignore("Not a king");
         }
@@ -45,8 +45,8 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         }
 
         // Determine color & initial king square baseline (standard chess: king on e-file)
-        var isWhite = @event.Piece.Owner.Id == "white";
-        var startTileId = isWhite ? "tile-e1" : "tile-e8";
+        var isWhite = @event.Piece.Owner.Id == ChessIds.Players.White;
+        var startTileId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (from.Id != startTileId)
         {
             return ConditionResponse.Ignore("King not on initial square");
@@ -55,8 +55,8 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         // Supported destinations relative to e-file king start:
         // Kingside: e -> g (two squares toward h rook)
         // Queenside: e -> c (two squares toward a rook)
-        var kingSideTarget = isWhite ? "tile-g1" : "tile-g8";
-        var queenSideTarget = isWhite ? "tile-c1" : "tile-c8";
+        var kingSideTarget = isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8;
+        var queenSideTarget = isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8;
 
         var isKingSide = to.Id == kingSideTarget;
         var isQueenSide = to.Id == queenSideTarget;
@@ -90,7 +90,7 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
             var tileId = $"tile-{f}{rank}";
             var tile = engine.Game.GetTile(tileId);
             // Skip the rook square itself (not part of king traversal). Rook squares: white h1/a1; black h8/a8.
-            if (tile.Id == (isWhite ? (isKingSide ? "tile-h1" : "tile-a1") : (isKingSide ? "tile-h8" : "tile-a8"))) { continue; }
+            if (tile.Id == (isWhite ? (isKingSide ? ChessIds.Tiles.H1 : ChessIds.Tiles.A1) : (isKingSide ? ChessIds.Tiles.H8 : ChessIds.Tiles.A8))) { continue; }
             if (state.GetPiecesOnTile(tile).Any()) { return ConditionResponse.Fail("Path blocked"); }
         }
 

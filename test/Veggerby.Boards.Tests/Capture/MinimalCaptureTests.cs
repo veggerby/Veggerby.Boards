@@ -3,6 +3,7 @@ using System.Linq;
 using AwesomeAssertions;
 
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
@@ -23,9 +24,9 @@ public class MinimalCaptureTests
         var progress = new MinimalCaptureGameBuilder().Compile();
         var white = progress.Game.GetPiece("white-slider");
         var black = progress.Game.GetPiece("black-block");
-        var a1 = progress.Game.GetTile("tile-a1");
-        var a2 = progress.Game.GetTile("tile-a2");
-        var a3 = progress.Game.GetTile("tile-a3");
+        var a1 = progress.Game.GetTile(ChessIds.Tiles.A1);
+        var a2 = progress.Game.GetTile(ChessIds.Tiles.A2);
+        var a3 = progress.Game.GetTile(ChessIds.Tiles.A3);
         // Build multi-step path a1 -> a2 -> a3
         var rel1 = progress.Game.Board.TileRelations.Single(r => r.From.Equals(a1) && r.To.Equals(a2));
         var rel2 = progress.Game.Board.TileRelations.Single(r => r.From.Equals(a2) && r.To.Equals(a3));

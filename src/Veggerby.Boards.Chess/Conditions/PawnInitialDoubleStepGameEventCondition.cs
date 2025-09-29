@@ -41,12 +41,14 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
         {
             return ConditionResponse.Ignore("Not two uniform steps");
         }
+
         var dirId = dirs[0].Id;
         var isWhite = @event.Piece.Id.StartsWith("white-");
         if (isWhite && dirId != "north")
         {
             return ConditionResponse.Ignore("White double-step must be north");
         }
+
         if (!isWhite && dirId != "south")
         {
             return ConditionResponse.Ignore("Black double-step must be south");

@@ -21,7 +21,7 @@ public class ChessBlockingTests
         // arrange
         var progress = new ChessGameBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen); // on d1
-        var target = progress.Game.GetTile("tile-d4"); // path crosses d2 (occupied by pawn)
+        var target = progress.Game.GetTile(ChessIds.Tiles.D4); // path crosses d2 (occupied by pawn)
         var state = progress.State.GetState<PieceState>(queen);
         var path = queen.Patterns.Select(p =>
         {

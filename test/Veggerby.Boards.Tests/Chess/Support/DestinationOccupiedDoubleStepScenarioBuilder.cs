@@ -17,11 +17,11 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
     {
         BoardId = "chess-destination-occupied-double-step";
 
-        AddPlayer("white");
-        AddPlayer("black");
+        AddPlayer(ChessIds.Players.White);
+        AddPlayer(ChessIds.Players.Black);
 
-        WithActivePlayer("white", true);
-        WithActivePlayer("black", false);
+        WithActivePlayer(ChessIds.Players.White, true);
+        WithActivePlayer(ChessIds.Players.Black, false);
 
         AddDirection("north");
         AddDirection("east");
@@ -51,7 +51,7 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
         }
 
         AddPiece("white-pawn-test")
-            .WithOwner("white")
+            .WithOwner(ChessIds.Players.White)
             .HasDirection("north").Done()
             .HasPattern("north")
             .HasPattern("north", "north")
@@ -60,11 +60,11 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
 
         // Opponent piece placed on e4 (double-step destination from e2)
         AddPiece("black-bishop-blocker")
-            .WithOwner("black")
+            .WithOwner(ChessIds.Players.Black)
             .HasDirection("north").Done();
 
-        WithPiece("white-pawn-test").OnTile("tile-e2");
-        WithPiece("black-bishop-blocker").OnTile("tile-e4");
+        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
+        WithPiece("black-bishop-blocker").OnTile(ChessIds.Tiles.E4);
 
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
 

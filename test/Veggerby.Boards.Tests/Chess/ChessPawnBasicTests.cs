@@ -20,7 +20,7 @@ public class ChessPawnBasicTests
         progress = progress.Move(WhitePawn5, "e3");
         // assert
         var pawn = progress.Game.GetPiece(WhitePawn5);
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be("tile-e3");
+        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
     }
 
     [Fact]

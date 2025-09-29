@@ -50,9 +50,9 @@ public class NomenclatureTests
         // arrange
         var nomenclature = new ChessNomenclature();
         var pawn = new Piece("white-pawn-5", owner: null, patterns: []);
-        var from = new Tile("tile-e2");
-        var mid = new Tile("tile-e3");
-        var to = new Tile("tile-e4");
+        var from = new Tile(ChessIds.Tiles.E2);
+        var mid = new Tile(ChessIds.Tiles.E3);
+        var to = new Tile(ChessIds.Tiles.E4);
         var rel1 = new TileRelation(from, mid, Direction.South);
         var rel2 = new TileRelation(mid, to, Direction.South);
         var path = new TilePath([rel1, rel2]);
@@ -70,12 +70,12 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
-        var black = new Player("black");
+        var white = new Player(ChessIds.Players.White);
+        var black = new Player(ChessIds.Players.Black);
         var pawn = new Piece("white-pawn-5", owner: white, patterns: []);
         var victim = new Piece("black-pawn-4", owner: black, patterns: []);
-        var from = new Tile("tile-e4");
-        var to = new Tile("tile-d5");
+        var from = new Tile(ChessIds.Tiles.E4);
+        var to = new Tile(ChessIds.Tiles.D5);
         var rel = new TileRelation(from, to, Direction.NorthWest); // diagonal capture style (engine semantics simplified)
         var path = new TilePath([rel]);
         var move = new MovePieceGameEvent(pawn, path);
@@ -99,7 +99,7 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
+        var white = new Player(ChessIds.Players.White);
         var patterns = new List<IPattern>
         {
             new FixedPattern(new[]{Direction.West, Direction.North, Direction.North}),
@@ -113,11 +113,11 @@ public class NomenclatureTests
         };
         var knightB1 = new Piece("white-knight-1", white, patterns);
         var knightD1 = new Piece("white-knight-2", white, patterns);
-        var fromB1 = new Tile("tile-b1");
-        var fromD1 = new Tile("tile-d1");
-        var c1 = new Tile("tile-c1");
-        var c2 = new Tile("tile-c2");
-        var c3 = new Tile("tile-c3");
+        var fromB1 = new Tile(ChessIds.Tiles.B1);
+        var fromD1 = new Tile(ChessIds.Tiles.D1);
+        var c1 = new Tile(ChessIds.Tiles.C1);
+        var c2 = new Tile(ChessIds.Tiles.C2);
+        var c3 = new Tile(ChessIds.Tiles.C3);
 
         // Minimal board connectivity for required paths
         var relB1C1 = new TileRelation(fromB1, c1, Direction.East);
@@ -151,8 +151,8 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
-        var black = new Player("black");
+        var white = new Player(ChessIds.Players.White);
+        var black = new Player(ChessIds.Players.Black);
         // Rook patterns (four repeatable directions simplified as separate fixed sequences of single steps repeated in visitor logic)
         var rookPatterns = new IPattern[]
         {
@@ -164,8 +164,8 @@ public class NomenclatureTests
         var rook = new Piece("white-rook-1", white, rookPatterns);
         var king = new Piece("black-king", black, []);
         // Tiles a1..a8
-        var a1 = new Tile("tile-a1"); var a2 = new Tile("tile-a2"); var a3 = new Tile("tile-a3"); var a4 = new Tile("tile-a4");
-        var a5 = new Tile("tile-a5"); var a6 = new Tile("tile-a6"); var a7 = new Tile("tile-a7"); var a8 = new Tile("tile-a8");
+        var a1 = new Tile(ChessIds.Tiles.A1); var a2 = new Tile(ChessIds.Tiles.A2); var a3 = new Tile(ChessIds.Tiles.A3); var a4 = new Tile(ChessIds.Tiles.A4);
+        var a5 = new Tile(ChessIds.Tiles.A5); var a6 = new Tile(ChessIds.Tiles.A6); var a7 = new Tile(ChessIds.Tiles.A7); var a8 = new Tile(ChessIds.Tiles.A8);
         // Relations up the file
         var r1 = new TileRelation(a1, a2, Direction.North); var r2 = new TileRelation(a2, a3, Direction.North);
         var r3 = new TileRelation(a3, a4, Direction.North); var r4 = new TileRelation(a4, a5, Direction.North);
@@ -190,15 +190,15 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
+        var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
         {
             new DirectionPattern(Direction.East, false),
             new DirectionPattern(Direction.West, false)
         });
-        var from = new Tile("tile-e1");
-        var f1 = new Tile("tile-f1");
-        var g1 = new Tile("tile-g1");
+        var from = new Tile(ChessIds.Tiles.E1);
+        var f1 = new Tile(ChessIds.Tiles.F1);
+        var g1 = new Tile(ChessIds.Tiles.G1);
         var r1 = new TileRelation(from, f1, Direction.East);
         var r2 = new TileRelation(f1, g1, Direction.East);
         var board = new Board("castle-board-k", new[] { r1, r2 });
@@ -219,15 +219,15 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
+        var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
         {
             new DirectionPattern(Direction.East, false),
             new DirectionPattern(Direction.West, false)
         });
-        var from = new Tile("tile-e1");
-        var d1 = new Tile("tile-d1");
-        var c1 = new Tile("tile-c1");
+        var from = new Tile(ChessIds.Tiles.E1);
+        var d1 = new Tile(ChessIds.Tiles.D1);
+        var c1 = new Tile(ChessIds.Tiles.C1);
         var r1 = new TileRelation(from, d1, Direction.West);
         var r2 = new TileRelation(d1, c1, Direction.West);
         var board = new Board("castle-board-q", new[] { r1, r2 });
@@ -248,10 +248,10 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var white = new Player("white");
+        var white = new Player(ChessIds.Players.White);
         var pawn = new Piece("white-pawn-1", white, new IPattern[] { new DirectionPattern(Direction.South, false) });
-        var from = new Tile("tile-e7");
-        var to = new Tile("tile-e8");
+        var from = new Tile(ChessIds.Tiles.E7);
+        var to = new Tile(ChessIds.Tiles.E8);
         var r = new TileRelation(from, to, Direction.South); // Using South (engine's orientation) consistent with earlier examples
         var board = new Board("promo-board", new[] { r });
         var game = new Game(board, new[] { white }, new Artifact[] { pawn });

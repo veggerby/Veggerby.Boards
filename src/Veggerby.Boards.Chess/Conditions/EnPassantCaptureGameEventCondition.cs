@@ -73,6 +73,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
         var victimTile = engine.Game.Board.GetTile(victimTileId);
         var victimPawn = state.GetPiecesOnTile(victimTile)
             .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && p.Id.Contains("pawn"));
+
         if (victimPawn is null)
         {
             return ConditionResponse.Ignore("No victim pawn");

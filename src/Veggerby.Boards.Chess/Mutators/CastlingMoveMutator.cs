@@ -24,19 +24,19 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         var ownerId = @event.Piece.Owner.Id;
         var isWhite = ownerId == ChessIds.Players.White;
         var toId = @event.Path!.To.Id;
-        var isKingSide = toId == (isWhite ? "tile-g1" : "tile-g8");
-        var isQueenSide = toId == (isWhite ? "tile-c1" : "tile-c8");
+        var isKingSide = toId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
+        var isQueenSide = toId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
         if (!isKingSide && !isQueenSide)
         {
             return gameState; // not a castling move
         }
 
         var rookSourceId = isWhite
-            ? (isKingSide ? "tile-h1" : "tile-a1")
-            : (isKingSide ? "tile-h8" : "tile-a8");
+            ? (isKingSide ? ChessIds.Tiles.H1 : ChessIds.Tiles.A1)
+            : (isKingSide ? ChessIds.Tiles.H8 : ChessIds.Tiles.A8);
         var rookDestId = isWhite
-            ? (isKingSide ? "tile-f1" : "tile-d1")
-            : (isKingSide ? "tile-f8" : "tile-d8");
+            ? (isKingSide ? ChessIds.Tiles.F1 : ChessIds.Tiles.D1)
+            : (isKingSide ? ChessIds.Tiles.F8 : ChessIds.Tiles.D8);
 
         // Resolve rook piece via piece states
         var rookPiece = gameState

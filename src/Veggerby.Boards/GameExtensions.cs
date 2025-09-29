@@ -80,18 +80,11 @@ public static partial class GameExtensions
     {
         var dice = progress.Game.GetArtifacts<Dice>(ids);
 
-        // Special handling: the Backgammon doubling cube ("doubling-dice") should not have its value overwritten
-        // by the deterministic index-based helper. Its lifecycle is governed by DoublingDiceStateMutator which
-        // doubles the current value and assigns ownership. If the helper is invoked with only the doubling cube
-        // (e.g., tests calling RollDice("doubling-dice")) we preserve the existing state so that an ignored condition
-        // results in a silent no-op (unchanged value & owner). We only construct transient DiceState<int> instances
-        // for standard dice (non doubling cube) here.
         var states = dice
             .Where(d => d.Id != "doubling-dice")
             .Select((x, i) => new DiceState<int>(x, i))
             .ToArray();
 
-        // If after filtering there are no states to roll (e.g., only doubling-dice requested) simply return original progress.
         if (states.Length == 0)
         {
             return progress;
@@ -107,7 +100,7 @@ public static partial class GameExtensions
     /// Test parity note: The observer batching parity test (see ObserverBatchingTests.GivenSingleMove_WhenBatchedEnabled_ThenOrderingMatchesUnbatched)
     /// replicates the core of this resolution logic (pattern.Accept + shortest path selection) via a helper to ensure
     /// ordering comparisons remain stable even if movement pattern internals evolve. If you change the semantics here,
-    /// update the helper in tests (`TestPathHelper.ResolveFirstValidPath`) accordingly.
+    /// update the helper in tests (TestPathHelper.ResolveFirstValidPath) accordingly.
     /// </remarks>
     public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
     {
@@ -128,46 +121,6 @@ public static partial class GameExtensions
         }
 
         var @event = new MovePieceGameEvent(piece, path);
-        return progress.HandleEvent(@event);
-    }
-
-    /// <summary>
-    /// Explicit chess castling helper (king side or queen side) removing reliance on synthetic path inside generic Move.
-    /// </summary>
-    /// <param name="progress">Game progress.</param>
-    /// <param name="color">"white" or "black".</param>
-    /// <param name="kingSide">True for king-side, false for queen-side.</param>
-    public static GameProgress Castle(this GameProgress progress, string color, bool kingSide)
-    {
-        var kingId = color + "-king";
-        var game = progress.Game;
-        var king = game.GetPiece(kingId);
-        var kingState = progress.State.GetState<PieceState>(king);
-        var start = kingState.CurrentTile.Id;
-        var expectedStart = color == "white" ? "tile-e1" : "tile-e8";
-        if (start != expectedStart) { return progress; }
-        var destination = color == "white"
-            ? (kingSide ? game.GetTile("tile-g1") : game.GetTile("tile-c1"))
-            : (kingSide ? game.GetTile("tile-g8") : game.GetTile("tile-c8"));
-
-        // Build horizontal path relations (two steps toward rook)
-        char fromFile = start[5];
-        char toFile = destination.Id[5];
-        int step = fromFile < toFile ? 1 : -1;
-        var rank = start[6];
-        var relations = new List<TileRelation>();
-        var dirId = step == 1 ? "east" : "west";
-        var direction = new Direction(dirId);
-        var current = kingState.CurrentTile;
-        for (char f = (char)(fromFile + step); ; f = (char)(f + step))
-        {
-            var nextTile = game.GetTile($"tile-{f}{rank}");
-            relations.Add(new TileRelation(current, nextTile, direction));
-            current = nextTile;
-            if (f == toFile) { break; }
-        }
-        var path = new TilePath(relations);
-        var @event = new MovePieceGameEvent(king, path);
         return progress.HandleEvent(@event);
     }
 }

@@ -22,10 +22,19 @@ public class ChessCompiledIntegrationParityTests
         var from = progress.Game.GetTile("e2");
         var to1 = progress.Game.GetTile("e3");
         var to2 = progress.Game.GetTile("e4");
+
         var legacyVisitor1 = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to1);
-        foreach (var p in piece.Patterns) { p.Accept(legacyVisitor1); if (legacyVisitor1.ResultPath != null) break; }
+        foreach (var p in piece.Patterns)
+        {
+            p.Accept(legacyVisitor1); if (legacyVisitor1.ResultPath != null) break;
+        }
+
         var legacyVisitor2 = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to2);
-        foreach (var p in piece.Patterns) { p.Accept(legacyVisitor2); if (legacyVisitor2.ResultPath != null) break; }
+        foreach (var p in piece.Patterns)
+        {
+            p.Accept(legacyVisitor2); if (legacyVisitor2.ResultPath != null) break;
+        }
+
         legacyVisitor1.ResultPath.Should().BeNull("Expected current legacy to fail for single advance for reproduction");
         legacyVisitor2.ResultPath.Should().BeNull("Expected current legacy to fail for double advance for reproduction");
     }
@@ -45,8 +54,12 @@ public class ChessCompiledIntegrationParityTests
         foreach (var pattern in piece.Patterns)
         {
             pattern.Accept(legacyVisitor);
-            if (legacyVisitor.ResultPath is not null) { break; }
+            if (legacyVisitor.ResultPath is not null)
+            {
+                break;
+            }
         }
+
         var legacy = legacyVisitor.ResultPath;
 
         // act (compiled first)
@@ -77,8 +90,12 @@ public class ChessCompiledIntegrationParityTests
         foreach (var pattern in piece.Patterns)
         {
             pattern.Accept(legacyVisitor);
-            if (legacyVisitor.ResultPath is not null) { break; }
+            if (legacyVisitor.ResultPath is not null)
+            {
+                break;
+            }
         }
+
         var legacy = legacyVisitor.ResultPath;
         var compiled = progress.ResolvePathCompiledFirst(piece, from, to);
 

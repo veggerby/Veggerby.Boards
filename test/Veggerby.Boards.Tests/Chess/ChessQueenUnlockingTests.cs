@@ -29,8 +29,8 @@ public class ChessQueenUnlockingTests
         progress = progress.Move(WhiteQueen, "e2");
 
         // assert
-        progress.State.GetState<PieceState>(queen).CurrentTile.Id.Should().Be("tile-e2");
-        queenStart.Id.Should().Be("tile-d1"); // sanity (original queen start square)
+        progress.State.GetState<PieceState>(queen).CurrentTile.Id.Should().Be(ChessIds.Tiles.E2);
+        queenStart.Id.Should().Be(ChessIds.Tiles.D1); // sanity (original queen start square)
     }
 
     [Fact]

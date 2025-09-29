@@ -59,7 +59,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
 
             if (id.Contains(ChessIds.PieceSuffixes.Pawn, StringComparison.Ordinal))
             {
-                int dir = opponent == "white" ? 1 : -1;
+                int dir = opponent == ChessIds.Players.White ? 1 : -1;
                 var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
                 if (pawnHit is not null) { return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack"); }
             }

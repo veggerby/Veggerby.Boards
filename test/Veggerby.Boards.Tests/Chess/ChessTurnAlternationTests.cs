@@ -26,11 +26,11 @@ public class ChessTurnAlternationTests
         // act2 attempt another white move (same pawn e3->e4)
         progress = progress.Move("white-pawn-5", "e4");
         // assert: ignored, pawn remains e3, state reference unchanged
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be("tile-e3");
+        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
         progress.Should().BeSameAs(afterWhiteMove);
         // black still to move (can move now)
         progress = progress.Move("black-pawn-5", "e6");
-        progress.State.GetState<PieceState>(beforeBlackPawn).CurrentTile.Id.Should().Be("tile-e6");
+        progress.State.GetState<PieceState>(beforeBlackPawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E6);
     }
 
     [Fact]
@@ -49,9 +49,9 @@ public class ChessTurnAlternationTests
         progress = progress.Move("black-pawn-test", "e3");
         // assert: black pawn remained on d4, state unchanged
         var blackPawnState = progress.State.GetState<PieceState>(blackPawn);
-        blackPawnState.CurrentTile.Id.Should().Be("tile-d4");
+        blackPawnState.CurrentTile.Id.Should().Be(ChessIds.Tiles.D4);
         progress.Should().BeSameAs(stateAfterDecline);
         // white pawn still on e4
-        progress.State.GetState<PieceState>(whitePawn).CurrentTile.Id.Should().Be("tile-e4");
+        progress.State.GetState<PieceState>(whitePawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E4);
     }
 }

@@ -79,10 +79,10 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         //  * Moving a rook from its original starting square removes that side's right only.
         bool whiteKingMoved = @event.Piece.Id == ChessIds.Pieces.WhiteKing;
         bool blackKingMoved = @event.Piece.Id == ChessIds.Pieces.BlackKing;
-        bool whiteRookFromA1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook1 && originalFromTile?.Id == "tile-a1";
-        bool whiteRookFromH1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook2 && originalFromTile?.Id == "tile-h1";
-        bool blackRookFromA8 = @event.Piece.Id == ChessIds.Pieces.BlackRook1 && originalFromTile?.Id == "tile-a8";
-        bool blackRookFromH8 = @event.Piece.Id == ChessIds.Pieces.BlackRook2 && originalFromTile?.Id == "tile-h8";
+        bool whiteRookFromA1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook1 && originalFromTile?.Id == ChessIds.Tiles.A1;
+        bool whiteRookFromH1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook2 && originalFromTile?.Id == ChessIds.Tiles.H1;
+        bool blackRookFromA8 = @event.Piece.Id == ChessIds.Pieces.BlackRook1 && originalFromTile?.Id == ChessIds.Tiles.A8;
+        bool blackRookFromH8 = @event.Piece.Id == ChessIds.Pieces.BlackRook2 && originalFromTile?.Id == ChessIds.Tiles.H8;
 
         var rightsAdjusted = RevokeRights(prevExtras, whiteKingMoved, blackKingMoved, whiteRookFromA1, whiteRookFromH1, blackRookFromA8, blackRookFromH8);
         var newExtras = rightsAdjusted with

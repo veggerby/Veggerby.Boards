@@ -27,8 +27,8 @@ public class DecisionPlanChessBehaviorTests
 
         // assert
         var pieces = progress.State.GetStates<PieceState>().ToDictionary(p => p.Artifact.Id, p => p.CurrentTile.Id);
-        pieces["white-pawn-5"].Should().Be("tile-e4");
-        pieces["black-pawn-5"].Should().Be("tile-e5");
-        pieces["white-knight-2"].Should().Be("tile-f3");
+        pieces["white-pawn-5"].Should().Be(ChessIds.Tiles.E4);
+        pieces["black-pawn-5"].Should().Be(ChessIds.Tiles.E5);
+        pieces["white-knight-2"].Should().Be(ChessIds.Tiles.F3);
     }
 }

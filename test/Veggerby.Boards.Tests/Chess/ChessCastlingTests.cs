@@ -29,12 +29,12 @@ public class ChessCastlingTests
         progress = progress.Move("white-bishop-2", "e2");
         progress = progress.Move("black-pawn-3", "c6");
         // Attempt castling using explicit helper
-        progress = progress.Castle("white", kingSide: true);
+        progress = progress.Castle(ChessIds.Players.White, kingSide: true);
         // assert
         var king = progress.Game.GetPiece("white-king");
         var rook = progress.Game.GetPiece("white-rook-2");
-        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be("tile-g1");
-        progress.State.GetState<PieceState>(rook).CurrentTile.Id.Should().Be("tile-f1");
+        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.G1);
+        progress.State.GetState<PieceState>(rook).CurrentTile.Id.Should().Be(ChessIds.Tiles.F1);
         var extras = progress.State.GetExtras<ChessStateExtras>();
         extras.WhiteCanCastleKingSide.Should().BeFalse();
         extras.WhiteCanCastleQueenSide.Should().BeFalse();
@@ -47,12 +47,12 @@ public class ChessCastlingTests
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State;
         // act & assert (malformed castling attempt should raise invalid event exception due to path blockage)
-        var ex = Record.Exception(() => progress = progress.Castle("white", kingSide: false));
+        var ex = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: false));
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged
         var king = progress.Game.GetPiece("white-king");
-        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be("tile-e1");
+        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.E1);
         before.Should().NotBeSameAs(null); // guard
     }
 }

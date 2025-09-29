@@ -523,10 +523,7 @@ public abstract class GameBuilder
     /// <param name="extras">Instance (must be reference type).</param>
     protected void WithState<T>(T extras) where T : class
     {
-        if (extras is null)
-        {
-            throw new ArgumentNullException(nameof(extras));
-        }
+        ArgumentNullException.ThrowIfNull(extras);
 
         // TODO: Revisit Extras state/artifact design (naming + potential consolidation). Consider exposing a more explicit
         // registration API to distinguish engine-level capabilities from per-game auxiliary state. (Tracked from user note)

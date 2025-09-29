@@ -69,8 +69,8 @@ public class CompiledPatternAdjacencyCacheParityTests
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile("tile-e2");
-            var to = progress.Game.GetTile("tile-e4");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
             without = ResolveCompiled(progress, piece, from, to);
         }
         TilePath with;
@@ -78,8 +78,8 @@ public class CompiledPatternAdjacencyCacheParityTests
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile("tile-e2");
-            var to = progress.Game.GetTile("tile-e4");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
             with = ResolveCompiled(progress, piece, from, to);
         }
 

@@ -2,6 +2,7 @@ using System.Linq;
 
 using AwesomeAssertions;
 
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Builders;
 
@@ -23,7 +24,7 @@ public class ChessCaptureTests
 
         // assert
         var queenState = progress.State.GetState<PieceState>(queen);
-        queenState.CurrentTile.Id.Should().Be("tile-e7");
+        queenState.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
 
         // black pawn should now have a captured state and not appear on e7
         progress.State.IsCaptured(blackPawn).Should().BeTrue("black pawn should be marked captured");

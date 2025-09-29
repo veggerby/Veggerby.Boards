@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Builders;
 
@@ -25,7 +26,7 @@ public class ChessCaptureScaffoldingTests
 
         // assert
         var queenState = progress.State.GetState<PieceState>(whiteQueen);
-        queenState.CurrentTile.Id.Should().Be("tile-e7");
+        queenState.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
         progress.State.IsCaptured(blackPawn).Should().BeTrue();
         progress.State.GetPiecesOnTile(queenState.CurrentTile)
             .Should().NotContain(p => p.Equals(blackPawn));

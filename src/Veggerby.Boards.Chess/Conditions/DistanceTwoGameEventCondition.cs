@@ -19,7 +19,7 @@ public sealed class DistanceTwoGameEventCondition : IGameEventCondition<MovePiec
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
         return moveEvent.Distance == 2
-        ? ConditionResponse.Valid
-        : ConditionResponse.Ignore("Distance not two");
+            ? ConditionResponse.Valid
+            : ConditionResponse.Ignore("Distance not two");
     }
 }

@@ -25,7 +25,7 @@ public class OccupancyBehaviorTests
         Assert.NotNull(fromState); // sanity
         var from = fromState.CurrentTile;
         // Target tile one rank forward.
-        var to = game.GetTile("tile-b3");
+        var to = game.GetTile(ChessIds.Tiles.B3);
         // Pre condition (ground truth via state): source occupied by piece, destination unoccupied.
         var allPieceStates = progress.State.GetStates<PieceState>().ToArray();
         Assert.Contains(allPieceStates, ps => ps.CurrentTile == from && ps.Artifact == piece);

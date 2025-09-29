@@ -7,6 +7,7 @@ using BenchmarkDotNet.Attributes;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Internal;
@@ -47,7 +48,7 @@ public class SlidingFastPathMicroBenchmark
             boardTiles.Add(new Tile($"tile-a{r}"));
         }
         // Simple file (a1..a8) plus one lateral tile for off-ray target
-        var lateral = new Tile("tile-b1");
+        var lateral = new Tile(ChessIds.Tiles.B1);
         boardTiles.Add(lateral);
         var relations = new List<TileRelation>();
         for (int r = 1; r <= 8; r++)

@@ -28,7 +28,7 @@ public class ChessPawnDoubleStepInvalidTests
         // attempt illegal double-step e3->e5 (skipping e4)
         progress = progress.Move("white-pawn-5", "e5");
         // assert: pawn remained on e3 (ignored)
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be("tile-e3");
+        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
         // ensure new state reference not advanced by illegal attempt (identity equality ok) - semantics: Move returns same progress when ignored
         progress.Should().BeSameAs(progress);
     }

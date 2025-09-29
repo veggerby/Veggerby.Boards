@@ -29,26 +29,26 @@ public class ChessGameEngineBuilderTests
         }
 
         // Spot-check orientation on corners and a few interior tiles
-        ExpectRelation("tile-a1", "north", "tile-a2");
-        ExpectRelation("tile-a1", "east", "tile-b1");
-        ExpectRelation("tile-a1", "north-east", "tile-b2");
+        ExpectRelation(ChessIds.Tiles.A1, "north", ChessIds.Tiles.A2);
+        ExpectRelation(ChessIds.Tiles.A1, "east", ChessIds.Tiles.B1);
+        ExpectRelation(ChessIds.Tiles.A1, "north-east", ChessIds.Tiles.B2);
 
-        ExpectRelation("tile-h1", "north", "tile-h2");
-        ExpectRelation("tile-h1", "west", "tile-g1");
-        ExpectRelation("tile-h1", "north-west", "tile-g2");
+        ExpectRelation(ChessIds.Tiles.H1, "north", ChessIds.Tiles.H2);
+        ExpectRelation(ChessIds.Tiles.H1, "west", ChessIds.Tiles.G1);
+        ExpectRelation(ChessIds.Tiles.H1, "north-west", ChessIds.Tiles.G2);
 
-        ExpectRelation("tile-a8", "south", "tile-a7");
-        ExpectRelation("tile-a8", "east", "tile-b8");
-        ExpectRelation("tile-a8", "south-east", "tile-b7");
+        ExpectRelation(ChessIds.Tiles.A8, "south", ChessIds.Tiles.A7);
+        ExpectRelation(ChessIds.Tiles.A8, "east", ChessIds.Tiles.B8);
+        ExpectRelation(ChessIds.Tiles.A8, "south-east", ChessIds.Tiles.B7);
 
-        ExpectRelation("tile-h8", "south", "tile-h7");
-        ExpectRelation("tile-h8", "west", "tile-g8");
-        ExpectRelation("tile-h8", "south-west", "tile-g7");
+        ExpectRelation(ChessIds.Tiles.H8, "south", ChessIds.Tiles.H7);
+        ExpectRelation(ChessIds.Tiles.H8, "west", ChessIds.Tiles.G8);
+        ExpectRelation(ChessIds.Tiles.H8, "south-west", ChessIds.Tiles.G7);
 
-        ExpectRelation("tile-d4", "north", "tile-d5");
-        ExpectRelation("tile-d4", "south", "tile-d3");
-        ExpectRelation("tile-d4", "east", "tile-e4");
-        ExpectRelation("tile-d4", "west", "tile-c4");
+        ExpectRelation(ChessIds.Tiles.D4, "north", ChessIds.Tiles.D5);
+        ExpectRelation(ChessIds.Tiles.D4, "south", ChessIds.Tiles.D3);
+        ExpectRelation(ChessIds.Tiles.D4, "east", ChessIds.Tiles.E4);
+        ExpectRelation(ChessIds.Tiles.D4, "west", ChessIds.Tiles.C4);
 
         // piece state assertions
         // Standard placement: queen on d-file, king on e-file

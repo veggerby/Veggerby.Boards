@@ -3,6 +3,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations; // TilePath
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;
 
 using Xunit;
@@ -54,14 +55,45 @@ public class SlidingFastPathParityPackTests
                 {
                     var id = tileId(file, rank);
                     var n = rank + 1; var s = rank - 1;
-                    if (n <= 8) { WithTile(id).WithRelationTo(tileId(file, n)).InDirection("north"); }
-                    if (s >= 1) { WithTile(id).WithRelationTo(tileId(file, s)).InDirection("south"); }
-                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection("east"); }
-                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection("west"); }
-                    if (file < 'h' && n <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), n)).InDirection("north-east"); }
-                    if (file > 'a' && n <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), n)).InDirection("north-west"); }
-                    if (file < 'h' && s >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), s)).InDirection("south-east"); }
-                    if (file > 'a' && s >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), s)).InDirection("south-west"); }
+                    if (n <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, n)).InDirection("north");
+                    }
+
+                    if (s >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, s)).InDirection("south");
+                    }
+
+                    if (file < 'h')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection("east");
+                    }
+
+                    if (file > 'a')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection("west");
+                    }
+
+                    if (file < 'h' && n <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), n)).InDirection("north-east");
+                    }
+
+                    if (file > 'a' && n <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), n)).InDirection("north-west");
+                    }
+
+                    if (file < 'h' && s >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), s)).InDirection("south-east");
+                    }
+
+                    if (file > 'a' && s >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), s)).InDirection("south-west");
+                    }
                 }
             }
 
@@ -137,21 +169,21 @@ public class SlidingFastPathParityPackTests
     public static IEnumerable<object[]> PackScenarios()
     {
         // id, type, from, owner definitions inside scenarios for clarity
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var queen = new PieceSpec("queen", "queen", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-d6", "black");
-        var immobile = new PieceSpec("stone", "immobile", "tile-d4", "white");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
+        var immobile = new PieceSpec("stone", "immobile", ChessIds.Tiles.D4, "white");
 
         // Each object[]: specs collection, moving piece, target tile, descriptive label (xUnit display)
-        yield return new object[] { new[] { rook }, rook, "tile-h4", "Rook long empty horizontal" };
-        yield return new object[] { new[] { rook, enemy }, rook, "tile-d6", "Rook capture enemy mid ray" };
-        yield return new object[] { new[] { rook, friendly }, rook, "tile-d8", "Rook friendly mid blocks beyond" };
-        yield return new object[] { new[] { bishop, friendly }, bishop, "tile-g5", "Bishop friendly mid ray blocks" };
-        yield return new object[] { new[] { queen, friendly }, queen, "tile-d6", "Queen friendly at target invalid" };
-        yield return new object[] { new[] { rook }, rook, "tile-d4", "Rook zero length" };
-        yield return new object[] { new[] { immobile }, immobile, "tile-d5", "Immobile cannot move" };
+        yield return new object[] { new[] { rook }, rook, ChessIds.Tiles.H4, "Rook long empty horizontal" };
+        yield return new object[] { new[] { rook, enemy }, rook, ChessIds.Tiles.D6, "Rook capture enemy mid ray" };
+        yield return new object[] { new[] { rook, friendly }, rook, ChessIds.Tiles.D8, "Rook friendly mid blocks beyond" };
+        yield return new object[] { new[] { bishop, friendly }, bishop, ChessIds.Tiles.G5, "Bishop friendly mid ray blocks" };
+        yield return new object[] { new[] { queen, friendly }, queen, ChessIds.Tiles.D6, "Queen friendly at target invalid" };
+        yield return new object[] { new[] { rook }, rook, ChessIds.Tiles.D4, "Rook zero length" };
+        yield return new object[] { new[] { immobile }, immobile, ChessIds.Tiles.D5, "Immobile cannot move" };
     }
 
     [Theory(DisplayName = "Sliding Fast-Path Parity Pack")]

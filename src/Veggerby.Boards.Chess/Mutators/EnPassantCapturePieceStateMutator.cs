@@ -64,9 +64,9 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         }
         catch
         {
-            activeId = @event.Piece.Id.StartsWith("white-") ? "white" : "black";
+            activeId = @event.Piece.Id.StartsWith("white-") ? ChessIds.Players.White : ChessIds.Players.Black;
         }
-        var fullmove = prevExtras.FullmoveNumber + (activeId == "black" ? 1 : 0);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = prevExtras with
         {
             EnPassantTargetTileId = null,

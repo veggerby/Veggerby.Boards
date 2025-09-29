@@ -46,7 +46,7 @@ public class OccupancyIndexRegistrationTests
     public void GivenBitboardsEnabled_WhenQueryingOccupancyIndex_ThenIsEmptyMatchesState()
     {
         var (progress, occ) = Build(bitboards: true);
-        var tile = progress.Game.Board.Tiles.First(t => t.Id == "tile-a1");
+        var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();
     }
 
@@ -54,7 +54,7 @@ public class OccupancyIndexRegistrationTests
     public void GivenNaiveOccupancyIndex_WhenQueryingOccupancy_ThenIsEmptyMatchesState()
     {
         var (progress, occ) = Build(bitboards: false);
-        var tile = progress.Game.Board.Tiles.First(t => t.Id == "tile-a1");
+        var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();
     }
 }

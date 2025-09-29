@@ -50,4 +50,42 @@ public class ChessCastlingSafetyTests
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
         extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue();
     }
+
+    [Fact]
+    public void GivenDestinationSquareC1UnderAttackByKnight_WhenWhiteAttemptsQueenSideCastle_ThenCastlingDeniedAndRightsIntact()
+    {
+        // arrange
+        // Goal: Black knight on b3 attacks c1 while path (d1, c1) clear and rights intact.
+        // Knight attack pattern: from b3 it attacks a1, c1, d2, d4, a5, c5, a? etc. So b3 -> c1 is valid.
+        var progress = new ChessGameBuilder().Compile();
+        // Sequence:
+        // 1. White clears d1, c1 by moving obstructing pieces: bishop c1 -> e3 (needs path cleared by moving pawn e2 first? Actually c1 bishop path to e3 requires d2 & e3 squares; d2 blocked by pawn d2. We'll use bishop c1 -> b2 route after clearing b2 pawn.)
+        // Simplify: move knight b1 -> d2 freeing b1 for later; then move bishop c1 -> b2 after moving pawn b2.
+        progress = progress.Move("white-knight-1", "d2");       // consume turn & vacate b1
+        progress = progress.Move("black-knight-2", "e7");        // g8 -> e7 starting route to b3
+        progress = progress.Move("white-pawn-2", "b4");          // clear b2 for bishop c1 -> b2
+        progress = progress.Move("black-knight-2", "c6");        // e7 -> c6
+        progress = progress.Move("white-bishop-1", "b2");        // c1 -> b2 clearing c1
+        progress = progress.Move("black-knight-2", "b4");        // c6 -> b4
+        progress = progress.Move("white-queen", "e2");           // queen d1 -> e2 clearing d1 (also safe square)
+        progress = progress.Move("black-knight-2", "d3");        // b4 -> d3
+        progress = progress.Move("white-pawn-5", "e4");          // filler; maintain rights
+        progress = progress.Move("black-knight-2", "b2");        // d3 -> b2 (attacks c4,a4,d1,d? etc)
+        progress = progress.Move("white-bishop-2", "e2");        // f1 -> e2 clearing f1 (not strictly needed but keeps symmetry)
+        progress = progress.Move("black-knight-2", "b3");        // b2 -> b3 now attacking c1
+
+        var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
+        extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
+
+        // act
+        var ex = Record.Exception(() => progress = progress.Castle("white", kingSide: false));
+
+        // assert
+        ex.Should().NotBeNull();
+        ex.Should().BeOfType<InvalidGameEventException>();
+        var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
+        extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue(); // rights unchanged (attempt denied)
+        extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
+    }
 }

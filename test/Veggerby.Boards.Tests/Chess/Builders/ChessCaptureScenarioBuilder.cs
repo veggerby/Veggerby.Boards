@@ -1,0 +1,65 @@
+using Veggerby.Boards;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States.Conditions;
+
+namespace Veggerby.Boards.Tests.Chess.Builders;
+
+/// <summary>
+/// Minimal chess subset builder: constructs only the e-file (e1..e8), white queen on e1, black pawn on e7, with empty intermediate squares
+/// so a direct multi-step path capture can be validated without moving auxiliary pawns.
+/// </summary>
+internal sealed class ChessCaptureScenarioBuilder : GameBuilder
+{
+    protected override void Build()
+    {
+        BoardId = "chess-capture-mini";
+        AddPlayer("white");
+        AddPlayer("black");
+        AddDirection("north"); // increasing rank toward black side
+        AddDirection("south"); // toward white side
+
+        // Build linear e-file: e1 (rank1) up to e8
+        for (int r = 1; r <= 8; r++)
+        {
+            var tileId = $"tile-e{r}";
+            var tile = AddTile(tileId);
+            if (r > 1)
+            {
+                tile.WithRelationTo($"tile-e{r - 1}").InDirection("south");
+            }
+            if (r < 8)
+            {
+                tile.WithRelationTo($"tile-e{r + 1}").InDirection("north");
+            }
+        }
+
+        // Pieces (queen sliding north/south; target pawn stationary facing south for consistency though direction irrelevant here)
+        AddPiece("white-queen")
+            .WithOwner("white")
+            .HasDirection("north").CanRepeat()
+            .HasDirection("south").CanRepeat();
+
+        AddPiece("black-pawn-5")
+            .WithOwner("black")
+            .HasDirection("south");
+
+        WithPiece("white-queen").OnTile("tile-e1");
+        WithPiece("black-pawn-5").OnTile("tile-e7");
+
+        AddGamePhase("move")
+            .If<NullGameStateCondition>()
+                .Then()
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PathNotObstructedGameEventCondition>()
+                            .And<DestinationHasOpponentPieceGameEventCondition>()
+                    .Then()
+                        .Do<CapturePieceStateMutator>()
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PathNotObstructedGameEventCondition>()
+                            .And<DestinationIsEmptyGameEventCondition>()
+                    .Then()
+                        .Do<MovePieceStateMutator>();
+    }
+}

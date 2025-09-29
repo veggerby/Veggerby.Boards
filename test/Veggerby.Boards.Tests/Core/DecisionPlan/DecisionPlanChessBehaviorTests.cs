@@ -20,14 +20,15 @@ public class DecisionPlanChessBehaviorTests
         var progress = new ChessGameBuilder().Compile();
 
         // act
-        progress = progress.Move("white-pawn-5", "e3");
-        progress = progress.Move("black-pawn-5", "e6");
+        // canonical orientation: white double-step e2->e4, black e7->e5
+        progress = progress.Move("white-pawn-5", "e4");
+        progress = progress.Move("black-pawn-5", "e5");
         progress = progress.Move("white-knight-2", "f3");
 
         // assert
         var pieces = progress.State.GetStates<PieceState>().ToDictionary(p => p.Artifact.Id, p => p.CurrentTile.Id);
-        pieces["white-pawn-5"].Should().Be("tile-e3");
-        pieces["black-pawn-5"].Should().Be("tile-e6");
+        pieces["white-pawn-5"].Should().Be("tile-e4");
+        pieces["black-pawn-5"].Should().Be("tile-e5");
         pieces["white-knight-2"].Should().Be("tile-f3");
     }
 }

@@ -37,10 +37,10 @@ public class ChessConditionDirectTests
     }
 
     [Fact]
-    public void PathNotObstructed_Should_Ignore_Queen_E1_E4()
+    public void PathNotObstructed_Should_Ignore_Queen_D1_D4()
     {
         // arrange
-        var (state, evt) = BuildEvent("white-queen", "tile-e4"); // passes over e2 (occupied by pawn)
+        var (state, evt) = BuildEvent("white-queen", "tile-d4"); // passes over d2 (occupied by pawn)
         var engine = new ChessGameBuilder().Compile().Engine; // fresh engine for condition context
         var condition = new PathNotObstructedGameEventCondition();
 
@@ -56,16 +56,16 @@ public class ChessConditionDirectTests
     }
 
     [Fact]
-    public void DestinationNotOwnPiece_Should_Ignore_Queen_E1_E2()
+    public void DestinationNotOwnPiece_Should_Ignore_Queen_D1_D2()
     {
         // arrange
-        var (state, evt) = BuildEvent("white-queen", "tile-e2"); // tile occupied by white pawn
+        var (state, evt) = BuildEvent("white-queen", "tile-d2"); // tile occupied by white pawn
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationNotOwnPieceGameEventCondition();
 
         // instrumentation: destination tile should have at least one friendly piece in state
         state.GetPiecesOnTile(evt.To).Any(ps => ps.Owner?.Equals(evt.Piece.Owner) ?? false)
-            .Should().BeTrue("destination e2 must be occupied by a friendly pawn");
+            .Should().BeTrue("destination d2 must be occupied by a friendly pawn");
 
         // act
         var result = condition.Evaluate(engine, state, evt);

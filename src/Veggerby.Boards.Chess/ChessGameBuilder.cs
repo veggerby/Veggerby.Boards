@@ -4,6 +4,7 @@ using Veggerby.Boards;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
@@ -35,6 +36,12 @@ public class ChessGameBuilder : GameBuilder
         AddPlayer("white");
         AddPlayer("black");
 
+        // Explicit active player projection: white begins.
+        WithActivePlayer("white", true);
+        WithActivePlayer("black", false);
+
+        // Canonical orientation: white pieces move toward increasing rank numbers (north), black toward decreasing (south).
+        // Directions are declared once; semantics in conditions/mutators use this canonical mapping.
         AddDirection("north");
         AddDirection("east");
         AddDirection("south");
@@ -74,46 +81,48 @@ public class ChessGameBuilder : GameBuilder
                         .InDirection("east");
                 }
 
-                if (y > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x)}{y - 1}")
-                        .InDirection("north");
-                }
-
+                // Canonical relation mapping: increasing rank = north
                 if (y < 8)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x)}{y + 1}")
+                        .InDirection("north");
+                }
+
+                if (y > 1)
+                {
+                    tile
+                        .WithRelationTo($"tile-{GetChar(x)}{y - 1}")
                         .InDirection("south");
                 }
 
-                if (x > 1 && y > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x - 1)}{y - 1}")
-                        .InDirection("north-west");
-                }
-
+                // Diagonals
                 if (x < 8 && y < 8)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x + 1)}{y + 1}")
-                        .InDirection("south-east");
+                        .InDirection("north-east");
                 }
 
                 if (x > 1 && y < 8)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x - 1)}{y + 1}")
-                        .InDirection("south-west");
+                        .InDirection("north-west");
                 }
 
                 if (x < 8 && y > 1)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x + 1)}{y - 1}")
-                        .InDirection("north-east");
+                        .InDirection("south-east");
+                }
+
+                if (x > 1 && y > 1)
+                {
+                    tile
+                        .WithRelationTo($"tile-{GetChar(x - 1)}{y - 1}")
+                        .InDirection("south-west");
                 }
 
             }
@@ -170,11 +179,21 @@ public class ChessGameBuilder : GameBuilder
         {
             AddPiece($"white-pawn-{i}")
                 .WithOwner("white")
-                .HasDirection("south");
+                // White forward = north (towards rank 8). Patterns are structural; legality gated by rule chain.
+                .HasDirection("north").Done()
+                .HasPattern("north")
+                .HasPattern("north", "north")
+                .HasDirection("north-east").Done()
+                .HasDirection("north-west").Done();
 
             AddPiece($"black-pawn-{i}")
                 .WithOwner("black")
-                .HasDirection("north");
+                // Black forward = south (towards rank 1).
+                .HasDirection("south").Done()
+                .HasPattern("south")
+                .HasPattern("south", "south")
+                .HasDirection("south-east").Done()
+                .HasDirection("south-west").Done();
         }
 
         for (int i = 1; i <= 8; i++)
@@ -234,8 +253,9 @@ public class ChessGameBuilder : GameBuilder
         WithPiece("white-rook-1").OnTile("tile-a1");
         WithPiece("white-knight-1").OnTile("tile-b1");
         WithPiece("white-bishop-1").OnTile("tile-c1");
-        WithPiece("white-king").OnTile("tile-d1");
-        WithPiece("white-queen").OnTile("tile-e1");
+        // Standard placement: queen on d-file, king on e-file
+        WithPiece("white-queen").OnTile("tile-d1");
+        WithPiece("white-king").OnTile("tile-e1");
         WithPiece("white-bishop-2").OnTile("tile-f1");
         WithPiece("white-knight-2").OnTile("tile-g1");
         WithPiece("white-rook-2").OnTile("tile-h1");
@@ -261,8 +281,9 @@ public class ChessGameBuilder : GameBuilder
         WithPiece("black-rook-1").OnTile("tile-a8");
         WithPiece("black-knight-1").OnTile("tile-b8");
         WithPiece("black-bishop-1").OnTile("tile-c8");
-        WithPiece("black-king").OnTile("tile-d8");
-        WithPiece("black-queen").OnTile("tile-e8");
+        // Standard placement: queen on d-file, king on e-file
+        WithPiece("black-queen").OnTile("tile-d8");
+        WithPiece("black-king").OnTile("tile-e8");
         WithPiece("black-bishop-2").OnTile("tile-f8");
         WithPiece("black-knight-2").OnTile("tile-g8");
         WithPiece("black-rook-2").OnTile("tile-h8");
@@ -278,20 +299,73 @@ public class ChessGameBuilder : GameBuilder
             FullmoveNumber: 1,
             MovedPieceIds: System.Array.Empty<string>()));
 
+
         AddGamePhase("move pieces")
             .If<NullGameStateCondition>()
                 .Then()
+                    // Castling (must appear before generic king non-pawn movement so two-square king move is intercepted)
                     .ForEvent<MovePieceGameEvent>()
-                        // Capture: path unobstructed (intermediates) AND destination has opponent piece
-                        .If<PathNotObstructedGameEventCondition>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            .And<CastlingGameEventCondition>()
+                    .Then()
+                        .Do<CastlingMoveMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    // Generic non-pawn capture (must appear before pawn specific branches)
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            .And<NonPawnGameEventCondition>()
+                            .And<PathNotObstructedGameEventCondition>()
                             .And<DestinationHasOpponentPieceGameEventCondition>()
                     .Then()
-                        .Do<CapturePieceStateMutator>()
+                        .Do<ChessCapturePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    // Generic non-pawn normal move
                     .ForEvent<MovePieceGameEvent>()
-                        // Normal move: path unobstructed AND destination empty
-                        .If<PathNotObstructedGameEventCondition>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            .And<NonPawnGameEventCondition>()
+                            .And<PathNotObstructedGameEventCondition>()
                             .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
-                        .Do<MovePieceStateMutator>();
+                        .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            // Capture: path unobstructed (intermediates) AND destination has opponent piece
+                            .And<PathNotObstructedGameEventCondition>()
+                            .And<DistanceOneGameEventCondition>()
+                            .And<DiagonalPawnDirectionGameEventCondition>()
+                            .And<DestinationHasOpponentPieceGameEventCondition>()
+                    .Then()
+                        .Do<ChessCapturePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            // En-passant capture: special pawn diagonal onto empty en-passant target
+                            .And<EnPassantCaptureGameEventCondition>() // includes distance==1 + diagonal semantics internally, but keep explicit guards for clarity
+                            .And<DistanceOneGameEventCondition>()
+                            .And<DiagonalPawnDirectionGameEventCondition>()
+                    .Then()
+                        .Do<EnPassantCapturePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            // Double-step pawn advance (must precede normal move so destination empty branch does not swallow it)
+                            .And<PathNotObstructedGameEventCondition>()
+                            .And<DestinationIsEmptyGameEventCondition>()
+                            .And<DistanceTwoGameEventCondition>()
+                            .And<PawnInitialDoubleStepGameEventCondition>()
+                    .Then()
+                        .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
+                    .ForEvent<MovePieceGameEvent>()
+                        .If<PieceIsActivePlayerGameEventCondition>()
+                            // Normal move: path unobstructed AND destination empty
+                            .And<PathNotObstructedGameEventCondition>()
+                            .And<DistanceOneGameEventCondition>()
+                            .And<ForwardPawnDirectionGameEventCondition>()
+                            .And<DestinationIsEmptyGameEventCondition>()
+                    .Then()
+                        .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()));
     }
 }

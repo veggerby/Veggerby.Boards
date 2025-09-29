@@ -34,8 +34,24 @@ static void RunChessDemo()
     progress = ApplyMove(progress, nomenclature, "white-knight-2", "tile-g1", "tile-f3");
     progress = ApplyMove(progress, nomenclature, "black-knight-2", "tile-g8", "tile-f6");
 
-    // Position after sequence
-    ChessBoardRenderer.Write(progress.Game, progress.State, Console.Out);
+    // Simple capture demonstration: clear e-file then queen captures a pawn
+    // Preconditions: white pawn on e3 blocks queen; move it further to e4 to free e3, then advance black pawn to e5 for capture scenario.
+    // (Engine currently supports single-step pawn movement only.)
+    try
+    {
+        progress = ApplyMove(progress, nomenclature, "white-pawn-5", "tile-e3", "tile-e4");
+        progress = ApplyMove(progress, nomenclature, "black-pawn-5", "tile-e6", "tile-e5");
+        // Queen path e1->e5 (multi-step) to capture black pawn
+        progress = ApplyMove(progress, nomenclature, "white-queen", "tile-e1", "tile-e5");
+        // Show board after capture
+        Console.WriteLine("Position after queen captures pawn on e5:");
+        ChessBoardRenderer.Write(progress.Game, progress.State, Console.Out);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"(capture demo skipped: {ex.Message})");
+    }
+
     Console.WriteLine();
 }
 

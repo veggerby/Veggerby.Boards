@@ -1,33 +1,33 @@
 using AwesomeAssertions;
 
-using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.Chess.Builders;
 
 using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
-/// Scaffolding tests for future chess capture semantics. Marked Skip until capture rules & mutators are implemented.
+/// Validates queen capturing a pawn in a straight unobstructed file using minimal chess capture scenario builder.
 /// </summary>
 public class ChessCaptureScaffoldingTests
 {
-    [Fact(Skip = "Capture semantics not implemented yet")]
+    [Fact]
     public void GivenOpponentPieceInLine_WhenQueenMovesOntoIt_ThenCaptureOccurs()
     {
-        // arrange
-        var progress = new ChessGameBuilder().Compile();
+        // arrange (direct capture position: queen e1, pawn e7)
+        var progress = new ChessCaptureScenarioBuilder().Compile();
         var whiteQueen = progress.Game.GetPiece("white-queen");
-        var blackPawn = progress.Game.GetPiece("black-pawn-5"); // on e7 initially
+        var blackPawn = progress.Game.GetPiece("black-pawn-5");
 
-        // act (hypothetical future sequence: clear path, then capture)
-        progress = progress.Move("white-pawn-5", "e3"); // free e2
-        progress = progress.Move("white-pawn-5", "e4"); // future double-move logic might differ
-        progress = progress.Move("white-pawn-5", "e5"); // assume incremental moves for now
-        progress = progress.Move("white-pawn-5", "e6");
-        progress = progress.Move("white-pawn-5", "e7"); // would attempt capture in future
-        // assert (future): black pawn removed; queen unchanged; or if queen moves to capture scenario etc.
-        progress.State.GetState<PieceState>(whiteQueen).CurrentTile.Id.Should().Be("tile-e1");
-        progress.State.GetState<PieceState>(blackPawn).CurrentTile.Id.Should().Be("tile-e7");
+        // act: queen moves to e7 capturing pawn
+        progress = progress.Move("white-queen", "e7");
+
+        // assert
+        var queenState = progress.State.GetState<PieceState>(whiteQueen);
+        queenState.CurrentTile.Id.Should().Be("tile-e7");
+        progress.State.IsCaptured(blackPawn).Should().BeTrue();
+        progress.State.GetPiecesOnTile(queenState.CurrentTile)
+            .Should().NotContain(p => p.Equals(blackPawn));
     }
 }

@@ -56,6 +56,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - Lightweight style-enforcement stub.
   - Expanded property-based invariants for chess/backgammon and a deterministic chess opening helper.
 
+- **Chess – Active Player & Turn Alternation**
+  - Introduced explicit active-player gating condition (`PieceIsActivePlayerGameEventCondition`) now returning `Ignore` for non-active attempts (replacing exception-style invalidation for friendlier optimistic move submission).
+  - Added automatic player alternation mutator (`NextPlayerStateMutator`) after every successful move/capture in chess phases and focused scenario builders.
+  - Implemented negative tests for pawn double-step illegality (off start rank after prior move, intermediate blocked, destination occupied) with minimalist scenario builders.
+  - Added turn alternation tests (consecutive same-player move ignored; delayed en-passant capture invalidated post-decline).
+  - Refactored queen unlocking tests to respect alternation and friendly-occupancy ignore semantics.
+  - Simplified initialization test: replaced exhaustive brittle relation enumeration with orientation spot-check helper.
+  - En-passant scenario builder refined (optional auxiliary pawn) and tests aligned with canonical orientation (white moves north).
+  - Basic castling support (no check/attack validation yet): standard king/queen placement (king on e-file), structural castling condition (rights, clear path, destination empty) with Invalid responses for malformed attempts, castling mutator moving king and rook and revoking rights, automatic rights revocation on king/rook movement. Tests added for kingside success and queenside blocked attempt.
+
 ### Changed
 
 - Compiled movement patterns **enabled by default**.

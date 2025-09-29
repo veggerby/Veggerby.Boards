@@ -114,6 +114,36 @@ public static partial class GameExtensions
         var piece = progress.Game.GetPiece(pieceId);
         var toTile = progress.Game.GetTile(toTileId);
         var state = progress.State.GetState<PieceState>(piece);
+
+        // Temporary chess castling support: synthesize horizontal two-square king path from original square (e1/e8) to g/c file.
+        // This preserves generic Move call sites in tests until a dedicated chess pre-processor API is introduced.
+        if (piece.Id.EndsWith("-king"))
+        {
+            var fromTileId = state.CurrentTile.Id;
+            var white = piece.Owner?.Id == "white";
+            var kingStart = white ? "tile-e1" : "tile-e8";
+            if (fromTileId == kingStart && (toTile.Id == (white ? "tile-g1" : "tile-g8") || toTile.Id == (white ? "tile-c1" : "tile-c8")))
+            {
+                char fromFile = fromTileId[5];
+                char toFile = toTile.Id[5];
+                int step = fromFile < toFile ? 1 : -1;
+                var rank = fromTileId[6];
+                var relations = new System.Collections.Generic.List<TileRelation>();
+                var dirId = step == 1 ? "east" : "west";
+                var direction = new Direction(dirId);
+                var current = state.CurrentTile;
+                for (char f = (char)(fromFile + step); ; f = (char)(f + step))
+                {
+                    var nextTile = progress.Game.GetTile($"tile-{f}{rank}");
+                    relations.Add(new TileRelation(current, nextTile, direction));
+                    current = nextTile;
+                    if (f == toFile) { break; }
+                }
+                var syntheticPath = new TilePath(relations);
+                var castleEvent = new MovePieceGameEvent(piece, syntheticPath);
+                return progress.HandleEvent(castleEvent);
+            }
+        }
         var path = piece.Patterns.Select(pattern =>
         {
             var visitor = new ResolveTilePathPatternVisitor(progress.Engine.Game.Board, state.CurrentTile, toTile);

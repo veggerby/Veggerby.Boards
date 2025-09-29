@@ -60,9 +60,9 @@ public class CompiledPatternAdjacencyCacheParityTests
     }
 
     [Fact]
-    public void GivenAdjacencyCacheToggle_WhenResolvingUnreachableDoublePawnAdvance_ThenBothNull()
+    public void GivenAdjacencyCacheToggle_WhenResolvingDoublePawnAdvance_ThenStructuralPathMatches()
     {
-        // arrange
+        // arrange (two-step pawn advance structurally present via fixed pattern)
         var builder = new ChessGameBuilder();
         TilePath without;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
@@ -83,8 +83,10 @@ public class CompiledPatternAdjacencyCacheParityTests
             with = ResolveCompiled(progress, piece, from, to);
         }
 
-        // assert
-        without.Should().BeNull();
-        with.Should().BeNull();
+        // assert structural path present and consistent both with and without adjacency cache
+        without.Should().NotBeNull();
+        with.Should().NotBeNull();
+        with.Distance.Should().Be(without.Distance);
+        with.Relations.Should().HaveSameCount(without.Relations);
     }
 }

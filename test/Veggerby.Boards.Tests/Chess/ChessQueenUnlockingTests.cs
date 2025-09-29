@@ -21,13 +21,14 @@ public class ChessQueenUnlockingTests
         var queen = progress.Game.GetPiece("white-queen");
         var queenStart = progress.State.GetState<PieceState>(queen).CurrentTile;
 
-        // act (move blocking pawn one step forward, then move queen into e2)
-        progress = progress.Move("white-pawn-5", "e3"); // frees e2
+        // act (white pawn double-step, black makes a quiet reply, then white queen moves)
+        progress = progress.Move("white-pawn-5", "e4");
+        progress = progress.Move("black-pawn-5", "e5"); // black reply to restore white turn
         progress = progress.Move("white-queen", "e2");
 
         // assert
         progress.State.GetState<PieceState>(queen).CurrentTile.Id.Should().Be("tile-e2");
-        queenStart.Id.Should().Be("tile-e1"); // sanity (original)
+        queenStart.Id.Should().Be("tile-d1"); // sanity (original queen start square)
     }
 
     [Fact]
@@ -38,11 +39,14 @@ public class ChessQueenUnlockingTests
         var queen = progress.Game.GetPiece("white-queen");
         var start = progress.State.GetState<PieceState>(queen).CurrentTile;
 
-        // act
-        progress = progress.Move("white-pawn-5", "e3"); // pawn now on e3 leaving e2 empty
-        progress = progress.Move("white-queen", "e3"); // destination occupied by friendly pawn
+        // act (white pawn advances, black replies, white queen attempts illegal capture of own pawn)
+        progress = progress.Move("white-pawn-5", "e4");
+        progress = progress.Move("black-pawn-5", "e5");
+        var before = progress;
+        progress = progress.Move("white-queen", "e4"); // should be ignored (friendly piece on e4)
 
-        // assert (queen should remain on original square e1)
+        // assert (queen remains and progress unchanged)
+        progress.Should().BeSameAs(before);
         progress.State.GetState<PieceState>(queen).CurrentTile.Should().Be(start);
     }
 }

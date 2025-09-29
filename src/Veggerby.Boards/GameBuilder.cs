@@ -42,6 +42,7 @@ public abstract class GameBuilder
     private readonly IList<ArtifactDefinition> _artifactDefinitions = [];
     private readonly IList<GamePhaseDefinition> _gamePhaseDefinitions = [];
     private readonly IList<object> _extrasStates = new List<object>();
+    private readonly IList<(string PlayerId, bool IsActive)> _activePlayerAssignments = new List<(string, bool)>();
 
     private Tile CreateTile(TileDefinition tile)
     {
@@ -111,6 +112,25 @@ public abstract class GameBuilder
         var player = new PlayerDefinition(this).WithId(playerId);
         _playerDefinitions.Add(player);
         return player;
+    }
+
+    /// <summary>
+    /// Declares an initial active player projection. Multiple calls may be made (typically one per player) with exactly one marked active.
+    /// </summary>
+    /// <param name="playerId">Player identifier previously added via <see cref="AddPlayer"/>.</param>
+    /// <param name="isActive">Whether the player starts active.</param>
+    /// <remarks>
+    /// Active player projections are optional; when absent, modules may infer sequencing implicitly (legacy behavior). Chess now uses explicit projections.
+    /// </remarks>
+    protected void WithActivePlayer(string playerId, bool isActive)
+    {
+        if (string.IsNullOrWhiteSpace(playerId))
+        {
+            throw new ArgumentException("Player id must be supplied", nameof(playerId));
+        }
+
+        // Defer validation (existence, uniqueness) until compile to allow out-of-order declarations.
+        _activePlayerAssignments.Add((playerId, isActive));
     }
 
     /// <summary>
@@ -360,6 +380,27 @@ public abstract class GameBuilder
         var baseStates = new List<IArtifactState>();
         baseStates.AddRange(pieceStates);
         baseStates.AddRange(diceStates);
+
+        // Materialize ActivePlayerState projections when declared.
+        if (_activePlayerAssignments.Any())
+        {
+            foreach (var (PlayerId, IsActive) in _activePlayerAssignments)
+            {
+                var player = game.Players.SingleOrDefault(p => string.Equals(p.Id, PlayerId));
+                if (player is null)
+                {
+                    throw new InvalidOperationException($"Active player declaration references unknown player '{PlayerId}'.");
+                }
+                baseStates.Add(new ActivePlayerState(player, IsActive));
+            }
+
+            // Validate exactly one active when any declarations exist.
+            var activeCount = _activePlayerAssignments.Count(a => a.IsActive);
+            if (activeCount != 1)
+            {
+                throw new InvalidOperationException($"Exactly one active player must be declared; found {activeCount}.");
+            }
+        }
 
         // Materialize extras states into artifact states
         foreach (var extras in _extrasStates)

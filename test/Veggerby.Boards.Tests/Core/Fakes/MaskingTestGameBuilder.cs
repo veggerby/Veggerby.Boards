@@ -1,4 +1,3 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States.Conditions;
@@ -11,14 +10,14 @@ internal class MaskingTestGameBuilder : GameBuilder
     {
         // Board 2x1 with east direction
         BoardId = "board";
-        AddDirection("east");
+        AddDirection(Constants.Directions.East);
         AddTile("tile-1-1");
         AddTile("tile-2-1");
-        WithTile("tile-1-1").WithRelationTo("tile-2-1").InDirection("east");
+        WithTile("tile-1-1").WithRelationTo("tile-2-1").InDirection(Constants.Directions.East);
         AddPlayer("p1");
         AddPlayer("p2");
-        AddPiece("a").OnTile("tile-1-1").WithOwner("p1").HasDirection("east");
-        AddPiece("b").OnTile("tile-1-1").WithOwner("p2").HasDirection("east");
+        AddPiece("a").OnTile("tile-1-1").WithOwner("p1").HasDirection(Constants.Directions.East);
+        AddPiece("b").OnTile("tile-1-1").WithOwner("p2").HasDirection(Constants.Directions.East);
 
         AddGamePhase("phase-a").Exclusive("g1")
             .If<NullGameStateCondition>()

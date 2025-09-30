@@ -1,16 +1,11 @@
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Tests.Capture;
 using Veggerby.Boards.Tests.Infrastructure;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Capture;
 

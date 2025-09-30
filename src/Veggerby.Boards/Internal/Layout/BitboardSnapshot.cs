@@ -1,6 +1,5 @@
 using System;
 
-using Veggerby.Boards; // for BoardException
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 

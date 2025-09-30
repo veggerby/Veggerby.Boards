@@ -1,7 +1,6 @@
 using System.Linq;
 
 using Veggerby.Boards.Go;
-using Veggerby.Boards.Go.Mutators;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Go;

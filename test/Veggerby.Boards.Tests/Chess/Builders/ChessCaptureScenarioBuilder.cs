@@ -1,4 +1,3 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -18,8 +17,8 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
         BoardId = "chess-capture-mini";
         AddPlayer(ChessIds.Players.White);
         AddPlayer(ChessIds.Players.Black);
-        AddDirection("north"); // increasing rank toward black side
-        AddDirection("south"); // toward white side
+        AddDirection(Constants.Directions.North); // increasing rank toward black side
+        AddDirection(Constants.Directions.South); // toward white side
 
         // Build linear e-file: e1 (rank1) up to e8
         for (int r = 1; r <= 8; r++)
@@ -28,23 +27,23 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
             var tile = AddTile(tileId);
             if (r > 1)
             {
-                tile.WithRelationTo($"tile-e{r - 1}").InDirection("south");
+                tile.WithRelationTo($"tile-e{r - 1}").InDirection(Constants.Directions.South);
             }
             if (r < 8)
             {
-                tile.WithRelationTo($"tile-e{r + 1}").InDirection("north");
+                tile.WithRelationTo($"tile-e{r + 1}").InDirection(Constants.Directions.North);
             }
         }
 
         // Pieces (queen sliding north/south; target pawn stationary facing south for consistency though direction irrelevant here)
         AddPiece("white-queen")
             .WithOwner(ChessIds.Players.White)
-            .HasDirection("north").CanRepeat()
-            .HasDirection("south").CanRepeat();
+            .HasDirection(Constants.Directions.North).CanRepeat()
+            .HasDirection(Constants.Directions.South).CanRepeat();
 
         AddPiece("black-pawn-5")
             .WithOwner(ChessIds.Players.Black)
-            .HasDirection("south");
+            .HasDirection(Constants.Directions.South);
 
         WithPiece("white-queen").OnTile(ChessIds.Tiles.E1);
         WithPiece("black-pawn-5").OnTile(ChessIds.Tiles.E7);

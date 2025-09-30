@@ -1,9 +1,5 @@
-using AwesomeAssertions;
-
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 

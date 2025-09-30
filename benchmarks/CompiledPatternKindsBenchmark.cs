@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
-using Veggerby.Boards.Internal;
 
 namespace Veggerby.Boards.Benchmarks;
 
@@ -33,9 +29,9 @@ public class CompiledPatternKindsBenchmark
     public void Setup()
     {
         // Directions
-        var east = new Direction("east");
-        var north = new Direction("north");
-        var northEast = new Direction("north-east");
+        var east = new Direction(Constants.Directions.East);
+        var north = new Direction(Constants.Directions.North);
+        var northEast = new Direction(Constants.Directions.NorthEast);
 
         // Tiles (graph shaped like an L plus a diagonal shortcut): a -> b -> c and a -> d -> e (north) and a -> c (ne)
         var a = new Tile("a");

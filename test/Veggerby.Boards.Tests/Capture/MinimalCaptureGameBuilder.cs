@@ -1,6 +1,5 @@
 using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -30,15 +29,15 @@ internal sealed class MinimalCaptureGameBuilder : GameBuilder
         BoardId = "mini-capture";
         AddPlayer(ChessIds.Players.White);
         AddPlayer(ChessIds.Players.Black);
-        AddDirection("east");
+        AddDirection(Constants.Directions.East);
 
         // Minimal forward-only chain a1 -> a2 -> a3 (single direction sufficient for path resolution)
-        AddTile(ChessIds.Tiles.A1).WithRelationTo(ChessIds.Tiles.A2).InDirection("east");
-        AddTile(ChessIds.Tiles.A2).WithRelationTo(ChessIds.Tiles.A3).InDirection("east");
+        AddTile(ChessIds.Tiles.A1).WithRelationTo(ChessIds.Tiles.A2).InDirection(Constants.Directions.East);
+        AddTile(ChessIds.Tiles.A2).WithRelationTo(ChessIds.Tiles.A3).InDirection(Constants.Directions.East);
         AddTile(ChessIds.Tiles.A3);
 
-        AddPiece("white-slider").WithOwner(ChessIds.Players.White).HasDirection("east").CanRepeat();
-        AddPiece("black-block").WithOwner(ChessIds.Players.Black).HasDirection("east");
+        AddPiece("white-slider").WithOwner(ChessIds.Players.White).HasDirection(Constants.Directions.East).CanRepeat();
+        AddPiece("black-block").WithOwner(ChessIds.Players.Black).HasDirection(Constants.Directions.East);
 
         WithPiece("white-slider").OnTile(ChessIds.Tiles.A1);
         WithPiece("black-block").OnTile(ChessIds.Tiles.A3);

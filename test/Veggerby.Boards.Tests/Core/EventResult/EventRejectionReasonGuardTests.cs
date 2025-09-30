@@ -3,8 +3,6 @@ using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Core.EventResult;
 
 /// <summary>

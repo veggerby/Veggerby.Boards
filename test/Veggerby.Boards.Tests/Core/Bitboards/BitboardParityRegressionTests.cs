@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Veggerby.Boards; // for extension helpers
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.States; // GameProgress
 using Veggerby.Boards.Tests.Infrastructure;
 

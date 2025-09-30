@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;

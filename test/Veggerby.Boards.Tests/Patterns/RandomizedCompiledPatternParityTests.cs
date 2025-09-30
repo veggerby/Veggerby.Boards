@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,9 +5,6 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
-using Veggerby.Boards.Internal;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Patterns;
 
@@ -22,7 +18,7 @@ public class RandomizedCompiledPatternParityTests
 {
     private static Game BuildGame()
     {
-        var north = new Direction("north"); var south = new Direction("south"); var east = new Direction("east"); var west = new Direction("west");
+        var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
         var ne = new Direction("ne"); var nw = new Direction("nw"); var se = new Direction("se"); var sw = new Direction("sw");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
         var tiles = new List<Tile>();

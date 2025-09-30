@@ -1,7 +1,5 @@
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;

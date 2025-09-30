@@ -1,10 +1,8 @@
 ﻿using System.Text;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Chess;
@@ -42,14 +40,14 @@ public class ChessGameBuilder : GameBuilder
 
         // Canonical orientation: white pieces move toward increasing rank numbers (north), black toward decreasing (south).
         // Directions are declared once; semantics in conditions/mutators use this canonical mapping.
-        AddDirection("north");
-        AddDirection("east");
-        AddDirection("south");
-        AddDirection("west");
-        AddDirection("north-east");
-        AddDirection("north-west");
-        AddDirection("south-east");
-        AddDirection("south-west");
+    AddDirection(Constants.Directions.North);
+    AddDirection(Constants.Directions.East);
+    AddDirection(Constants.Directions.South);
+    AddDirection(Constants.Directions.West);
+    AddDirection(Constants.Directions.NorthEast);
+    AddDirection(Constants.Directions.NorthWest);
+    AddDirection(Constants.Directions.SouthEast);
+    AddDirection(Constants.Directions.SouthWest);
 
         /*         N
          * (a,1) ----- (h,1)    WHITE
@@ -71,14 +69,14 @@ public class ChessGameBuilder : GameBuilder
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x - 1)}{y}")
-                        .InDirection("west");
+                        .InDirection(Constants.Directions.West);
                 }
 
                 if (x < 8)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x + 1)}{y}")
-                        .InDirection("east");
+                        .InDirection(Constants.Directions.East);
                 }
 
                 // Canonical relation mapping: increasing rank = north
@@ -86,14 +84,14 @@ public class ChessGameBuilder : GameBuilder
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x)}{y + 1}")
-                        .InDirection("north");
+                        .InDirection(Constants.Directions.North);
                 }
 
                 if (y > 1)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x)}{y - 1}")
-                        .InDirection("south");
+                        .InDirection(Constants.Directions.South);
                 }
 
                 // Diagonals
@@ -101,28 +99,28 @@ public class ChessGameBuilder : GameBuilder
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x + 1)}{y + 1}")
-                        .InDirection("north-east");
+                        .InDirection(Constants.Directions.NorthEast);
                 }
 
                 if (x > 1 && y < 8)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x - 1)}{y + 1}")
-                        .InDirection("north-west");
+                        .InDirection(Constants.Directions.NorthWest);
                 }
 
                 if (x < 8 && y > 1)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x + 1)}{y - 1}")
-                        .InDirection("south-east");
+                        .InDirection(Constants.Directions.SouthEast);
                 }
 
                 if (x > 1 && y > 1)
                 {
                     tile
                         .WithRelationTo($"tile-{GetChar(x - 1)}{y - 1}")
-                        .InDirection("south-west");
+                        .InDirection(Constants.Directions.SouthWest);
                 }
 
             }
@@ -133,120 +131,120 @@ public class ChessGameBuilder : GameBuilder
 
         AddPiece(ChessIds.Pieces.WhiteQueen)
             .WithOwner(ChessIds.Players.White)
-            .HasDirection("north").CanRepeat()
-            .HasDirection("east").CanRepeat()
-            .HasDirection("west").CanRepeat()
-            .HasDirection("south").CanRepeat()
-            .HasDirection("north-east").CanRepeat()
-            .HasDirection("north-west").CanRepeat()
-            .HasDirection("south-east").CanRepeat()
-            .HasDirection("south-west").CanRepeat();
+            .HasDirection(Constants.Directions.North).CanRepeat()
+            .HasDirection(Constants.Directions.East).CanRepeat()
+            .HasDirection(Constants.Directions.West).CanRepeat()
+            .HasDirection(Constants.Directions.South).CanRepeat()
+            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
 
         AddPiece(ChessIds.Pieces.WhiteKing)
             .WithOwner(ChessIds.Players.White)
-            .HasDirection("north").Done()
-            .HasDirection("east").Done()
-            .HasDirection("west").Done()
-            .HasDirection("south").Done()
-            .HasDirection("north-east").Done()
-            .HasDirection("north-west").Done()
-            .HasDirection("south-east").Done()
-            .HasDirection("south-west").Done();
+            .HasDirection(Constants.Directions.North).Done()
+            .HasDirection(Constants.Directions.East).Done()
+            .HasDirection(Constants.Directions.West).Done()
+            .HasDirection(Constants.Directions.South).Done()
+            .HasDirection(Constants.Directions.NorthEast).Done()
+            .HasDirection(Constants.Directions.NorthWest).Done()
+            .HasDirection(Constants.Directions.SouthEast).Done()
+            .HasDirection(Constants.Directions.SouthWest).Done();
 
         AddPiece(ChessIds.Pieces.BlackQueen)
             .WithOwner(ChessIds.Players.Black)
-            .HasDirection("north").CanRepeat()
-            .HasDirection("east").CanRepeat()
-            .HasDirection("west").CanRepeat()
-            .HasDirection("south").CanRepeat()
-            .HasDirection("north-east").CanRepeat()
-            .HasDirection("north-west").CanRepeat()
-            .HasDirection("south-east").CanRepeat()
-            .HasDirection("south-west").CanRepeat();
+            .HasDirection(Constants.Directions.North).CanRepeat()
+            .HasDirection(Constants.Directions.East).CanRepeat()
+            .HasDirection(Constants.Directions.West).CanRepeat()
+            .HasDirection(Constants.Directions.South).CanRepeat()
+            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
 
         AddPiece(ChessIds.Pieces.BlackKing)
             .WithOwner(ChessIds.Players.Black)
-            .HasDirection("north").Done()
-            .HasDirection("east").Done()
-            .HasDirection("west").Done()
-            .HasDirection("south").Done()
-            .HasDirection("north-east").Done()
-            .HasDirection("north-west").Done()
-            .HasDirection("south-east").Done()
-            .HasDirection("south-west").Done();
+            .HasDirection(Constants.Directions.North).Done()
+            .HasDirection(Constants.Directions.East).Done()
+            .HasDirection(Constants.Directions.West).Done()
+            .HasDirection(Constants.Directions.South).Done()
+            .HasDirection(Constants.Directions.NorthEast).Done()
+            .HasDirection(Constants.Directions.NorthWest).Done()
+            .HasDirection(Constants.Directions.SouthEast).Done()
+            .HasDirection(Constants.Directions.SouthWest).Done();
 
         for (int i = 1; i <= 8; i++)
         {
             AddPiece($"white-pawn-{i}")
                 .WithOwner(ChessIds.Players.White)
                 // White forward = north (towards rank 8). Patterns are structural; legality gated by rule chain.
-                .HasDirection("north").Done()
-                .HasPattern("north")
-                .HasPattern("north", "north")
-                .HasDirection("north-east").Done()
-                .HasDirection("north-west").Done();
+                .HasDirection(Constants.Directions.North).Done()
+                .HasPattern(Constants.Directions.North)
+                .HasPattern(Constants.Directions.North, Constants.Directions.North)
+                .HasDirection(Constants.Directions.NorthEast).Done()
+                .HasDirection(Constants.Directions.NorthWest).Done();
 
             AddPiece($"black-pawn-{i}")
                 .WithOwner(ChessIds.Players.Black)
                 // Black forward = south (towards rank 1).
-                .HasDirection("south").Done()
-                .HasPattern("south")
-                .HasPattern("south", "south")
-                .HasDirection("south-east").Done()
-                .HasDirection("south-west").Done();
+                .HasDirection(Constants.Directions.South).Done()
+                .HasPattern(Constants.Directions.South)
+                .HasPattern(Constants.Directions.South, Constants.Directions.South)
+                .HasDirection(Constants.Directions.SouthEast).Done()
+                .HasDirection(Constants.Directions.SouthWest).Done();
         }
 
         for (int i = 1; i <= 8; i++)
         {
             AddPiece($"white-rook-{i}")
                 .WithOwner(ChessIds.Players.White)
-                .HasDirection("north").CanRepeat()
-                .HasDirection("east").CanRepeat()
-                .HasDirection("south").CanRepeat()
-                .HasDirection("west").CanRepeat();
+                .HasDirection(Constants.Directions.North).CanRepeat()
+                .HasDirection(Constants.Directions.East).CanRepeat()
+                .HasDirection(Constants.Directions.South).CanRepeat()
+                .HasDirection(Constants.Directions.West).CanRepeat();
 
             AddPiece($"white-knight-{i}")
                 .WithOwner(ChessIds.Players.White)
-                .HasPattern("west", "north", "north")
-                .HasPattern("west", "south", "south")
-                .HasPattern("east", "north", "north")
-                .HasPattern("east", "south", "south")
-                .HasPattern("north", "east", "east")
-                .HasPattern("north", "west", "west")
-                .HasPattern("south", "east", "east")
-                .HasPattern("south", "west", "west");
+                .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
+                .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
+                .HasPattern(Constants.Directions.East, Constants.Directions.North, Constants.Directions.North)
+                .HasPattern(Constants.Directions.East, Constants.Directions.South, Constants.Directions.South)
+                .HasPattern(Constants.Directions.North, Constants.Directions.East, Constants.Directions.East)
+                .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
+                .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
+                .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
 
             AddPiece($"white-bishop-{i}")
                 .WithOwner(ChessIds.Players.White)
-                .HasDirection("north-east").CanRepeat()
-                .HasDirection("north-west").CanRepeat()
-                .HasDirection("south-east").CanRepeat()
-                .HasDirection("south-west").CanRepeat();
+                .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                .HasDirection(Constants.Directions.SouthWest).CanRepeat();
 
             AddPiece($"black-rook-{i}")
                 .WithOwner(ChessIds.Players.Black)
-                .HasDirection("north").CanRepeat()
-                .HasDirection("east").CanRepeat()
-                .HasDirection("south").CanRepeat()
-                .HasDirection("west").CanRepeat();
+                .HasDirection(Constants.Directions.North).CanRepeat()
+                .HasDirection(Constants.Directions.East).CanRepeat()
+                .HasDirection(Constants.Directions.South).CanRepeat()
+                .HasDirection(Constants.Directions.West).CanRepeat();
 
             AddPiece($"black-knight-{i}")
                 .WithOwner(ChessIds.Players.Black)
-                .HasPattern("west", "north", "north")
-                .HasPattern("west", "south", "south")
-                .HasPattern("east", "north", "north")
-                .HasPattern("east", "south", "south")
-                .HasPattern("north", "east", "east")
-                .HasPattern("north", "west", "west")
-                .HasPattern("south", "east", "east")
-                .HasPattern("south", "west", "west");
+                .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
+                .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
+                .HasPattern(Constants.Directions.East, Constants.Directions.North, Constants.Directions.North)
+                .HasPattern(Constants.Directions.East, Constants.Directions.South, Constants.Directions.South)
+                .HasPattern(Constants.Directions.North, Constants.Directions.East, Constants.Directions.East)
+                .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
+                .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
+                .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
 
             AddPiece($"black-bishop-{i}")
                 .WithOwner(ChessIds.Players.Black)
-                .HasDirection("north-east").CanRepeat()
-                .HasDirection("north-west").CanRepeat()
-                .HasDirection("south-east").CanRepeat()
-                .HasDirection("south-west").CanRepeat();
+                .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                .HasDirection(Constants.Directions.SouthWest).CanRepeat();
         }
 
         // State

@@ -103,8 +103,8 @@ internal sealed class BoardShape
             return false;
         }
 
-        bool orth = Has(directions, "north") || Has(directions, "south") || Has(directions, "east") || Has(directions, "west");
-        bool diag = Has(directions, "north-east", "northeast", "south-east", "southeast", "north-west", "northwest", "south-west", "southwest");
+        bool orth = Has(directions, Constants.Directions.North) || Has(directions, Constants.Directions.South) || Has(directions, Constants.Directions.East) || Has(directions, Constants.Directions.West);
+        bool diag = Has(directions, Constants.Directions.NorthEast, "northeast", Constants.Directions.SouthEast, "southeast", Constants.Directions.NorthWest, "northwest", Constants.Directions.SouthWest, "southwest");
 
         if (orth && diag)
         {

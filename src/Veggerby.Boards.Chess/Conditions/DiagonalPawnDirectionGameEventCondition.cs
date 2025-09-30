@@ -35,14 +35,14 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
         var isWhite = moveEvent.Piece.Id.StartsWith("white-");
         if (isWhite)
         {
-            if (dir.Id is "north-east" or "north-west")
+            if (dir.Id is Constants.Directions.NorthEast or Constants.Directions.NorthWest)
             {
                 return ConditionResponse.Valid;
             }
         }
         else
         {
-            if (dir.Id is "south-east" or "south-west")
+            if (dir.Id is Constants.Directions.SouthEast or Constants.Directions.SouthWest)
             {
                 return ConditionResponse.Valid;
             }

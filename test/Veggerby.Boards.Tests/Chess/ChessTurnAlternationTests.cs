@@ -1,10 +1,6 @@
-using AwesomeAssertions;
-
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Support;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess;
 

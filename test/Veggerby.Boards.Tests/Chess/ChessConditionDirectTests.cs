@@ -1,13 +1,9 @@
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 

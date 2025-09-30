@@ -3,8 +3,6 @@ using System.Linq;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 /// <summary>

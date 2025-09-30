@@ -28,12 +28,12 @@ public sealed class ForwardPawnDirectionGameEventCondition : IGameEventCondition
 
         var dir = moveEvent.Path.Directions.Single();
         var isWhite = moveEvent.Piece.Id.StartsWith("white-");
-        if (isWhite && dir.Id == "north")
+        if (isWhite && dir.Id == Constants.Directions.North)
         {
             return ConditionResponse.Valid;
         }
 
-        if (!isWhite && dir.Id == "south")
+        if (!isWhite && dir.Id == Constants.Directions.South)
         {
             return ConditionResponse.Valid;
         }

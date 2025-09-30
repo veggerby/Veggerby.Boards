@@ -8,38 +8,38 @@ namespace Veggerby.Boards.Artifacts.Relations;
 public class Direction : IEquatable<Direction>
 {
     /// <summary>Left.</summary>
-    public static readonly Direction Left = new("left");
+    public static readonly Direction Left = new(Constants.Directions.Left);
     /// <summary>Right.</summary>
-    public static readonly Direction Right = new("right");
+    public static readonly Direction Right = new(Constants.Directions.Right);
     /// <summary>Up.</summary>
-    public static readonly Direction Up = new("up");
+    public static readonly Direction Up = new(Constants.Directions.Up);
     /// <summary>Down.</summary>
-    public static readonly Direction Down = new("down");
+    public static readonly Direction Down = new(Constants.Directions.Down);
     /// <summary>Across / lateral.</summary>
-    public static readonly Direction Across = new("across");
+    public static readonly Direction Across = new(Constants.Directions.Across);
 
     /// <summary>North.</summary>
-    public static readonly Direction North = new("north");
+    public static readonly Direction North = new(Constants.Directions.North);
     /// <summary>South.</summary>
-    public static readonly Direction South = new("south");
+    public static readonly Direction South = new(Constants.Directions.South);
     /// <summary>East.</summary>
-    public static readonly Direction East = new("east");
+    public static readonly Direction East = new(Constants.Directions.East);
     /// <summary>West.</summary>
-    public static readonly Direction West = new("west");
+    public static readonly Direction West = new(Constants.Directions.West);
 
     /// <summary>North-West diagonal.</summary>
-    public static readonly Direction NorthWest = new("north-west");
+    public static readonly Direction NorthWest = new(Constants.Directions.NorthWest);
     /// <summary>North-East diagonal.</summary>
-    public static readonly Direction NorthEast = new("north-east");
+    public static readonly Direction NorthEast = new(Constants.Directions.NorthEast);
     /// <summary>South-West diagonal.</summary>
-    public static readonly Direction SouthWest = new("south-west");
+    public static readonly Direction SouthWest = new(Constants.Directions.SouthWest);
     /// <summary>South-East diagonal.</summary>
-    public static readonly Direction SouthEast = new("south-east");
+    public static readonly Direction SouthEast = new(Constants.Directions.SouthEast);
 
     /// <summary>Clockwise rotation direction.</summary>
-    public static readonly Direction Clockwise = new("clockwise");
+    public static readonly Direction Clockwise = new(Constants.Directions.Clockwise);
     /// <summary>Counter-clockwise rotation direction.</summary>
-    public static readonly Direction CounterClockwise = new("counter-clockwise");
+    public static readonly Direction CounterClockwise = new(Constants.Directions.CounterClockwise);
 
     /// <summary>Wildcard direction matching any.</summary>
     public static readonly Direction Any = new AnyDirection();

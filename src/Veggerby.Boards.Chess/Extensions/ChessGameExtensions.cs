@@ -37,8 +37,8 @@ public static partial class GameExtensions
         int step = fromFile < toFile ? 1 : -1;
         var rank = start[6];
         var relations = new List<TileRelation>();
-        var dirId = step == 1 ? "east" : "west";
-        var direction = new Direction(dirId);
+    var dirId = step == 1 ? Constants.Directions.East : Constants.Directions.West;
+    var direction = new Direction(dirId);
         var current = kingState.CurrentTile;
         for (char f = (char)(fromFile + step); ; f = (char)(f + step))
         {

@@ -1,9 +1,4 @@
-using System.Linq;
-
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal.Layout;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Layout;
 

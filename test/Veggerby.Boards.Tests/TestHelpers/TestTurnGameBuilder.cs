@@ -1,4 +1,3 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 
 namespace Veggerby.Boards.Tests.TestHelpers;

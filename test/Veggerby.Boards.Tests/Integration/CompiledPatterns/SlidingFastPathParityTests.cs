@@ -1,12 +1,9 @@
 using System.Linq;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 
@@ -33,8 +30,8 @@ public class SlidingFastPathParityTests
 
         protected override void Build()
         {
-            AddDirection("north"); AddDirection("south"); AddDirection("east"); AddDirection("west");
-            AddDirection("north-east"); AddDirection("north-west"); AddDirection("south-east"); AddDirection("south-west");
+            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
 
             AddPlayer("white"); AddPlayer("black");
 
@@ -53,14 +50,14 @@ public class SlidingFastPathParityTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection("north"); }
-                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection("south"); }
-                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection("east"); }
-                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection("west"); }
-                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection("north-east"); }
-                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection("north-west"); }
-                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection("south-east"); }
-                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection("south-west"); }
+                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North); }
+                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South); }
+                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East); }
+                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West); }
+                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast); }
+                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest); }
+                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast); }
+                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest); }
                 }
             }
 
@@ -70,26 +67,26 @@ public class SlidingFastPathParityTests
                 switch (spec.Type)
                 {
                     case "rook":
-                        pd.HasDirection("north").CanRepeat()
-                            .HasDirection("east").CanRepeat()
-                            .HasDirection("south").CanRepeat()
-                            .HasDirection("west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.North).CanRepeat()
+                            .HasDirection(Constants.Directions.East).CanRepeat()
+                            .HasDirection(Constants.Directions.South).CanRepeat()
+                            .HasDirection(Constants.Directions.West).CanRepeat();
                         break;
                     case "bishop":
-                        pd.HasDirection("north-east").CanRepeat()
-                            .HasDirection("north-west").CanRepeat()
-                            .HasDirection("south-east").CanRepeat()
-                            .HasDirection("south-west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
                         break;
                     case "queen":
-                        pd.HasDirection("north").CanRepeat()
-                            .HasDirection("east").CanRepeat()
-                            .HasDirection("south").CanRepeat()
-                            .HasDirection("west").CanRepeat()
-                            .HasDirection("north-east").CanRepeat()
-                            .HasDirection("north-west").CanRepeat()
-                            .HasDirection("south-east").CanRepeat()
-                            .HasDirection("south-west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.North).CanRepeat()
+                            .HasDirection(Constants.Directions.East).CanRepeat()
+                            .HasDirection(Constants.Directions.South).CanRepeat()
+                            .HasDirection(Constants.Directions.West).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
                         break;
                     case "immobile":
                         break; // no directions

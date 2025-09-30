@@ -1,9 +1,7 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Tests.Chess.Support;
@@ -23,14 +21,14 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
         WithActivePlayer(ChessIds.Players.White, true);
         WithActivePlayer(ChessIds.Players.Black, false);
 
-        AddDirection("north");
-        AddDirection("east");
-        AddDirection("south");
-        AddDirection("west");
-        AddDirection("north-east");
-        AddDirection("north-west");
-        AddDirection("south-east");
-        AddDirection("south-west");
+        AddDirection(Constants.Directions.North);
+        AddDirection(Constants.Directions.East);
+        AddDirection(Constants.Directions.South);
+        AddDirection(Constants.Directions.West);
+        AddDirection(Constants.Directions.NorthEast);
+        AddDirection(Constants.Directions.NorthWest);
+        AddDirection(Constants.Directions.SouthEast);
+        AddDirection(Constants.Directions.SouthWest);
 
         static string FileChar(int idx) => ((char)('a' + idx - 1)).ToString();
         for (var file = 1; file <= 8; file++)
@@ -39,29 +37,29 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
             {
                 var id = $"tile-{FileChar(file)}{rank}";
                 var tile = AddTile(id);
-                if (file < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection("east"); }
-                if (file > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection("west"); }
-                if (rank < 8) { tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection("north"); }
-                if (rank > 1) { tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection("south"); }
-                if (file < 8 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection("north-east"); }
-                if (file > 1 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection("north-west"); }
-                if (file < 8 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection("south-east"); }
-                if (file > 1 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection("south-west"); }
+                if (file < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection(Constants.Directions.East); }
+                if (file > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection(Constants.Directions.West); }
+                if (rank < 8) { tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection(Constants.Directions.North); }
+                if (rank > 1) { tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection(Constants.Directions.South); }
+                if (file < 8 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection(Constants.Directions.NorthEast); }
+                if (file > 1 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection(Constants.Directions.NorthWest); }
+                if (file < 8 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection(Constants.Directions.SouthEast); }
+                if (file > 1 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection(Constants.Directions.SouthWest); }
             }
         }
 
         AddPiece("white-pawn-test")
             .WithOwner(ChessIds.Players.White)
-            .HasDirection("north").Done()
-            .HasPattern("north")
-            .HasPattern("north", "north")
-            .HasDirection("north-east").Done()
-            .HasDirection("north-west").Done();
+            .HasDirection(Constants.Directions.North).Done()
+            .HasPattern(Constants.Directions.North)
+            .HasPattern(Constants.Directions.North, Constants.Directions.North)
+            .HasDirection(Constants.Directions.NorthEast).Done()
+            .HasDirection(Constants.Directions.NorthWest).Done();
 
         // Opponent piece placed on e4 (double-step destination from e2)
         AddPiece("black-bishop-blocker")
             .WithOwner(ChessIds.Players.Black)
-            .HasDirection("north").Done();
+            .HasDirection(Constants.Directions.North).Done();
 
         WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
         WithPiece("black-bishop-blocker").OnTile(ChessIds.Tiles.E4);

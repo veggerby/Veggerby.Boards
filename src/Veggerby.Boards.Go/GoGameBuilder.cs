@@ -2,6 +2,7 @@ using Veggerby.Boards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Go.Mutators;
 using Veggerby.Boards.States.Conditions;
+using Veggerby.Boards.Artifacts.Relations;
 
 namespace Veggerby.Boards.Go;
 
@@ -37,10 +38,10 @@ public sealed class GoGameBuilder : GameBuilder
         AddPlayer("white");
 
         // Four orthogonal directions (liberty topology)
-        AddDirection("north");
-        AddDirection("east");
-        AddDirection("south");
-        AddDirection("west");
+        AddDirection(Constants.Directions.North);
+        AddDirection(Constants.Directions.East);
+        AddDirection(Constants.Directions.South);
+        AddDirection(Constants.Directions.West);
 
         for (int x = 1; x <= _size; x++)
         {
@@ -48,10 +49,10 @@ public sealed class GoGameBuilder : GameBuilder
             {
                 var id = $"tile-{x}-{y}";
                 var tile = AddTile(id);
-                if (x > 1) { tile.WithRelationTo($"tile-{x - 1}-{y}").InDirection("west"); }
-                if (x < _size) { tile.WithRelationTo($"tile-{x + 1}-{y}").InDirection("east"); }
-                if (y > 1) { tile.WithRelationTo($"tile-{x}-{y - 1}").InDirection("north"); }
-                if (y < _size) { tile.WithRelationTo($"tile-{x}-{y + 1}").InDirection("south"); }
+                if (x > 1) { tile.WithRelationTo($"tile-{x - 1}-{y}").InDirection(Constants.Directions.West); }
+                if (x < _size) { tile.WithRelationTo($"tile-{x + 1}-{y}").InDirection(Constants.Directions.East); }
+                if (y > 1) { tile.WithRelationTo($"tile-{x}-{y - 1}").InDirection(Constants.Directions.North); }
+                if (y < _size) { tile.WithRelationTo($"tile-{x}-{y + 1}").InDirection(Constants.Directions.South); }
             }
         }
 

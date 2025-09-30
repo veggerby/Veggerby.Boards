@@ -33,7 +33,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
 
         // Must be diagonal (directions count 1 and not straight north/south)
         var dir = @event.Path.Directions.Single();
-        if (dir.Id is "north" or "south")
+        if (dir.Id is Constants.Directions.North or Constants.Directions.South)
         {
             return ConditionResponse.Ignore("Not diagonal");
         }

@@ -1,12 +1,7 @@
 using System.Linq;
 
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal;
-using Veggerby.Boards.Internal.Bitboards;
 using Veggerby.Boards.Tests.Infrastructure;
-using Veggerby.Boards.Tests.Utils;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Bitboards;
 

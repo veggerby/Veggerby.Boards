@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts;
@@ -27,9 +25,9 @@ public class PatternResolutionBenchmark
     public void Setup()
     {
         // Construct a small synthetic board with orthogonal and diagonal connections sufficient for rook/bishop/queen/pawn/knight examples.
-        var north = new Direction("north");
-        var east = new Direction("east");
-        var northEast = new Direction("north-east");
+        var north = new Direction(Constants.Directions.North);
+        var east = new Direction(Constants.Directions.East);
+        var northEast = new Direction(Constants.Directions.NorthEast);
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");

@@ -1,10 +1,5 @@
-using System.Linq;
-
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
-using Veggerby.Boards.Tests.Utils;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
@@ -117,13 +112,13 @@ public class FastPathMetricsTests
         protected override void Build()
         {
             BoardId = "rook-north";
-            AddDirection("north");
+            AddDirection(Constants.Directions.North);
             AddPlayer("white");
             AddTile("v1"); AddTile("v2"); AddTile("v3"); AddTile("v4");
-            WithTile("v1").WithRelationTo("v2").InDirection("north");
-            WithTile("v2").WithRelationTo("v3").InDirection("north");
-            WithTile("v3").WithRelationTo("v4").InDirection("north");
-            AddPiece("rook").WithOwner("white").HasDirection("north").CanRepeat().OnTile("v1");
+            WithTile("v1").WithRelationTo("v2").InDirection(Constants.Directions.North);
+            WithTile("v2").WithRelationTo("v3").InDirection(Constants.Directions.North);
+            WithTile("v3").WithRelationTo("v4").InDirection(Constants.Directions.North);
+            AddPiece("rook").WithOwner("white").HasDirection(Constants.Directions.North).CanRepeat().OnTile("v1");
         }
     }
 
@@ -132,10 +127,10 @@ public class FastPathMetricsTests
         protected override void Build()
         {
             BoardId = "non-slider";
-            AddDirection("east");
+            AddDirection(Constants.Directions.East);
             AddPlayer("white");
             AddTile("x1"); AddTile("x2");
-            WithTile("x1").WithRelationTo("x2").InDirection("east");
+            WithTile("x1").WithRelationTo("x2").InDirection(Constants.Directions.East);
             AddPiece("stone").WithOwner("white").OnTile("x1");
         }
     }
@@ -145,17 +140,17 @@ public class FastPathMetricsTests
         protected override void Build()
         {
             BoardId = "large-linear";
-            AddDirection("east");
+            AddDirection(Constants.Directions.East);
             AddPlayer("white");
             for (int i = 0; i < 65; i++)
             {
                 AddTile($"t{i}");
                 if (i > 0)
                 {
-                    WithTile($"t{i - 1}").WithRelationTo($"t{i}").InDirection("east");
+                    WithTile($"t{i - 1}").WithRelationTo($"t{i}").InDirection(Constants.Directions.East);
                 }
             }
-            AddPiece("rook").WithOwner("white").HasDirection("east").CanRepeat().OnTile("t0");
+            AddPiece("rook").WithOwner("white").HasDirection(Constants.Directions.East).CanRepeat().OnTile("t0");
         }
     }
 }

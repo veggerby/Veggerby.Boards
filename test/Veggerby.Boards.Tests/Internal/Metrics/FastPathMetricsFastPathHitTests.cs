@@ -1,9 +1,5 @@
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
-using Veggerby.Boards.Tests.Utils;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
@@ -17,12 +13,12 @@ public class FastPathMetricsFastPathHitTests
         protected override void Build()
         {
             BoardId = "fastpath-rook";
-            AddDirection("east");
+            AddDirection(Constants.Directions.East);
             AddPlayer("white");
             AddTile("a1"); AddTile("b1"); AddTile("c1");
-            WithTile("a1").WithRelationTo("b1").InDirection("east");
-            WithTile("b1").WithRelationTo("c1").InDirection("east");
-            AddPiece("rook").WithOwner("white").HasDirection("east").CanRepeat().OnTile("a1");
+            WithTile("a1").WithRelationTo("b1").InDirection(Constants.Directions.East);
+            WithTile("b1").WithRelationTo("c1").InDirection(Constants.Directions.East);
+            AddPiece("rook").WithOwner("white").HasDirection(Constants.Directions.East).CanRepeat().OnTile("a1");
         }
     }
 

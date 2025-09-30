@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;

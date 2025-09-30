@@ -1,8 +1,5 @@
-using System.Linq;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
-using Veggerby.Boards.Chess; // for pieces in chess tests (namespace reuse okay for other games)
 
 namespace Veggerby.Boards.Tests.TestHelpers;
 

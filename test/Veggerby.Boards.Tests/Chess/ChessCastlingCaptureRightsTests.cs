@@ -1,6 +1,9 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -15,8 +18,8 @@ public class ChessCastlingCaptureRightsTests
         var progress = new ChessGameBuilder().Compile();
         // Free black dark-square bishop (c8) path to h3 then to h1:
         // 1. Move white pawn h2 -> h4 (to vacate h3/h4 squares for path clearance) and alternate moves legally.
-        progress = progress.Move("white-pawn-8", "h4");
-        progress = progress.Move("black-pawn-5", "e6");
+        progress = progress.Move(WhitePawn8, H4);
+        progress = progress.Move(BlackPawn5, E6);
         // 2. Move white a-pawn to keep turns alternating while clearing diagonal blocks for bishop (need to clear d7/e6/f7? Actually path c8-d7-e6-f5-g4-h3-h2-h1; we cleared h-pawn so h2 empty; need to clear d7 piece: move black pawn d7 -> d5 after bishop first move). We'll sequence carefully.
         // Black bishop path first leg: c8 -> h3 requires squares d7, e6, f5, g4 clear. e6 is now occupied by black pawn from e7->e6, so instead we route bishop via f8 bishop capturing? Simpler: use black queen-side bishop capturing after clearing d7 & e6 squares:
         // Simplify: Use black queen to capture rook: clear path d8-h4-h1 is obstructed. Alternative simpler capture: move black knight g8 -> f6 -> h5 -> f4 -> h3 -> f2 -> h1 is too long.

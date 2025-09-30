@@ -75,23 +75,39 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
             return ConditionResponse.Fail("Queen-side right not available");
         }
 
-        // Path emptiness between king and rook (excluding endpoints). Extract all intermediate tiles linearly between from/to by file ordering.
-        // Board uses algebraic style ids tile-<file><rank>.
-        var fromFile = from.Id[5]; // tile-<f><r>
-        var toFile = to.Id[5];
-        var rank = from.Id[6]; // same rank for castling
-        if (rank != (isWhite ? '1' : '8'))
+        // Path emptiness between king and rook (excluding endpoints). Use explicit constant sequences instead of constructing ids.
+        var rankExpected = isWhite ? '1' : '8';
+        if (from.Id[^1] != rankExpected || to.Id[^1] != rankExpected)
         {
             return ConditionResponse.Fail("Rank mismatch");
         }
-        int step = fromFile < toFile ? 1 : -1;
-        for (char f = (char)(fromFile + step); f != toFile; f = (char)(f + step))
+
+        // Determine intermediate squares the king traverses (which must be empty) and squares between king and rook (for blockage check).
+        // For kingside (e -> g): king passes through f; rook path check includes f and g (destination) but g emptiness checked separately below.
+        // For queenside (e -> c): king passes through d; additionally squares between king and rook on queenside are d, c, b (excluding a rook square, c destination checked below).
+        string[] pathCheckTiles;
+        if (isKingSide)
         {
-            var tileId = $"tile-{f}{rank}";
-            var tile = engine.Game.GetTile(tileId);
-            // Skip the rook square itself (not part of king traversal). Rook squares: white h1/a1; black h8/a8.
-            if (tile.Id == (isWhite ? (isKingSide ? ChessIds.Tiles.H1 : ChessIds.Tiles.A1) : (isKingSide ? ChessIds.Tiles.H8 : ChessIds.Tiles.A8))) { continue; }
-            if (state.GetPiecesOnTile(tile).Any()) { return ConditionResponse.Fail("Path blocked"); }
+            pathCheckTiles = isWhite
+                ? new[] { ChessIds.Tiles.F1 } // only f1 between e1 and g1 (exclude rook h1)
+                : new[] { ChessIds.Tiles.F8 };
+        }
+        else // queen side
+        {
+            pathCheckTiles = isWhite
+                ? new[] { ChessIds.Tiles.D1, ChessIds.Tiles.C1, ChessIds.Tiles.B1 } // exclude rook a1
+                : new[] { ChessIds.Tiles.D8, ChessIds.Tiles.C8, ChessIds.Tiles.B8 };
+        }
+
+        foreach (var tileConst in pathCheckTiles)
+        {
+            // Skip destination here; it will be validated for emptiness after loop.
+            if (tileConst == to.Id) { continue; }
+            var tile = engine.Game.GetTile(tileConst);
+            if (state.GetPiecesOnTile(tile).Any())
+            {
+                return ConditionResponse.Fail("Path blocked");
+            }
         }
 
         // Destination must be empty for castling (king cannot capture during castling)

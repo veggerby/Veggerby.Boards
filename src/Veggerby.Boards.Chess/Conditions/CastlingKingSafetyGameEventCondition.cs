@@ -31,7 +31,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-    if (!ChessPiece.IsKing(state, @event.Piece.Id)) { return ConditionResponse.Ignore("Not a king"); }
+        if (!ChessPiece.IsKing(state, @event.Piece.Id)) { return ConditionResponse.Ignore("Not a king"); }
         var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
         var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (@event.From?.Id != startId) { return ConditionResponse.Ignore("Not from initial square"); }

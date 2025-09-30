@@ -1,11 +1,11 @@
 ---
 slug: workstreams
 name: "Workstreams Overview"
-last_updated: 2025-09-26
+last_updated: 2025-09-30
 status_index:
   done: [1,2,3]
-  partial: [4,5,6,7,8,9]
-  planned: [10]
+  partial: [4,5,6,7,8,9,10,11]
+  planned: []
 ---
 
 # Workstreams Overview
@@ -21,6 +21,7 @@ status_index:
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |
 | 8 | Structural Refactors | partial | Timeline zipper + hashing scaffolding (flag-gated). |
 | 9 | Turn & Round Sequencing | partial | TurnState segmentation + overhead benchmark baseline. |
-| 10 | Chess Full Move Legality | planned | Full legality (state, generation, filtering, SAN completion). |
+| 10 | Chess Full Move Legality | partial | Castling rights + safety, metadata predicates, ids normalized; generation & endgame pending. |
+| 11 | Go Game Module | partial | Board + placement/pass scaffolding; capture/ko/scoring pending. |
 
 Legend: done = acceptance met; partial = some acceptance outstanding; closed = intentionally deferred; planned = not yet started.

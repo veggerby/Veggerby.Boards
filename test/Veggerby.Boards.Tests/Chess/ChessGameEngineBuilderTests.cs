@@ -4,6 +4,9 @@ using System.Linq;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Utils;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 public class ChessGameEngineBuilderTests
@@ -49,30 +52,51 @@ public class ChessGameEngineBuilderTests
         ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.East, ChessIds.Tiles.E4);
         ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.West, ChessIds.Tiles.C4);
 
-        // piece state assertions
-        // Standard placement: queen on d-file, king on e-file
-        string[] whiteBack = { "white-rook-1:a1", "white-knight-1:b1", "white-bishop-1:c1", "white-queen:d1", "white-king:e1", "white-bishop-2:f1", "white-knight-2:g1", "white-rook-2:h1" };
-        foreach (var entry in whiteBack)
+        // piece state assertions (standard chess initial placement)
+        (string PieceId, string TileId)[] whiteBack =
+        [
+            (WhiteRook1, A1),
+            (WhiteKnight1, B1),
+            (WhiteBishop1, C1),
+            (WhiteQueen, D1),
+            (WhiteKing, E1),
+            (WhiteBishop2, F1),
+            (WhiteKnight2, G1),
+            (WhiteRook2, H1)
+        ];
+        foreach (var (pieceId, tileId) in whiteBack)
         {
-            var parts = entry.Split(':');
-            actual.ShouldHavePieceState(parts[0], $"tile-{parts[1]}");
-        }
-        for (int i = 1; i <= 8; i++)
-        {
-            var fileChar = (char)('a' + i - 1);
-            actual.ShouldHavePieceState($"white-pawn-{i}", $"tile-{fileChar}2");
+            actual.ShouldHavePieceState(pieceId, tileId);
         }
 
-        string[] blackBack = { "black-rook-1:a8", "black-knight-1:b8", "black-bishop-1:c8", "black-queen:d8", "black-king:e8", "black-bishop-2:f8", "black-knight-2:g8", "black-rook-2:h8" };
-        foreach (var entry in blackBack)
+        string[] whitePawns = [WhitePawn1, WhitePawn2, WhitePawn3, WhitePawn4, WhitePawn5, WhitePawn6, WhitePawn7, WhitePawn8];
+        string[] whitePawnTiles = [A2, B2, C2, D2, E2, F2, G2, H2];
+        for (int i = 0; i < whitePawns.Length; i++)
         {
-            var parts = entry.Split(':');
-            actual.ShouldHavePieceState(parts[0], $"tile-{parts[1]}");
+            actual.ShouldHavePieceState(whitePawns[i], whitePawnTiles[i]);
         }
-        for (int i = 1; i <= 8; i++)
+
+        (string PieceId, string TileId)[] blackBack =
+        [
+            (BlackRook1, A8),
+            (BlackKnight1, B8),
+            (BlackBishop1, C8),
+            (BlackQueen, D8),
+            (BlackKing, E8),
+            (BlackBishop2, F8),
+            (BlackKnight2, G8),
+            (BlackRook2, H8)
+        ];
+        foreach (var (pieceId, tileId) in blackBack)
         {
-            var fileChar = (char)('a' + i - 1);
-            actual.ShouldHavePieceState($"black-pawn-{i}", $"tile-{fileChar}7");
+            actual.ShouldHavePieceState(pieceId, tileId);
+        }
+
+        string[] blackPawns = [BlackPawn1, BlackPawn2, BlackPawn3, BlackPawn4, BlackPawn5, BlackPawn6, BlackPawn7, BlackPawn8];
+        string[] blackPawnTiles = [A7, B7, C7, D7, E7, F7, G7, H7];
+        for (int i = 0; i < blackPawns.Length; i++)
+        {
+            actual.ShouldHavePieceState(blackPawns[i], blackPawnTiles[i]);
         }
     }
 }

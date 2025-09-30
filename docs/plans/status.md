@@ -98,12 +98,23 @@
 
 ### 10. Chess Full Move Legality
 
-🆕 **Planned.**
+⏳ **Partial.**
 
 * Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
-  * Progress update: Castling rights + safety filter (start/intermediate/destination attack checks) implemented with optimized attack scanning; explicit `Castle` helper replaces synthetic path hack. Remaining: full move generation API, promotion, mate/stalemate evaluation, SAN completion (#, =Q, e.p.).
-* Pending: implementation kickoff; acceptance & metrics defined in workstream file.
-* Risks: performance regressions in hot path if generation naive; test surface expansion (many edge cases) requiring careful property tests.
+  * Progress update: Castling rights + safety filter implemented; explicit `Castle` helper; metadata-driven role/color predicates; identifier normalization via `ChessIds`; en-passant & castling mutators migrated to predicates; coverage guard active. Remaining: pseudo-legal generation API, promotion, mate/stalemate, SAN completion (#, =Q, e.p.).
+* Pending: generation + legality filter implementation & benchmarks.
+* Risks: generation perf, edge-case explosion in legality tests, predicate overhead (to benchmark).
+
+---
+
+### 11. Go Game Module
+
+⏳ **Partial.**
+
+* Scope: stone placement, capture/group & liberty resolution, suicide rule, simple ko, double-pass termination, scoring (area first), nomenclature.
+  * Progress update: Builder + board topology (orthogonal liberties), stone pools, placement (emptiness only), pass event increments counter, minimal nomenclature, extras scaffold (ko/pass/size). Remaining: capture & liberty evaluation, suicide enforcement, ko detection, pass-termination -> terminal flag, scoring, coordinate nomenclature, tests & benchmarks.
+* Pending: group/liberty resolver + capture logic design.
+* Risks: capture evaluation performance on 19x19, ko edge-cases (snapback misclassification), scoring determinism.
 
 ---
 

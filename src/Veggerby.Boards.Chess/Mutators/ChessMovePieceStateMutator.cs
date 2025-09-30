@@ -47,7 +47,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         // Reset en-passant by default; set only if this move is a double-step pawn advance (distance == 2)
         string enPassantTarget = null;
         var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
-    if (ChessPiece.IsPawn(gameState, @event.Piece.Id) && @event.Distance == 2)
+        if (ChessPiece.IsPawn(gameState, @event.Piece.Id) && @event.Distance == 2)
         {
             // Robust intermediate inference (supports either 2 single-step relations or a future potential single relation of distance 2)
             var relations = @event.Path.Relations.ToArray();
@@ -67,7 +67,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
             }
         }
 
-    var isPawnAdvance = ChessPiece.IsPawn(gameState, @event.Piece.Id);
+        var isPawnAdvance = ChessPiece.IsPawn(gameState, @event.Piece.Id);
         var halfmove = isPawnAdvance ? 0 : prevExtras.HalfmoveClock + 1;
         // Derive active player defensively: prefer ActivePlayerState when present, else infer from mover color sequence assumption (white starts)
         string activeId;

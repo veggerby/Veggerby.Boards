@@ -2,6 +2,9 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Support;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -14,18 +17,18 @@ public class ChessTurnAlternationTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var pawn = progress.Game.GetPiece("white-pawn-5");
-        var beforeBlackPawn = progress.Game.GetPiece("black-pawn-5");
+        var pawn = progress.Game.GetPiece(WhitePawn5);
+        var beforeBlackPawn = progress.Game.GetPiece(BlackPawn5);
         // act1 white e2->e3
-        progress = progress.Move("white-pawn-5", "e3");
+        progress = progress.Move(WhitePawn5, E3);
         var afterWhiteMove = progress;
         // act2 attempt another white move (same pawn e3->e4)
-        progress = progress.Move("white-pawn-5", "e4");
+        progress = progress.Move(WhitePawn5, E4);
         // assert: ignored, pawn remains e3, state reference unchanged
         progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
         progress.Should().BeSameAs(afterWhiteMove);
         // black still to move (can move now)
-        progress = progress.Move("black-pawn-5", "e6");
+        progress = progress.Move(BlackPawn5, E6);
         progress.State.GetState<PieceState>(beforeBlackPawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E6);
     }
 

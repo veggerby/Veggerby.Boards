@@ -73,6 +73,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
     - Optimized attack enumeration (early exit, static direction arrays, no per-move hash set allocations) reducing transient allocations during safety checks.
     - Castling failure messages now include the specific attacked square id.
 
+  - **Chess – Metadata Classification & Identifier Normalization**
+    - Introduced explicit piece role & color metadata maps (replacing string heuristic parsing of ids like `white-king`, `-pawn`).
+    - Added predicate helpers (`IsKing`, `IsPawn`, `IsWhite`, `IsBlack`, etc.) centralizing all role/color checks with test coverage.
+    - Replaced all production/test/benchmark/sample code uses of raw chess piece & tile identifier string literals with `ChessIds` constants (single source of truth) except in intentional custom scenario cases.
+    - Implemented `MetadataCoverageGuard` ensuring scenario builders include every declared piece in metadata maps (prevents silent drift).
+    - Added classification & parity tests plus en-passant and castling regression tests validating metadata driven logic.
+    - Updated documentation snippets to reflect constant-based usage pattern.
+
+  - **Go – Initial Module Scaffolding**
+    - Added `GoGameBuilder` (configurable 9/13/19 board), orthogonal liberty topology, stone pools for both players.
+    - Added events & mutators: `PlaceStoneGameEvent` (emptiness-only placement) and `PassTurnGameEvent` (increments pass counter), `GoStateExtras` (ko placeholder, pass count, board size).
+    - Minimal `GoNomenclature` placeholder and workstream plan (`11-go-game-module`) outlining capture, ko, suicide, scoring, and termination roadmap.
+
 ### Changed
 
 - Compiled movement patterns **enabled by default**.
@@ -81,6 +94,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Consolidated package versions via `Directory.Packages.props`.
 - README and docs updated across acceleration, sequencing, and DX topics.
 - Chess castling implementation evolved from provisional structural-only version to full safety-gated variant with explicit API and performance-tuned attack scanning.
+- Chess move, capture, en-passant, and castling mutators & conditions now use metadata predicates (no id substring heuristics remain).
+- Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
 
 ### Fixed
 
@@ -93,6 +108,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Fully removed legacy traversal code.
 - Added benchmarks, parity packs, and cleanup checklists for regression safety.
 - Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).
+  - Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
 
 ## [0.1.0] – Initial
 

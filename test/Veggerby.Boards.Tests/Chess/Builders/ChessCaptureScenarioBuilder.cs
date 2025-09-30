@@ -36,17 +36,17 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
         }
 
         // Pieces (queen sliding north/south; target pawn stationary facing south for consistency though direction irrelevant here)
-        AddPiece("white-queen")
-            .WithOwner(ChessIds.Players.White)
-            .HasDirection(Constants.Directions.North).CanRepeat()
-            .HasDirection(Constants.Directions.South).CanRepeat();
+        AddPiece(ChessIds.Pieces.WhiteQueen)
+                .WithOwner(ChessIds.Players.White)
+                .HasDirection(Constants.Directions.North).CanRepeat()
+                .HasDirection(Constants.Directions.South).CanRepeat();
 
-        AddPiece("black-pawn-5")
-            .WithOwner(ChessIds.Players.Black)
-            .HasDirection(Constants.Directions.South);
+        AddPiece(ChessIds.Pieces.BlackPawn5)
+                .WithOwner(ChessIds.Players.Black)
+                .HasDirection(Constants.Directions.South);
 
-        WithPiece("white-queen").OnTile(ChessIds.Tiles.E1);
-        WithPiece("black-pawn-5").OnTile(ChessIds.Tiles.E7);
+        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile(ChessIds.Tiles.E1);
+        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile(ChessIds.Tiles.E7);
 
         AddGamePhase("move")
             .If<NullGameStateCondition>()

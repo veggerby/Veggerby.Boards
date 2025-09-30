@@ -2,6 +2,9 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Builders;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -14,11 +17,11 @@ public class ChessCaptureScaffoldingTests
     {
         // arrange (direct capture position: queen e1, pawn e7)
         var progress = new ChessCaptureScenarioBuilder().Compile();
-        var whiteQueen = progress.Game.GetPiece("white-queen");
-        var blackPawn = progress.Game.GetPiece("black-pawn-5");
+        var whiteQueen = progress.Game.GetPiece(WhiteQueen);
+        var blackPawn = progress.Game.GetPiece(BlackPawn5);
 
         // act: queen moves to e7 capturing pawn
-        progress = progress.Move("white-queen", "e7");
+        progress = progress.Move(WhiteQueen, E7);
 
         // assert
         var queenState = progress.State.GetState<PieceState>(whiteQueen);

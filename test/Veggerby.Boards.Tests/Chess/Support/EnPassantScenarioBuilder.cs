@@ -124,6 +124,9 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
         }
         WithState(new ChessPieceColorsExtras(colors));
 
+        // Guard: ensure every added piece has both role and color metadata (defensive for future edits)
+        Tests.Chess.Support.MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
+
         // Active player projection now explicit via WithActivePlayer declarations above.
 
         // Movement phase (mirrors ChessGameBuilder ordering)

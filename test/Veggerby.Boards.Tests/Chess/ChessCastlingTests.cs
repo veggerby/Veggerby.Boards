@@ -1,6 +1,9 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -15,19 +18,19 @@ public class ChessCastlingTests
         var progress = new ChessGameBuilder().Compile();
         // Clear path squares f1 and g1 (king e1 -> g1) by vacating g1 (knight) and f1 (bishop) and ensuring bishop destination e2 is free.
         // 1. Advance pawn e2 -> e4 (double step frees e2)
-        progress = progress.Move("white-pawn-5", "e4");
-        progress = progress.Move("black-pawn-5", "e6");
+        progress = progress.Move(WhitePawn5, E4);
+        progress = progress.Move(BlackPawn5, E6);
         // 2. Knight g1 -> f3 (vacates g1)
-        progress = progress.Move("white-knight-2", "f3");
-        progress = progress.Move("black-pawn-4", "d6");
+        progress = progress.Move(WhiteKnight2, F3);
+        progress = progress.Move(BlackPawn4, D6);
         // 3. Bishop f1 -> e2 (vacates f1 now that e2 is empty)
-        progress = progress.Move("white-bishop-2", "e2");
-        progress = progress.Move("black-pawn-3", "c6");
+        progress = progress.Move(WhiteBishop2, E2);
+        progress = progress.Move(BlackPawn3, C6);
         // Attempt castling using explicit helper
         progress = progress.Castle(ChessIds.Players.White, kingSide: true);
         // assert
-        var king = progress.Game.GetPiece("white-king");
-        var rook = progress.Game.GetPiece("white-rook-2");
+        var king = progress.Game.GetPiece(WhiteKing);
+        var rook = progress.Game.GetPiece(WhiteRook2);
         progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.G1);
         progress.State.GetState<PieceState>(rook).CurrentTile.Id.Should().Be(ChessIds.Tiles.F1);
         var extras = progress.State.GetExtras<ChessStateExtras>();
@@ -46,7 +49,7 @@ public class ChessCastlingTests
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged
-        var king = progress.Game.GetPiece("white-king");
+        var king = progress.Game.GetPiece(WhiteKing);
         progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.E1);
         before.Should().NotBeSameAs(null); // guard
     }

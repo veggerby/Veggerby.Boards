@@ -2,6 +2,9 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Support;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -15,14 +18,14 @@ public class ChessPawnDoubleStepInvalidTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var pawn = progress.Game.GetPiece("white-pawn-5");
+        var pawn = progress.Game.GetPiece(WhitePawn5);
         // act1 single move e2->e3
-        progress = progress.Move("white-pawn-5", "e3");
+        progress = progress.Move(WhitePawn5, E3);
         var afterSingle = progress;
         // black reply to restore white turn (quiet move: e7->e6)
-        progress = progress.Move("black-pawn-5", "e6");
+        progress = progress.Move(BlackPawn5, E6);
         // attempt illegal double-step e3->e5 (skipping e4)
-        progress = progress.Move("white-pawn-5", "e5");
+        progress = progress.Move(WhitePawn5, E5);
         // assert: pawn remained on e3 (ignored)
         progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
         // ensure new state reference not advanced by illegal attempt (identity equality ok) - semantics: Move returns same progress when ignored

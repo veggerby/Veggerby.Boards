@@ -62,9 +62,9 @@ public class ObserverOverheadBenchmark
         var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
         _batched = builder3.Compile();
 
-        var piece = _baseline.Game.GetPiece("white-pawn-2");
-        var from = _baseline.Game.GetTile("e2");
-        var to = _baseline.Game.GetTile("e4");
+        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2);
+        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2);
+        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4);
         var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
         _event = new MovePieceGameEvent(piece, path);
     }

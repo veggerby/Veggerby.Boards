@@ -4,6 +4,9 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Builders;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 public class ChessCaptureTests
@@ -13,10 +16,10 @@ public class ChessCaptureTests
     {
         // arrange
         var progress = new ChessCaptureScenarioBuilder().Compile();
-        var queen = progress.Game.GetPiece("white-queen");
-        var blackPawn = progress.Game.GetPiece("black-pawn-5"); // on e7
-        // act: queen traverses directly (multi-step path built internally by Move helper) to capture square
-        progress = progress.Move("white-queen", "e7");
+        var queen = progress.Game.GetPiece(WhiteQueen);
+        var blackPawn = progress.Game.GetPiece(BlackPawn5); // on e7
+                                                            // act: queen traverses directly (multi-step path built internally by Move helper) to capture square
+        progress = progress.Move(WhiteQueen, E7);
 
         // assert
         var queenState = progress.State.GetState<PieceState>(queen);

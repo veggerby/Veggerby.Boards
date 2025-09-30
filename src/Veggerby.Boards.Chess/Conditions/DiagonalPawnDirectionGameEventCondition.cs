@@ -21,7 +21,8 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
     /// <returns>Valid if pawn forward diagonal single-step, else Ignore.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
-        if (!moveEvent.Piece.Id.Contains("pawn"))
+        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (!ChessPieceRoles.TryGetRole(rolesExtras, moveEvent.Piece.Id, out var role) || role != ChessPieceRole.Pawn)
         {
             return ConditionResponse.Ignore("Not a pawn");
         }
@@ -32,7 +33,7 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
         }
 
         var dir = moveEvent.Path.Directions.Single();
-        var isWhite = moveEvent.Piece.Id.StartsWith("white-");
+        var isWhite = ChessPiece.IsWhite(state, moveEvent.Piece.Id);
         if (isWhite)
         {
             if (dir.Id is Constants.Directions.NorthEast or Constants.Directions.NorthWest)

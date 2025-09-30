@@ -401,7 +401,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         // Find opposing king
         var moverOwner = moveEvent.Piece.Owner;
         var opponentKingState = state.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && ps.Artifact.Id.Contains(ChessIds.PieceSuffixes.King));
+            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(state, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
+
         if (opponentKingState is null)
         {
             return false; // cannot detect
@@ -413,6 +414,7 @@ public sealed class ChessNomenclature : IGameNomenclature
             .Where(ps => ps.Artifact != moveEvent.Piece && ps.CurrentTile != destination) // remove captured piece if any opposing there
             .Select(ps => (States.IArtifactState)ps)
             .ToList();
+
         updatedStates.Add(new States.PieceState(moveEvent.Piece, destination));
         var post = Veggerby.Boards.States.GameState.New(updatedStates);
 

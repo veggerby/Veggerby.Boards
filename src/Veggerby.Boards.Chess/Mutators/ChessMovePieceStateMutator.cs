@@ -44,34 +44,35 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
             ? prevExtras.MovedPieceIds
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
 
-        // Reset en-passant by default; set only if this move is a double-step pawn advance
+        // Reset en-passant by default; set only if this move is a double-step pawn advance (distance == 2)
         string enPassantTarget = null;
-        if (@event.Piece.Id.Contains("pawn") && @event.Distance == 2)
+        var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
+        if (ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var role) && role == ChessPieceRole.Pawn && @event.Distance == 2)
         {
-            // Target is the square jumped over: the intermediate relation's To of the first step (orientation agnostic)
-            var directionIds = @event.Path.Directions.ToArray();
-            if (directionIds.Length == 2 && directionIds.Distinct().Count() == 1)
+            // Robust intermediate inference (supports either 2 single-step relations or a future potential single relation of distance 2)
+            var relations = @event.Path.Relations.ToArray();
+            if (relations.Length == 2)
             {
-                // intermediate tile is first relation To
-                var intermediate = @event.Path.Relations.First().To;
-                enPassantTarget = intermediate.Id;
+                // Standard case: two explicit single-step relations; intermediate is first To
+                enPassantTarget = relations[0].To.Id;
+            }
+            else if (relations.Length == 1 && relations[0].Distance == 2)
+            {
+                // Defensive: derive intermediate via coordinate arithmetic (same file, rank +/-2)
+                if (ChessCoordinates.TryParse(relations[0].From.Id, out var fFile, out var fRank) && ChessCoordinates.TryParse(relations[0].To.Id, out var tFile, out var tRank) && fFile == tFile && System.Math.Abs(tRank - fRank) == 2)
+                {
+                    var midRank = (fRank + tRank) / 2; // integer midpoint between ranks (e.g., 2 & 4 -> 3; 7 & 5 -> 6)
+                    enPassantTarget = ChessCoordinates.BuildTileId(fFile, midRank);
+                }
             }
         }
 
-        var isPawnAdvance = @event.Piece.Id.Contains("pawn");
+        var isPawnAdvance = ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var r2) && r2 == ChessPieceRole.Pawn;
         var halfmove = isPawnAdvance ? 0 : prevExtras.HalfmoveClock + 1;
         // Derive active player defensively: prefer ActivePlayerState when present, else infer from mover color sequence assumption (white starts)
         string activeId;
-        try
-        {
-            activeId = gameState.GetActivePlayer().Id;
-        }
-        catch
-        {
-            // fallback: alternate by half-move count encoded in FullmoveNumber & whose turn expectation
-            // If mover is black, increment fullmove (black just moved)
-            activeId = @event.Piece.Id.StartsWith("white-") ? ChessIds.Players.White : ChessIds.Players.Black;
-        }
+        try { activeId = gameState.GetActivePlayer().Id; }
+        catch { activeId = ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black; }
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
 
         // Castling rights revocation rules (movement):

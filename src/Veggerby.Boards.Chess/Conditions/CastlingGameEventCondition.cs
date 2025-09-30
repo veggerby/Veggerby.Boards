@@ -30,8 +30,9 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        // Only consider king pieces by id convention
-        if (!@event.Piece.Id.EndsWith(ChessIds.PieceSuffixes.King))
+        // Resolve role via metadata (no string heuristics)
+        var roleExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (!ChessPieceRoles.TryGetRole(roleExtras, @event.Piece.Id, out var role) || role != ChessPieceRole.King)
         {
             return ConditionResponse.Ignore("Not a king");
         }

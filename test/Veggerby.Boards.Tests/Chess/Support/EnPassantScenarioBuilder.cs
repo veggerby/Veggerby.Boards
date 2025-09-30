@@ -98,6 +98,32 @@ internal sealed class EnPassantScenarioBuilder : GameBuilder
         // Chess extras baseline
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
 
+        // Role metadata for test pieces
+        var roles = new System.Collections.Generic.Dictionary<string, ChessPieceRole>
+        {
+            { "white-pawn-test", ChessPieceRole.Pawn },
+            { "black-pawn-test", ChessPieceRole.Pawn }
+        };
+
+        if (_includeAuxiliaryBlackPawn)
+        {
+            roles.Add("black-pawn-aux", ChessPieceRole.Pawn);
+        }
+
+        WithState(new ChessPieceRolesExtras(roles));
+
+        // Color metadata for test pieces
+        var colors = new System.Collections.Generic.Dictionary<string, ChessPieceColor>
+        {
+            { "white-pawn-test", ChessPieceColor.White },
+            { "black-pawn-test", ChessPieceColor.Black }
+        };
+        if (_includeAuxiliaryBlackPawn)
+        {
+            colors.Add("black-pawn-aux", ChessPieceColor.Black);
+        }
+        WithState(new ChessPieceColorsExtras(colors));
+
         // Active player projection now explicit via WithActivePlayer declarations above.
 
         // Movement phase (mirrors ChessGameBuilder ordering)

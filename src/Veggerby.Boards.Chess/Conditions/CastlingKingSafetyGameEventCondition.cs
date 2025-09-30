@@ -30,7 +30,8 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        if (!@event.Piece.Id.EndsWith(ChessIds.PieceSuffixes.King)) { return ConditionResponse.Ignore("Not a king"); }
+        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (!ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var movingRole) || movingRole != ChessPieceRole.King) { return ConditionResponse.Ignore("Not a king"); }
         var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
         var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (@event.From?.Id != startId) { return ConditionResponse.Ignore("Not from initial square"); }
@@ -54,15 +55,15 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         {
             if (ps.Artifact.Owner?.Id != opponent) { continue; }
             var id = ps.Artifact.Id;
+            if (!ChessPieceRoles.TryGetRole(rolesExtras, id, out var pieceRole)) { continue; }
             var (file, rank) = Parse(ps.CurrentTile.Id);
-
-            if (id.Contains(ChessIds.PieceSuffixes.Pawn, StringComparison.Ordinal))
+            if (pieceRole == ChessPieceRole.Pawn)
             {
                 int dir = opponent == ChessIds.Players.White ? 1 : -1;
                 var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
                 if (pawnHit is not null) { return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack"); }
             }
-            else if (id.Contains(ChessIds.PieceSuffixes.Knight, StringComparison.Ordinal))
+            else if (pieceRole == ChessPieceRole.Knight)
             {
                 foreach (var (df, dr) in KnightOffsets)
                 {
@@ -72,23 +73,23 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                     if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
                 }
             }
-            else if (id.Contains(ChessIds.PieceSuffixes.Bishop, StringComparison.Ordinal))
+            else if (pieceRole == ChessPieceRole.Bishop)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.Contains(ChessIds.PieceSuffixes.Rook, StringComparison.Ordinal))
+            else if (pieceRole == ChessPieceRole.Rook)
             {
                 var hit = ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.Contains(ChessIds.PieceSuffixes.Queen, StringComparison.Ordinal))
+            else if (pieceRole == ChessPieceRole.Queen)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
                 hit ??= ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (id.EndsWith(ChessIds.PieceSuffixes.King, StringComparison.Ordinal))
+            else if (pieceRole == ChessPieceRole.King)
             {
                 for (int df = -1; df <= 1; df++)
                 {

@@ -56,19 +56,23 @@ public static class ChessBoardRenderer
             writer.Write(rank);
             writer.Write(' ');
             writer.Write('|');
+
             for (int file = 1; file <= 8; file++)
             {
                 var fileChar = (char)('a' + file - 1);
                 var tileId = $"tile-{fileChar}{rank}";
+
                 if (!pieceStates.TryGetValue(tileId, out var piece))
                 {
                     writer.Write(" . ");
                     continue;
                 }
+
                 var parts = piece.Id.Split('-'); // e.g. white-pawn-5 or white-king
                 var role = parts.Length > 1 ? parts[1] : string.Empty;
                 var isWhite = parts[0] == ChessIds.Players.White;
                 char glyph;
+
                 if (useUnicode)
                 {
                     glyph = role switch
@@ -94,18 +98,22 @@ public static class ChessBoardRenderer
                         "pawn" => 'p',
                         _ => '?'
                     };
+
                     if (isWhite)
                     {
                         glyph = char.ToUpperInvariant(glyph);
                     }
                 }
+
                 writer.Write(' ');
                 writer.Write(glyph);
                 writer.Write(' ');
             }
+
             writer.Write('|');
             writer.WriteLine();
         }
+
         writer.WriteLine("  +------------------------+");
         writer.WriteLine("    a  b  c  d  e  f  g  h\n");
     }

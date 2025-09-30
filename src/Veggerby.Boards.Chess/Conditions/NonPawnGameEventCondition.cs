@@ -13,8 +13,11 @@ public sealed class NonPawnGameEventCondition : IGameEventCondition<MovePieceGam
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        return @event.Piece.Id.Contains("pawn")
-            ? ConditionResponse.Ignore("Is pawn")
-            : ConditionResponse.Valid;
+        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var role) && role == ChessPieceRole.Pawn)
+        {
+            return ConditionResponse.Ignore("Is pawn");
+        }
+        return ConditionResponse.Valid;
     }
 }

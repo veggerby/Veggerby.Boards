@@ -40,14 +40,14 @@ public class ChessGameBuilder : GameBuilder
 
         // Canonical orientation: white pieces move toward increasing rank numbers (north), black toward decreasing (south).
         // Directions are declared once; semantics in conditions/mutators use this canonical mapping.
-    AddDirection(Constants.Directions.North);
-    AddDirection(Constants.Directions.East);
-    AddDirection(Constants.Directions.South);
-    AddDirection(Constants.Directions.West);
-    AddDirection(Constants.Directions.NorthEast);
-    AddDirection(Constants.Directions.NorthWest);
-    AddDirection(Constants.Directions.SouthEast);
-    AddDirection(Constants.Directions.SouthWest);
+        AddDirection(Constants.Directions.North);
+        AddDirection(Constants.Directions.East);
+        AddDirection(Constants.Directions.South);
+        AddDirection(Constants.Directions.West);
+        AddDirection(Constants.Directions.NorthEast);
+        AddDirection(Constants.Directions.NorthWest);
+        AddDirection(Constants.Directions.SouthEast);
+        AddDirection(Constants.Directions.SouthWest);
 
         /*         N
          * (a,1) ----- (h,1)    WHITE
@@ -296,6 +296,109 @@ public class ChessGameBuilder : GameBuilder
             HalfmoveClock: 0,
             FullmoveNumber: 1,
             MovedPieceIds: System.Array.Empty<string>()));
+
+        // Piece role metadata map (piece id -> role) used by conditions instead of string heuristics
+        // Immutable and color/index agnostic; populated explicitly for clarity.
+        var roleMap = new System.Collections.Generic.Dictionary<string, ChessPieceRole>(56)
+        {
+            // White major pieces
+            { ChessIds.Pieces.WhiteKing, ChessPieceRole.King },
+            { ChessIds.Pieces.WhiteQueen, ChessPieceRole.Queen },
+            { ChessIds.Pieces.WhiteRook1, ChessPieceRole.Rook },
+            { ChessIds.Pieces.WhiteRook2, ChessPieceRole.Rook },
+            { ChessIds.Pieces.WhiteBishop1, ChessPieceRole.Bishop },
+            { ChessIds.Pieces.WhiteBishop2, ChessPieceRole.Bishop },
+            { ChessIds.Pieces.WhiteKnight1, ChessPieceRole.Knight },
+            { ChessIds.Pieces.WhiteKnight2, ChessPieceRole.Knight },
+            // Black major pieces
+            { ChessIds.Pieces.BlackKing, ChessPieceRole.King },
+            { ChessIds.Pieces.BlackQueen, ChessPieceRole.Queen },
+            { ChessIds.Pieces.BlackRook1, ChessPieceRole.Rook },
+            { ChessIds.Pieces.BlackRook2, ChessPieceRole.Rook },
+            { ChessIds.Pieces.BlackBishop1, ChessPieceRole.Bishop },
+            { ChessIds.Pieces.BlackBishop2, ChessPieceRole.Bishop },
+            { ChessIds.Pieces.BlackKnight1, ChessPieceRole.Knight },
+            { ChessIds.Pieces.BlackKnight2, ChessPieceRole.Knight },
+            // White pawns
+            { ChessIds.Pieces.WhitePawn1, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn2, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn3, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn4, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn5, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn6, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn7, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.WhitePawn8, ChessPieceRole.Pawn },
+            // Black pawns
+            { ChessIds.Pieces.BlackPawn1, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn2, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn3, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn4, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn5, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn6, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn7, ChessPieceRole.Pawn },
+            { ChessIds.Pieces.BlackPawn8, ChessPieceRole.Pawn },
+        };
+        WithState(new ChessPieceRolesExtras(roleMap));
+
+        var colorMap = new System.Collections.Generic.Dictionary<string, ChessPieceColor>(56)
+        {
+            // White pieces
+            { ChessIds.Pieces.WhiteKing, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteQueen, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteRook1, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteRook2, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteBishop1, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteBishop2, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteKnight1, ChessPieceColor.White },
+            { ChessIds.Pieces.WhiteKnight2, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn1, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn2, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn3, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn4, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn5, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn6, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn7, ChessPieceColor.White },
+            { ChessIds.Pieces.WhitePawn8, ChessPieceColor.White },
+            // Black pieces
+            { ChessIds.Pieces.BlackKing, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackQueen, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackRook1, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackRook2, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackBishop1, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackBishop2, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackKnight1, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackKnight2, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn1, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn2, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn3, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn4, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn5, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn6, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn7, ChessPieceColor.Black },
+            { ChessIds.Pieces.BlackPawn8, ChessPieceColor.Black },
+        };
+        WithState(new ChessPieceColorsExtras(colorMap));
+
+        // Build-time (compile-time equivalent) validation ensuring every canonical piece id has role and color entries.
+        // Fast-fail to prevent silent drift if ChessIds.Pieces is modified without updating metadata.
+        var expectedPieceIds = new string[]
+        {
+            ChessIds.Pieces.WhiteKing, ChessIds.Pieces.WhiteQueen, ChessIds.Pieces.WhiteRook1, ChessIds.Pieces.WhiteRook2,
+            ChessIds.Pieces.WhiteBishop1, ChessIds.Pieces.WhiteBishop2, ChessIds.Pieces.WhiteKnight1, ChessIds.Pieces.WhiteKnight2,
+            ChessIds.Pieces.WhitePawn1, ChessIds.Pieces.WhitePawn2, ChessIds.Pieces.WhitePawn3, ChessIds.Pieces.WhitePawn4,
+            ChessIds.Pieces.WhitePawn5, ChessIds.Pieces.WhitePawn6, ChessIds.Pieces.WhitePawn7, ChessIds.Pieces.WhitePawn8,
+            ChessIds.Pieces.BlackKing, ChessIds.Pieces.BlackQueen, ChessIds.Pieces.BlackRook1, ChessIds.Pieces.BlackRook2,
+            ChessIds.Pieces.BlackBishop1, ChessIds.Pieces.BlackBishop2, ChessIds.Pieces.BlackKnight1, ChessIds.Pieces.BlackKnight2,
+            ChessIds.Pieces.BlackPawn1, ChessIds.Pieces.BlackPawn2, ChessIds.Pieces.BlackPawn3, ChessIds.Pieces.BlackPawn4,
+            ChessIds.Pieces.BlackPawn5, ChessIds.Pieces.BlackPawn6, ChessIds.Pieces.BlackPawn7, ChessIds.Pieces.BlackPawn8,
+        };
+        foreach (var pid in expectedPieceIds)
+        {
+            if (!roleMap.ContainsKey(pid) || !colorMap.ContainsKey(pid))
+            {
+                throw new System.InvalidOperationException($"Piece metadata drift: missing role/color for '{pid}'");
+            }
+        }
 
 
         AddGamePhase("move pieces")

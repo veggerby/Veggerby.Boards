@@ -25,7 +25,8 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
         var @event = moveEvent; // local alias to retain prior variable name usage
-        if (!@event.Piece.Id.Contains("pawn"))
+        var roleExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (!ChessPieceRoles.TryGetRole(roleExtras, @event.Piece.Id, out var role) || role != ChessPieceRole.Pawn)
         {
             return ConditionResponse.Ignore("Not a pawn");
         }
@@ -43,7 +44,7 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
         }
 
         var dirId = dirs[0].Id;
-        var isWhite = @event.Piece.Id.StartsWith("white-");
+        var isWhite = ChessPiece.IsWhite(state, @event.Piece.Id);
         if (isWhite && dirId != Constants.Directions.North)
         {
             return ConditionResponse.Ignore("White double-step must be north");

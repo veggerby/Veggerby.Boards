@@ -21,7 +21,8 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
         var @event = moveEvent;
-        if (!@event.Piece.Id.Contains("pawn"))
+        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
+        if (!ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var moverRole) || moverRole != ChessPieceRole.Pawn)
         {
             return ConditionResponse.Ignore("Not a pawn");
         }
@@ -61,7 +62,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
             return ConditionResponse.Ignore("Unparsable target id");
         }
 
-        var moverIsWhite = @event.Piece.Id.StartsWith("white-");
+        var moverIsWhite = ChessPiece.IsWhite(state, @event.Piece.Id);
         // White moves north; victim pawn is one rank south of target (rank - 1). Black moves south; victim one rank north (rank + 1).
         var victimRank = moverIsWhite ? rank - 1 : rank + 1;
         if (victimRank < 1 || victimRank > 8)
@@ -72,7 +73,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
         var victimPawn = state.GetPiecesOnTile(victimTile)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && p.Id.Contains("pawn"));
+            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPieceRoles.TryGetRole(rolesExtras, p.Id, out var r) && r == ChessPieceRole.Pawn);
 
         if (victimPawn is null)
         {

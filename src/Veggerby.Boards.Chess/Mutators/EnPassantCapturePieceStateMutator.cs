@@ -28,7 +28,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             return gameState; // invalid target id pattern; defensive no-op
         }
 
-        var moverIsWhite = @event.Piece.Id.StartsWith("white-");
+        var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
         // White moves north; victim is the pawn that advanced two squares and sits one rank south of the target.
         var victimRank = moverIsWhite ? rank - 1 : rank + 1;
 
@@ -39,9 +39,10 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
 
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
+        var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
         var victimPiece = gameState
             .GetPiecesOnTile(victimTile)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && p.Id.Contains("pawn"));
+            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPieceRoles.TryGetRole(rolesExtras, p.Id, out var r) && r == ChessPieceRole.Pawn);
 
         if (victimPiece is null)
         {
@@ -58,14 +59,8 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             ? prevExtras.MovedPieceIds
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
         string activeId;
-        try
-        {
-            activeId = gameState.GetActivePlayer().Id;
-        }
-        catch
-        {
-            activeId = @event.Piece.Id.StartsWith("white-") ? ChessIds.Players.White : ChessIds.Players.Black;
-        }
+        try { activeId = gameState.GetActivePlayer().Id; }
+        catch { activeId = ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black; }
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = prevExtras with
         {

@@ -158,3 +158,45 @@
 
    * Implement minimal Roslyn rules.
    * Add cross-platform determinism CI job.
+
+---
+
+### 12. Ludo / Parcheesi Game Module
+
+⏳ **Planned.**
+
+* Scope: race track + home stretches, safe squares, entry on 6, capture reset, win when all tokens home.
+* Pending: full builder, movement/capture conditions, win detection tests.
+* Risks: variant creep (extra-turn on 6, stacking) inflating baseline.
+
+### 13. Checkers / Draughts Game Module
+
+⏳ **Planned.**
+
+* Scope: dark-square graph, forward men, bidirectional kings, mandatory capture, multi-jump chains, kinging, immobilization/ elimination win.
+* Pending: capture chain enumerator, deterministic path ordering, kinging mutator, tests & benchmarks.
+* Risks: branching capture explosion performance; variant divergence early.
+
+### 14. Monopoly Game Module
+
+⏳ **Planned.**
+
+* Scope: board cycle, property acquisition, rent, jail, chance/community deck (subset), doubles logic, bankruptcy elimination.
+* Pending: deck artifacts & deterministic shuffle, rent & cash transfer mutators, jail state flow, win detection tests.
+* Risks: economic complexity creep (houses/auctions) prematurely.
+
+### 16. Risk Game Module
+
+⏳ **Planned.**
+
+* Scope: territory graph, reinforcement calc (territories/3 min 3 + continent bonus), combat dice resolution, conquest ownership transfer, elimination, domination win.
+* Pending: reinforcement condition implementation, combat resolution mutators, win detection tests, benchmarks.
+* Risks: early card mechanic inclusion expanding surface; combat allocation overhead.
+
+### 17. Deck-building Core Module
+
+⏳ **Planned.**
+
+* Scope: deterministic supply, deck/hand/discard zones, draw & shuffle (seeded), action/buy/cleanup phases, scoring.
+* Pending: shuffle artifact, phase sequencer conditions, gain/trash mutators, scoring aggregator, tests & benchmarks.
+* Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.

@@ -5,7 +5,7 @@ last_updated: 2025-09-30
 status_index:
   done: [1,2,3]
   partial: [4,5,6,7,8,9,10,11]
-  planned: []
+  planned: [12,13,14,16,17]
 ---
 
 # Workstreams Overview
@@ -23,5 +23,10 @@ status_index:
 | 9 | Turn & Round Sequencing | partial | TurnState segmentation + overhead benchmark baseline. |
 | 10 | Chess Full Move Legality | partial | Castling rights + safety, metadata predicates, ids normalized; generation & endgame pending. |
 | 11 | Go Game Module | partial | Board + placement/pass scaffolding; capture/ko/scoring pending. |
+| 12 | Ludo / Parcheesi Game Module | planned | Race track, entry on 6, capture reset, safe squares baseline. |
+| 13 | Checkers / Draughts Game Module | planned | Dark-square graph, mandatory capture, multi-jump deterministic. |
+| 14 | Monopoly Game Module | planned | Track, property ownership, rent, jail & deck (simplified baseline). |
+| 16 | Risk Game Module | planned | Territory graph, reinforcement calc, combat dice, conquest. |
+| 17 | Deck-building Core Module | planned | Supply piles, shuffle determinism, phase sequencing, scoring. |
 
 Legend: done = acceptance met; partial = some acceptance outstanding; closed = intentionally deferred; planned = not yet started.

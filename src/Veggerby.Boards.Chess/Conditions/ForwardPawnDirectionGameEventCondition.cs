@@ -16,8 +16,7 @@ public sealed class ForwardPawnDirectionGameEventCondition : IGameEventCondition
     /// </summary>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
-        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPieceRoles.TryGetRole(rolesExtras, moveEvent.Piece.Id, out var role) || role != ChessPieceRole.Pawn)
+        if (!ChessPiece.IsPawn(state, moveEvent.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");
         }

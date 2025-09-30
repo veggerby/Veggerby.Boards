@@ -25,8 +25,7 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
         var @event = moveEvent; // local alias to retain prior variable name usage
-        var roleExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPieceRoles.TryGetRole(roleExtras, @event.Piece.Id, out var role) || role != ChessPieceRole.Pawn)
+        if (!ChessPiece.IsPawn(state, @event.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");
         }

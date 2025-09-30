@@ -39,10 +39,9 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
 
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
-        var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
         var victimPiece = gameState
             .GetPiecesOnTile(victimTile)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPieceRoles.TryGetRole(rolesExtras, p.Id, out var r) && r == ChessPieceRole.Pawn);
+            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(gameState, p.Id));
 
         if (victimPiece is null)
         {

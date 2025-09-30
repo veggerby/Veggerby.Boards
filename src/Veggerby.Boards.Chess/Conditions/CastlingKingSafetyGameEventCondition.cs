@@ -31,7 +31,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var movingRole) || movingRole != ChessPieceRole.King) { return ConditionResponse.Ignore("Not a king"); }
+    if (!ChessPiece.IsKing(state, @event.Piece.Id)) { return ConditionResponse.Ignore("Not a king"); }
         var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
         var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (@event.From?.Id != startId) { return ConditionResponse.Ignore("Not from initial square"); }
@@ -55,15 +55,24 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         {
             if (ps.Artifact.Owner?.Id != opponent) { continue; }
             var id = ps.Artifact.Id;
-            if (!ChessPieceRoles.TryGetRole(rolesExtras, id, out var pieceRole)) { continue; }
+            // Skip pieces whose role can't be resolved or isn't a sliding attacker/knight/pawn etc; rely on predicate helpers for clarity where possible.
+            if (ChessPiece.IsKing(state, id)) { continue; }
             var (file, rank) = Parse(ps.CurrentTile.Id);
-            if (pieceRole == ChessPieceRole.Pawn)
+            // Determine role via predicates (avoid direct map usage for consistency with new style). Order common/cheap checks first.
+            bool isPawn = ChessPiece.IsPawn(state, id);
+            bool isKnight = !isPawn && ChessPiece.IsKnight(state, id);
+            bool isBishop = !isPawn && !isKnight && ChessPiece.IsBishop(state, id);
+            bool isRook = !isPawn && !isKnight && !isBishop && ChessPiece.IsRook(state, id);
+            bool isQueen = !isPawn && !isKnight && !isBishop && !isRook && ChessPiece.IsQueen(state, id);
+            bool isOppKing = !isPawn && !isKnight && !isBishop && !isRook && !isQueen && ChessPiece.IsKing(state, id);
+
+            if (isPawn)
             {
                 int dir = opponent == ChessIds.Players.White ? 1 : -1;
                 var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
                 if (pawnHit is not null) { return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack"); }
             }
-            else if (pieceRole == ChessPieceRole.Knight)
+            else if (isKnight)
             {
                 foreach (var (df, dr) in KnightOffsets)
                 {
@@ -73,23 +82,23 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                     if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
                 }
             }
-            else if (pieceRole == ChessPieceRole.Bishop)
+            else if (isBishop)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (pieceRole == ChessPieceRole.Rook)
+            else if (isRook)
             {
                 var hit = ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (pieceRole == ChessPieceRole.Queen)
+            else if (isQueen)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
                 hit ??= ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
                 if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
             }
-            else if (pieceRole == ChessPieceRole.King)
+            else if (isOppKing)
             {
                 for (int df = -1; df <= 1; df++)
                 {

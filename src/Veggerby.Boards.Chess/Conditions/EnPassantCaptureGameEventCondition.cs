@@ -21,8 +21,8 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
         var @event = moveEvent;
-        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPieceRoles.TryGetRole(rolesExtras, @event.Piece.Id, out var moverRole) || moverRole != ChessPieceRole.Pawn)
+        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>(); // retained for victim lookup later
+        if (!ChessPiece.IsPawn(state, @event.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");
         }
@@ -73,7 +73,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
         var victimPawn = state.GetPiecesOnTile(victimTile)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPieceRoles.TryGetRole(rolesExtras, p.Id, out var r) && r == ChessPieceRole.Pawn);
+            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(state, p.Id));
 
         if (victimPawn is null)
         {

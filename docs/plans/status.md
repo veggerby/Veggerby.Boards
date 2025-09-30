@@ -29,12 +29,12 @@
 
 ⏳ **Partial.**
 
-* Bitboards exist, but incremental update path disabled.
+* Bitboards exist; incremental update path reintroduced behind `EnableBitboardIncremental` (default off – soak parity phase).
 * Sliding fast-path enabled (≤64 tiles) and strong perf numbers.
   ⚠️ Missing:
 
   * Bitboard128 path (>64 tiles).
-  * Re-enable incremental path behind soak.
+  * Soak & graduate incremental path (validate no occupancy desync across large move suites).
   * Per-piece masks overhead validation.
   * Heuristic pruning (topology-aware early exit, mask assisted).
   * Full LINQ removal across hot paths.
@@ -84,15 +84,15 @@
 
 ### 9. Unified Turn / Round Sequencing
 
-⏳ **Partial.**
+⏳ **Partial (Graduated Core).**
 
-* TurnState, segments, events, metrics overhead all in place.
-  ⚠️ Missing:
-
-  * Hash parity validation (flag vs baseline).
-  * Real adoption example (e.g., Go two-pass termination).
-  * Legacy active player path removal.
-  * Default graduation (currently `false`).
+* Turn sequencing flag now defaults ON; initial TurnState emitted and advancement mutators (advance, pass, replay, commit) consolidated with shared rotation helper.
+* Determinism tests added (scripted advancement + pass/replay streak reset).
+  ⚠️ Remaining:
+  * Two-pass termination adoption in Go module (terminal condition wiring).
+  * Legacy active player projection replacement (derive from TurnState in projection layer) – rotation helper still used.
+  * Hash parity snapshot test once state hashing feature flag is activated.
+  * Documentation note for sequencing lifecycle (planned `turn-sequencing.md`).
 
 ---
 

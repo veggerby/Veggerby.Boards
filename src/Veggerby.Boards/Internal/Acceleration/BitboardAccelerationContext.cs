@@ -32,18 +32,17 @@ internal sealed class BitboardAccelerationContext(
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {
-        // Incremental path temporarily disabled pending correctness investigation (occupancy desync).
-        // if (evt is Flows.Events.MovePieceGameEvent mpe)
-        // {
-        //     if (_shape.TryGetTileIndex(mpe.From, out var fromIdx) && _shape.TryGetTileIndex(mpe.To, out var toIdx))
-        //     {
-        //         var previousPieceMap = _pieceMapSnapshot;
-        //         _bitboardSnapshot = _bitboardSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, previousPieceMap, _shape);
-        //         _pieceMapSnapshot = _pieceMapSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx);
-        //         (Occupancy as IBitboardBackedOccupancy)?.BindSnapshot(_bitboardSnapshot);
-        //         return;
-        //     }
-        // }
+        if (Internal.FeatureFlags.EnableBitboardIncremental && evt is Flows.Events.MovePieceGameEvent mpe)
+        {
+            if (_shape.TryGetTileIndex(mpe.From, out var fromIdx) && _shape.TryGetTileIndex(mpe.To, out var toIdx))
+            {
+                var previousPieceMap = _pieceMapSnapshot;
+                _bitboardSnapshot = _bitboardSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx, previousPieceMap, _shape);
+                _pieceMapSnapshot = _pieceMapSnapshot.UpdateForMove(mpe.Piece, (short)fromIdx, (short)toIdx);
+                (Occupancy as IBitboardBackedOccupancy)?.BindSnapshot(_bitboardSnapshot);
+                return;
+            }
+        }
 
         // Fallback full rebuild
         _pieceMapSnapshot = PieceMapSnapshot.Build(_pieceMapLayout, newState, _shape);

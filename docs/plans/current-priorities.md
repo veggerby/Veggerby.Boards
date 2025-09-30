@@ -20,7 +20,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 ## Tier 1 – Foundational Multipliers
 
 1. **Turn Sequencing Graduation (Status 9)**
-   Finalize `TurnState` adoption, remove legacy active player path, add hash parity validation (e.g., Go termination example).
+   Core enabled-by-default (advancement, pass, replay, commit, rotation helper) – remaining: Go two-pass terminal wiring, legacy active player projection removal, hash parity test, sequencing note doc.
    Impact: Enables clean phase-driven loops for Monopoly, Deck-building, Ludo, Risk.
 
 2. **Performance Data Layout & Bitboards (Status 4)**

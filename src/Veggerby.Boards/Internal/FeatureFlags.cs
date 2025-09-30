@@ -82,6 +82,13 @@ internal static class FeatureFlags
     public static bool EnableSlidingFastPath { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the incremental bitboard + piece map update path is enabled.
+    /// When disabled, a full rebuild of bitboard and piece map snapshots occurs each state transition.
+    /// Default: false (soak / parity phase – enable in controlled tests until desync risk fully retired).
+    /// </summary>
+    public static bool EnableBitboardIncremental { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets a value indicating whether per-piece occupancy masks are maintained (bitboard acceleration mode only).
     /// When enabled, an additional mask per piece id is computed to allow fine-grained attack pruning / mobility heuristics.
     /// Default: false (feature experimental; enable only when benchmarks confirm negligible overhead on move application).
@@ -117,5 +124,5 @@ internal static class FeatureFlags
     /// no events or rules may alter its values (turn number remains 1, segment remains <see cref="States.TurnSegment.Start"/>).
     /// Default: false until segment transition + advancement parity, determinism, and rule gating tests are complete.
     /// </summary>
-    public static bool EnableTurnSequencing { get; set; } = false;
+    public static bool EnableTurnSequencing { get; set; } = true; // graduated: default on (parity + rotation validated)
 }

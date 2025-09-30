@@ -50,6 +50,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - Deterministic replay tests, canonical RNG serialization, 64/128-bit state hashing, and finalized timeline zipper.
   - Hashing overhead benchmarks.
 
+- **Bitboard Incremental Path (Soak Flag)**
+  - Added feature flag `EnableBitboardIncremental` (default off) reintroducing incremental bitboard & piece map snapshot updates for move events.
+  - Parity test (`BitboardIncrementalParityTests`) validates identical occupancy vs full rebuild for scripted opening sequence.
+  - Full rebuild remains default until large randomized suites confirm no desync.
+
+- **Turn Sequencing Graduation (Core Enabled)**
+  - `EnableTurnSequencing` now defaults ON; initial `TurnState` emitted when building games.
+  - Consolidated active player rotation into `TurnSequencingHelpers.ApplyTurnAndRotate` used by advance & pass mutators.
+  - Added deterministic sequencing tests (`TurnSequencingDeterminismTests`) covering scripted advancement, pass streak increment & replay reset.
+  - Refactored mutators (`TurnAdvanceStateMutator`, `TurnPassStateMutator`, `TurnReplayStateMutator`, `TurnCommitStateMutator`) to streamlined remarks and helper usage.
+  - Remaining (tracked in status/workstreams): Go two-pass termination wiring, legacy active player projection replacement, hash parity test once hashing feature graduates.
+
 - **Developer Experience (DX)**
   - `developer-experience.md` consolidating style charter, benchmark policy, and contribution workflow.
   - Thread-safe `FeatureFlagScope` for deterministic test isolation.
@@ -91,11 +103,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Compiled movement patterns **enabled by default**.
 - State hashing uses canonical binary serialization; added 128-bit xxHash128.
 - Incremental bitboard updates temporarily disabled (falls back to full rebuild per transition).
+- Incremental bitboard updates reintroduced behind soak flag; default behavior still full rebuild until graduation.
 - Consolidated package versions via `Directory.Packages.props`.
 - README and docs updated across acceleration, sequencing, and DX topics.
 - Chess castling implementation evolved from provisional structural-only version to full safety-gated variant with explicit API and performance-tuned attack scanning.
 - Chess move, capture, en-passant, and castling mutators & conditions now use metadata predicates (no id substring heuristics remain).
 - Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
+- Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
 
 ### Fixed
 

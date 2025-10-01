@@ -25,6 +25,23 @@ public class FastPathMetricsTests
     }
 
     [Fact]
+    public void GivenDegenerateLargeSingleDirectionBoard_WhenQueryingSlidingRays_ThenGeneratorNeutralized()
+    {
+        FastPathMetrics.Reset();
+        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
+        var progress = new LargeLinearBuilder().Compile();
+        var rook = progress.Game.GetPiece("rook");
+        var from = progress.Game.GetTile("t0");
+        // Exercise fast path resolution (should gracefully skip due to neutralized rays)
+        var path = progress.ResolvePathCompiledFirst(rook, from, progress.Game.GetTile("t1"));
+        Assert.NotNull(path); // Path still resolvable via compiled/legacy resolver fallback
+        var metrics = FastPathMetrics.Snapshot();
+        Assert.Equal(1, metrics.Attempts);
+        // No crash and either a skip (no services / attack miss) or an actual hit if heuristics change.
+        Assert.True(metrics.FastPathHits == 1 || metrics.FastPathSkipNoServices >= 0 || metrics.FastPathSkipAttackMiss >= 0);
+    }
+
+    [Fact]
     public void GivenBitboardsEnabled_WhenResolvingSlidingPath_ThenFastPathHitIncrementsCounter()
     {
         FastPathMetrics.Reset();

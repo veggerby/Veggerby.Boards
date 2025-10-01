@@ -5,9 +5,6 @@ namespace Veggerby.Boards;
 /// <summary>
 /// Concrete artifact representing an extras state container.
 /// </summary>
-internal sealed class ExtrasArtifact : Artifact
+internal sealed class ExtrasArtifact(string id) : Artifact(id)
 {
-    public ExtrasArtifact(string id) : base(id)
-    {
-    }
 }

@@ -10,17 +10,11 @@ namespace Veggerby.Boards;
 /// Generic wrapper turning an arbitrary extras record into an <see cref="IArtifactState"/> so it can live inside <see cref="GameState"/>.
 /// </summary>
 /// <typeparam name="T">Extras type.</typeparam>
-internal sealed class ExtrasState<T> : IArtifactState
+internal sealed class ExtrasState<T>(Artifact artifact, T value) : IArtifactState
 {
-    public ExtrasState(Artifact artifact, T value)
-    {
-        Artifact = artifact;
-        Value = value;
-    }
+    public Artifact Artifact { get; } = artifact;
 
-    public Artifact Artifact { get; }
-
-    public T Value { get; }
+    public T Value { get; } = value;
 
     public override bool Equals(object obj)
     {

@@ -27,18 +27,17 @@
 
 ### 4. Performance Data Layout & Hot Paths
 
-⏳ **Partial.**
+⏳ **Partial (Expanded).**
 
-* Bitboards exist; incremental update path reintroduced behind `EnableBitboardIncremental` (default off – soak parity phase).
-* Sliding fast-path enabled (≤64 tiles) and strong perf numbers.
-  ⚠️ Missing:
-
-  * Bitboard128 path (>64 tiles).
-  * Soak & graduate incremental path (validate no occupancy desync across large move suites).
-  * Per-piece masks overhead validation.
-  * Heuristic pruning (topology-aware early exit, mask assisted).
-  * Full LINQ removal across hot paths.
-    ⚠️ Docs mismatch: defaults (`EnableBitboards=false`, `EnableSlidingFastPath=true`) not consistently reflected.
+* Bitboards: incremental update path reintroduced behind `EnableBitboardIncremental` (default off) with scripted, soak, and deterministic randomized parity suites.
+* Bitboard128 scaffolding added (global + per-player occupancy up to 128 tiles); acceleration selection extended (≤128 uses bitboards) while ≤64 fast path unchanged.
+* Sliding fast-path enabled (≤64 tiles) with strong perf numbers.
+  ⚠️ Remaining:
+  * Graduate incremental path (large randomized + multi-module soak; hash parity post hashing flag).
+  * Per-piece / piece-type masks and overhead validation (both 64 and 128 variants).
+  * Heuristic pruning (topology + occupancy guided early exit).
+  * LINQ removal across hot mutators / visitors.
+  * Documentation sync for feature flag defaults & Bitboard128 constraints.
 
 ---
 

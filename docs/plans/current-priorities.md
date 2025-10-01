@@ -24,7 +24,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
    Impact: Enables clean phase-driven loops for Monopoly, Deck-building, Ludo, Risk.
 
 2. **Performance Data Layout & Bitboards (Status 4)**
-   Re-enable incremental bitboard updates; implement Bitboard128 for >64 tiles; prune LINQ in hot loops; add topology pruning heuristics.
+   Incremental bitboard updates (soak phase) + Bitboard128 scaffolding (global/per-player up to 128 tiles) landed; next: graduation criteria, per-piece masks, heuristic pruning, LINQ sweep.
    Impact: Core for scaling complex move generation and territory evaluation.
 
 3. **Diagnostics Consumability (Status 6)**

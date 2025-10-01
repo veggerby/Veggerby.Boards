@@ -52,9 +52,8 @@ public class CanonicalStateSerializerTests
         return (GameState.New(states), piece, dice, turnArtifact);
     }
 
-    private sealed class ArtifactIdArtifact : Artifact
+    private sealed class ArtifactIdArtifact(string id) : Artifact(id)
     {
-        public ArtifactIdArtifact(string id) : base(id) { }
     }
 
     [Fact]

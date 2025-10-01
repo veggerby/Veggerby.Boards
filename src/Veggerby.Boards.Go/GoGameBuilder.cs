@@ -9,18 +9,13 @@ namespace Veggerby.Boards.Go;
 /// <summary>
 /// Configures a Go board (default 19x19) and scaffolds stone pools for both players plus pass/placement phase.
 /// </summary>
-public sealed class GoGameBuilder : GameBuilder
+/// <remarks>
+/// Creates a new Go game builder.
+/// </remarks>
+/// <param name="size">Board dimension (default 19). 9 or 13 useful for testing.</param>
+public sealed class GoGameBuilder(int size = 19) : GameBuilder
 {
-    private readonly int _size;
-
-    /// <summary>
-    /// Creates a new Go game builder.
-    /// </summary>
-    /// <param name="size">Board dimension (default 19). 9 or 13 useful for testing.</param>
-    public GoGameBuilder(int size = 19)
-    {
-        _size = size;
-    }
+    private readonly int _size = size;
 
     /// <summary>
     /// Builds the Go game definition: sets up players, orthogonally connected board tiles, pre-allocates stone pieces,

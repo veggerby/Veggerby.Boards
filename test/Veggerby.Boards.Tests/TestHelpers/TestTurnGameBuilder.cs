@@ -5,14 +5,9 @@ namespace Veggerby.Boards.Tests.TestHelpers;
 /// <summary>
 /// Minimal concrete game builder used by tests that require a compiled engine with players only.
 /// </summary>
-internal sealed class TestTurnGameBuilder : GameBuilder
+internal sealed class TestTurnGameBuilder(params Player[] players) : GameBuilder
 {
-    private readonly Player[] _players;
-
-    public TestTurnGameBuilder(params Player[] players)
-    {
-        _players = players;
-    }
+    private readonly Player[] _players = players;
 
     protected override void Build()
     {

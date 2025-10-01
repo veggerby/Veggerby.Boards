@@ -10,14 +10,9 @@ namespace Veggerby.Boards.Tests.Chess.Support;
 /// Minimal chess scenario builder for focused en-passant tests (black captures white double-step).
 /// Provides full 8x8 board topology but only includes required pawns (optionally an auxiliary pawn for non-capture reply tests).
 /// </summary>
-internal sealed class EnPassantScenarioBuilder : GameBuilder
+internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = false) : GameBuilder
 {
-    private readonly bool _includeAuxiliaryBlackPawn;
-
-    public EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = false)
-    {
-        _includeAuxiliaryBlackPawn = includeAuxiliaryBlackPawn;
-    }
+    private readonly bool _includeAuxiliaryBlackPawn = includeAuxiliaryBlackPawn;
 
     protected override void Build()
     {

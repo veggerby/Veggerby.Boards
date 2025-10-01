@@ -479,7 +479,8 @@ public abstract class GameBuilder
 
         // Acceleration context selection
         Internal.Acceleration.IAccelerationContext accelerationContext;
-        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
+        var tileCount = game.Board.Tiles.Count();
+        if (FeatureFlags.EnableBitboards && tileCount <= 128) // extended to 128 via Bitboard128 scaffolding
         {
             var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
             var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);

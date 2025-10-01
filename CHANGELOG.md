@@ -6,11 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+> Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
+
 ### Breaking
 
 - Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
 
 ### Added
+
+- Bitboard128 scaffolding: `BitboardSnapshot` now supports boards up to 128 tiles using internal two-segment `Bitboard128` structure (global + per-player masks).
+- Synthetic large board test (`Bitboard128SnapshotTests`) validating 128-bit snapshot popcount parity with piece state count.
+- Randomized and extended parity stress tests for incremental bitboard updates.
 
 - **Turn Sequencing Framework (Workstream 10)**
   Introduced `TurnState`, `TurnArtifact`, and `TurnSegment` for deterministic sequencing:
@@ -99,6 +105,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
     - Minimal `GoNomenclature` placeholder and workstream plan (`11-go-game-module`) outlining capture, ko, suicide, scoring, and termination roadmap.
 
 ### Changed
+
+- Acceleration context selection now enables bitboards for boards up to 128 tiles (previously ≤64). Fast path for ≤64 unchanged.
+- `BitboardSnapshot` incremental update path extended to handle 128-bit occupancy when active.
 
 - Compiled movement patterns **enabled by default**.
 - State hashing uses canonical binary serialization; added 128-bit xxHash128.

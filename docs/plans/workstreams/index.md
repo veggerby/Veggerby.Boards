@@ -15,7 +15,7 @@ status_index:
 | 1 | Rule Evaluation Engine Modernization | done | Unified decision plan, grouping, filtering, exclusivity masks, predicate hoisting. |
 | 2 | Deterministic RNG & History | done | Stable RNG abstraction, timeline zipper scaffolding, dual hashing placeholders. |
 | 3 | Movement & Pattern Compilation | closed | Compiled movement patterns + sliding fast-path (≤64 tiles). |
-| 4 | Performance Data Layout & Hot Paths | partial | Sliding fast-path, bitboards snapshot path, parity & benchmark coverage. |
+| 4 | Performance Data Layout & Hot Paths | partial | Sliding fast-path, bitboards (incremental soak + 128-bit scaffolding), parity & benchmarks. |
 | 5 | Concurrency & Simulation | partial | Deterministic playouts + metrics, parallel path flagged. |
 | 6 | Observability & Diagnostics | partial | EventResult taxonomy, grouping, kind filtering, trace prototype. |
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |

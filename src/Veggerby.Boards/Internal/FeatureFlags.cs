@@ -96,6 +96,13 @@ internal static class FeatureFlags
     public static bool EnablePerPieceMasks { get; set; } = false;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the experimental segmented bitboard abstraction is enabled. When enabled, a unified
+    /// segmented representation (inline up to 4 segments, spill thereafter) is constructed alongside legacy 64/128 fields for
+    /// parity + performance evaluation. Default: false (experimental; enable only in targeted tests/benchmarks).
+    /// </summary>
+    public static bool EnableSegmentedBitboards { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets a value indicating whether topology pruning heuristics are enabled (skip precomputation / lookup for
     /// directions not present in the board's <see cref="Layout.BoardTopology"/> classification). Intended to reduce
     /// branching and iteration in mixed topology boards. Default: false until pruning parity and performance are validated.

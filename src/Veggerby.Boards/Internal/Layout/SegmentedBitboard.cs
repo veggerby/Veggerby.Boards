@@ -150,10 +150,12 @@ internal readonly struct SegmentedBitboard
             {
                 return true;
             }
+
             if (_spill is null)
             {
                 return false;
             }
+
             for (int i = 0; i < _spill.Length; i++)
             {
                 if (_spill[i] != 0UL)
@@ -161,6 +163,7 @@ internal readonly struct SegmentedBitboard
                     return true;
                 }
             }
+
             return false;
         }
     }
@@ -181,14 +184,17 @@ internal readonly struct SegmentedBitboard
         {
             count += BitOperations.PopCount(_s1);
         }
+
         if (SegmentCount > 2)
         {
             count += BitOperations.PopCount(_s2);
         }
+
         if (SegmentCount > 3)
         {
             count += BitOperations.PopCount(_s3);
         }
+
         if (_spill is not null)
         {
             for (int i = 0; i < _spill.Length; i++)
@@ -196,6 +202,7 @@ internal readonly struct SegmentedBitboard
                 count += BitOperations.PopCount(_spill[i]);
             }
         }
+
         return count;
     }
 
@@ -232,6 +239,7 @@ internal readonly struct SegmentedBitboard
                 {
                     return this; // defensive; should not happen if segmentIndex in range
                 }
+
                 int spillIdx = segmentIndex - InlineSegmentCapacity;
                 var clone = new ulong[spill.Length];
                 // copy spill (immutability)
@@ -239,6 +247,7 @@ internal readonly struct SegmentedBitboard
                 {
                     clone[i] = spill[i];
                 }
+
                 clone[spillIdx] = mutator(clone[spillIdx]);
                 spill = clone;
                 break;

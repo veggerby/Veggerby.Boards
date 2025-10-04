@@ -42,18 +42,18 @@ public class NextPlayerStateMutator : IStateMutator<IGameEvent>
             return gameState;
         }
 
-        var activePlayerStates = gameState.GetStates<ActivePlayerState>();
-        var activePlayerState = activePlayerStates.Single(x => x.IsActive);
+        // Use centralized projection to identify the current active player
+        var activePlayer = gameState.GetActivePlayer();
 
         var nextPlayer = engine
             .Game
             .Players
             .Concat(engine.Game.Players) // to allow "loop around|
-            .SkipWhile(x => !x.Equals(activePlayerState.Artifact)) // find active player
+            .SkipWhile(x => !x.Equals(activePlayer)) // find active player
             .Skip(1) // skip active player
             .First(); // take next
 
-        var previousPlayerState = new ActivePlayerState(activePlayerState.Artifact, false);
+        var previousPlayerState = new ActivePlayerState(activePlayer, false);
         var nextPlayerState = new ActivePlayerState(nextPlayer, true);
 
         return gameState.Next([previousPlayerState, nextPlayerState]);

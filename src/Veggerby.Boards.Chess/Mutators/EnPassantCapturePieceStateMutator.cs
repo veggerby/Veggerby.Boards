@@ -57,9 +57,9 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         var moved = prevExtras.MovedPieceIds.Contains(@event.Piece.Id)
             ? prevExtras.MovedPieceIds
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
-        string activeId;
-        try { activeId = gameState.GetActivePlayer().Id; }
-        catch { activeId = ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black; }
+        string activeId = gameState.TryGetActivePlayer(out var ap)
+            ? ap.Id
+            : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = prevExtras with
         {

@@ -34,8 +34,22 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
         // Require active turn sequencing flag for multi-turn gating; if disabled behave as original single first doubling semantics.
         var turnState = state.GetStates<TurnState>().FirstOrDefault();
 
-        var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive)?.Artifact;
-        var inactivePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => !x.IsActive)?.Artifact;
+        // Active player now derived via centralized projection helper; inactive is the other player in two-player Backgammon
+        Player activePlayer = null;
+        if (state.TryGetActivePlayer(out var ap))
+        {
+            activePlayer = ap;
+        }
+
+        Player inactivePlayer = null;
+        if (activePlayer is not null)
+        {
+            // find the other player (Backgammon is strictly two-player in this module)
+            foreach (var p in engine.Game.Players)
+            {
+                if (!p.Equals(activePlayer)) { inactivePlayer = p; break; }
+            }
+        }
 
         var specialized = state.GetState<DoublingDiceState>(DoublingDice);
         if (specialized is not null)

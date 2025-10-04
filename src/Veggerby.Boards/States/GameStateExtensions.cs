@@ -11,6 +11,42 @@ namespace Veggerby.Boards.States;
 public static class GameStateExtensions
 {
     /// <summary>
+    /// Tries to get the single active player for the supplied game state without throwing.
+    /// </summary>
+    /// <param name="gameState">The game state.</param>
+    /// <param name="activePlayer">When this method returns, contains the active player if exactly one is present; otherwise <c>null</c>.</param>
+    /// <returns><c>true</c> when exactly one active player is present; otherwise <c>false</c>.</returns>
+    /// <remarks>
+    /// This helper avoids exceptions when zero or multiple active players exist, simplifying conditions and guards.
+    /// </remarks>
+    public static bool TryGetActivePlayer(this GameState gameState, out Player activePlayer)
+    {
+        activePlayer = null;
+        var seen = false;
+        foreach (var aps in gameState.GetStates<ActivePlayerState>())
+        {
+            if (!aps.IsActive)
+            {
+                continue;
+            }
+
+            if (!seen)
+            {
+                activePlayer = aps.Artifact;
+                seen = true;
+            }
+            else
+            {
+                // More than one active -> ambiguous
+                activePlayer = null;
+                return false;
+            }
+        }
+
+        return seen;
+    }
+
+    /// <summary>
     /// Gets the single active player for the supplied game state.
     /// </summary>
     /// <param name="gameState">The game state.</param>

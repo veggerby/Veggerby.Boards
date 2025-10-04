@@ -27,6 +27,15 @@ Pure transformations implementing `IStateMutator<TEvent>` returning either a *ne
 
 Hierarchical (composite) conditional scopes. Phase resolution selects FIRST valid leaf (deterministic ordering). Pre-processors can expand an event into derived events before rule evaluation.
 
+## Active player projection
+
+Avoid direct scans for ActivePlayerState. Use the centralized helpers:
+
+- Prefer GameStateExtensions.TryGetActivePlayer(out Player) in conditions and gates where the absence of an active player should result in Ignore/NotApplicable rather than an exception.
+- Use GameStateExtensions.GetActivePlayer() in strict flows and mutators that require exactly one active player and should fail fast otherwise.
+
+See turn-sequencing.md for rotation semantics and when the active player changes.
+
 ## DecisionPlan (Compiled Rule Pipeline)
 
 Rules and phases compile into a linear evaluation plan (see `decision-plan-and-acceleration.md`). Optimization flags may group, filter, and mask entries without changing semantics.

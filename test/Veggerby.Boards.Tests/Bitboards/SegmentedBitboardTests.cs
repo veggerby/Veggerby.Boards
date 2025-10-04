@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+
 using Veggerby.Boards.Internal.Layout;
+
 using Xunit;
 
 namespace Veggerby.Boards.Tests.Bitboards;

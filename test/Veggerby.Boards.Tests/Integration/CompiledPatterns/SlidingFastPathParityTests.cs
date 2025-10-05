@@ -1,11 +1,9 @@
 using System.Linq;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 
@@ -32,8 +30,8 @@ public class SlidingFastPathParityTests
 
         protected override void Build()
         {
-            AddDirection("north"); AddDirection("south"); AddDirection("east"); AddDirection("west");
-            AddDirection("north-east"); AddDirection("north-west"); AddDirection("south-east"); AddDirection("south-west");
+            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
 
             AddPlayer("white"); AddPlayer("black");
 
@@ -52,14 +50,14 @@ public class SlidingFastPathParityTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection("north"); }
-                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection("south"); }
-                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection("east"); }
-                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection("west"); }
-                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection("north-east"); }
-                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection("north-west"); }
-                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection("south-east"); }
-                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection("south-west"); }
+                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North); }
+                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South); }
+                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East); }
+                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West); }
+                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast); }
+                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest); }
+                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast); }
+                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest); }
                 }
             }
 
@@ -69,26 +67,26 @@ public class SlidingFastPathParityTests
                 switch (spec.Type)
                 {
                     case "rook":
-                        pd.HasDirection("north").CanRepeat()
-                            .HasDirection("east").CanRepeat()
-                            .HasDirection("south").CanRepeat()
-                            .HasDirection("west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.North).CanRepeat()
+                            .HasDirection(Constants.Directions.East).CanRepeat()
+                            .HasDirection(Constants.Directions.South).CanRepeat()
+                            .HasDirection(Constants.Directions.West).CanRepeat();
                         break;
                     case "bishop":
-                        pd.HasDirection("north-east").CanRepeat()
-                            .HasDirection("north-west").CanRepeat()
-                            .HasDirection("south-east").CanRepeat()
-                            .HasDirection("south-west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
                         break;
                     case "queen":
-                        pd.HasDirection("north").CanRepeat()
-                            .HasDirection("east").CanRepeat()
-                            .HasDirection("south").CanRepeat()
-                            .HasDirection("west").CanRepeat()
-                            .HasDirection("north-east").CanRepeat()
-                            .HasDirection("north-west").CanRepeat()
-                            .HasDirection("south-east").CanRepeat()
-                            .HasDirection("south-west").CanRepeat();
+                        pd.HasDirection(Constants.Directions.North).CanRepeat()
+                            .HasDirection(Constants.Directions.East).CanRepeat()
+                            .HasDirection(Constants.Directions.South).CanRepeat()
+                            .HasDirection(Constants.Directions.West).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
+                            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
                         break;
                     case "immobile":
                         break; // no directions
@@ -143,78 +141,78 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_EmptyHorizontalRay_Parity()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        AssertParity([rook], rook, "tile-h4");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, ChessIds.Tiles.H4);
     }
 
     [Fact]
     public void GivenBishop_LongEmptyDiagonal_Parity()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        AssertParity([bishop], bishop, "tile-g5");
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        AssertParity([bishop], bishop, ChessIds.Tiles.G5);
     }
 
     [Fact]
     public void GivenQueen_VerticalEmptyRay_Parity()
     {
-        var queen = new PieceSpec("queen", "queen", "tile-d4", "white");
-        AssertParity([queen], queen, "tile-d8");
+        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
+        AssertParity([queen], queen, ChessIds.Tiles.D8);
     }
 
     [Fact]
     public void GivenRook_FriendlyBlockerMidRay_MoveBeyondBlocked()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
-        AssertParity([rook, friendly], rook, "tile-d8"); // null
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
+        AssertParity([rook, friendly], rook, ChessIds.Tiles.D8); // null
     }
 
     [Fact]
     public void GivenRook_FriendlyBlockerAtTarget_Invalid()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
-        AssertParity([rook, friendly], rook, "tile-d6"); // null
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
+        AssertParity([rook, friendly], rook, ChessIds.Tiles.D6); // null
     }
 
     [Fact]
     public void GivenRook_EnemyBlockerAsTarget_CapturePath()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-d6", "black");
-        AssertParity([rook, enemy], rook, "tile-d6"); // capture
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
+        AssertParity([rook, enemy], rook, ChessIds.Tiles.D6); // capture
     }
 
     [Fact]
     public void GivenRook_EnemyBlockerMidRay_TargetBeyondBlocked()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-d6", "black");
-        AssertParity([rook, enemy], rook, "tile-d7");
-        AssertParity([rook, enemy], rook, "tile-d8");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
+        AssertParity([rook, enemy], rook, ChessIds.Tiles.D7);
+        AssertParity([rook, enemy], rook, ChessIds.Tiles.D8);
     }
 
     [Fact]
     public void GivenRook_FriendlyThenEnemy_FirstBlockerPrevails()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-d7", "black");
-        AssertParity([rook, friendly, enemy], rook, "tile-d7");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D7, "black");
+        AssertParity([rook, friendly, enemy], rook, ChessIds.Tiles.D7);
     }
 
     [Fact]
     public void GivenRook_ShortRayLengthOne_Parity()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        AssertParity([rook], rook, "tile-d5");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, ChessIds.Tiles.D5);
     }
 
     [Fact]
     public void GivenImmobilePiece_NoPath()
     {
-        var stone = new PieceSpec("stone", "immobile", "tile-d4", "white");
-        AssertParity([stone], stone, "tile-d5");
+        var stone = new PieceSpec("stone", "immobile", ChessIds.Tiles.D4, "white");
+        AssertParity([stone], stone, ChessIds.Tiles.D5);
     }
 
     // ---------------- Parity V2 Extended Scenarios (from movement-semantics charter) ----------------
@@ -222,74 +220,74 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_AdjacentFriendlyBlocker_TargetInvalid()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d5", "white");
-        AssertParity([rook, friendly], rook, "tile-d5"); // null
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D5, "white");
+        AssertParity([rook, friendly], rook, ChessIds.Tiles.D5); // null
     }
 
     [Fact]
     public void GivenRook_AdjacentEnemy_Capture()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-d5", "black");
-        AssertParity([rook, enemy], rook, "tile-d5"); // capture single-step
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D5, "black");
+        AssertParity([rook, enemy], rook, ChessIds.Tiles.D5); // capture single-step
     }
 
     [Fact]
     public void GivenBishop_FriendlyBlockerMidRay_TargetBeyondBlocked()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
-        AssertParity([bishop, friendly], bishop, "tile-g5"); // null beyond friendly
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
+        AssertParity([bishop, friendly], bishop, ChessIds.Tiles.G5); // null beyond friendly
     }
 
     [Fact]
     public void GivenBishop_FriendlyBlockerAtTarget_Invalid()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
-        AssertParity([bishop, friendly], bishop, "tile-e3"); // null (occupied by friendly)
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
+        AssertParity([bishop, friendly], bishop, ChessIds.Tiles.E3); // null (occupied by friendly)
     }
 
     [Fact]
     public void GivenBishop_EnemyBlockerAsTarget_Capture()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
-        AssertParity([bishop, enemy], bishop, "tile-e3"); // capture
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
+        AssertParity([bishop, enemy], bishop, ChessIds.Tiles.E3); // capture
     }
 
     [Fact]
     public void GivenBishop_EnemyBlockerMidRay_TargetBeyondBlocked()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
-        AssertParity([bishop, enemy], bishop, "tile-g5"); // null beyond enemy blocker
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
+        AssertParity([bishop, enemy], bishop, ChessIds.Tiles.G5); // null beyond enemy blocker
     }
 
     [Fact]
     public void GivenBishop_FriendlyThenEnemy_FirstBlockerPrevails()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-e3", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-f4", "black");
-        AssertParity([bishop, friendly, enemy], bishop, "tile-f4"); // null (friendly earlier)
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.F4, "black");
+        AssertParity([bishop, friendly, enemy], bishop, ChessIds.Tiles.F4); // null (friendly earlier)
     }
 
     [Fact]
     public void GivenBishop_EnemyThenFriendly_FirstBlockerPrevails()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
-        var friendly = new PieceSpec("ally", "immobile", "tile-f4", "white");
-        AssertParity([bishop, enemy, friendly], bishop, "tile-f4"); // null beyond enemy blocker
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.F4, "white");
+        AssertParity([bishop, enemy, friendly], bishop, ChessIds.Tiles.F4); // null beyond enemy blocker
     }
 
     [Fact]
     public void GivenRook_ZeroLengthRequest_ReturnsNull()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        AssertParity([rook], rook, "tile-d4"); // from == to => null
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, ChessIds.Tiles.D4); // from == to => null
     }
 
     // ---------------- Decorator Direct Parity (fast-path vs compiled only) ----------------
@@ -341,23 +339,23 @@ public class SlidingFastPathParityTests
     [Fact]
     public void Decorator_Rook_LongHorizontal_Parity()
     {
-        var rook = new PieceSpec("rook", "rook", "tile-d4", "white");
-        AssertDecoratorParity([rook], rook, "tile-h4");
+        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
+        AssertDecoratorParity([rook], rook, ChessIds.Tiles.H4);
     }
 
     [Fact]
     public void Decorator_Bishop_DiagonalCapture_Parity()
     {
-        var bishop = new PieceSpec("bishop", "bishop", "tile-c1", "white");
-        var enemy = new PieceSpec("enemy", "immobile", "tile-e3", "black");
-        AssertDecoratorParity([bishop, enemy], bishop, "tile-e3");
+        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
+        AssertDecoratorParity([bishop, enemy], bishop, ChessIds.Tiles.E3);
     }
 
     [Fact]
     public void Decorator_Queen_BlockedBeyondFriendly_NullParity()
     {
-        var queen = new PieceSpec("queen", "queen", "tile-d4", "white");
-        var friendly = new PieceSpec("ally", "immobile", "tile-d6", "white");
-        AssertDecoratorParity([queen, friendly], queen, "tile-d8");
+        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
+        AssertDecoratorParity([queen, friendly], queen, ChessIds.Tiles.D8);
     }
 }

@@ -7,6 +7,9 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.ChessIds.Tiles;
+
 namespace Veggerby.Boards.Benchmarks;
 
 /// <summary>
@@ -34,9 +37,9 @@ public class EventFilteringBaseline
         _chess = new ChessGameBuilder().Compile();
         _backgammon = new BackgammonGameBuilder().Compile();
 
-        var from = _chess.Game.GetTile("e2");
-        var to = _chess.Game.GetTile("e4");
-        _whitePawn = _chess.Game.GetPiece("white-pawn-2");
+        var from = _chess.Game.GetTile(E2);
+        var to = _chess.Game.GetTile(E4);
+        _whitePawn = _chess.Game.GetPiece(WhitePawn2);
         _pawnPath = new ResolveTilePathPatternVisitor(_chess.Game.Board, from, to).ResultPath!;
         _die1 = _backgammon.Game.GetArtifact<Dice>("dice-1");
     }

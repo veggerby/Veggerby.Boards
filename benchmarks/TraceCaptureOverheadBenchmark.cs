@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
@@ -31,9 +30,9 @@ public class TraceCaptureOverheadBenchmark
             var builder = new ChessGameBuilder();
             _progress = builder.Compile();
             var game = _progress.Game;
-            var pawn = game.GetPiece("white-pawn-2");
-            var from = game.GetTile("e2");
-            var to = game.GetTile("e4");
+            var pawn = game.GetPiece(ChessIds.Pieces.WhitePawn2);
+            var from = game.GetTile(ChessIds.Tiles.E2);
+            var to = game.GetTile(ChessIds.Tiles.E4);
             var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             pawn.Patterns.First().Accept(visitor);
             var path = visitor.ResultPath!;

@@ -1,101 +1,73 @@
-# Copilot Instructions – Veggerby.Boards
+## Project Overview
 
-These rules are binding for any AI-generated code in this repo.
-**Follow exactly.**
+Veggerby.Boards is a composable, deterministic .NET board game engine. It models boards as graphs, immutable artifact identities (Pieces, Tiles, Players, Dice, Board), and an immutable `GameState` history advanced only by validated game events processed through rules and phases. The design optimizes for clarity, testability, and deterministic replay.
 
----
+### What It Provides
+* Immutable artifact identities created via `GameBuilder`.
+* Declarative events (`MovePiece`, `RollDice`, etc.) that express intent only.
+* Pure mutators producing new `GameState` snapshots (persistent chain).
+* Rule + phase gating to ensure only valid events transition state.
+* Inline efficient bitboard / layout primitives (performance-minded, allocation aware).
+* Reusable game modules (Chess, Backgammon; Go planned) demonstrating composition.
 
-## 1. Purpose & Framing
+### What It Explicitly Does Not Provide
+* UI / rendering / animation.
+* Generic rule-engine DSL or physics simulation.
+* AI players or heuristic search.
+* Hidden side‑effects or mutable global state.
 
-You are contributing to **Veggerby.Boards**, a composable .NET board game engine.
-It models **boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases** for deterministic turn progression.
+### Mental Model (Authoritative)
+Artifacts are immutable identities; GameState is immutable history; Events are declarative intentions; Rules couple conditions and mutators; Phases are conditional scopes. Determinism is sacrosanct. Same input → same output always (no ambient randomness—dice encapsulate randomness explicitly in `DiceState`).
 
-### What this library is
+## Folder / Layer Structure
 
-* A **structural engine** for board games:
+Core (`Veggerby.Boards`): foundational domain primitives (Artifact, Game, GameState, GameBuilder, Rules, Phases, Layout, Bitboards).
 
-  * **Artifacts** (Piece, Tile, Dice, Player, Board) are immutable identities.
-  * **GameState** snapshots current positions, dice values, and history links.
-  * **Events** express intent (`MovePiece`, `RollDice`).
-  * **Mutators** apply deterministic transitions.
-  * **Rules & Phases** gate event applicability and structure turn flow.
-* Game modules (Backgammon, Chess) demonstrate reuse of the core engine.
-* API layer is a façade for demo exposure (DTOs + ASP.NET).
+Modules (shipped: `Veggerby.Boards.Chess`, `Veggerby.Boards.Backgammon`; planned: `Veggerby.Boards.Go`): declarative builders and rule sets composed from core primitives; no cross‑contamination of module specifics into core.
 
-### What this library is not
+API / Samples / Benchmarks: façade + demonstration + performance validation; never introduce side‑effects into core logic.
 
-* Not a UI toolkit, rendering library, or AI opponent.
-* Not a physics simulator or generic rule engine.
-* Not for hidden side effects: all state transitions must be explicit and immutable.
+Docs (`/docs`): conceptual explanations and extension guidance. Update when introducing new public concepts or extension seams.
 
-### Mental model (authoritative)
+## Libraries & Frameworks
 
-* **Artifacts are immutable identities.** They exist only via `GameBuilder`.
-* **GameState is immutable history.** Each transition yields a new snapshot linked to the prior.
-* **Events are declarative intentions.** They never apply themselves.
-* **Rules couple conditions and mutators.** Valid events → mutators → new state.
-* **Phases are conditional scopes.** Only active phases handle events.
-* **Determinism is sacrosanct.** Same event + same state → same result, always.
+* .NET (C#) for engine implementation.
+* xUnit + AwesomeAssertions + NSubstitute for testing.
+* (Optional) AutoMapper only in API layer (not core) for DTO mapping.
 
----
+## Coding Standards
 
-## 2. Core Principles
+* Obey `.editorconfig` strictly.
+* File‑scoped namespaces (`namespace Veggerby.Boards;`).
+* 4 spaces indentation, no tabs, no trailing whitespace.
+* `using System;` first, blank line, then other usings alphabetical/logical.
+* Naming: private fields `_camelCase`; public members PascalCase; constants PascalCase.
+* Always use braces, even for single statements.
+* Expression-bodied members only when strictly clearer.
+* Favor explicit loops in perf‑sensitive paths over LINQ.
+* Tests always segmented with `// arrange`, `// act`, `// assert` comments.
 
-1. Determinism > cleverness (no randomness outside explicit `DiceState`).
-2. Clarity > abstraction bloat (favor explicit builders and mutators).
-3. Immutability: never mutate state; always produce new `GameState`.
-4. Explicit gating: conditions control flow, no hidden shortcuts.
-5. Testability: every rule branch (Valid, Invalid, Ignore, NotApplicable) must be covered.
+## Engine Semantics & Invariants
 
----
+* Artifacts: equality = type + Id; immutable once built.
+* GameState: persistent history chain; never mutated in place.
+* Events: never apply themselves; they are pure intentions.
+* Rules: couple predicates + mutators; must encode all gating logic explicitly.
+* Phases: conditional scopes; only active phases evaluate events.
+* Mutators: pure, allocation-conscious; must return original state if no change.
+* Determinism: identical prior state + event => identical next state.
+* Errors: domain exceptions (`BoardException`, `InvalidGameEventException`) on invariant breach.
 
-## 3. Style & Formatting
+## Testing Requirements
 
-* Follow `.editorconfig` **exactly**.
-* File-scoped namespaces only (`namespace Veggerby.Boards;`).
-* Braces required for all control flow.
-* Spaces (4 per indent). No tabs, no trailing whitespace.
-* `using System;` first, blank line, then others.
-* Private fields: `_camelCase`. Public: PascalCase. Constants: PascalCase.
-* Expression-bodied members only if trivially clearer.
-* Tests: use `// arrange`, `// act`, `// assert`.
+* Frameworks: xUnit, AwesomeAssertions, NSubstitute (only these—no extra deps).
+* Deterministic: randomness encapsulated solely via `DiceState<T>`.
+* Branch Coverage: every rule path (Valid / Invalid / Ignore / NotApplicable) has tests.
+* Structure: `// arrange`, `// act`, `// assert` required for clarity.
+* No reliance on previous test ordering (tests independent & reproducible).
+* Avoid hidden global toggles except explicit feature flags (restore original value in `IDisposable` scope helpers).
 
----
-
-## 4. Architecture Boundaries
-
-* **Core (`Veggerby.Boards`)**
-
-  * Definitions: `Artifact`, `Game`, `GameState`, `IGameEvent`, `IStateMutator<T>`, `IGameEventRule`, `GamePhase`, `GameBuilder`.
-  * No direct coupling to game-specific logic.
-* **Modules (Backgammon, Chess)**
-  Declarative builders only. Reuse core primitives.
-
-  * Thin façade: build games, handle events, return DTOs.
-  * No business logic beyond mapping.
-
----
-
-## 5. Semantics & Invariants
-
-* **Artifacts:** equality by type + Id.
-* **GameState:** persistent chain (`CompareTo` available).
-* **Events:** never mutate state directly.
-* **Mutators:** must be pure; always return new state or original if no change.
-* **Conditions:** must be explicit; compose via provided composite helpers.
-* **Phases:** resolve via first valid leaf condition (deterministic).
-* **Errors:** throw domain exceptions (`BoardException`, `InvalidGameEventException`) when invariants break.
-
----
-
-## 6. Testing
-
-* Framework: xUnit + AwesomeAssertions.
-* Running: when running unit tests via `dotnet test` **never** use `--no-build` parameter.
-* Each rule branch covered: happy, edge, exception.
-* Deterministic: no hidden randomness (dice must use explicit `DiceState<T>`).
-* Example template:
-
+### Example Test Pattern
 ```csharp
 [Fact]
 public void GivenValidMove_WhenHandled_ThenPieceMoves()
@@ -116,77 +88,70 @@ public void GivenValidMove_WhenHandled_ThenPieceMoves()
 }
 ```
 
----
+## Performance Guidelines
 
-## 7. Performance
+* Keep hot paths allocation-free where practical (e.g., bitboards, movement resolution, rule dispatch).
+* Avoid LINQ and unnecessary boxing in inner loops.
+* Immutable value types (e.g., compact structs) favored where semantically stable.
+* No speculative caching unless data is immutable and microbenchmarks justify it.
 
-* Immutable by default; avoid unnecessary allocations in event handling.
-* No LINQ in hot mutators (prefer loops for clarity + performance).
-* No caching unless immutable and safe.
+## Documentation Expectations
 
----
+* Public APIs require XML docs (summary + key invariants in `<remarks>` if non-trivial).
+* Update `/docs` when introducing: new event kinds, rule composition helpers, movement pattern visitors, or extension seams.
+* Keep examples minimal and deterministic.
 
-## 8. Documentation
+## Dependency Policy
 
-* XML docs for all public APIs.
-* Document invariants in `<remarks>`.
-* Update `docs/` if adding new concepts or extension points.
+* Core: zero external dependencies beyond BCL.
+* Tests: xUnit, AwesomeAssertions, NSubstitute only.
+* API layer may use AutoMapper—never leak into core.
 
----
+## Forbidden Patterns
 
-## 9. Dependency Policy
+* Mutating `GameState` or any artifact state directly.
+* Hidden global state / implicit singletons.
+* Skipping rule/phase gating (no backdoors).
+* Random behavior outside explicit dice abstraction.
+* Mixing game-specific module logic into core primitives.
+* Obscure implicit conversions or magic reflection hacks.
+* LINQ inside mutators (explicit loops required for determinism & perf clarity).
 
-* Keep dependencies minimal.
-* Tests: xUnit + NSubstitute + AwesomeAssertions only.
-* API layer may use AutoMapper but not core.
+## Suitable / Unsuitable Tasks
 
----
+Suitable:
+* New `IGameEvent` + accompanying mutator + tests.
+* New condition / composite condition helper.
+* Module builder extension (Chess, Backgammon; Go planned) introducing rule branch.
+* New movement pattern visitor with tests + microbench (must include perf validation rationale).
+* API layer extension (DTO / façade) that remains a thin mapping layer with zero new core coupling.
 
-## 10. Forbidden Patterns
+Unsuitable:
+* Introducing AI heuristics.
+* UI or rendering responsibilities.
+* Adding convenience external dependencies for non-core concerns.
 
-🚫 Mutating `GameState` or `ArtifactState` directly.
-🚫 Hidden global state.
-🚫 Skipping condition checks in rules.
-🚫 Random behavior outside dice.
-🚫 Mixing module-specific logic into Core.
+## Definition of Done (Authoritative)
 
----
+A change is DONE when ALL of the following hold:
+1. Build passes (`dotnet build`) with no warnings introduced.
+2. All existing and new tests pass (`dotnet test`) without `--no-build`.
+3. New logic covered by tests including edge, invalid, and no-op paths.
+4. Public APIs added or modified have XML documentation (and docs updated if conceptually new).
+5. No mutation of existing state objects; immutability preserved (verified via code review / tests).
+6. Determinism preserved (no hidden randomness; dice changes visible in state snapshots).
+7. Performance-sensitive paths not regressed (microbench or reasoning if changed significantly).
+8. No forbidden patterns introduced (see Forbidden Patterns section).
+9. Feature flags or temporary toggles restored to prior state after tests.
+10. Naming, formatting, and structure conform to Coding Standards.
 
-## 11. PR Checklist
+## Safety & Invariant Enforcement
 
-Before merging:
+* Validate inputs early; throw domain exceptions with clear intent.
+* Favor explicit guard branches over silent failure.
+* Tests must assert failure modes for invalid operations (not just happy paths).
 
-* [ ] `dotnet build` passes
-* [ ] All tests green
-* [ ] New logic covered by tests
-* [ ] No analyzer/style warnings
-* [ ] XML docs added
-* [ ] Invariants preserved
-* [ ] Docs updated (if public behavior changed)
+## Final Guidance
 
----
+Favor small, verifiable steps. If an abstraction does not clearly reduce duplication, enable a proven reuse scenario, or sharpen semantics—do not add it. All new abstractions must be justified by at least one concrete in-repo use case (present or imminent). Determinism, clarity, and immutability outweigh cleverness.
 
-## 12. Suitable Tasks
-
-✅ Add new `IGameEvent` + mutator with tests
-✅ Add new condition type
-✅ Extend Backgammon/Chess builder with new rule branch
-✅ Add visitor for new movement pattern
-
-❌ Add AI logic into core
-❌ Add UI rendering into engine
-❌ Add external deps for convenience
-
----
-
-## 13. Safety
-
-* Validate invariants early; throw clear exceptions.
-* No user input parsing in core (API must validate externally).
-* Keep engine pure: no logging, no side effects.
-
----
-
-**Final rule:**
-Favor *small, verifiable changes*.
-If a new abstraction doesn’t clarify semantics or reduce duplication, **don’t add it**.

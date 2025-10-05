@@ -1,9 +1,5 @@
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal.Paths;
 using Veggerby.Boards.Tests.Infrastructure;
-using Veggerby.Boards.Tests.Utils;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Internal.Paths;
 

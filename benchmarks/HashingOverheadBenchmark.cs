@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
@@ -44,9 +43,9 @@ public class HashingOverheadBenchmark
             Internal.FeatureFlags.EnableStateHashing = original;
         }
 
-        var from = _withHashing.Game.GetTile("e2");
-        var to = _withHashing.Game.GetTile("e4");
-        _pawn = _withHashing.Game.GetPiece("white-pawn-2");
+        var from = _withHashing.Game.GetTile(ChessIds.Tiles.E2);
+        var to = _withHashing.Game.GetTile(ChessIds.Tiles.E4);
+        _pawn = _withHashing.Game.GetPiece(ChessIds.Pieces.WhitePawn2);
         _path = new ResolveTilePathPatternVisitor(_withHashing.Game.Board, from, to).ResultPath!;
     }
 

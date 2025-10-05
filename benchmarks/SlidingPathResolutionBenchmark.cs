@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts;
@@ -10,7 +6,6 @@ using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Internal;
-using Veggerby.Boards.Internal.Compiled;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.States;
 
@@ -47,14 +42,14 @@ public class SlidingPathResolutionBenchmark
     public void Setup()
     {
         // Build full 8x8 grid (tile-a1..tile-h8) with orthogonal + diagonal directions
-        var north = new Direction("north");
-        var south = new Direction("south");
-        var east = new Direction("east");
-        var west = new Direction("west");
-        var ne = new Direction("north-east");
-        var nw = new Direction("north-west");
-        var se = new Direction("south-east");
-        var sw = new Direction("south-west");
+        var north = new Direction(Constants.Directions.North);
+        var south = new Direction(Constants.Directions.South);
+        var east = new Direction(Constants.Directions.East);
+        var west = new Direction(Constants.Directions.West);
+        var ne = new Direction(Constants.Directions.NorthEast);
+        var nw = new Direction(Constants.Directions.NorthWest);
+        var se = new Direction(Constants.Directions.SouthEast);
+        var sw = new Direction(Constants.Directions.SouthWest);
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
         var tiles = new List<Tile>();
         var relations = new List<TileRelation>();

@@ -9,8 +9,6 @@ using Veggerby.Boards.Simulation;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Simulation;
 
 // Simple test playout policy: attempts a fixed list of events provided via delegate.

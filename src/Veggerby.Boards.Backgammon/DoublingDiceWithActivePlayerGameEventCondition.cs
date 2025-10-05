@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
@@ -40,8 +39,8 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
             return ConditionResponse.Ignore("Event does not target doubling cube exclusively");
         }
 
-        var activePlayer = state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive);
-        if (activePlayer is null)
+        // derive active player centrally (projection now centralized via GameStateExtensions)
+        if (!state.TryGetActivePlayer(out var activePlayerArtifact))
         {
             return ConditionResponse.Ignore("No active player selected");
         }
@@ -67,7 +66,7 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
         }
 
         // Owner must be the active player to redouble (offer); if not on roll yet, ignore.
-        if (!specialized.CurrentPlayer?.Equals(activePlayer.Artifact) ?? true)
+        if (!specialized.CurrentPlayer?.Equals(activePlayerArtifact) ?? true)
         {
             return ConditionResponse.Ignore("Owner not active – cannot redouble yet");
         }

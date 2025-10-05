@@ -96,7 +96,7 @@ public class ChessInvariants
     {
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
-        var initialWhiteCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "white");
+        var initialWhiteCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.White);
         var pawn = progress.Game.GetPiece("white-pawn-5");
         var fromTile = progress.Game.GetTile("e2");
         var toTile = progress.Game.GetTile("e4");
@@ -104,7 +104,7 @@ public class ChessInvariants
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromTile, toTile).ResultPath;
         if (path is null) { return true; }
         progress = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
-        var afterWhiteCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "white");
+        var afterWhiteCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.White);
         return afterWhiteCount == initialWhiteCount;
     }
 
@@ -144,9 +144,9 @@ public class ChessInvariants
             // attempt path for capture (may be null if illegal in current simplified engine state)
             var capturePath = new ResolveTilePathPatternVisitor(progress.Game.Board, e4Tile, d5).ResultPath;
             if (capturePath is null) { continue; }
-            var beforeBlackCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "black");
+            var beforeBlackCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
             var updated = progress.HandleEvent(new MovePieceGameEvent(whitePawn!, capturePath));
-            var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "black");
+            var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
             // assert (soft) – ensure count does not drop by more than one
             Assert.InRange(beforeBlackCount - afterBlackCount, 0, 1);
             progress = updated; // keep for potential next iteration, though each loop resets builder anyway
@@ -228,7 +228,7 @@ public class ChessInvariants
         {
             return; // vacuous (module misconfigured)
         }
-        var initialBlackCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "black");
+        var initialBlackCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
 
         // Move white pawn two steps forward (e2 -> e4) if path available
         var e2 = progress.Game.GetTile("e2");
@@ -257,7 +257,7 @@ public class ChessInvariants
         var updated = progress.HandleEvent(new MovePieceGameEvent(whitePawn, capturePath));
 
         // assert
-        var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == "black");
+        var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
         Assert.InRange(initialBlackCount - afterBlackCount, 0, 1); // captured at most one
         // previous state must remain unchanged
         Assert.NotEqual(before, updated.State); // a new state object produced (even if piece counts same, transition attempted)

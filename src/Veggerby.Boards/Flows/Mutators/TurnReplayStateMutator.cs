@@ -1,17 +1,10 @@
-using System;
-
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Flows.Mutators;
 
 /// <summary>
-/// Applies an extra turn: increments TurnNumber, resets segment to Start, preserves ActivePlayer, resets pass streak.
-/// </summary>
-/// <summary>
-/// State mutator applying a replay (extra) turn: increments numeric turn, resets segment to Start, preserves active player.
+/// Applies an extra turn (replay): increments numeric turn, resets segment to Start, resets pass streak, preserves active player.
 /// </summary>
 public sealed class TurnReplayStateMutator : IStateMutator<TurnReplayEvent>
 {

@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Veggerby.Boards; // for extension helpers
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.States; // GameProgress
 using Veggerby.Boards.Tests.Infrastructure;
 
@@ -101,10 +99,10 @@ public class BitboardParityRegressionTests
             occ.Mask.Should().Be(naiveGlobal, $"global mask diverged after step {i} ({piece}->{to})");
 
             // per-player masks
-            var whiteMask = ComputeNaivePlayerMask(progress, "white");
-            var blackMask = ComputeNaivePlayerMask(progress, "black");
-            var white = perPlayer.Single(p => p.Key.Id == "white").Value.Mask;
-            var black = perPlayer.Single(p => p.Key.Id == "black").Value.Mask;
+            var whiteMask = ComputeNaivePlayerMask(progress, ChessIds.Players.White);
+            var blackMask = ComputeNaivePlayerMask(progress, ChessIds.Players.Black);
+            var white = perPlayer.Single(p => p.Key.Id == ChessIds.Players.White).Value.Mask;
+            var black = perPlayer.Single(p => p.Key.Id == ChessIds.Players.Black).Value.Mask;
             white.Should().Be(whiteMask, $"white mask diverged after step {i}");
             black.Should().Be(blackMask, $"black mask diverged after step {i}");
         }

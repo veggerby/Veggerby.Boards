@@ -3,9 +3,7 @@ namespace Veggerby.Boards.Tests.Simulation;
 #nullable enable
 
 using System;
-using System.Linq;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;

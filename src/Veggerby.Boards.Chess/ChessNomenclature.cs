@@ -1,6 +1,5 @@
 using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
@@ -34,12 +33,12 @@ public sealed class ChessNomenclature : IGameNomenclature
         var role = parts[1];
         return role switch
         {
-            "pawn" => color == "white" ? "P" : "p",
-            "rook" => color == "white" ? "R" : "r",
-            "knight" => color == "white" ? "N" : "n",
-            "bishop" => color == "white" ? "B" : "b",
-            "queen" => color == "white" ? "Q" : "q",
-            "king" => color == "white" ? "K" : "k",
+            "pawn" => color == ChessIds.Players.White ? "P" : "p",
+            "rook" => color == ChessIds.Players.White ? "R" : "r",
+            "knight" => color == ChessIds.Players.White ? "N" : "n",
+            "bishop" => color == ChessIds.Players.White ? "B" : "b",
+            "queen" => color == ChessIds.Players.White ? "Q" : "q",
+            "king" => color == ChessIds.Players.White ? "K" : "k",
             _ => piece.Id
         };
     }
@@ -71,8 +70,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         }
         return player.Id switch
         {
-            "white" => "White",
-            "black" => "Black",
+            ChessIds.Players.White => ChessIds.Players.White,
+            ChessIds.Players.Black => ChessIds.Players.Black,
             _ => player.Id
         };
     }
@@ -241,7 +240,7 @@ public sealed class ChessNomenclature : IGameNomenclature
                 var rankChar = toSquare[1];
                 // Assume white moves toward higher rank numbers (8), black toward lower (1)
                 var ownerId = moveEvent.Piece.Owner?.Id;
-                bool promote = (ownerId == "white" && rankChar == '8') || (ownerId == "black" && rankChar == '1');
+                bool promote = (ownerId == ChessIds.Players.White && rankChar == '8') || (ownerId == ChessIds.Players.Black && rankChar == '1');
                 if (promote)
                 {
                     // baseText for pawn non-capture move is destination; capture form is exd8. Append =Q (fixed queen for now).
@@ -402,7 +401,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         // Find opposing king
         var moverOwner = moveEvent.Piece.Owner;
         var opponentKingState = state.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && ps.Artifact.Id.Contains("-king"));
+            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(state, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
+
         if (opponentKingState is null)
         {
             return false; // cannot detect
@@ -414,6 +414,7 @@ public sealed class ChessNomenclature : IGameNomenclature
             .Where(ps => ps.Artifact != moveEvent.Piece && ps.CurrentTile != destination) // remove captured piece if any opposing there
             .Select(ps => (States.IArtifactState)ps)
             .ToList();
+
         updatedStates.Add(new States.PieceState(moveEvent.Piece, destination));
         var post = Veggerby.Boards.States.GameState.New(updatedStates);
 

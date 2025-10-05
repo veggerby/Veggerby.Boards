@@ -6,11 +6,6 @@ using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.Tests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.Benchmarks")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Veggerby.Boards.PropertyTests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("SimulationDemo")]
-
 namespace Veggerby.Boards;
 
 /// <summary>
@@ -81,18 +76,11 @@ public static partial class GameExtensions
     {
         var dice = progress.Game.GetArtifacts<Dice>(ids);
 
-        // Special handling: the Backgammon doubling cube ("doubling-dice") should not have its value overwritten
-        // by the deterministic index-based helper. Its lifecycle is governed by DoublingDiceStateMutator which
-        // doubles the current value and assigns ownership. If the helper is invoked with only the doubling cube
-        // (e.g., tests calling RollDice("doubling-dice")) we preserve the existing state so that an ignored condition
-        // results in a silent no-op (unchanged value & owner). We only construct transient DiceState<int> instances
-        // for standard dice (non doubling cube) here.
         var states = dice
             .Where(d => d.Id != "doubling-dice")
             .Select((x, i) => new DiceState<int>(x, i))
             .ToArray();
 
-        // If after filtering there are no states to roll (e.g., only doubling-dice requested) simply return original progress.
         if (states.Length == 0)
         {
             return progress;
@@ -108,13 +96,14 @@ public static partial class GameExtensions
     /// Test parity note: The observer batching parity test (see ObserverBatchingTests.GivenSingleMove_WhenBatchedEnabled_ThenOrderingMatchesUnbatched)
     /// replicates the core of this resolution logic (pattern.Accept + shortest path selection) via a helper to ensure
     /// ordering comparisons remain stable even if movement pattern internals evolve. If you change the semantics here,
-    /// update the helper in tests (`TestPathHelper.ResolveFirstValidPath`) accordingly.
+    /// update the helper in tests (TestPathHelper.ResolveFirstValidPath) accordingly.
     /// </remarks>
     public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
     {
         var piece = progress.Game.GetPiece(pieceId);
         var toTile = progress.Game.GetTile(toTileId);
         var state = progress.State.GetState<PieceState>(piece);
+
         var path = piece.Patterns.Select(pattern =>
         {
             var visitor = new ResolveTilePathPatternVisitor(progress.Engine.Game.Board, state.CurrentTile, toTile);

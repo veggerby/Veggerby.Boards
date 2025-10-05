@@ -1,7 +1,5 @@
 using Veggerby.Boards.Internal;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
 public class FastPathMetricsInvariantTests

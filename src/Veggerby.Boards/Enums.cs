@@ -12,7 +12,10 @@ public enum CompositeMode
     /// </summary>
     Any,
     /// <summary>
-    /// All child conditions must be valid (ignores are tolerated if at least one valid exists).
+    /// All child conditions must evaluate <see cref="ConditionResult.Valid"/>. If any evaluate
+    /// <see cref="ConditionResult.Invalid"/> the composite fails. If any evaluate
+    /// <see cref="ConditionResult.Ignore"/> (and not all ignore) the composite is treated as
+    /// not applicable (ignored) to allow permissive per-condition opt-out semantics.
     /// </summary>
     All,
     /// <summary>

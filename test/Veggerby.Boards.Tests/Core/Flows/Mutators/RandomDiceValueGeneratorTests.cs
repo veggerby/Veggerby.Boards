@@ -3,7 +3,6 @@ using System;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Tests.Infrastructure;
 using Veggerby.Boards.Tests.Utils;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Mutators;

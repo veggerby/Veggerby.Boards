@@ -2,7 +2,6 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
-using Veggerby.Boards.Internal.Attacks; // sliding attack fast-path
 using Veggerby.Boards.Internal.Compiled;
 using Veggerby.Boards.States;
 

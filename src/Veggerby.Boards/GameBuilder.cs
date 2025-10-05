@@ -41,6 +41,8 @@ public abstract class GameBuilder
     private readonly IList<PieceDirectionPatternDefinition> _pieceDirectionPatternDefinitions = [];
     private readonly IList<ArtifactDefinition> _artifactDefinitions = [];
     private readonly IList<GamePhaseDefinition> _gamePhaseDefinitions = [];
+    private readonly IList<object> _extrasStates = new List<object>();
+    private readonly IList<(string PlayerId, bool IsActive)> _activePlayerAssignments = new List<(string, bool)>();
 
     private Tile CreateTile(TileDefinition tile)
     {
@@ -110,6 +112,25 @@ public abstract class GameBuilder
         var player = new PlayerDefinition(this).WithId(playerId);
         _playerDefinitions.Add(player);
         return player;
+    }
+
+    /// <summary>
+    /// Declares an initial active player projection. Multiple calls may be made (typically one per player) with exactly one marked active.
+    /// </summary>
+    /// <param name="playerId">Player identifier previously added via <see cref="AddPlayer"/>.</param>
+    /// <param name="isActive">Whether the player starts active.</param>
+    /// <remarks>
+    /// Active player projections are optional; when absent, modules may infer sequencing implicitly (legacy behavior). Chess now uses explicit projections.
+    /// </remarks>
+    protected void WithActivePlayer(string playerId, bool isActive)
+    {
+        if (string.IsNullOrWhiteSpace(playerId))
+        {
+            throw new ArgumentException("Player id must be supplied", nameof(playerId));
+        }
+
+        // Defer validation (existence, uniqueness) until compile to allow out-of-order declarations.
+        _activePlayerAssignments.Add((playerId, isActive));
     }
 
     /// <summary>
@@ -320,6 +341,18 @@ public abstract class GameBuilder
         var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
+        // Add synthetic artifacts for extras states (one per extras type) so they participate in hashing & diffs deterministically.
+        var extrasArtifacts = new Dictionary<Type, Artifact>();
+        foreach (var extras in _extrasStates)
+        {
+            var t = extras.GetType();
+            // stable id includes full type name for uniqueness across modules
+            var id = $"extras-{t.FullName}";
+            var art = new ExtrasArtifact(id);
+            extrasArtifacts[t] = art;
+            artifacts.Add(art);
+        }
+
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
         TurnArtifact turnArtifact = null;
         if (Internal.FeatureFlags.EnableTurnSequencing)
@@ -347,6 +380,40 @@ public abstract class GameBuilder
         var baseStates = new List<IArtifactState>();
         baseStates.AddRange(pieceStates);
         baseStates.AddRange(diceStates);
+
+        // Materialize ActivePlayerState projections when declared.
+        if (_activePlayerAssignments.Any())
+        {
+            foreach (var (PlayerId, IsActive) in _activePlayerAssignments)
+            {
+                var player = game.Players.SingleOrDefault(p => string.Equals(p.Id, PlayerId));
+                if (player is null)
+                {
+                    throw new InvalidOperationException($"Active player declaration references unknown player '{PlayerId}'.");
+                }
+                baseStates.Add(new ActivePlayerState(player, IsActive));
+            }
+
+            // Validate exactly one active when any declarations exist.
+            var activeCount = _activePlayerAssignments.Count(a => a.IsActive);
+            if (activeCount != 1)
+            {
+                throw new InvalidOperationException($"Exactly one active player must be declared; found {activeCount}.");
+            }
+        }
+
+        // Materialize extras states into artifact states
+        foreach (var extras in _extrasStates)
+        {
+            var t = extras.GetType();
+            if (extrasArtifacts.TryGetValue(t, out var art))
+            {
+                // Wrap via generic runtime constructed ExtrasState<T>
+                var extrasStateType = typeof(ExtrasState<>).MakeGenericType(t);
+                var state = (IArtifactState)Activator.CreateInstance(extrasStateType, art, extras);
+                baseStates.Add(state);
+            }
+        }
 
         // Inject initial TurnState (turn 1, Start segment) only when sequencing enabled.
         if (turnArtifact is not null)
@@ -412,7 +479,8 @@ public abstract class GameBuilder
 
         // Acceleration context selection
         Internal.Acceleration.IAccelerationContext accelerationContext;
-        if (FeatureFlags.EnableBitboards && game.Board.Tiles.Count() <= 64)
+        var tileCount = game.Board.Tiles.Count();
+        if (FeatureFlags.EnableBitboards && tileCount <= 128) // extended to 128 via Bitboard128 scaffolding
         {
             var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
             var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
@@ -447,5 +515,19 @@ public abstract class GameBuilder
         _initialGameProgress = new GameProgress(engine, initialGameState, null);
 
         return _initialGameProgress;
+    }
+
+    /// <summary>
+    /// Registers an immutable extras state record captured in the initial <see cref="GameState"/> (e.g., castling rights, ko info).
+    /// </summary>
+    /// <typeparam name="T">Record / class type representing extras.</typeparam>
+    /// <param name="extras">Instance (must be reference type).</param>
+    protected void WithState<T>(T extras) where T : class
+    {
+        ArgumentNullException.ThrowIfNull(extras);
+
+        // TODO: Revisit Extras state/artifact design (naming + potential consolidation). Consider exposing a more explicit
+        // registration API to distinguish engine-level capabilities from per-game auxiliary state. (Tracked from user note)
+        _extrasStates.Add(extras);
     }
 }

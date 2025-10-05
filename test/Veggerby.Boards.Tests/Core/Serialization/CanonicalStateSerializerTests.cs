@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Internal;
@@ -54,9 +52,8 @@ public class CanonicalStateSerializerTests
         return (GameState.New(states), piece, dice, turnArtifact);
     }
 
-    private sealed class ArtifactIdArtifact : Artifact
+    private sealed class ArtifactIdArtifact(string id) : Artifact(id)
     {
-        public ArtifactIdArtifact(string id) : base(id) { }
     }
 
     [Fact]

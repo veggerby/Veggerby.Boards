@@ -132,10 +132,10 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
     }
 
     // Builder where Move rule is placed last; precedingGroups defines how many distinct non-matching groups are inserted before it.
-    private sealed class MoveLastGameBuilder : GameBuilder
+    private sealed class MoveLastGameBuilder(int preceding) : GameBuilder
     {
-        private readonly int _preceding;
-        public MoveLastGameBuilder(int preceding) { _preceding = preceding; }
+        private readonly int _preceding = preceding;
+
         protected override void Build()
         {
             BoardId = "move-last-filter-board";
@@ -187,10 +187,10 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
     }
 
     // Builder where Roll rule is placed last; preceding groups include other kinds (including extra move rules) first.
-    private sealed class RollLastGameBuilder : GameBuilder
+    private sealed class RollLastGameBuilder(int preceding) : GameBuilder
     {
-        private readonly int _preceding;
-        public RollLastGameBuilder(int preceding) { _preceding = preceding; }
+        private readonly int _preceding = preceding;
+
         protected override void Build()
         {
             BoardId = "roll-last-filter-board";

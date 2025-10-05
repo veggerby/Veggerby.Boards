@@ -30,6 +30,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Default Packaging Properties -->
@@ -56,6 +57,19 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
 
     <PackageReference Include="Veggerby.Algorithm" />
+  </ItemGroup>
+
+  <!-- Internals visible for test assembly -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Veggerby.Boards.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Veggerby.Boards.Benchmarks</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Veggerby.Boards.PropertyTests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

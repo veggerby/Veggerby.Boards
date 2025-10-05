@@ -2,8 +2,8 @@
 id: 10
 slug: chess-full-move-legality
 name: "Chess Full Move Legality"
-status: planned
-last_updated: 2025-09-26
+status: partial
+last_updated: 2025-09-30
 owner: chess
 summary: >-
   Implement complete chess move legality: state extensions (castling rights, en passant), occupancy-aware generation,
@@ -33,8 +33,8 @@ Provide a complete, deterministic, testable implementation of chess move legalit
 
 ## Current State Snapshot
 
-- Implemented: basic movement patterns, partial SAN (captures, disambiguation, +, castling geometry), generic move event.
-- Missing: occupancy blocking, castling rights, en passant, promotion logic, move generation API, king safety filtering, mate/stalemate detection, special events, complete SAN symbols (#, =Q, e.p.).
+- Implemented: basic movement patterns, partial SAN (captures, disambiguation, +, castling geometry), generic move event; castling rights tracking & safety gating (start/intermediate/destination attack checks), metadata-driven piece role/color classification (predicate helpers), identifier normalization via `ChessIds` constants, en-passant structural support (event + predicate-based mutator), explicit `Castle` helper API.
+- Missing: occupancy-aware blocking integration within generation, full pseudo-legal move generation API, promotion events & notation, king safety legality filter (post-generation), mate/stalemate detection, SAN completion (#, =Q, e.p.), generation & legality performance benchmarks.
 
 ## Success Criteria
 
@@ -174,7 +174,7 @@ public sealed record PseudoMove(Piece Piece, Tile From, Tile To, PseudoMoveKind 
 
 ## Status Summary
 
-Initial plan authored. No implementation started. Pending scheduling.
+Foundational prerequisites landed (rights, safety, metadata predicates, identifier constants, en-passant + castling events/mutators). Remaining complexity centers on efficient generation + legality filtering and endgame resolution (mate/stalemate/promotion). Performance targets & allocation baselines still to be established.
 
 ---
 

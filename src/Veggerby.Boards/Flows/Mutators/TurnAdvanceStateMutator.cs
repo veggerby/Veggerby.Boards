@@ -1,29 +1,16 @@
-using System;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Flows.Mutators;
 
 /// <summary>
-/// Advances the global turn timeline. For non-terminal segments it progresses to the next segment; for the final
-/// segment it increments the numeric turn, resets the segment to <see cref="TurnSegment.Start"/>, and (when present)
-/// rotates the active player states in player enumeration order.
+/// Advances the global turn timeline. For non-terminal segments progresses to next segment; for the final segment
+/// increments numeric turn, resets to <see cref="TurnSegment.Start"/>, and rotates active player (if projections present).
 /// </summary>
 /// <remarks>
-/// Player rotation is a compatibility projection for legacy <see cref="ActivePlayerState"/> usage. Once turn
-/// sequencing becomes authoritative, legacy active player state may be replaced by a TurnState projection. The
-/// mutator only executes when <c>FeatureFlags.EnableTurnSequencing</c> is true and will otherwise return the
-/// original <see cref="GameState"/> unchanged. No LINQ is used inside the tight branch except for simple sequencing
-/// which is not considered a hot path (turn boundary events are sparse relative to move events).
-/// </remarks>
-/// <summary>
-/// State mutator advancing the turn segment or, when at the final segment, incrementing the numeric turn and rotating the active player.
-/// </summary>
-/// <remarks>
-/// Optimized to avoid LINQ allocations in the hot path: simple loops replace <c>FirstOrDefault</c>/<c>Concat</c>/<c>SkipWhile</c> patterns.
+/// Rotation logic is centralized in <see cref="TurnSequencingHelpers"/>. Executed only when sequencing enabled.
+/// Allocation conscious: simple loops, no LINQ in hot path.
 /// </remarks>
 internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEvent>
 {
@@ -59,45 +46,8 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
             return gameState.Next([progressed]);
         }
 
-        // Last segment: advance numeric turn and reset to Start + rotate active player (if any)
+        // Last segment: advance numeric turn and reset to Start + rotate via helper
         var advancedTurnState = new TurnState(turnArtifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, 0);
-
-        // Active player projection compatibility layer: rotate exactly one active player if states exist
-        ActivePlayerState currentActive = null;
-        var activePlayerStates = gameState.GetStates<ActivePlayerState>();
-        foreach (var aps in activePlayerStates)
-        {
-            if (aps.IsActive)
-            {
-                currentActive = aps; break;
-            }
-        }
-        if (currentActive is null) { return gameState.Next([advancedTurnState]); }
-
-        var playersEnumerable = engine.Game.Players;
-        if (playersEnumerable is null) { return gameState.Next([advancedTurnState]); }
-        // Materialize once to avoid multiple enumeration and enable indexing
-        Player[] players;
-        if (playersEnumerable is Player[] arr)
-        {
-            players = arr;
-        }
-        else
-        {
-            var tempList = new System.Collections.Generic.List<Player>();
-            foreach (var p in playersEnumerable) { tempList.Add(p); }
-            players = tempList.ToArray();
-        }
-        var total = players.Length;
-        if (total <= 1) { return gameState.Next([advancedTurnState]); }
-        var idx = -1;
-        for (var i = 0; i < total; i++) { if (players[i].Equals(currentActive.Artifact)) { idx = i; break; } }
-        if (idx == -1) { return gameState.Next([advancedTurnState]); }
-        var nextIndex = (idx + 1) % total;
-        var nextPlayer = players[nextIndex];
-        if (nextPlayer.Equals(currentActive.Artifact)) { return gameState.Next([advancedTurnState]); }
-        var previousPlayerProjection = new ActivePlayerState(currentActive.Artifact, false);
-        var nextPlayerProjection = new ActivePlayerState(nextPlayer, true);
-        return gameState.Next([advancedTurnState, previousPlayerProjection, nextPlayerProjection]);
+        return TurnSequencingHelpers.ApplyTurnAndRotate(engine, gameState, advancedTurnState);
     }
 }

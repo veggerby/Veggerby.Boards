@@ -4,6 +4,8 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
+using static Veggerby.Boards.Chess.ChessIds.Pieces;
+
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -29,11 +31,11 @@ public class DeterministicOpeningTests
 
         static string Normalize(string id) => id.StartsWith("tile-") ? id[5..] : id;
 
-        var whitePawn = progress.Game.GetPiece("white-pawn-5");
-        var blackPawn = progress.Game.GetPiece("black-pawn-5");
-        var whiteKnight = progress.Game.GetPiece("white-knight-2");
-        var blackKnight = progress.Game.GetPiece("black-knight-1");
-        var whiteBishop = progress.Game.GetPiece("white-bishop-2");
+        var whitePawn = progress.Game.GetPiece(WhitePawn5);
+        var blackPawn = progress.Game.GetPiece(BlackPawn5);
+        var whiteKnight = progress.Game.GetPiece(WhiteKnight2);
+        var blackKnight = progress.Game.GetPiece(BlackKnight1);
+        var whiteBishop = progress.Game.GetPiece(WhiteBishop2);
 
         if (whitePawn is not null && applied >= 1)
         {
@@ -69,7 +71,7 @@ public class DeterministicOpeningTests
         progress.State.Should().NotBeSameAs(initialState);
 
         // Ensure original white pawn still at e2 in the initial snapshot
-        var originalPawnState = initialState.GetStates<PieceState>().Single(ps => ps.Artifact.Id == "white-pawn-5");
+        var originalPawnState = initialState.GetStates<PieceState>().Single(ps => ps.Artifact.Id == WhitePawn5);
         Normalize(originalPawnState.CurrentTile.Id).Should().Be("e2");
     }
 }

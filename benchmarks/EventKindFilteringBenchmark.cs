@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts.Relations;
@@ -56,7 +53,7 @@ public class EventKindFilteringBenchmark
         _filtering = new ChessGameBuilder().WithObserver(_obsFiltering).Compile();
         FeatureFlags.EnableDecisionPlanEventFiltering = false; // reset
 
-        var rook = _legacy.Game.GetPiece("white-rook-1");
+        var rook = _legacy.Game.GetPiece(ChessIds.Pieces.WhiteRook1);
         var from = _legacy.Game.GetTile("a1");
         var to = _legacy.Game.GetTile("b1");
         var forwardPath = new ResolveTilePathPatternVisitor(_legacy.Game.Board, from, to).ResultPath;

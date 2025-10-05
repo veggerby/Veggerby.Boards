@@ -42,9 +42,9 @@ public static class ChessBoardRenderer
     /// <param name="useUnicode">If true uses ♔♕♖♗♘♙ / ♚♛♜♝♞♟; otherwise uses KQRBNP/kqrbnp.</param>
     public static void Write(Game game, GameState state, TextWriter writer, bool useUnicode)
     {
-        if (game is null) { throw new ArgumentNullException(nameof(game)); }
-        if (state is null) { throw new ArgumentNullException(nameof(state)); }
-        if (writer is null) { throw new ArgumentNullException(nameof(writer)); }
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(writer);
 
         // Pre-index piece states by tile id for O(1) lookup
         var pieceStates = state.GetStates<PieceState>()
@@ -56,19 +56,23 @@ public static class ChessBoardRenderer
             writer.Write(rank);
             writer.Write(' ');
             writer.Write('|');
+
             for (int file = 1; file <= 8; file++)
             {
                 var fileChar = (char)('a' + file - 1);
                 var tileId = $"tile-{fileChar}{rank}";
+
                 if (!pieceStates.TryGetValue(tileId, out var piece))
                 {
                     writer.Write(" . ");
                     continue;
                 }
+
                 var parts = piece.Id.Split('-'); // e.g. white-pawn-5 or white-king
                 var role = parts.Length > 1 ? parts[1] : string.Empty;
-                var isWhite = parts[0] == "white";
+                var isWhite = parts[0] == ChessIds.Players.White;
                 char glyph;
+
                 if (useUnicode)
                 {
                     glyph = role switch
@@ -94,18 +98,22 @@ public static class ChessBoardRenderer
                         "pawn" => 'p',
                         _ => '?'
                     };
+
                     if (isWhite)
                     {
                         glyph = char.ToUpperInvariant(glyph);
                     }
                 }
+
                 writer.Write(' ');
                 writer.Write(glyph);
                 writer.Write(' ');
             }
+
             writer.Write('|');
             writer.WriteLine();
         }
+
         writer.WriteLine("  +------------------------+");
         writer.WriteLine("    a  b  c  d  e  f  g  h\n");
     }

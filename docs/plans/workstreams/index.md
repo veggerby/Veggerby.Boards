@@ -1,7 +1,7 @@
 ---
 slug: workstreams
 name: "Workstreams Overview"
-last_updated: 2025-09-30
+last_updated: 2025-10-05
 status_index:
   done: [1,2,3]
   partial: [4,5,6,7,8,9,10,11]
@@ -15,12 +15,12 @@ status_index:
 | 1 | Rule Evaluation Engine Modernization | done | Unified decision plan, grouping, filtering, exclusivity masks, predicate hoisting. |
 | 2 | Deterministic RNG & History | done | Stable RNG abstraction, timeline zipper scaffolding, dual hashing placeholders. |
 | 3 | Movement & Pattern Compilation | closed | Compiled movement patterns + sliding fast-path (≤64 tiles). |
-| 4 | Performance Data Layout & Hot Paths | partial | Sliding fast-path, bitboards (incremental soak + 128-bit scaffolding), parity & benchmarks. |
+| 4 | Performance Data Layout & Hot Paths | partial | Sliding fast-path, bitboards (incremental soak + 128-bit scaffolding), added BitboardSnapshot coverage, parity & benchmarks. |
 | 5 | Concurrency & Simulation | partial | Deterministic playouts + metrics, parallel path flagged. |
 | 6 | Observability & Diagnostics | partial | EventResult taxonomy, grouping, kind filtering, trace prototype. |
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |
 | 8 | Structural Refactors | partial | Timeline zipper + hashing scaffolding (flag-gated). |
-| 9 | Turn & Round Sequencing | partial | Default-on sequencing; mutators + rotation helper; Go two-pass & hash parity pending. |
+| 9 | Turn & Round Sequencing | partial | Default-on sequencing; mutators + rotation helper; docs helper guidance delivered; Go two-pass & hash parity pending. |
 | 10 | Chess Full Move Legality | partial | Castling rights + safety, metadata predicates, ids normalized; generation & endgame pending. |
 | 11 | Go Game Module | partial | Board + placement/pass scaffolding; capture/ko/scoring pending. |
 | 12 | Ludo / Parcheesi Game Module | planned | Race track, entry on 6, capture reset, safe squares baseline. |

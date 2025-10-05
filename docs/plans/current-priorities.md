@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-09-30
+last_updated: 2025-10-05
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -20,7 +20,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 ## Tier 1 – Foundational Multipliers
 
 1. **Turn Sequencing Graduation (Status 9)**
-   Core enabled-by-default (advancement, pass, replay, commit, rotation helper) – remaining: Go two-pass terminal wiring, legacy active player projection removal, hash parity test, sequencing note doc.
+   Core enabled-by-default (advancement, pass, replay, commit, rotation helper) – remaining: Go two-pass terminal wiring, legacy active player projection removal, hash parity test. Docs sequencing note delivered (helper usage guidance).
    Impact: Enables clean phase-driven loops for Monopoly, Deck-building, Ludo, Risk.
 
 2. **Performance Data Layout & Bitboards (Status 4)**

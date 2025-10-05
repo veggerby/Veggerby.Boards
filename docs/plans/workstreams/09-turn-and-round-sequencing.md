@@ -3,7 +3,7 @@ id: 9
 slug: turn-and-round-sequencing
 name: "Turn & Round Sequencing"
 status: partial
-last_updated: 2025-09-26
+last_updated: 2025-10-05
 owner: core
 flags:
   - EnableTurnSequencing (exp)
@@ -27,6 +27,7 @@ open_followups:
 - TurnState segmentation model
 - Overhead benchmark instrumentation
 - Integration path w/out evaluation interruptions
+- Documentation updated with usage guidance for `TryGetActivePlayer(out Player)` vs `GetActivePlayer()` (conditions/gates vs strict flows).
 
 ## Pending / Deferred
 

@@ -29,7 +29,7 @@
 
 ⏳ **Partial (Expanded).**
 
-* Bitboards: incremental update path reintroduced behind `EnableBitboardIncremental` (default off) with scripted, soak, and deterministic randomized parity suites.
+* Bitboards: incremental update path reintroduced behind `EnableBitboardIncremental` (default off) with scripted, soak, and deterministic randomized parity suites. Added focused `BitboardSnapshot` unit tests (64/128 build + update paths) to strengthen coverage.
 * Bitboard128 scaffolding added (global + per-player occupancy up to 128 tiles); acceleration selection extended (≤128 uses bitboards) while ≤64 fast path unchanged.
 * Sliding fast-path enabled (≤64 tiles) with strong perf numbers.
   ⚠️ Remaining:
@@ -86,7 +86,7 @@
 ⏳ **Partial (Graduated Core).**
 
 * Turn sequencing flag now defaults ON; initial TurnState emitted and advancement mutators (advance, pass, replay, commit) consolidated with shared rotation helper.
-* Determinism tests added (scripted advancement + pass/replay streak reset).
+* Determinism tests added (scripted advancement + pass/replay streak reset). Docs updated with clear guidance on `TryGetActivePlayer(out Player)` vs `GetActivePlayer()` usage (conditions/gates vs strict flows).
   ⚠️ Remaining:
   * Two-pass termination adoption in Go module (terminal condition wiring).
   * Legacy active player projection replacement (derive from TurnState in projection layer) – rotation helper still used.
@@ -119,7 +119,7 @@
 
 ## Cross-Cutting Gaps
 
-* **Feature Flag Governance:** Many flags experimental. Needs central table (Graduated / Experimental / Deprecated) with graduation criteria.
+* **Feature Flag Governance:** Central table exists in `feature-flags.md` and is being kept current (owner, defaults, graduation notes). Continue pruning deprecated scaffolds in next minor.
 * **Benchmarks:** Numbers are scattered. Need a single summary doc (with last commit hash).
 * **Cross-Platform Hash CI:** Replay determinism verified locally but not enforced in CI across OS/arch.
 * **Diagnostics UX:** Trace capture exists but no viewer. CLI viewer MVP would unlock graduation.

@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Synthetic large board test (`Bitboard128SnapshotTests`) validating 128-bit snapshot popcount parity with piece state count.
 - Randomized and extended parity stress tests for incremental bitboard updates.
 
+- Unit tests increasing coverage:
+  - `BitboardSnapshotTests` for 64-bit and 128-bit build/update paths, including optimistic concurrency no-op and segment-aware assertions (AAA + AwesomeAssertions).
+  - `BackgammonBoardRendererTests` verifying ASCII rendering (top/bottom rows, bar/home summary) and exact formatting.
+
+- Documentation guidance:
+  - Turn sequencing docs updated with `TryGetActivePlayer(out Player)` vs `GetActivePlayer()` usage guidance (conditions/gates vs strict flows).
+  - Core concepts now include an “Active player projection” section discouraging direct `ActivePlayerState` scans.
+
 - **Turn Sequencing Framework (Workstream 10)**
   Introduced `TurnState`, `TurnArtifact`, and `TurnSegment` for deterministic sequencing:
   - Segment progression (`Start → Main → End`), turn number advancement, and active-player rotation.
@@ -121,6 +129,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Chess move, capture, en-passant, and castling mutators & conditions now use metadata predicates (no id substring heuristics remain).
 - Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
 - Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
+- Refactor sweep to prefer non-throwing `TryGetActivePlayer(out Player)` in safe contexts (conditions/gates) across core and modules (Backgammon, Chess); strict `GetActivePlayer()` retained in invariant-critical paths.
 
 ### Fixed
 

@@ -2,11 +2,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 

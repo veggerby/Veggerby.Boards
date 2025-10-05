@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;

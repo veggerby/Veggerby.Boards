@@ -1,4 +1,3 @@
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
@@ -60,17 +59,17 @@ public class CompiledPatternAdjacencyCacheParityTests
     }
 
     [Fact]
-    public void GivenAdjacencyCacheToggle_WhenResolvingUnreachableDoublePawnAdvance_ThenBothNull()
+    public void GivenAdjacencyCacheToggle_WhenResolvingDoublePawnAdvance_ThenStructuralPathMatches()
     {
-        // arrange
+        // arrange (two-step pawn advance structurally present via fixed pattern)
         var builder = new ChessGameBuilder();
         TilePath without;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile("tile-e2");
-            var to = progress.Game.GetTile("tile-e4");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
             without = ResolveCompiled(progress, piece, from, to);
         }
         TilePath with;
@@ -78,13 +77,15 @@ public class CompiledPatternAdjacencyCacheParityTests
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile("tile-e2");
-            var to = progress.Game.GetTile("tile-e4");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
             with = ResolveCompiled(progress, piece, from, to);
         }
 
-        // assert
-        without.Should().BeNull();
-        with.Should().BeNull();
+        // assert structural path present and consistent both with and without adjacency cache
+        without.Should().NotBeNull();
+        with.Should().NotBeNull();
+        with.Distance.Should().Be(without.Distance);
+        with.Relations.Should().HaveSameCount(without.Relations);
     }
 }

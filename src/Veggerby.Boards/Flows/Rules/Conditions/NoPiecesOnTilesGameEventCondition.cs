@@ -37,7 +37,10 @@ public class NoPiecesOnTilesGameEventCondition<T> : IGameEventCondition<T> where
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
     {
-        var player = state.GetActivePlayer();
+        if (!state.TryGetActivePlayer(out var player))
+        {
+            return ConditionResponse.Ignore("No active player");
+        }
         return Tiles.All(tile => !state.GetPiecesOnTile(tile, player).Any())
             ? ConditionResponse.Valid
             : ConditionResponse.Invalid;

@@ -1,6 +1,5 @@
 using System;
 
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Internal.Acceleration;
 using Veggerby.Boards.Internal.Attacks;
 using Veggerby.Boards.Internal.Layout;

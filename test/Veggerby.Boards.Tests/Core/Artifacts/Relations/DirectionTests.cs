@@ -165,7 +165,7 @@ public class DirectionTests
         public void Should_return_expected()
         {
             // arrange
-            var direction = new Direction("south");
+            var direction = new Direction(Constants.Directions.South);
 
             // act
             var actual = direction.ToString();

@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;

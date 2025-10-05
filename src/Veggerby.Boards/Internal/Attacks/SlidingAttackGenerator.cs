@@ -23,21 +23,48 @@ internal sealed class SlidingAttackGenerator : IAttackRays
     public static SlidingAttackGenerator Build(BoardShape shape)
     {
         ArgumentNullException.ThrowIfNull(shape);
-        var rays = new short[shape.TileCount * shape.DirectionCount][];
+        // Guard against pathological size multiplication (defensive: prevent gigantic allocations or overflow)
+        long slots = (long)shape.TileCount * (long)shape.DirectionCount;
+        if (slots <= 0 || slots > 1_000_000) // heuristic upper bound (1M direction rays).
+        {
+            // Fallback to empty rays for safety; still return generator so callers do not crash.
+            return new SlidingAttackGenerator(shape, Array.Empty<short[]>());
+        }
+        // Degenerate topology guard: A very long single-direction ring or chain offers little benefit for precomputed sliding.
+        // Empirically this has produced pathological memory growth in synthetic stress boards; we neutralize by skipping.
+        if (shape.DirectionCount == 1 && shape.TileCount > 64)
+        {
+            return new SlidingAttackGenerator(shape, Array.Empty<short[]>());
+        }
+        var rays = new short[slots][];
         for (int t = 0; t < shape.TileCount; t++)
         {
             for (int d = 0; d < shape.DirectionCount; d++)
             {
                 var list = new List<short>(8);
                 var current = t;
-                while (true)
+                // Track visited to avoid infinite loops on cyclic relations (e.g., wrap-around boards)
+                int safety = shape.TileCount; // upper bound: cannot traverse more distinct tiles than exist
+                var visited = new HashSet<int>();
+                while (safety-- > 0)
                 {
                     var neighborIdx = shape.Neighbors[current * shape.DirectionCount + d];
                     if (neighborIdx < 0)
                     {
                         break;
                     }
+                    if (!visited.Add(neighborIdx))
+                    {
+                        // cycle encountered; stop extending this ray
+                        break;
+                    }
                     list.Add(neighborIdx);
+                    // Hard per-ray cap: cannot legitimately exceed total tiles. Additionally guard with 4096 absolute limit
+                    // to avoid pathological growth in unforeseen cyclic topologies (defensive programming – determinism over completeness).
+                    if (list.Count >= shape.TileCount || list.Count >= 4096)
+                    {
+                        break;
+                    }
                     current = neighborIdx;
                 }
                 rays[t * shape.DirectionCount + d] = list.ToArray();
@@ -49,6 +76,10 @@ internal sealed class SlidingAttackGenerator : IAttackRays
     public List<short> GetSlidingAttacks(Piece piece, short fromTileIndex, PieceMapSnapshot pieceMap, BitboardSnapshot bitboards)
     {
         var results = new List<short>();
+        if (_rayTileIndices.Length == 0)
+        {
+            return results; // degenerate / neutralized generator
+        }
         if (fromTileIndex < 0 || fromTileIndex >= _shape.TileCount)
         {
             return results;
@@ -106,6 +137,10 @@ internal sealed class SlidingAttackGenerator : IAttackRays
     public bool TryGetRays(Piece piece, Tile from, out ulong[] rays)
     {
         rays = Array.Empty<ulong>();
+        if (_rayTileIndices.Length == 0)
+        {
+            return false; // neutralized generator
+        }
         if (piece is null || from is null)
         {
             return false;

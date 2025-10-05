@@ -11,7 +11,7 @@ public class BoardShapeTopologyTests
     {
         // arrange
         var a1 = new Tile("a1"); var b1 = new Tile("b1"); var a2 = new Tile("a2"); var b2 = new Tile("b2");
-        var north = new Direction("north"); var east = new Direction("east"); var ne = new Direction("north-east");
+        var north = new Direction(Constants.Directions.North); var east = new Direction(Constants.Directions.East); var ne = new Direction(Constants.Directions.NorthEast);
         var r1 = new TileRelation(a1, a2, north); // orth
         var r2 = new TileRelation(a1, b1, east); // orth
         var r3 = new TileRelation(a1, b2, ne); // diag
@@ -29,7 +29,7 @@ public class BoardShapeTopologyTests
     {
         // arrange
         var a1 = new Tile("oa1"); var b1 = new Tile("ob1"); var a2 = new Tile("oa2");
-        var north = new Direction("north"); var east = new Direction("east");
+        var north = new Direction(Constants.Directions.North); var east = new Direction(Constants.Directions.East);
         var r1 = new TileRelation(a1, a2, north);
         var r2 = new TileRelation(a1, b1, east);
         var board = new Board("mini-orth", [r1, r2]);

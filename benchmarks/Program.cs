@@ -1,5 +1,3 @@
-using System;
-
 using BenchmarkDotNet.Running;
 
 using Veggerby.Boards.Benchmarks;

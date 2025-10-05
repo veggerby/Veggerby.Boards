@@ -1,9 +1,5 @@
-using System.Linq;
-
 using Veggerby.Boards.Internal.Evaluation.Mobility;
 using Veggerby.Boards.Tests.Infrastructure;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Evaluation;
 

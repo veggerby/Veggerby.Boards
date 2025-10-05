@@ -1,5 +1,3 @@
-using System;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 

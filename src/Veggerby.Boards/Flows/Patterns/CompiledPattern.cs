@@ -33,19 +33,27 @@ internal sealed class CompiledPattern
 
     public static CompiledPattern Fixed(Direction[] steps)
     {
-        if (steps is null || steps.Length == 0) throw new ArgumentException("Empty fixed steps", nameof(steps));
+        if (steps is null || steps.Length == 0)
+        {
+            throw new ArgumentException("Empty fixed steps", nameof(steps));
+        }
+
         return new CompiledPattern(CompiledPatternKind.Fixed, steps, false);
     }
 
     public static CompiledPattern Ray(Direction direction, bool repeatable)
     {
-        if (direction is null) throw new ArgumentNullException(nameof(direction));
+        ArgumentNullException.ThrowIfNull(direction);
         return new CompiledPattern(CompiledPatternKind.Ray, [direction], repeatable);
     }
 
     public static CompiledPattern MultiRay(Direction[] directions, bool repeatable)
     {
-        if (directions is null || directions.Length == 0) throw new ArgumentException("Empty multi-ray directions", nameof(directions));
+        if (directions is null || directions.Length == 0)
+        {
+            throw new ArgumentException("Empty multi-ray directions", nameof(directions));
+        }
+
         return new CompiledPattern(CompiledPatternKind.MultiRay, directions, repeatable);
     }
 }

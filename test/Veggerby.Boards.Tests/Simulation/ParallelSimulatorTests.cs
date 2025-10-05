@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Simulation;
-using Veggerby.Boards.States;
 
 using Xunit;
 

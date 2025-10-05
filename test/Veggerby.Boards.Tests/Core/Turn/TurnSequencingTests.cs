@@ -3,13 +3,9 @@ using System.Linq;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
-using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Flows.Rules.Conditions.Turn;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Turn;
 

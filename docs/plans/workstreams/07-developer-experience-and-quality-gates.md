@@ -30,6 +30,7 @@ open_followups:
 - Benchmark suite categorized
 - Documentation restructured (core concepts, movement, determinism, performance)
 - Manual drift audit (no legacy doc references)
+- Centralized chess identifier constants (`ChessIds`) and predicate-based metadata classification eliminating string heuristics (reinforces style & determinism charter)
 
 ## Pending / Deferred
 
@@ -42,3 +43,15 @@ Missing automated regression gates may allow silent perf drift; manual deviation
 ## Next Steps
 
 Introduce analyzer for deviation annotations then wire perf baseline guard-rail in CI.
+
+## Style Reinforcement (2025-09-30)
+
+Recent refactors reinforced mandatory patterns:
+
+- Use `ChessIds` (Pieces, Tiles, Directions) instead of raw string literals.
+- Use metadata predicate helpers (`IsKing`, `IsPawn`, `IsWhite`, etc.) — never infer role/color from identifiers.
+- Guards (e.g., `MetadataCoverageGuard`) must validate builder completeness for metadata-driven features.
+- Hot paths (conditions, mutators, generation) must avoid LINQ and unnecessary allocations.
+- Immutability & determinism remain non-negotiable: events declare intent; mutators produce new state snapshots only.
+
+Analyzer follow-up will enforce these (string literal chess id heuristics, ad-hoc role parsing) once authoring complete.

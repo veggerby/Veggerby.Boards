@@ -17,7 +17,7 @@ public class SingleActivePlayerGameStateCondition : IGameStateCondition
     /// <returns><see cref="ConditionResponse.Valid"/> when exactly one active player is present; otherwise <see cref="ConditionResponse.Invalid"/>.</returns>
     public ConditionResponse Evaluate(GameState state)
     {
-        return state.GetStates<ActivePlayerState>().SingleOrDefault(x => x.IsActive) is not null
+        return state.TryGetActivePlayer(out _)
             ? ConditionResponse.Valid
             : ConditionResponse.Invalid;
     }

@@ -3,8 +3,6 @@
 // test surface yet. Keeping a placeholder (Skipped) test preserves historical intent while
 // avoiding compilation errors. Once a sanctioned public seam exists for allocation / fast-path
 // verification, this file will be replaced with proper coverage.
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Acceleration;
 
 /// <summary>

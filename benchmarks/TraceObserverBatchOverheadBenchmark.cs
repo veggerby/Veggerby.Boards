@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
@@ -74,9 +73,9 @@ public class TraceObserverBatchOverheadBenchmark
             FeatureFlags.EnableObserverBatching = true;
             _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            var piece = _baseline.Game.GetPiece("white-pawn-2");
-            var from = _baseline.Game.GetTile("e2");
-            var to = _baseline.Game.GetTile("e4");
+            var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2);
+            var from = _baseline.Game.GetTile(ChessIds.Tiles.E2);
+            var to = _baseline.Game.GetTile(ChessIds.Tiles.E4);
             var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
             _event = new MovePieceGameEvent(piece, path);
         }

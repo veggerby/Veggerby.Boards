@@ -6,11 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+> Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
+
 ### Breaking
 
 - Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
 
 ### Added
+
+- Bitboard128 scaffolding: `BitboardSnapshot` now supports boards up to 128 tiles using internal two-segment `Bitboard128` structure (global + per-player masks).
+- Experimental segmented bitboards (`EnableSegmentedBitboards` flag): unified scalable representation supporting 64 and 128 tile boards with parity tests (global + per-player). Currently feature-gated; default off until extended stress + performance benchmarks complete.
+- Synthetic large board test (`Bitboard128SnapshotTests`) validating 128-bit snapshot popcount parity with piece state count.
+- Randomized and extended parity stress tests for incremental bitboard updates.
 
 - **Turn Sequencing Framework (Workstream 10)**
   Introduced `TurnState`, `TurnArtifact`, and `TurnSegment` for deterministic sequencing:
@@ -50,19 +57,70 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - Deterministic replay tests, canonical RNG serialization, 64/128-bit state hashing, and finalized timeline zipper.
   - Hashing overhead benchmarks.
 
+- **Bitboard Incremental Path (Soak Flag)**
+  - Added feature flag `EnableBitboardIncremental` (default off) reintroducing incremental bitboard & piece map snapshot updates for move events.
+  - Parity test (`BitboardIncrementalParityTests`) validates identical occupancy vs full rebuild for scripted opening sequence.
+  - Full rebuild remains default until large randomized suites confirm no desync.
+
+- **Turn Sequencing Graduation (Core Enabled)**
+  - `EnableTurnSequencing` now defaults ON; initial `TurnState` emitted when building games.
+  - Consolidated active player rotation into `TurnSequencingHelpers.ApplyTurnAndRotate` used by advance & pass mutators.
+  - Added deterministic sequencing tests (`TurnSequencingDeterminismTests`) covering scripted advancement, pass streak increment & replay reset.
+  - Refactored mutators (`TurnAdvanceStateMutator`, `TurnPassStateMutator`, `TurnReplayStateMutator`, `TurnCommitStateMutator`) to streamlined remarks and helper usage.
+  - Remaining (tracked in status/workstreams): Go two-pass termination wiring, legacy active player projection replacement, hash parity test once hashing feature graduates.
+
 - **Developer Experience (DX)**
   - `developer-experience.md` consolidating style charter, benchmark policy, and contribution workflow.
   - Thread-safe `FeatureFlagScope` for deterministic test isolation.
   - Lightweight style-enforcement stub.
   - Expanded property-based invariants for chess/backgammon and a deterministic chess opening helper.
 
+- **Chess – Active Player & Turn Alternation**
+  - Introduced explicit active-player gating condition (`PieceIsActivePlayerGameEventCondition`) now returning `Ignore` for non-active attempts (replacing exception-style invalidation for friendlier optimistic move submission).
+  - Added automatic player alternation mutator (`NextPlayerStateMutator`) after every successful move/capture in chess phases and focused scenario builders.
+  - Implemented negative tests for pawn double-step illegality (off start rank after prior move, intermediate blocked, destination occupied) with minimalist scenario builders.
+  - Added turn alternation tests (consecutive same-player move ignored; delayed en-passant capture invalidated post-decline).
+  - Refactored queen unlocking tests to respect alternation and friendly-occupancy ignore semantics.
+  - Simplified initialization test: replaced exhaustive brittle relation enumeration with orientation spot-check helper.
+  - En-passant scenario builder refined (optional auxiliary pawn) and tests aligned with canonical orientation (white moves north).
+  - Basic castling support (no check/attack validation yet): standard king/queen placement (king on e-file), structural castling condition (rights, clear path, destination empty) with Invalid responses for malformed attempts, castling mutator moving king and rook and revoking rights, automatic rights revocation on king/rook movement. Tests added for kingside success and queenside blocked attempt.
+
+  - **Chess – Castling Safety & API Enhancements**
+    - Added `CastlingKingSafetyGameEventCondition` preventing castling while king is in check, or when intermediate/destination squares are attacked (evaluates start, transit, destination squares).
+    - Introduced explicit `GameExtensions.Castle(color, kingSide)` helper removing prior synthetic path hack from generic `Move` helper.
+    - Deterministic safety denial tests (king-side intermediate square attacked; queen-side destination square attacked) with rights preservation on denial.
+    - Optimized attack enumeration (early exit, static direction arrays, no per-move hash set allocations) reducing transient allocations during safety checks.
+    - Castling failure messages now include the specific attacked square id.
+
+  - **Chess – Metadata Classification & Identifier Normalization**
+    - Introduced explicit piece role & color metadata maps (replacing string heuristic parsing of ids like `white-king`, `-pawn`).
+    - Added predicate helpers (`IsKing`, `IsPawn`, `IsWhite`, `IsBlack`, etc.) centralizing all role/color checks with test coverage.
+    - Replaced all production/test/benchmark/sample code uses of raw chess piece & tile identifier string literals with `ChessIds` constants (single source of truth) except in intentional custom scenario cases.
+    - Implemented `MetadataCoverageGuard` ensuring scenario builders include every declared piece in metadata maps (prevents silent drift).
+    - Added classification & parity tests plus en-passant and castling regression tests validating metadata driven logic.
+    - Updated documentation snippets to reflect constant-based usage pattern.
+
+  - **Go – Initial Module Scaffolding**
+    - Added `GoGameBuilder` (configurable 9/13/19 board), orthogonal liberty topology, stone pools for both players.
+    - Added events & mutators: `PlaceStoneGameEvent` (emptiness-only placement) and `PassTurnGameEvent` (increments pass counter), `GoStateExtras` (ko placeholder, pass count, board size).
+    - Minimal `GoNomenclature` placeholder and workstream plan (`11-go-game-module`) outlining capture, ko, suicide, scoring, and termination roadmap.
+
 ### Changed
+
+- Acceleration context selection now enables bitboards for boards up to 128 tiles (previously ≤64). Fast path for ≤64 unchanged.
+- Sliding attack generator now defensively skips precomputation on degenerate single-direction boards >64 tiles to avoid pathological allocation growth (no functional regression – rays offer no additional branching on such topologies).
+- `BitboardSnapshot` incremental update path extended to handle 128-bit occupancy when active.
 
 - Compiled movement patterns **enabled by default**.
 - State hashing uses canonical binary serialization; added 128-bit xxHash128.
 - Incremental bitboard updates temporarily disabled (falls back to full rebuild per transition).
+- Incremental bitboard updates reintroduced behind soak flag; default behavior still full rebuild until graduation.
 - Consolidated package versions via `Directory.Packages.props`.
 - README and docs updated across acceleration, sequencing, and DX topics.
+- Chess castling implementation evolved from provisional structural-only version to full safety-gated variant with explicit API and performance-tuned attack scanning.
+- Chess move, capture, en-passant, and castling mutators & conditions now use metadata predicates (no id substring heuristics remain).
+- Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
+- Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
 
 ### Fixed
 
@@ -73,8 +131,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Maintenance
 
 - Fully removed legacy traversal code.
+- Added defensive cycle detection + per-ray caps in sliding attack generation and neutralization guard for large single-direction boards (stability improvements for synthetic parity tests).
 - Added benchmarks, parity packs, and cleanup checklists for regression safety.
 - Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).
+  - Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
 
 ## [0.1.0] – Initial
 

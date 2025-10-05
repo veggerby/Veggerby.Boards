@@ -27,18 +27,17 @@
 
 ### 4. Performance Data Layout & Hot Paths
 
-⏳ **Partial.**
+⏳ **Partial (Expanded).**
 
-* Bitboards exist, but incremental update path disabled.
-* Sliding fast-path enabled (≤64 tiles) and strong perf numbers.
-  ⚠️ Missing:
-
-  * Bitboard128 path (>64 tiles).
-  * Re-enable incremental path behind soak.
-  * Per-piece masks overhead validation.
-  * Heuristic pruning (topology-aware early exit, mask assisted).
-  * Full LINQ removal across hot paths.
-    ⚠️ Docs mismatch: defaults (`EnableBitboards=false`, `EnableSlidingFastPath=true`) not consistently reflected.
+* Bitboards: incremental update path reintroduced behind `EnableBitboardIncremental` (default off) with scripted, soak, and deterministic randomized parity suites.
+* Bitboard128 scaffolding added (global + per-player occupancy up to 128 tiles); acceleration selection extended (≤128 uses bitboards) while ≤64 fast path unchanged.
+* Sliding fast-path enabled (≤64 tiles) with strong perf numbers.
+  ⚠️ Remaining:
+  * Graduate incremental path (large randomized + multi-module soak; hash parity post hashing flag).
+  * Per-piece / piece-type masks and overhead validation (both 64 and 128 variants).
+  * Heuristic pruning (topology + occupancy guided early exit).
+  * LINQ removal across hot mutators / visitors.
+  * Documentation sync for feature flag defaults & Bitboard128 constraints.
 
 ---
 
@@ -84,25 +83,37 @@
 
 ### 9. Unified Turn / Round Sequencing
 
-⏳ **Partial.**
+⏳ **Partial (Graduated Core).**
 
-* TurnState, segments, events, metrics overhead all in place.
-  ⚠️ Missing:
-
-  * Hash parity validation (flag vs baseline).
-  * Real adoption example (e.g., Go two-pass termination).
-  * Legacy active player path removal.
-  * Default graduation (currently `false`).
+* Turn sequencing flag now defaults ON; initial TurnState emitted and advancement mutators (advance, pass, replay, commit) consolidated with shared rotation helper.
+* Determinism tests added (scripted advancement + pass/replay streak reset).
+  ⚠️ Remaining:
+  * Two-pass termination adoption in Go module (terminal condition wiring).
+  * Legacy active player projection replacement (derive from TurnState in projection layer) – rotation helper still used.
+  * Hash parity snapshot test once state hashing feature flag is activated.
+  * Documentation note for sequencing lifecycle (planned `turn-sequencing.md`).
 
 ---
 
 ### 10. Chess Full Move Legality
 
-🆕 **Planned.**
+⏳ **Partial.**
 
 * Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
-* Pending: implementation kickoff; acceptance & metrics defined in workstream file.
-* Risks: performance regressions in hot path if generation naive; test surface expansion (many edge cases) requiring careful property tests.
+  * Progress update: Castling rights + safety filter implemented; explicit `Castle` helper; metadata-driven role/color predicates; identifier normalization via `ChessIds`; en-passant & castling mutators migrated to predicates; coverage guard active. Remaining: pseudo-legal generation API, promotion, mate/stalemate, SAN completion (#, =Q, e.p.).
+* Pending: generation + legality filter implementation & benchmarks.
+* Risks: generation perf, edge-case explosion in legality tests, predicate overhead (to benchmark).
+
+---
+
+### 11. Go Game Module
+
+⏳ **Partial.**
+
+* Scope: stone placement, capture/group & liberty resolution, suicide rule, simple ko, double-pass termination, scoring (area first), nomenclature.
+  * Progress update: Builder + board topology (orthogonal liberties), stone pools, placement (emptiness only), pass event increments counter, minimal nomenclature, extras scaffold (ko/pass/size). Remaining: capture & liberty evaluation, suicide enforcement, ko detection, pass-termination -> terminal flag, scoring, coordinate nomenclature, tests & benchmarks.
+* Pending: group/liberty resolver + capture logic design.
+* Risks: capture evaluation performance on 19x19, ko edge-cases (snapback misclassification), scoring determinism.
 
 ---
 
@@ -146,3 +157,45 @@
 
    * Implement minimal Roslyn rules.
    * Add cross-platform determinism CI job.
+
+---
+
+### 12. Ludo / Parcheesi Game Module
+
+⏳ **Planned.**
+
+* Scope: race track + home stretches, safe squares, entry on 6, capture reset, win when all tokens home.
+* Pending: full builder, movement/capture conditions, win detection tests.
+* Risks: variant creep (extra-turn on 6, stacking) inflating baseline.
+
+### 13. Checkers / Draughts Game Module
+
+⏳ **Planned.**
+
+* Scope: dark-square graph, forward men, bidirectional kings, mandatory capture, multi-jump chains, kinging, immobilization/ elimination win.
+* Pending: capture chain enumerator, deterministic path ordering, kinging mutator, tests & benchmarks.
+* Risks: branching capture explosion performance; variant divergence early.
+
+### 14. Monopoly Game Module
+
+⏳ **Planned.**
+
+* Scope: board cycle, property acquisition, rent, jail, chance/community deck (subset), doubles logic, bankruptcy elimination.
+* Pending: deck artifacts & deterministic shuffle, rent & cash transfer mutators, jail state flow, win detection tests.
+* Risks: economic complexity creep (houses/auctions) prematurely.
+
+### 16. Risk Game Module
+
+⏳ **Planned.**
+
+* Scope: territory graph, reinforcement calc (territories/3 min 3 + continent bonus), combat dice resolution, conquest ownership transfer, elimination, domination win.
+* Pending: reinforcement condition implementation, combat resolution mutators, win detection tests, benchmarks.
+* Risks: early card mechanic inclusion expanding surface; combat allocation overhead.
+
+### 17. Deck-building Core Module
+
+⏳ **Planned.**
+
+* Scope: deterministic supply, deck/hand/discard zones, draw & shuffle (seeded), action/buy/cleanup phases, scoring.
+* Pending: shuffle artifact, phase sequencer conditions, gain/trash mutators, scoring aggregator, tests & benchmarks.
+* Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.

@@ -1,5 +1,3 @@
-using System;
-
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 

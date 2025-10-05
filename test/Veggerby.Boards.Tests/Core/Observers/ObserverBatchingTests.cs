@@ -1,6 +1,3 @@
-using System.Linq;
-
-using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;
@@ -8,8 +5,6 @@ using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Observers;
 

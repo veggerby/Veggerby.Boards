@@ -9,14 +9,9 @@ namespace Veggerby.Boards.Backgammon;
 /// <summary>
 /// Rule that observes the opening dice roll and, when values differ, emits a <see cref="SelectActivePlayerGameEvent"/>.
 /// </summary>
-internal sealed class SelectActivePlayerRule : IGameEventRule
+internal sealed class SelectActivePlayerRule(IGameEventRule inner) : IGameEventRule
 {
-    private readonly IGameEventRule _inner;
-
-    public SelectActivePlayerRule(IGameEventRule inner)
-    {
-        _inner = inner; // chain to existing roll handling (e.g., dice state mutators) first
-    }
+    private readonly IGameEventRule _inner = inner;
 
     public ConditionResponse Check(GameEngine engine, GameState state, IGameEvent @event)
     {

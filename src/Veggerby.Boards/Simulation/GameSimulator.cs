@@ -155,10 +155,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <returns>Playout result.</returns>
     public PlayoutResult Playout(GameProgress progress, IPlayoutObserver observer = null)
     {
-        if (progress is null)
-        {
-            throw new ArgumentNullException(nameof(progress));
-        }
+        ArgumentNullException.ThrowIfNull(progress);
 
         var ob = observer ?? NullObserver.Instance;
 
@@ -293,18 +290,12 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <returns>Batch result at termination.</returns>
     public PlayoutBatchResult PlayoutManyUntil(GameProgress progress, int maxCount, Func<PlayoutBatchResult, bool> stopPredicate)
     {
-        if (progress is null)
-        {
-            throw new ArgumentNullException(nameof(progress));
-        }
+        ArgumentNullException.ThrowIfNull(progress);
         if (maxCount <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(maxCount));
         }
-        if (stopPredicate is null)
-        {
-            throw new ArgumentNullException(nameof(stopPredicate));
-        }
+        ArgumentNullException.ThrowIfNull(stopPredicate);
 
         var list = new List<PlayoutResult>(capacity: Math.Min(maxCount, 1024));
         for (var i = 0; i < maxCount; i++)
@@ -333,18 +324,12 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <returns>Batch result at termination.</returns>
     public async Task<PlayoutBatchResult> PlayoutManyUntilAsync(GameProgress progress, int maxCount, Func<PlayoutBatchResult, bool> stopPredicate, int? waveSize = null, CancellationToken cancellationToken = default)
     {
-        if (progress is null)
-        {
-            throw new ArgumentNullException(nameof(progress));
-        }
+        ArgumentNullException.ThrowIfNull(progress);
         if (maxCount <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(maxCount));
         }
-        if (stopPredicate is null)
-        {
-            throw new ArgumentNullException(nameof(stopPredicate));
-        }
+        ArgumentNullException.ThrowIfNull(stopPredicate);
 
         var list = new List<PlayoutResult>(capacity: Math.Min(maxCount, 1024));
         var remaining = maxCount;

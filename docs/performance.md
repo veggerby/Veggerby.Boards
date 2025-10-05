@@ -8,6 +8,9 @@ Performance work follows “parity first, optimization second”. Benchmarks ens
 |-----------|-------|
 | PatternResolutionBenchmark | Legacy vs compiled pattern traversal |
 | SlidingPathResolutionBenchmark | Bitboards & fast-path efficacy |
+| SegmentedBitboardSnapshotBenchmark | Snapshot build cost (flag on/off, 64 vs 128 tiles) |
+| SegmentedBitboardMicroBenchmark | Primitive ops (Test/Set/Clear/PopCount) vs ulong & Bitboard128 |
+| SlidingAttackGeneratorBenchmark | Ray precomputation cost across topologies (ring vs grid) |
 | CompiledPatternKindsBenchmark | Pattern kind latency & allocation profile |
 | TurnSequencingOverheadBenchmark | Sequencing flag overhead |
 | EventKindFilteringBenchmark | DecisionPlan event filtering gains |

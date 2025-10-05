@@ -3,11 +3,8 @@ using System.Linq;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Turn;
 
@@ -43,6 +40,7 @@ public class TurnSequencingHashParityTests
     [Fact]
     public void GivenSameMoves_WhenSequencingOffAndOn_ThenPiecePositionsMatchAndTurnStateExplainsHashDelta()
     {
+        // arrange
         GameProgress offProgress;
         GameProgress onProgress;
 
@@ -55,11 +53,13 @@ public class TurnSequencingHashParityTests
             onProgress = ApplyOpening(new ChessGameBuilder().Compile());
         }
 
+        // act
         var offPieces = offProgress.State.GetStates<PieceState>().OrderBy(p => p.Artifact.Id)
             .Select(p => (p.Artifact.Id, p.CurrentTile.Id)).ToArray();
         var onPieces = onProgress.State.GetStates<PieceState>().OrderBy(p => p.Artifact.Id)
             .Select(p => (p.Artifact.Id, p.CurrentTile.Id)).ToArray();
 
+        // assert
         onPieces.Should().BeEquivalentTo(offPieces, o => o.WithStrictOrdering());
 
         var offHash = offProgress.State.Hash;
@@ -74,13 +74,16 @@ public class TurnSequencingHashParityTests
     [Fact]
     public void GivenSequencingEnabled_WhenPassingTurn_ThenTurnNumberIncrementsAndSegmentResets()
     {
+        // arrange
         using var _ = new FlagScope(true);
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State.GetStates<TurnState>().FirstOrDefault();
         before.Should().NotBeNull();
+        // act
         var mutator = new TurnPassStateMutator();
         var updatedState = mutator.MutateState(progress.Engine, progress.State, new TurnPassEvent());
         var after = updatedState.GetStates<TurnState>().First();
+        // assert
         after.TurnNumber.Should().Be(before!.TurnNumber + 1);
         after.Segment.Should().Be(TurnSegment.Start);
     }

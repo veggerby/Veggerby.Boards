@@ -3,7 +3,7 @@ id: 4
 slug: performance-data-layout-hot-paths
 name: "Performance Data Layout & Hot Paths"
 status: partial
-last_updated: 2025-09-26
+last_updated: 2025-10-05
 owner: core
 flags:
   - EnableBitboards (exp)
@@ -18,7 +18,7 @@ acceptance:
   - Allocation-free fast-path hits validated (allocation probe benchmark).
 open_followups:
   - Re-enable incremental bitboard updates after soak parity window.
-  - Bitboard128 for >64 tile boards.
+  - Bitboard128 for >64 tile boards (scaffolding landed; coverage expanded via `BitboardSnapshot` tests).
   - Heuristic pruning via per-piece masks + topology.
   - Mobility evaluator extensions (leapers, pawns, weighting).
   - LINQ legacy sweep & hot-path audit.

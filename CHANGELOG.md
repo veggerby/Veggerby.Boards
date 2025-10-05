@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- New module: Veggerby.Boards.Cards
+  - Deterministic cards & decks capability: artifacts (`Card`, `Deck`), immutable `DeckState` with named ordered piles, and events for create/shuffle/draw/move/discard.
+  - Deterministic shuffle powered by `GameState.Random` (seed via `GameBuilder.WithSeed`) for full replay reproducibility.
+  - `CardsGameBuilder` with minimal topology and two players to satisfy core invariants, plus helper `CreateInitialDeckEvent()`.
+  - Tests covering create+draw flow, deterministic shuffle parity, and invalid draw rejection.
+
 - Bitboard128 scaffolding: `BitboardSnapshot` now supports boards up to 128 tiles using internal two-segment `Bitboard128` structure (global + per-player masks).
 - Experimental segmented bitboards (`EnableSegmentedBitboards` flag): unified scalable representation supporting 64 and 128 tile boards with parity tests (global + per-player). Currently feature-gated; default off until extended stress + performance benchmarks complete.
 - Synthetic large board test (`Bitboard128SnapshotTests`) validating 128-bit snapshot popcount parity with piece state count.

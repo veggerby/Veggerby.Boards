@@ -3,7 +3,7 @@ slug: workstreams
 name: "Workstreams Overview"
 last_updated: 2025-10-05
 status_index:
-  done: [1,2,3]
+  done: [1,2,3,18]
   partial: [4,5,6,7,8,9,10,11]
   planned: [12,13,14,16,17]
 ---
@@ -28,5 +28,6 @@ status_index:
 | 14 | Monopoly Game Module | planned | Track, property ownership, rent, jail & deck (simplified baseline). |
 | 16 | Risk Game Module | planned | Territory graph, reinforcement calc, combat dice, conquest. |
 | 17 | Deck-building Core Module | planned | Supply piles, shuffle determinism, phase sequencing, scoring. |
+| 18 | Cards & Decks Module | done | Deterministic cards/decks with piles, shuffle, draw/move/discard, builder wiring. |
 
 Legend: done = acceptance met; partial = some acceptance outstanding; closed = intentionally deferred; planned = not yet started.

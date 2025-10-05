@@ -199,3 +199,20 @@
 * Scope: deterministic supply, deck/hand/discard zones, draw & shuffle (seeded), action/buy/cleanup phases, scoring.
 * Pending: shuffle artifact, phase sequencer conditions, gain/trash mutators, scoring aggregator, tests & benchmarks.
 * Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.
+
+---
+
+## New Capability Delivered – Cards & Decks Module
+
+✅ Initial Cards module (`Veggerby.Boards.Cards`) implemented.
+
+* Scope: card/deck artifacts, immutable `DeckState` with named ordered piles, events (create, shuffle, draw, move, discard), builder wiring using DecisionPlan DSL.
+* Determinism: shuffles use `GameState.Random`; seeding via `GameBuilder.WithSeed` yields reproducible order.
+* Tests: create+draw happy path, deterministic shuffle parity across seeded builders, invalid draw rejection via rule condition.
+* Invariants: minimal board topology and two players included in builder to satisfy core engine requirements.
+
+Open follow-ups:
+
+* Documentation page under `/docs/cards` with usage and deterministic semantics (quick start mirrors tests).
+* Optional v1 extensions: peek/reveal, gain from supply, reshuffle-on-empty policy as explicit event.
+* Workstream linkage: informs Workstream 17 (Deck-building Core) as a foundational subset (zones/piles and shuffle reproducibility).

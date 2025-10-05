@@ -31,7 +31,7 @@ Deliver a deterministic foundation for deck-building games capturing zone transi
 
 ## Current State Snapshot
 
-Planned only.
+Cards & Decks foundation delivered separately (`Veggerby.Boards.Cards`): artifacts, piles, deterministic shuffle, and basic transitions (create/draw/move/discard). This workstream will build phases, supply, and scoring atop that foundation.
 
 ## Success Criteria
 

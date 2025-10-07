@@ -2,8 +2,8 @@
 id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
-status: planned
-last_updated: 2025-09-30
+status: partial
+last_updated: 2025-10-07
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
@@ -31,7 +31,13 @@ Deliver a deterministic foundation for deck-building games capturing zone transi
 
 ## Current State Snapshot
 
-Cards & Decks foundation delivered separately (`Veggerby.Boards.Cards`): artifacts, piles, deterministic shuffle, and basic transitions (create/draw/move/discard). This workstream will build phases, supply, and scoring atop that foundation.
+Scaffolding in place:
+
+- New project `Veggerby.Boards.DeckBuilding` added to the solution.
+- `DeckBuildingGameBuilder` establishes minimal topology and players (no-op phases will be added alongside rules in subsequent changes).
+- `CardDefinition` artifact introduced (name, types, cost, victory points) with XML docs.
+
+Foundation to build on: `Veggerby.Boards.Cards` (artifacts, piles, deterministic shuffle, create/draw/move/discard).
 
 ## Success Criteria
 
@@ -64,7 +70,12 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Not started.
+Initial scaffolding completed. Next up:
+
+- Add supply model (counts per CardDefinition id) and builder wiring.
+- Introduce player zone state and deterministic reshuffle-on-empty behavior.
+- Wire Action/Buy/Cleanup phases with event-specific conditions and mutators (gain, trash, cleanup, reshuffle).
+- Add MVP tests for gain from supply, reshuffle determinism, and cleanup cycle.
 
 ---
 _End of workstream 17._

@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 
 - New module: Veggerby.Boards.Cards
+- Workstream 17 – Deck-building Core: initial scaffolding
+  - New project `Veggerby.Boards.DeckBuilding` added to the solution.
+  - `DeckBuildingGameBuilder` introduced with minimal topology and players (phases/rules to follow).
+  - `CardDefinition` artifact added (metadata only: name, types, cost, victory points) with XML docs.
+
   - Deterministic cards & decks capability: artifacts (`Card`, `Deck`), immutable `DeckState` with named ordered piles, and events for create/shuffle/draw/move/discard.
   - Deterministic shuffle powered by `GameState.Random` (seed via `GameBuilder.WithSeed`) for full replay reproducibility.
   - `CardsGameBuilder` with minimal topology and two players to satisfy core invariants, plus helper `CreateInitialDeckEvent()`.

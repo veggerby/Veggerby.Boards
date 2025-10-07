@@ -194,10 +194,10 @@
 
 ### 17. Deck-building Core Module
 
-⏳ **Planned.**
+⏳ **Partial.**
 
-* Scope: deterministic supply, deck/hand/discard zones, draw & shuffle (seeded), action/buy/cleanup phases, scoring.
-* Pending: shuffle artifact, phase sequencer conditions, gain/trash mutators, scoring aggregator, tests & benchmarks.
+* Scaffolding added: new `Veggerby.Boards.DeckBuilding` project, `DeckBuildingGameBuilder` with minimal topology/players, and `CardDefinition` artifact (name/types/cost/VP) with XML docs.
+* Next: supply model + wiring, player zone state (deck/hand/discard/in-play) with deterministic reshuffle policy, Action/Buy/Cleanup phases and associated events/mutators (Gain, Trash, Cleanup), MVP tests (gain from supply, reshuffle determinism, cleanup cycle), and docs.
 * Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.
 
 ---

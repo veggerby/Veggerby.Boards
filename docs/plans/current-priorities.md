@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-10-05
+last_updated: 2025-10-07
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -50,7 +50,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
    Impact: Canonical complex movement + legality reference implementation.
 
 1. **Cards Module Documentation & Extensions**
-   Cards module delivered (deterministic piles, shuffle, draw/move/discard). Next: author docs page, add peek/reveal/gain/reshuffle events.
+   Cards module delivered (deterministic piles, shuffle, draw/move/discard). Docs page authored under `/docs/cards`. Next: add peek/reveal/gain/reshuffle events.
    Impact: Unlocks card-based modules and standardizes deterministic card mechanics.
 
 1. **Checkers Capture Chain Enumeration (Workstream 13)**
@@ -63,7 +63,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Phase & Zone Engine (Workstream 17)** – Build on Cards foundation to validate phased zone transitions & shuffle lifecycle.
+1. **Deck-building Phase & Zone Engine (Workstream 17)** – Scaffolding landed (`Veggerby.Boards.DeckBuilding` project, builder, CardDefinition). Next: supply model, player zones, Action/Buy/Cleanup phases, reshuffle policy, and MVP tests.
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 

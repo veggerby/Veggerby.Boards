@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Veggerby.Boards.Cards;
-using Veggerby.Boards.States;
-using Veggerby.Boards.Flows.Events;
-using Xunit;
 using AwesomeAssertions;
+
+using Veggerby.Boards.Cards;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.States;
+
+using Xunit;
 
 namespace Veggerby.Boards.Tests.Cards;
 

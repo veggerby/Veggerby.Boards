@@ -155,3 +155,26 @@ A change is DONE when ALL of the following hold:
 
 Favor small, verifiable steps. If an abstraction does not clearly reduce duplication, enable a proven reuse scenario, or sharpen semantics—do not add it. All new abstractions must be justified by at least one concrete in-repo use case (present or imminent). Determinism, clarity, and immutability outweigh cleverness.
 
+## Explicitly Forbidden Actions (Agent Conduct)
+
+To protect repository integrity and ensure reproducibility, the assistant must not perform the following actions under any circumstances unless explicitly and narrowly authorized in the prompt:
+
+- Git and Pull Request operations
+    - Never run git commands (add, commit, push, pull, merge, rebase, tag, branch, checkout, cherry-pick, etc.).
+    - Never create, modify, rebase, comment on, label, or merge Pull Requests or Issues via CLI/API.
+    - If users request guidance, provide instructions only; do not execute repository mutations.
+
+- Test/build shortcuts
+    - Never run `dotnet test` with `--no-build` (cannot guarantee the code is built). Let `dotnet test` build or run an explicit build first.
+    - Never state that a build or tests succeeded unless they were executed in this session and the output was observed.
+
+- Tooling and file edits
+    - Do not bypass repository tool guidance: use the provided file-edit tools; do not attempt file edits via shell when a dedicated editor tool exists.
+    - Prefer the smallest, targeted edits; avoid broad reformatting or unrelated changes.
+
+- Scope and invariants
+    - Do not introduce UI/AI/heuristics or unrelated dependencies (see “Forbidden Patterns”).
+    - Do not weaken determinism or core invariants; never add hidden randomness or mutable global state.
+
+These rules complement the “Forbidden Patterns” section and repository coding standards. When in doubt, ask for clarification before proceeding.
+

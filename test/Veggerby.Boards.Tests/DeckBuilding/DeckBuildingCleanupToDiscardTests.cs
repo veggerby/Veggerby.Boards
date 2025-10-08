@@ -63,7 +63,8 @@ public class DeckBuildingCleanupToDiscardTests
         var updated = progress.HandleEvent(new CleanupToDiscardEvent(deck));
 
         // assert
-        updated.State.Should().NotBeSameAs(progress.State);
+        // No-op path must return the original state instance per engine invariants
+        updated.State.Should().BeSameAs(progress.State);
         var ds = updated.State.GetState<DeckState>(deck);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(0);
         ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(0);

@@ -36,6 +36,28 @@ public class DeckBuildingGameBuilder : GameBuilder
     }
 
     /// <summary>
+    /// Registers multiple concrete card artifacts with the given ids into the game being built.
+    /// Must be called before <see cref="GameBuilder.Compile"/>.
+    /// </summary>
+    /// <param name="cardIds">Stable card identifiers.</param>
+    public void WithCards(params string[] cardIds)
+    {
+        if (cardIds is null)
+        {
+            return;
+        }
+
+        for (var i = 0; i < cardIds.Length; i++)
+        {
+            var id = cardIds[i];
+            if (!string.IsNullOrEmpty(id))
+            {
+                WithCard(id);
+            }
+        }
+    }
+
+    /// <summary>
     /// Builds minimal topology and players to satisfy core invariants.
     /// </summary>
     protected override void Build()
@@ -62,14 +84,30 @@ public class DeckBuildingGameBuilder : GameBuilder
         // Minimal card definitions + concrete cards (supply will be set by callers via events later)
         // Project scope: keep builder lean; supply/state created through events in tests or higher-level builders.
 
-        // Phase wiring: allow deck initialization and buy/gain operations
+        // Phases
+        // Setup: deck initialization
+        AddGamePhase("db-setup")
+            .If<States.Conditions.NullGameStateCondition>()
+            .Then()
+            .ForEvent<CreateDeckEvent>().If<DeckBuildingCreateDeckEventCondition>().Then().Do<DeckBuildingCreateDeckStateMutator>();
+
+        // Action: card plays, draw/reshuffle, trash
+        AddGamePhase("db-action")
+            .If<States.Conditions.NullGameStateCondition>()
+            .Then()
+            .ForEvent<DrawWithReshuffleEvent>().If<DrawWithReshuffleEventCondition>().Then().Do<DrawWithReshuffleStateMutator>()
+            .ForEvent<TrashFromHandEvent>().If<TrashFromHandEventCondition>().Then().Do<TrashFromHandStateMutator>();
+
+        // Buy: gain from supply
         AddGamePhase("db-buy")
             .If<States.Conditions.NullGameStateCondition>()
             .Then()
-            .ForEvent<CreateDeckEvent>().If<DeckBuildingCreateDeckEventCondition>().Then().Do<DeckBuildingCreateDeckStateMutator>()
-            .ForEvent<DrawWithReshuffleEvent>().If<DrawWithReshuffleEventCondition>().Then().Do<DrawWithReshuffleStateMutator>()
-            .ForEvent<CleanupToDiscardEvent>().If<CleanupToDiscardEventCondition>().Then().Do<CleanupToDiscardStateMutator>()
-            .ForEvent<TrashFromHandEvent>().If<TrashFromHandEventCondition>().Then().Do<TrashFromHandStateMutator>()
             .ForEvent<GainFromSupplyEvent>().If<GainFromSupplyEventCondition>().Then().Do<GainFromSupplyStateMutator>();
+
+        // Cleanup: end of turn cleanup
+        AddGamePhase("db-cleanup")
+            .If<States.Conditions.NullGameStateCondition>()
+            .Then()
+            .ForEvent<CleanupToDiscardEvent>().If<CleanupToDiscardEventCondition>().Then().Do<CleanupToDiscardStateMutator>();
     }
 }

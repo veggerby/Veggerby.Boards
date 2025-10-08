@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-10-07
+last_updated: 2025-10-08
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -63,7 +63,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Phase & Zone Engine (Workstream 17)** – Scaffolding landed (`Veggerby.Boards.DeckBuilding` project, builder, CardDefinition). Next: supply model, player zones, Action/Buy/Cleanup phases, reshuffle policy, and MVP tests.
+1. **Deck-building Phase & Zone Engine (Workstream 17)** – Scaffolding plus core zone mechanics landed: gain from supply, draw with deterministic reshuffle, trash from hand, and end-of-turn cleanup wired and tested. Next: split phases (Action/Buy/Cleanup), supply seeding helpers, and scoring aggregator.
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 

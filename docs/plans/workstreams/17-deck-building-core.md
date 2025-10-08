@@ -3,7 +3,7 @@ id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
 status: partial
-last_updated: 2025-10-07
+last_updated: 2025-10-08
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
@@ -31,13 +31,16 @@ Deliver a deterministic foundation for deck-building games capturing zone transi
 
 ## Current State Snapshot
 
-Scaffolding in place:
+Delivered:
 
-- New project `Veggerby.Boards.DeckBuilding` added to the solution.
-- `DeckBuildingGameBuilder` establishes minimal topology and players (no-op phases will be added alongside rules in subsequent changes).
-- `CardDefinition` artifact introduced (name, types, cost, victory points) with XML docs.
-
-Foundation to build on: `Veggerby.Boards.Cards` (artifacts, piles, deterministic shuffle, create/draw/move/discard).
+- New project `Veggerby.Boards.DeckBuilding` with `DeckBuildingGameBuilder` (minimal topology/players) and `CardDefinition` artifact (name/types/cost/VP).
+- Zone mechanics built atop `Veggerby.Boards.Cards` (piles, deterministic shuffle/draw, move/discard):
+  - `CreateDeckEvent` initializes piles (+optional supply snapshot).
+  - `GainFromSupplyEvent` decrements supply and appends to a target pile.
+  - `DrawWithReshuffleEvent` reshuffles Discard deterministically into Draw when needed and draws to Hand.
+  - `TrashFromHandEvent` removes specified cards from Hand.
+  - `CleanupToDiscardEvent` moves all cards from Hand and InPlay to Discard.
+- Tests cover gain from supply (happy/insufficient), reshuffle determinism, trash validation, and cleanup behavior.
 
 ## Success Criteria
 
@@ -52,7 +55,7 @@ Foundation to build on: `Veggerby.Boards.Cards` (artifacts, piles, deterministic
 2. Supply Pile Builder (ordered deterministic collection with counts).
 3. Player Zone State (deck, hand, discard, in-play) + Draw / Discard / Gain / Trash Mutators.
 4. Shuffle Artifact & Deterministic Shuffle Mutator (seeded RNG state captured explicitly).
-5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions.
+5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions. [In progress: currently single-phase wiring; to be split]
 6. Scoring Aggregator (victory points sum) + Game End Condition (supply depletion threshold).
 7. Tests (draw cycle determinism, play action modifies state, buy adds to discard, cleanup resets hand, scoring computation).
 8. Benchmarks (shuffle throughput, draw cycle cost, zone transition overhead).
@@ -70,12 +73,12 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Initial scaffolding completed. Next up:
+Core zone mechanics landed. Next up:
 
-- Add supply model (counts per CardDefinition id) and builder wiring.
-- Introduce player zone state and deterministic reshuffle-on-empty behavior.
-- Wire Action/Buy/Cleanup phases with event-specific conditions and mutators (gain, trash, cleanup, reshuffle).
-- Add MVP tests for gain from supply, reshuffle determinism, and cleanup cycle.
+- Split Action/Buy/Cleanup phases (currently single-phase).
+- Add supply builder/seeding helpers and bulk card registration helper.
+- Implement scoring aggregator and termination condition.
+- Author module docs page with examples and a phase diagram.
 
 ---
 _End of workstream 17._

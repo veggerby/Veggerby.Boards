@@ -194,11 +194,28 @@
 
 ### 17. Deck-building Core Module
 
-⏳ **Partial.**
+⏳ **Partial (Expanded).**
 
-* Scaffolding added: new `Veggerby.Boards.DeckBuilding` project, `DeckBuildingGameBuilder` with minimal topology/players, and `CardDefinition` artifact (name/types/cost/VP) with XML docs.
-* Next: supply model + wiring, player zone state (deck/hand/discard/in-play) with deterministic reshuffle policy, Action/Buy/Cleanup phases and associated events/mutators (Gain, Trash, Cleanup), MVP tests (gain from supply, reshuffle determinism, cleanup cycle), and docs.
-* Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.
+Delivered so far:
+
+* Project scaffolding with `DeckBuildingGameBuilder` and `CardDefinition` artifact.
+* Player zones over `Cards` piles with deterministic transitions backed by seeded RNG.
+* Events/Rules/Mutators implemented and wired:
+  * `CreateDeckEvent` (initialize piles and optional supply snapshot)
+  * `GainFromSupplyEvent` (decrement supply, append to target pile)
+  * `DrawWithReshuffleEvent` (reshuffle Discard deterministically into Draw when needed, then draw to Hand)
+  * `TrashFromHandEvent` (remove specified cards from Hand)
+  * `CleanupToDiscardEvent` (move all cards from Hand and InPlay to Discard)
+* Tests added covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, and cleanup behavior.
+
+Next:
+
+* Split phases (Action, Buy, Cleanup) instead of current single-phase wiring.
+* Supply builder/seeding helpers and bulk card registration helper.
+* Scoring aggregator (victory points) and end condition.
+* Docs page for Deck-building module with examples and phase diagram.
+
+Risks: overbuilding effect system; keep mechanics minimal until phase split/scoring land.
 
 ---
 

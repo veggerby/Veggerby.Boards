@@ -27,7 +27,7 @@ status_index:
 | 13 | Checkers / Draughts Game Module | planned | Dark-square graph, mandatory capture, multi-jump deterministic. |
 | 14 | Monopoly Game Module | planned | Track, property ownership, rent, jail & deck (simplified baseline). |
 | 16 | Risk Game Module | planned | Territory graph, reinforcement calc, combat dice, conquest. |
-| 17 | Deck-building Core Module | partial | Scaffolding added; supply, zones, phases, scoring upcoming. |
+| 17 | Deck-building Core Module | partial | Scaffolding + core zone mechanics (gain, draw w/ reshuffle, trash, cleanup) delivered; phase split, supply helpers, and scoring upcoming. |
 | 18 | Cards & Decks Module | done | Deterministic cards/decks with piles, shuffle, draw/move/discard, builder wiring. |
 
 Legend: done = acceptance met; partial = some acceptance outstanding; closed = intentionally deferred; planned = not yet started.

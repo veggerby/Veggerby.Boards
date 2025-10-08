@@ -19,6 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - New project `Veggerby.Boards.DeckBuilding` added to the solution.
   - `DeckBuildingGameBuilder` introduced with minimal topology and players (phases/rules to follow).
   - `CardDefinition` artifact added (metadata only: name, types, cost, victory points) with XML docs.
+  - `WithCard(cardId)` helper on `DeckBuildingGameBuilder` to register concrete card artifacts deterministically before compile.
+  - Buy phase wiring: `CreateDeckEvent` (init piles + optional supply) and `GainFromSupplyEvent` (decrement supply and append to a target pile) with rules and mutators.
+  - Draw with reshuffle: `DrawWithReshuffleEvent` + rules/mutator to shuffle discard deterministically into draw when needed and perform the draw into hand.
+  - Trash from hand: `TrashFromHandEvent` + rules/mutator to remove specified cards from Hand.
+  - Cleanup: `CleanupToDiscardEvent` + rules/mutator to move all cards from Hand and InPlay to Discard for end-of-turn cleanup.
 
   - Deterministic cards & decks capability: artifacts (`Card`, `Deck`), immutable `DeckState` with named ordered piles, and events for create/shuffle/draw/move/discard.
   - Deterministic shuffle powered by `GameState.Random` (seed via `GameBuilder.WithSeed`) for full replay reproducibility.

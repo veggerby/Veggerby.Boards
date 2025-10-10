@@ -201,24 +201,29 @@ Delivered so far:
 * Project scaffolding with `DeckBuildingGameBuilder` and `CardDefinition` artifact.
 * Player zones over `Cards` piles with deterministic transitions backed by seeded RNG.
 * Events/Rules/Mutators implemented and wired:
+  * `RegisterCardDefinitionEvent` (register metadata definitions)
   * `CreateDeckEvent` (initialize piles and optional supply snapshot)
   * `GainFromSupplyEvent` (decrement supply, append to target pile)
   * `DrawWithReshuffleEvent` (reshuffle Discard deterministically into Draw when needed, then draw to Hand)
   * `TrashFromHandEvent` (remove specified cards from Hand)
   * `CleanupToDiscardEvent` (move all cards from Hand and InPlay to Discard)
-* Tests added covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, and cleanup behavior.
-* Deterministic DecisionPlan baseline locked (ordered phase:event list + signature) with guard test + diff.
-* Structural invariants test ensures presence of all core deck-building events across phases.
+  * `ComputeScoresEvent` (aggregate victory points -> `ScoreState` per player, idempotent)
+  * `EndGameEvent` (append terminal `GameEndedState` marker post-scoring)
+* Tests covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, cleanup behavior, scoring aggregation/idempotency, termination gating (pre-score ignore, post-score success), and EndGame ordering invariant (ComputeScores precedes EndGame in cleanup phase).
+* Deterministic DecisionPlan baseline locked & updated (added scoring + termination) with guard test + diff; signature advanced.
+* Structural invariants + explicit ordering invariant ensure presence and sequencing (ComputeScores → EndGame) across phases.
 * Feature flag guard + sequential test collection removed flakiness from shared sequencing flag.
+* Action / Buy phase split completed (separate `db-action` and `db-buy`).
+* Scoring + termination integrated; baseline signature advanced & ordering invariant added.
 
 Next:
 
-* Action / Buy phase split completed (separate `db-action` and `db-buy` phases; baseline updated and capture harness removed).
-* Supply builder/seeding helpers and bulk card registration helper.
-* Scoring aggregator (victory points) and end condition.
-* Docs page for Deck-building module with examples and phase diagram.
+* Supply configurator scaffold (`DeckBuildingSupplyConfigurator`) delivering fluent card definition + supply registration and deterministic startup event emission (definitions + single create) with ordering, duplicate, undefined supply, and integration tests.
+* Dedicated module docs page (`deck-building.md`) published (phases table, zones, shuffling determinism, supply usage, end-to-end flow, error modes, extension points).
+* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost) – pending.
+* Optional: alternate end-game trigger (supply depletion) + additional invariants – pending.
 
-Risks: overbuilding effect system; keep mechanics minimal until scoring lands. Baseline regeneration discipline required for future phase additions.
+Risks: overbuilding effect system; maintain minimal primitives until card effects require expansion. Baseline regeneration discipline required for future phase additions.
 
 ---
 

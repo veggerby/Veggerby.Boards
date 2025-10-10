@@ -7,7 +7,7 @@ last_updated: 2025-10-10
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
-  action/treasure/buy phases sequencing, and win by total victory point card value at game end.
+  action/buy/cleanup phases sequencing, deterministic victory point scoring, and win by total VP card value at game end.
 acceptance:
   - Supply piles constructed deterministically (configured card definitions + counts) with stable ordering.
   - Player zones (deck, hand, discard, in-play) modeled as immutable states with explicit transitions (draw, discard, gain, trash).
@@ -40,11 +40,14 @@ Delivered:
   - `DrawWithReshuffleEvent` reshuffles Discard deterministically into Draw when needed and draws to Hand.
   - `TrashFromHandEvent` removes specified cards from Hand.
   - `CleanupToDiscardEvent` moves all cards from Hand and InPlay to Discard.
-- Tests cover gain from supply (happy/insufficient), reshuffle determinism, trash validation, and cleanup behavior.
+- Tests cover gain from supply (happy/insufficient), reshuffle determinism, trash validation, cleanup behavior, scoring aggregation idempotency, and termination gating.
 - Deterministic DecisionPlan baseline locked (ordered phase:event list + signature) with guard + diff test preventing accidental drift.
 - Structural invariants test asserting presence of core events across phases.
 - Feature flag guard + sequential test collection eliminated prior sequencing flag race flakiness.
 - Action/Buy phase split completed: former unified main phase separated into `db-action` (draw, trash) and `db-buy` (gain) phases with updated baseline and invariants.
+- Scoring + Termination delivered: `RegisterCardDefinitionEvent` & `CardDefinitionState`, `ComputeScoresEvent` & `ScoreState`, `EndGameEvent` & `GameEndedState` wired in cleanup; ordering invariant and baseline signature locked.
+- Supply configurator scaffold: `DeckBuildingSupplyConfigurator` fluent helper enabling ordered card definition registration + supply counts and deterministic startup events (`RegisterCardDefinitionEvent`s then single `CreateDeckEvent`). Tests cover insertion ordering, duplicate definition rejection, undefined supply guard, and integration with `GainFromSupplyEvent`.
+- Dedicated module documentation page (`docs/deck-building.md`) authored (phases table, zones, shuffling determinism, supply configurator usage, end-to-end example, error modes, extension points).
 
 ## Success Criteria
 
@@ -78,11 +81,11 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Core zone mechanics, Action/Buy phase split, and deterministic baseline/invariant hardening landed. Next up:
+Core zone mechanics, Action/Buy phase split, deterministic baseline/invariant hardening, scoring & termination, supply configurator scaffold, and dedicated module docs page landed. Next up:
 
-- Add supply builder/seeding helpers and bulk card registration helper.
-- Implement scoring aggregator and termination condition.
-- Author module docs page with examples and a phase diagram.
+- Bulk card registration convenience method (batch add) – optional (evaluate demand; current fluent per-card API deterministic).
+- Benchmarks (shuffle throughput, draw cycle cost, zone transition overhead, scoring cost).
+- Alternate end-game trigger (e.g., supply depletion threshold) + invariant tests.
 
 ---
 _End of workstream 17._

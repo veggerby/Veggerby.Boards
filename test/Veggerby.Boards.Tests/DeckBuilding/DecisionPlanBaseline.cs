@@ -8,6 +8,7 @@ public static class DecisionPlanBaseline
 {
     public static readonly string[] Entries = new[]
     {
+        "db-setup:RegisterCardDefinitionEvent",
         "db-setup:CreateDeckEvent",
         "db-setup:EndTurnSegmentEvent",
         "db-action:DrawWithReshuffleEvent",
@@ -16,8 +17,10 @@ public static class DecisionPlanBaseline
         "db-buy:GainFromSupplyEvent",
         "db-buy:EndTurnSegmentEvent",
         "db-cleanup:CleanupToDiscardEvent",
+        "db-cleanup:ComputeScoresEvent",
+        "db-cleanup:EndGameEvent",
         "db-cleanup:EndTurnSegmentEvent",
     };
-
-    public const string Signature = "01B3E2805E9304679B7CE60A0D0F088CACB1219C8AA4A4EE979D37662A767429";
+    // SHA-256 of the ordered phase:event entries above (captured via temporary baseline capture test)
+    public const string Signature = "1FE3B652CCAFBC84834E243155E20FF992606BFB30530DBABE878349726B6414";
 }

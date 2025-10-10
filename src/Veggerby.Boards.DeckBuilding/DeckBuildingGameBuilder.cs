@@ -16,6 +16,9 @@ public class DeckBuildingGameBuilder : GameBuilder
     private Deck _p1Deck;
     private Deck _p2Deck;
 
+    /// <summary>Supply configurator instance (set via extension) enabling startup event generation. Public read-only for test consumption.</summary>
+    public DeckBuildingSupplyConfigurator SupplyConfigurator { get; internal set; }
+
     /// <summary>Standard pile identifiers for player decks.</summary>
     public static class Piles
     {
@@ -94,6 +97,7 @@ public class DeckBuildingGameBuilder : GameBuilder
         AddGamePhase("db-setup")
             .If<TurnSegmentStartCondition>()
             .Then()
+            .ForEvent<RegisterCardDefinitionEvent>().If<RegisterCardDefinitionEventCondition>().Then().Do<RegisterCardDefinitionStateMutator>()
             .ForEvent<CreateDeckEvent>().If<DeckBuildingCreateDeckEventCondition>().Then().Do<DeckBuildingCreateDeckStateMutator>()
             .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
 
@@ -117,6 +121,8 @@ public class DeckBuildingGameBuilder : GameBuilder
             .If<TurnSegmentEndCondition>()
             .Then()
             .ForEvent<CleanupToDiscardEvent>().If<CleanupToDiscardEventCondition>().Then().Do<CleanupToDiscardStateMutator>()
+            .ForEvent<ComputeScoresEvent>().If<ComputeScoresEventCondition>().Then().Do<ComputeScoresStateMutator>()
+            .ForEvent<EndGameEvent>().If<EndGameEventCondition>().Then().Do<EndGameStateMutator>()
             .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
     }
 }

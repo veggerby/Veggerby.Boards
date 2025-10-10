@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-10-08
+last_updated: 2025-10-10
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -63,8 +63,8 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Phase & Zone Engine (Workstream 17)** – Core zone mechanics plus Action/Buy phase split completed (draw/trash vs gain separated); deterministic baseline updated. Next: supply seeding helpers, bulk card registration helper, scoring aggregator + termination condition, module docs.
-   * NOTE: Baseline locked post-split; future phase additions require intentional regeneration.
+1. **Deck-building Core (Workstream 17)** – Core zone mechanics, Action/Buy split, scoring aggregator, termination event, supply configurator helper, and dedicated docs page landed; deterministic baseline updated (scoring + EndGame events added). Next: optional bulk registration helper, benchmarks, alternate end trigger.
+   * NOTE: Baseline locked post-scoring; future phase/event additions require intentional regeneration. Evaluate demand before adding batch API (current fluent API deterministic & concise).
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 

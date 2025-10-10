@@ -39,7 +39,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
       - TurnState assertion helpers enforcing single turn state materialization pre-main segment advancement.
       - Sequential collection definition for deck-building tests disabling parallel execution to eliminate race conditions on feature flags.
       - Phases split: former combined `db-main` separated into `db-action` (draw, trash) and `db-buy` (gain) with updated baseline and diagnostics.
+  - Scoring + Termination: Added `RegisterCardDefinitionEvent` + `CardDefinitionState`, `ComputeScoresEvent` + `ScoreState` for deterministic victory point aggregation, and `EndGameEvent` + `GameEndedState` wired in cleanup phase (idempotent, gated by `EndGameEventCondition`). DecisionPlan baseline updated with new events & signature; ordering invariant test ensures `ComputeScoresEvent` precedes `EndGameEvent`.
   - Removed obsolete diagnostic plan dump test after phase split stabilization (reliance now on invariants + signature test only).
+    - Supply configurator scaffold: `DeckBuildingSupplyConfigurator` fluent helper to register card definitions + supply counts and emit deterministic startup events (`RegisterCardDefinitionEvent`s followed by a single `CreateDeckEvent`). Tests cover insertion ordering, duplicate definition rejection, undefined supply safeguard, and `GainFromSupplyEvent` integration.
+    - Deck-building module documentation page (`docs/deck-building.md`) providing phases table, zone descriptions, shuffle determinism notes, supply configurator usage, end-to-end example, error modes, and extension points.
 
   - Deterministic cards & decks capability: artifacts (`Card`, `Deck`), immutable `DeckState` with named ordered piles, and events for create/shuffle/draw/move/discard.
   - Deterministic shuffle powered by `GameState.Random` (seed via `GameBuilder.WithSeed`) for full replay reproducibility.
@@ -162,7 +165,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
 - Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
 - Refactor sweep to prefer non-throwing `TryGetActivePlayer(out Player)` in safe contexts (conditions/gates) across core and modules (Backgammon, Chess); strict `GetActivePlayer()` retained in invariant-critical paths.
-- Deck-building current phase wiring clarified: unified main phase pending Action/Buy split; DecisionPlan baseline locked to prevent drift prior to phase expansion.
+- Deck-building phase wiring: Action/Buy split completed; baseline updated again after integrating scoring + termination with locked signature and ordering invariant (ComputeScores → EndGame).
 
 ### Fixed
 

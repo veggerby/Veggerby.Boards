@@ -92,28 +92,20 @@ public class DecisionPlanSignatureTests
         // Baseline length guard (quick signal for accidental insertion/removal)
         currentEntries.Length.Should().Be(DecisionPlanBaseline.Entries.Length, "baseline entry count mismatch (possible insertion/removal). If intentional, regenerate baseline.");
 
-        if (!string.Equals(currentSignature, DecisionPlanBaseline.Signature, StringComparison.Ordinal))
-        {
-            var diff = BuildDiff(DecisionPlanBaseline.Entries, currentEntries);
-            currentSignature.Should().Be(DecisionPlanBaseline.Signature, "signature mismatch\n" + diff);
-        }
+        var signaturesMatch = string.Equals(currentSignature, DecisionPlanBaseline.Signature, StringComparison.Ordinal);
+        var entriesMatch = currentEntries.SequenceEqual(DecisionPlanBaseline.Entries, StringComparer.Ordinal);
 
-        if (!currentEntries.SequenceEqual(DecisionPlanBaseline.Entries, StringComparer.Ordinal))
+        if (!signaturesMatch || !entriesMatch)
         {
             var diff = BuildDiff(DecisionPlanBaseline.Entries, currentEntries);
-            currentEntries.Should().Equal(DecisionPlanBaseline.Entries, diff);
-        }
-
-        if (!string.Equals(currentSignature, DecisionPlanBaseline.Signature, StringComparison.Ordinal))
-        {
-            var diff = BuildDiff(DecisionPlanBaseline.Entries, currentEntries);
-            currentSignature.Should().Be(DecisionPlanBaseline.Signature, "signature mismatch\n" + diff);
-        }
-
-        if (!currentEntries.SequenceEqual(DecisionPlanBaseline.Entries, StringComparer.Ordinal))
-        {
-            var diff = BuildDiff(DecisionPlanBaseline.Entries, currentEntries);
-            currentEntries.Should().Equal(DecisionPlanBaseline.Entries, diff);
+            if (!signaturesMatch)
+            {
+                currentSignature.Should().Be(DecisionPlanBaseline.Signature, "signature mismatch\n" + diff);
+            }
+            if (!entriesMatch)
+            {
+                currentEntries.Should().Equal(DecisionPlanBaseline.Entries, diff);
+            }
         }
     }
 

@@ -144,4 +144,23 @@ public class DecisionPlanInvariants
         buyAdvance.Should().BeTrue("EndTurnSegmentEvent advancement must be present in buy phase");
         cleanupAdvance.Should().BeTrue("EndTurnSegmentEvent advancement must be present in cleanup phase");
     }
+
+    [Fact]
+    public void DecisionPlan_EndGameEvent_Comes_After_ComputeScoresEvent()
+    {
+        // arrange
+        var progress = new DeckBuildingGameBuilder().Compile();
+        var flattened = Flatten(progress.Engine.DecisionPlan)
+            .Select((x, idx) => new { x.PhaseLabel, x.EventType, Index = idx })
+            .ToList();
+
+        // act
+        var computeIdx = flattened.FirstOrDefault(e => e.PhaseLabel == "db-cleanup" && e.EventType == typeof(ComputeScoresEvent))?.Index ?? -1;
+        var endGameIdx = flattened.FirstOrDefault(e => e.PhaseLabel == "db-cleanup" && e.EventType == typeof(EndGameEvent))?.Index ?? -1;
+
+        // assert
+        computeIdx.Should().BeGreaterThanOrEqualTo(0, "ComputeScoresEvent must exist in cleanup phase");
+        endGameIdx.Should().BeGreaterThanOrEqualTo(0, "EndGameEvent must exist in cleanup phase");
+        endGameIdx.Should().BeGreaterThan(computeIdx, "EndGameEvent must occur after ComputeScoresEvent within cleanup phase to ensure scores are finalized before termination");
+    }
 }

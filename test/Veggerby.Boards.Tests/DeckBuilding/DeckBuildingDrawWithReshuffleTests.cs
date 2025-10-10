@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.Events;
+using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.Support; // TurnStateAssertions & FeatureFlagGuard
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -10,6 +13,7 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenEmptyDraw_WithDiscard_WhenDraw2_ReshufflesAndDraws()
     {
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithSeed(42UL);
@@ -30,7 +34,13 @@ public class DeckBuildingDrawWithReshuffleTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress.ShouldHaveSingleTurnState();
+        // ensure deck state created in Start segment
+        progress.State.GetState<DeckState>(deck).Should().NotBeNull();
+        // advance Start -> Main for draw phase
+        progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
 
+        // act
         // act
         progress = progress.HandleEvent(new DrawWithReshuffleEvent(deck, 2));
 
@@ -44,6 +54,7 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenInsufficientTotal_WhenDraw_ThenRejected()
     {
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var c1 = new Card("a");
@@ -58,8 +69,12 @@ public class DeckBuildingDrawWithReshuffleTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress.ShouldHaveSingleTurnState();
+        progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
+        // advance Start -> Main for action segment
+        progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         var act = () => progress.HandleEvent(new DrawWithReshuffleEvent(deck, 2));
 
         // assert

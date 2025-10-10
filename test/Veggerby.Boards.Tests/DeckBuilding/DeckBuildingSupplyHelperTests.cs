@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.Events;
+using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.Support; // TurnStateAssertions
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -10,6 +13,7 @@ public class DeckBuildingSupplyHelperTests
     [Fact]
     public void BuildSupply_WhenUsedWithCreateDeck_ThenGainFromSupplyDecrements()
     {
+        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("copper");
@@ -24,11 +28,15 @@ public class DeckBuildingSupplyHelperTests
         };
         var supply = DeckBuildingTestHelpers.BuildSupply(("copper", 5));
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress.ShouldHaveSingleTurnState();
+        progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         var enumerator = progress.Game.Players.GetEnumerator();
         Assert.True(enumerator.MoveNext());
         var player = enumerator.Current;
+        // advance Start -> Main so GainFromSupplyEvent (gated on Main segment) will be processed
+        progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         progress = progress.HandleEvent(new GainFromSupplyEvent(player, deck, "copper", DeckBuildingGameBuilder.Piles.Discard));
 
         // assert

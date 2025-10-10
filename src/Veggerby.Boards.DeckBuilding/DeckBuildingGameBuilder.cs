@@ -1,5 +1,10 @@
 using Veggerby.Boards.Cards;
+using Veggerby.Boards.Events;
+using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.Flows.Rules.Conditions.Turn;
+using Veggerby.Boards.States;
+using Veggerby.Boards.States.Conditions; // for NullGameStateCondition
 
 namespace Veggerby.Boards.DeckBuilding;
 
@@ -85,29 +90,33 @@ public class DeckBuildingGameBuilder : GameBuilder
         // Project scope: keep builder lean; supply/state created through events in tests or higher-level builders.
 
         // Phases
-        // Setup: deck initialization
+        // Setup: deck initialization + segment advancement (Start->Main)
         AddGamePhase("db-setup")
-            .If<States.Conditions.NullGameStateCondition>()
+            .If<TurnSegmentStartCondition>()
             .Then()
-            .ForEvent<CreateDeckEvent>().If<DeckBuildingCreateDeckEventCondition>().Then().Do<DeckBuildingCreateDeckStateMutator>();
+            .ForEvent<CreateDeckEvent>().If<DeckBuildingCreateDeckEventCondition>().Then().Do<DeckBuildingCreateDeckStateMutator>()
+            .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
 
-        // Action: card plays, draw/reshuffle, trash
+        // Action phase (subset of former main) + advancement (Main->End)
         AddGamePhase("db-action")
-            .If<States.Conditions.NullGameStateCondition>()
+            .If<TurnSegmentMainCondition>()
             .Then()
             .ForEvent<DrawWithReshuffleEvent>().If<DrawWithReshuffleEventCondition>().Then().Do<DrawWithReshuffleStateMutator>()
-            .ForEvent<TrashFromHandEvent>().If<TrashFromHandEventCondition>().Then().Do<TrashFromHandStateMutator>();
+            .ForEvent<TrashFromHandEvent>().If<TrashFromHandEventCondition>().Then().Do<TrashFromHandStateMutator>()
+            .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
 
-        // Buy: gain from supply
+        // Buy phase (supply gains) shares Main segment – ordering after action phase provides deterministic separation
         AddGamePhase("db-buy")
-            .If<States.Conditions.NullGameStateCondition>()
+            .If<TurnSegmentMainCondition>()
             .Then()
-            .ForEvent<GainFromSupplyEvent>().If<GainFromSupplyEventCondition>().Then().Do<GainFromSupplyStateMutator>();
+            .ForEvent<GainFromSupplyEvent>().If<GainFromSupplyEventCondition>().Then().Do<GainFromSupplyStateMutator>()
+            .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
 
-        // Cleanup: end of turn cleanup
+        // Cleanup: end of turn cleanup + advancement (End->next Start)
         AddGamePhase("db-cleanup")
-            .If<States.Conditions.NullGameStateCondition>()
+            .If<TurnSegmentEndCondition>()
             .Then()
-            .ForEvent<CleanupToDiscardEvent>().If<CleanupToDiscardEventCondition>().Then().Do<CleanupToDiscardStateMutator>();
+            .ForEvent<CleanupToDiscardEvent>().If<CleanupToDiscardEventCondition>().Then().Do<CleanupToDiscardStateMutator>()
+            .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
     }
 }

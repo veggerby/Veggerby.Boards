@@ -207,15 +207,18 @@ Delivered so far:
   * `TrashFromHandEvent` (remove specified cards from Hand)
   * `CleanupToDiscardEvent` (move all cards from Hand and InPlay to Discard)
 * Tests added covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, and cleanup behavior.
+* Deterministic DecisionPlan baseline locked (ordered phase:event list + signature) with guard test + diff.
+* Structural invariants test ensures presence of all core deck-building events across phases.
+* Feature flag guard + sequential test collection removed flakiness from shared sequencing flag.
 
 Next:
 
-* Split phases (Action, Buy, Cleanup) instead of current single-phase wiring.
+* Action / Buy phase split completed (separate `db-action` and `db-buy` phases; baseline updated and capture harness removed).
 * Supply builder/seeding helpers and bulk card registration helper.
 * Scoring aggregator (victory points) and end condition.
 * Docs page for Deck-building module with examples and phase diagram.
 
-Risks: overbuilding effect system; keep mechanics minimal until phase split/scoring land.
+Risks: overbuilding effect system; keep mechanics minimal until scoring lands. Baseline regeneration discipline required for future phase additions.
 
 ---
 

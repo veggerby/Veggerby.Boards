@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.Events;
+using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.Support; // TurnStateAssertions & FeatureFlagGuard
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -10,6 +13,7 @@ public class DeckBuildingTrashFromHandTests
     [Fact]
     public void GivenCardsInHand_WhenTrash_ThenRemoved()
     {
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var c1 = new Card("a");
@@ -26,8 +30,12 @@ public class DeckBuildingTrashFromHandTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress.ShouldHaveSingleTurnState();
+        progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
+        // advance Start -> Main
+        progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         progress = progress.HandleEvent(new TrashFromHandEvent(deck, new List<Card> { c1 }));
 
         // assert
@@ -38,6 +46,7 @@ public class DeckBuildingTrashFromHandTests
     [Fact]
     public void GivenCardNotInHand_WhenTrash_ThenRejected()
     {
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var c1 = new Card("a");
@@ -54,8 +63,11 @@ public class DeckBuildingTrashFromHandTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress.ShouldHaveSingleTurnState();
+        progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
+        progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         var act = () => progress.HandleEvent(new TrashFromHandEvent(deck, new List<Card> { c2 }));
 
         // assert

@@ -3,7 +3,7 @@ id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
 status: partial
-last_updated: 2025-10-08
+last_updated: 2025-10-10
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
@@ -41,6 +41,10 @@ Delivered:
   - `TrashFromHandEvent` removes specified cards from Hand.
   - `CleanupToDiscardEvent` moves all cards from Hand and InPlay to Discard.
 - Tests cover gain from supply (happy/insufficient), reshuffle determinism, trash validation, and cleanup behavior.
+- Deterministic DecisionPlan baseline locked (ordered phase:event list + signature) with guard + diff test preventing accidental drift.
+- Structural invariants test asserting presence of core events across phases.
+- Feature flag guard + sequential test collection eliminated prior sequencing flag race flakiness.
+- Action/Buy phase split completed: former unified main phase separated into `db-action` (draw, trash) and `db-buy` (gain) phases with updated baseline and invariants.
 
 ## Success Criteria
 
@@ -55,7 +59,7 @@ Delivered:
 2. Supply Pile Builder (ordered deterministic collection with counts).
 3. Player Zone State (deck, hand, discard, in-play) + Draw / Discard / Gain / Trash Mutators.
 4. Shuffle Artifact & Deterministic Shuffle Mutator (seeded RNG state captured explicitly).
-5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions. [In progress: currently single-phase wiring; to be split]
+5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions. (Action/Buy split completed.)
 6. Scoring Aggregator (victory points sum) + Game End Condition (supply depletion threshold).
 7. Tests (draw cycle determinism, play action modifies state, buy adds to discard, cleanup resets hand, scoring computation).
 8. Benchmarks (shuffle throughput, draw cycle cost, zone transition overhead).
@@ -66,6 +70,7 @@ Delivered:
 - Overengineering effect system early (keep placeholder minimal).
 - Shuffle allocation overhead if naive copying each transition.
 - Variant phase additions increasing complexity prematurely.
+- Baseline regeneration discipline required during phase expansion (avoid ad-hoc modifications bypassing signature test update).
 
 ## Extension Strategy
 
@@ -73,9 +78,8 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Core zone mechanics landed. Next up:
+Core zone mechanics, Action/Buy phase split, and deterministic baseline/invariant hardening landed. Next up:
 
-- Split Action/Buy/Cleanup phases (currently single-phase).
 - Add supply builder/seeding helpers and bulk card registration helper.
 - Implement scoring aggregator and termination condition.
 - Author module docs page with examples and a phase diagram.

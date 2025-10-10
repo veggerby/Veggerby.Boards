@@ -63,7 +63,8 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Phase & Zone Engine (Workstream 17)** – Scaffolding plus core zone mechanics landed: gain from supply, draw with deterministic reshuffle, trash from hand, and end-of-turn cleanup wired and tested. Next: split phases (Action/Buy/Cleanup), supply seeding helpers, and scoring aggregator.
+1. **Deck-building Phase & Zone Engine (Workstream 17)** – Core zone mechanics plus Action/Buy phase split completed (draw/trash vs gain separated); deterministic baseline updated. Next: supply seeding helpers, bulk card registration helper, scoring aggregator + termination condition, module docs.
+   * NOTE: Baseline locked post-split; future phase additions require intentional regeneration.
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 
@@ -85,7 +86,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 7. Deterministic Shuffle Artifact
 8. Checkers Capture Chain
 9. Risk Reinforcement/Combat
-10. Deck-building Phases
+10. Deck-building Scoring & Termination
 11. Ludo
 12. Monopoly
 

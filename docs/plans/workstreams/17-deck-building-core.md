@@ -3,7 +3,7 @@ id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
 status: done
-last_updated: 2025-10-10
+last_updated: 2025-10-12
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
@@ -92,9 +92,15 @@ All acceptance criteria satisfied:
 
 Deferred (optional, not blocking closure):
 
-- Benchmarks: shuffle throughput, draw cycle, transition overhead, scoring cost.
-- Alternate end-game trigger (supply depletion threshold) + invariant tests.
+- Benchmarks: shuffle throughput, draw cycle, transition overhead, scoring cost (partial metrics captured for GainFromSupply path: 2.94µs / 7.37KB; gating 97.6ns / 176B).
 - Optional bulk card registration batch helper (demand pending).
+
+Post-completion optimizations (2025-10-12):
+
+- Integrated alternate end trigger (supply depletion threshold and/or key supply piles) via `DeckBuildingEndTriggerOptions` consumed by `EndGameEventCondition`.
+- Added `DeckSupplyStats` extras (`TotalPiles`, `EmptyPiles`) maintained incrementally by create/gain mutators enabling O(1) depletion checks.
+- Optimized `GainFromSupplyStateMutator` (selective cloning) to clone only mutated pile list prior to `DeckState` freezing.
+- Added structural sharing & supply stats decrement tests validating correctness and empty-pile transition semantics.
 
 Workstream marked done; deferred items tracked as general backlog enhancements.
 

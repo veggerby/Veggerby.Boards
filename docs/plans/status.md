@@ -120,7 +120,7 @@
 ## Cross-Cutting Gaps
 
 * **Feature Flag Governance:** Central table exists in `feature-flags.md` and is being kept current (owner, defaults, graduation notes). Continue pruning deprecated scaffolds in next minor.
-* **Benchmarks:** Numbers are scattered. Need a single summary doc (with last commit hash).
+* **Benchmarks:** Numbers were scattered; initial consolidated snapshot added at `docs/performance/summary.md` (expand with additional core + acceleration benchmarks; include commit hash per capture).
 * **Cross-Platform Hash CI:** Replay determinism verified locally but not enforced in CI across OS/arch.
 * **Diagnostics UX:** Trace capture exists but no viewer. CLI viewer MVP would unlock graduation.
 * **LINQ Sweep:** Still pending in several hot/event paths.
@@ -194,7 +194,7 @@
 
 ### 17. Deck-building Core Module
 
-✅ **Done.** (Benchmarks & alternate end trigger deferred.)
+✅ **Done.** (Benchmarks partially captured; alternate end trigger delivered.)
 
 Delivered:
 
@@ -223,9 +223,16 @@ Next:
 
 Deferred (not blocking completion):
 
-* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost).
-* Alternate end-game trigger (supply depletion) + additional invariants (design drafted: `designs/deck-building-alternate-end-trigger.md`).
+* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost) – partial capture now includes GainFromSupply (2.94µs) and condition gating (97.6ns) allocations/time.
+* Additional end-game trigger variants (beyond current supply depletion threshold + key pile set) and invariants.
 * Optional bulk definition batch helper (evaluate demand).
+
+Recent optimizations:
+
+* Alternate end trigger (supply depletion threshold and/or key supply pile emptiness) integrated into `EndGameEventCondition`.
+* `DeckSupplyStats` extras (O(1) empty pile tracking) + selective cloning in `GainFromSupplyStateMutator` reducing intermediate allocations.
+* New tests: structural sharing (pile content immutability scope) and supply stats decrement crossing-zero behavior.
+
 
 
 Risks: overbuilding effect system; maintain minimal primitives until card effects require expansion. Baseline regeneration discipline required for future phase additions.

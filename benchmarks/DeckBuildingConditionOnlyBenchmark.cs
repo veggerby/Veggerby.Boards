@@ -18,7 +18,6 @@ public class DeckBuildingConditionOnlyBenchmark
 {
     private GameEngine _engine = null!;
     private GameState _state = null!;
-    private GameState _stateMissingPile = null!;
     private GameState _stateMissingCardArtifact = null!;
     private readonly GainFromSupplyEventCondition _condition = new();
     private GainFromSupplyEvent _validEvent = null!;
@@ -45,16 +44,6 @@ public class DeckBuildingConditionOnlyBenchmark
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         _state = progress.State;
-
-        // State with missing pile (remove Discard)
-        var pilesMissing = new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },
-            { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
-            { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
-        };
-        var supply2 = new Dictionary<string, int> { { "c1", 1 } };
-        var deckStateMissing = new DeckState(deck, pilesMissing, supply2);
-        _stateMissingPile = _state.Next([deckStateMissing]);
 
         // State referencing unknown card artifact in supply
         var supplyGhost = new Dictionary<string, int> { { "ghost", 1 } };

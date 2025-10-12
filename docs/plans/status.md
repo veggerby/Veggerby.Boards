@@ -224,7 +224,7 @@ Next:
 Deferred (not blocking completion):
 
 * Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost).
-* Alternate end-game trigger (supply depletion) + additional invariants.
+* Alternate end-game trigger (supply depletion) + additional invariants (design drafted: `designs/deck-building-alternate-end-trigger.md`).
 * Optional bulk definition batch helper (evaluate demand).
 
 

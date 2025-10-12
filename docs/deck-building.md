@@ -148,12 +148,36 @@ progress = progress.HandleEvent(new EndGameEvent());
 * Negative cost or supply count: `ArgumentOutOfRangeException`.
 * Null/blank ids or name: `ArgumentException`.
 
+### Alternate End Trigger (Supply Depletion)
+
+By default the module allows `EndGameEvent` once scores are computed and the minimal fixed turn threshold is reached.
+
+You can optionally enable a *supply depletion* end trigger so the game may end earlier when either:
+
+* A configured number of distinct supply piles are empty (threshold), OR
+* Any pile from a configured key set is empty.
+
+Configuration (call before `Compile`):
+
+```csharp
+var builder = new DeckBuildingGameBuilder()
+    .WithEndTrigger(new DeckBuildingEndTriggerOptions(
+        emptySupplyPilesThreshold: 2, // require 2 empty piles
+        keyPileCardIds: new[]{"province"} // OR province pile empty
+    ));
+```
+
+Semantics:
+
+* Scores (`ComputeScoresEvent`) must still have been processed; depletion alone never bypasses scoring.
+* If options are provided and neither condition is met the `EndGameEvent` is ignored (turn threshold does not apply when custom options are active).
+* Options are immutable and captured in the initial state as an extras snapshot (participating in hashing for deterministic replay).
+
 ### Extension Points
 
 Future planned extensions (guarded until needed):
 
 * Attack / Reaction card types (additional types + conditions).
-* Alternate end triggers (e.g., N empty supply piles) gating `EndGameEvent`.
 * Cost modifiers / effect hooks.
 * Batch definition addition helper.
 
@@ -169,11 +193,11 @@ Tests cover:
 
 Re-run tests with:
 
-```
+```bash
 dotnet test test/Veggerby.Boards.Tests -c Debug
 ```
 
 (Use the existing solution test tasks; above is illustrative.)
 
 ---
-_End of deck-building module docs._
+*End of deck-building module docs.*

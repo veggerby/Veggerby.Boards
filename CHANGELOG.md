@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+
+- Deck-building: Optional supply depletion alternate end trigger via `WithEndTrigger(new DeckBuildingEndTriggerOptions(...))` enabling threshold and/or key pile emptiness to permit `EndGameEvent`.
+
 > Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
 
 ### Breaking
 
 - Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
 
-### Added
+### Added (earlier)
 
 - New module: Veggerby.Boards.Cards
 - Workstream 17 – Deck-building Core: initial scaffolding

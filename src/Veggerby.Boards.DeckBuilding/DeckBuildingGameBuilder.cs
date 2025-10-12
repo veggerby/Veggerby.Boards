@@ -1,3 +1,5 @@
+using System;
+
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -15,6 +17,8 @@ public class DeckBuildingGameBuilder : GameBuilder
 {
     private Deck _p1Deck;
     private Deck _p2Deck;
+
+    private DeckBuildingEndTriggerOptions _endTriggerOptions; // optional end trigger config (instance)
 
     /// <summary>Supply configurator instance (set via extension) enabling startup event generation. Public read-only for test consumption.</summary>
     public DeckBuildingSupplyConfigurator SupplyConfigurator { get; internal set; }
@@ -125,4 +129,21 @@ public class DeckBuildingGameBuilder : GameBuilder
             .ForEvent<EndGameEvent>().If<EndGameEventCondition>().Then().Do<EndGameStateMutator>()
             .ForEvent<EndTurnSegmentEvent>().If<DbEndTurnSegmentAlwaysCondition>().Then().Do<DbTurnAdvanceStateMutator>();
     }
+
+    /// <summary>
+    /// Configures alternate end-game trigger options (supply depletion rules). Optional; absence means default turn-based threshold only.
+    /// Must be invoked prior to <see cref="GameBuilder.Compile"/>.
+    /// </summary>
+    public DeckBuildingGameBuilder WithEndTrigger(DeckBuildingEndTriggerOptions options)
+    {
+        _endTriggerOptions = options ?? throw new ArgumentNullException(nameof(options));
+        // capture as extras state so each compiled game holds its own configuration deterministically
+        WithState(_endTriggerOptions);
+        return this;
+    }
+
+    /// <summary>
+    /// Internal accessor used by <see cref="EndGameEventCondition"/> for evaluating custom trigger semantics.
+    /// </summary>
+    internal DeckBuildingEndTriggerOptions GetEndTriggerOptions() => _endTriggerOptions;
 }

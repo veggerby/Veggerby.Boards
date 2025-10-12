@@ -39,9 +39,14 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
 
         // Decrement supply count
         var newSupply = new Dictionary<string, int>(deckState.Supply, StringComparer.Ordinal);
-        newSupply[@event.CardId] = newSupply[@event.CardId] - 1;
+        var beforeValue = newSupply[@event.CardId];
+        var afterValue = beforeValue - 1;
+        newSupply[@event.CardId] = afterValue;
 
         var updatedDeckState = new DeckState(@event.Deck, newPiles, newSupply);
-        return gameState.Next([updatedDeckState]);
+        var next = gameState.Next([updatedDeckState]);
+        var stats = gameState.GetExtras<DeckSupplyStats>();
+        DeckSupplyStats updatedStats = stats is null ? DeckSupplyStats.From(newSupply) : stats.AfterDecrement(beforeValue, afterValue);
+        return next.ReplaceExtras(updatedStats);
     }
 }

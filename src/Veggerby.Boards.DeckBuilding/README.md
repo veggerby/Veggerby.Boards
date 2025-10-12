@@ -60,6 +60,36 @@ progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
 
 Determinism is preserved through the engine RNG; seed via `GameBuilder.WithSeed(ulong)` for reproducible sequences.
 
+### End Game Trigger (Supply Depletion)
+
+You can enable an alternate game end trigger based on supply depletion via:
+
+```csharp
+builder.WithEndTrigger(new DeckBuildingEndTriggerOptions(
+  emptySupplyPilesThreshold: 3,                    // optional > 0 threshold
+  keySupplyPileIds: new[]{"province", "colony"}   // optional specific key piles that must all be empty
+));
+```
+
+Validation rule (enforced in constructor): at least one of the following must be configured:
+
+1. `emptySupplyPilesThreshold > 0`
+2. A non-empty `keySupplyPileIds` collection
+
+If neither is provided, an `ArgumentException` is thrown. Negative thresholds throw `ArgumentOutOfRangeException`.
+
+At runtime the `EndGameEventCondition` requires scores to have been computed (via a preceding `ComputeScoresEvent`) before a depletion-triggered end may validate; otherwise the end event is ignored until scoring occurs.
+
+### Gain From Supply Failure Modes
+
+`GainFromSupplyEventCondition` returns `Fail` (raising `InvalidGameEventException`) with these reasons:
+
+- `Unknown pile` – Target pile id not present in the deck state.
+- `Insufficient supply` – Supply dictionary does not contain the card id or its count is zero.
+- `Unknown card id` – Card artifact not registered in the game even though supply references it.
+
+The exception message now includes the failing reason (e.g., `Invalid game event GainFromSupplyEvent: Unknown pile`). Tests assert on substrings only; reason text is stable and considered part of the public contract.
+
 ## Status
 
 Workstream 17 is in progress. This module currently supports initializing decks, gaining from supply, trashing, cleanup, and reshuffle-on-empty draws; additional features (e.g., scoring) will follow.

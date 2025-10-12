@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Breaking
 
 - Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
+- Deck-building: `DeckBuildingEndTriggerOptions` now enforces that at least one termination mechanism is configured (either `emptySupplyPilesThreshold > 0` or a non-empty `keySupplyPileIds`). Constructing with neither now throws `ArgumentException` (previously accepted and ignored). Negative threshold still throws `ArgumentOutOfRangeException`.
 
 ### Added (earlier)
 
@@ -170,6 +171,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
 - Refactor sweep to prefer non-throwing `TryGetActivePlayer(out Player)` in safe contexts (conditions/gates) across core and modules (Backgammon, Chess); strict `GetActivePlayer()` retained in invariant-critical paths.
 - Deck-building phase wiring: Action/Buy split completed; baseline updated again after integrating scoring + termination with locked signature and ordering invariant (ComputeScores → EndGame).
+- Invalid game event diagnostics: `InvalidGameEventException.Message` now includes the failing condition reason (e.g. `Invalid game event GainFromSupplyEvent: Unknown pile`) improving debuggability and enabling precise guard-path test assertions.
 
 ### Fixed
 

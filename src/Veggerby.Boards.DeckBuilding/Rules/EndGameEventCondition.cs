@@ -50,16 +50,25 @@ public sealed class EndGameEventCondition : IGameEventCondition<EndGameEvent>
                 var merged = deckStates.SelectMany(d => d.Supply).GroupBy(kv => kv.Key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First().Value, StringComparer.Ordinal);
                 if (options.EmptySupplyPilesThreshold > 0)
                 {
-                    var emptyCount = 0;
-                    foreach (var kv in merged)
+                    // Fast path: use stats if available.
+                    var stats = state.GetExtras<DeckSupplyStats>();
+                    if (stats is not null)
                     {
-                        if (kv.Value <= 0)
+                        thresholdSatisfied = stats.EmptyPiles >= options.EmptySupplyPilesThreshold;
+                    }
+                    else
+                    {
+                        var emptyCount = 0;
+                        foreach (var kv in merged)
                         {
-                            emptyCount++;
-                            if (emptyCount >= options.EmptySupplyPilesThreshold)
+                            if (kv.Value <= 0)
                             {
-                                thresholdSatisfied = true;
-                                break;
+                                emptyCount++;
+                                if (emptyCount >= options.EmptySupplyPilesThreshold)
+                                {
+                                    thresholdSatisfied = true;
+                                    break;
+                                }
                             }
                         }
                     }

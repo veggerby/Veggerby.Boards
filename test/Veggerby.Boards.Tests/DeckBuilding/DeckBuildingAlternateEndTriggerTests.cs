@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -158,5 +159,27 @@ public class DeckBuildingAlternateEndTriggerTests
         // ensure transitions differ from pre-end state identically (one new GameEndedState)
         before1.GetStates<GameEndedState>().Should().BeEmpty();
         before2.GetStates<GameEndedState>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Options_Invalid_WhenNoThresholdAndNoKeys()
+    {
+        // act
+        var act = () => new DeckBuildingEndTriggerOptions(0, null);
+
+        // assert
+        act.Should().Throw<ArgumentException>().WithMessage("*threshold > 0 or key pile ids non-empty*");
+    }
+
+    [Fact]
+    public void Options_Valid_WhenThresholdOnly()
+    {
+        new DeckBuildingEndTriggerOptions(1, null).Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Options_Valid_WhenKeysOnly()
+    {
+        new DeckBuildingEndTriggerOptions(0, new[] { "kp" }).Should().NotBeNull();
     }
 }

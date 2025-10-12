@@ -25,9 +25,12 @@ public sealed class DeckBuildingEndTriggerOptions
         {
             throw new ArgumentOutOfRangeException(nameof(emptySupplyPilesThreshold));
         }
+        var keys = keyPileCardIds is null ? new List<string>() : new List<string>(keyPileCardIds);
+        if (emptySupplyPilesThreshold <= 0 && keys.Count == 0)
+        {
+            throw new ArgumentException("At least one of: threshold > 0 or key pile ids non-empty must be supplied.");
+        }
         EmptySupplyPilesThreshold = emptySupplyPilesThreshold;
-        KeyPileCardIds = keyPileCardIds is null
-            ? Array.Empty<string>()
-            : new List<string>(keyPileCardIds);
+        KeyPileCardIds = keys;
     }
 }

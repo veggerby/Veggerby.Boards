@@ -21,6 +21,8 @@ public sealed class DeckBuildingCreateDeckStateMutator : IStateMutator<CreateDec
             piles[kv.Key] = kv.Value?.ToList() ?? new List<Card>();
         }
         var ds = new DeckState(@event.Deck, piles, @event.Supply);
-        return state.Next([ds]);
+        var next = state.Next([ds]);
+        var stats = DeckSupplyStats.From(@event.Supply);
+        return next.ReplaceExtras(stats);
     }
 }

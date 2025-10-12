@@ -2,7 +2,7 @@
 id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
-status: partial
+status: done
 last_updated: 2025-10-10
 owner: games
 summary: >-
@@ -81,11 +81,22 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Core zone mechanics, Action/Buy phase split, deterministic baseline/invariant hardening, scoring & termination, supply configurator scaffold, and dedicated module docs page landed. Next up:
+All acceptance criteria satisfied:
 
-- Bulk card registration convenience method (batch add) – optional (evaluate demand; current fluent per-card API deterministic).
-- Benchmarks (shuffle throughput, draw cycle cost, zone transition overhead, scoring cost).
-- Alternate end-game trigger (e.g., supply depletion threshold) + invariant tests.
+- Deterministic supply construction via configurator.
+- Player zones and transitions implemented & tested (draw/reshuffle, discard, gain, trash, cleanup).
+- Turn phases enforced with Action/Buy split and cleanup sequencing.
+- Scoring + termination events integrated with ordering invariant.
+- Documentation page published and CHANGELOG updated.
+- Structural invariants & deterministic baseline signature locked.
+
+Deferred (optional, not blocking closure):
+
+- Benchmarks: shuffle throughput, draw cycle, transition overhead, scoring cost.
+- Alternate end-game trigger (supply depletion threshold) + invariant tests.
+- Optional bulk card registration batch helper (demand pending).
+
+Workstream marked done; deferred items tracked as general backlog enhancements.
 
 ---
 _End of workstream 17._

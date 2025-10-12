@@ -194,9 +194,9 @@
 
 ### 17. Deck-building Core Module
 
-⏳ **Partial (Expanded).**
+✅ **Done.** (Benchmarks & alternate end trigger deferred.)
 
-Delivered so far:
+Delivered:
 
 * Project scaffolding with `DeckBuildingGameBuilder` and `CardDefinition` artifact.
 * Player zones over `Cards` piles with deterministic transitions backed by seeded RNG.
@@ -220,8 +220,13 @@ Next:
 
 * Supply configurator scaffold (`DeckBuildingSupplyConfigurator`) delivering fluent card definition + supply registration and deterministic startup event emission (definitions + single create) with ordering, duplicate, undefined supply, and integration tests.
 * Dedicated module docs page (`deck-building.md`) published (phases table, zones, shuffling determinism, supply usage, end-to-end flow, error modes, extension points).
-* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost) – pending.
-* Optional: alternate end-game trigger (supply depletion) + additional invariants – pending.
+
+Deferred (not blocking completion):
+
+* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost).
+* Alternate end-game trigger (supply depletion) + additional invariants.
+* Optional bulk definition batch helper (evaluate demand).
+
 
 Risks: overbuilding effect system; maintain minimal primitives until card effects require expansion. Baseline regeneration discipline required for future phase additions.
 

@@ -63,8 +63,8 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Core (Workstream 17)** – Core zone mechanics, Action/Buy split, scoring aggregator, termination event, supply configurator helper, and dedicated docs page landed; deterministic baseline updated (scoring + EndGame events added). Next: optional bulk registration helper, benchmarks, alternate end trigger.
-   * NOTE: Baseline locked post-scoring; future phase/event additions require intentional regeneration. Evaluate demand before adding batch API (current fluent API deterministic & concise).
+1. **Deck-building Core (Workstream 17)** – DONE (benchmarks & alt end trigger deferred). Zone mechanics, Action/Buy split, scoring + termination, supply configurator, docs page, baseline signature + invariants locked. Optional: bulk registration helper (demand pending).
+   * Baseline locked; any new phase/event requires intentional regeneration with updated signature + invariants.
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 

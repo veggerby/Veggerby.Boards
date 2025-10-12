@@ -5,6 +5,7 @@ using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.States;
@@ -345,7 +346,9 @@ public class SlidingPathResolutionBenchmark
 
             // Minimal phase root (no rules needed for path resolution benchmark)
             var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
-            var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
+            // DecisionPlan mandatory (GameEngine enforces non-null); compile minimal plan for benchmark phase root.
+            var plan = DecisionPlan.Compile(phaseRoot);
+            var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
             return new GameProgress(engine, state, null);
         }
 

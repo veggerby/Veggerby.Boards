@@ -149,6 +149,7 @@ jobs:
           name: nuget-package
           path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish prerelease to GitHub Packages (PR)
+        if: ${{ env.GH_PACKAGES_TOKEN != '' }}
         run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
@@ -170,10 +171,12 @@ jobs:
           name: nuget-package
           path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish prerelease to GitHub Packages (main)
+        if: ${{ env.GH_PACKAGES_TOKEN != '' }}
         run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
       - name: Publish prerelease to NuGet.org (main)
+        if: ${{ env.NUGET_API_KEY != '' }}
         run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
         env:
           NUGET_API_KEY: ${{ env.NUGET_API_KEY }}
@@ -195,10 +198,12 @@ jobs:
           name: nuget-package
           path: ${{ env.NUGET_PACK_DIR }}
       - name: Publish release to GitHub Packages (tag)
+        if: ${{ env.GH_PACKAGES_TOKEN != '' }}
         run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$GH_PACKAGES_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
         env:
           GH_PACKAGES_TOKEN: ${{ env.GH_PACKAGES_TOKEN }}
       - name: Publish release to NuGet.org (tag)
+        if: ${{ env.NUGET_API_KEY != '' }}
         run: dotnet nuget push "$NUGET_PACK_DIR/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
         env:
           NUGET_API_KEY: ${{ env.NUGET_API_KEY }}

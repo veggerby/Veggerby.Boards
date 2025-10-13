@@ -2,12 +2,12 @@
 id: 17
 slug: deck-building-core
 name: "Deck-building Core Module"
-status: planned
-last_updated: 2025-09-30
+status: done
+last_updated: 2025-10-12
 owner: games
 summary: >-
   Dominion-like baseline: deterministic supply piles, player deck/discard/hand zones, draw/shuffle cycle with seeded RNG,
-  action/treasure/buy phases sequencing, and win by total victory point card value at game end.
+  action/buy/cleanup phases sequencing, deterministic victory point scoring, and win by total VP card value at game end.
 acceptance:
   - Supply piles constructed deterministically (configured card definitions + counts) with stable ordering.
   - Player zones (deck, hand, discard, in-play) modeled as immutable states with explicit transitions (draw, discard, gain, trash).
@@ -31,7 +31,23 @@ Deliver a deterministic foundation for deck-building games capturing zone transi
 
 ## Current State Snapshot
 
-Planned only.
+Delivered:
+
+- New project `Veggerby.Boards.DeckBuilding` with `DeckBuildingGameBuilder` (minimal topology/players) and `CardDefinition` artifact (name/types/cost/VP).
+- Zone mechanics built atop `Veggerby.Boards.Cards` (piles, deterministic shuffle/draw, move/discard):
+  - `CreateDeckEvent` initializes piles (+optional supply snapshot).
+  - `GainFromSupplyEvent` decrements supply and appends to a target pile.
+  - `DrawWithReshuffleEvent` reshuffles Discard deterministically into Draw when needed and draws to Hand.
+  - `TrashFromHandEvent` removes specified cards from Hand.
+  - `CleanupToDiscardEvent` moves all cards from Hand and InPlay to Discard.
+- Tests cover gain from supply (happy/insufficient), reshuffle determinism, trash validation, cleanup behavior, scoring aggregation idempotency, and termination gating.
+- Deterministic DecisionPlan baseline locked (ordered phase:event list + signature) with guard + diff test preventing accidental drift.
+- Structural invariants test asserting presence of core events across phases.
+- Feature flag guard + sequential test collection eliminated prior sequencing flag race flakiness.
+- Action/Buy phase split completed: former unified main phase separated into `db-action` (draw, trash) and `db-buy` (gain) phases with updated baseline and invariants.
+- Scoring + Termination delivered: `RegisterCardDefinitionEvent` & `CardDefinitionState`, `ComputeScoresEvent` & `ScoreState`, `EndGameEvent` & `GameEndedState` wired in cleanup; ordering invariant and baseline signature locked.
+- Supply configurator scaffold: `DeckBuildingSupplyConfigurator` fluent helper enabling ordered card definition registration + supply counts and deterministic startup events (`RegisterCardDefinitionEvent`s then single `CreateDeckEvent`). Tests cover insertion ordering, duplicate definition rejection, undefined supply guard, and integration with `GainFromSupplyEvent`.
+- Dedicated module documentation page (`docs/deck-building.md`) authored (phases table, zones, shuffling determinism, supply configurator usage, end-to-end example, error modes, extension points).
 
 ## Success Criteria
 
@@ -46,7 +62,7 @@ Planned only.
 2. Supply Pile Builder (ordered deterministic collection with counts).
 3. Player Zone State (deck, hand, discard, in-play) + Draw / Discard / Gain / Trash Mutators.
 4. Shuffle Artifact & Deterministic Shuffle Mutator (seeded RNG state captured explicitly).
-5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions.
+5. Turn Phase Sequencer (Action, Buy, Cleanup) Conditions. (Action/Buy split completed.)
 6. Scoring Aggregator (victory points sum) + Game End Condition (supply depletion threshold).
 7. Tests (draw cycle determinism, play action modifies state, buy adds to discard, cleanup resets hand, scoring computation).
 8. Benchmarks (shuffle throughput, draw cycle cost, zone transition overhead).
@@ -57,6 +73,7 @@ Planned only.
 - Overengineering effect system early (keep placeholder minimal).
 - Shuffle allocation overhead if naive copying each transition.
 - Variant phase additions increasing complexity prematurely.
+- Baseline regeneration discipline required during phase expansion (avoid ad-hoc modifications bypassing signature test update).
 
 ## Extension Strategy
 
@@ -64,7 +81,28 @@ Builder toggles / extension points: additional phases (Night, Duration), card ty
 
 ## Status Summary
 
-Not started.
+All acceptance criteria satisfied:
+
+- Deterministic supply construction via configurator.
+- Player zones and transitions implemented & tested (draw/reshuffle, discard, gain, trash, cleanup).
+- Turn phases enforced with Action/Buy split and cleanup sequencing.
+- Scoring + termination events integrated with ordering invariant.
+- Documentation page published and CHANGELOG updated.
+- Structural invariants & deterministic baseline signature locked.
+
+Deferred (optional, not blocking closure):
+
+- Benchmarks: shuffle throughput, draw cycle, transition overhead, scoring cost (partial metrics captured for GainFromSupply path: 2.94µs / 7.37KB; gating 97.6ns / 176B).
+- Optional bulk card registration batch helper (demand pending).
+
+Post-completion optimizations (2025-10-12):
+
+- Integrated alternate end trigger (supply depletion threshold and/or key supply piles) via `DeckBuildingEndTriggerOptions` consumed by `EndGameEventCondition`.
+- Added `DeckSupplyStats` extras (`TotalPiles`, `EmptyPiles`) maintained incrementally by create/gain mutators enabling O(1) depletion checks.
+- Optimized `GainFromSupplyStateMutator` (selective cloning) to clone only mutated pile list prior to `DeckState` freezing.
+- Added structural sharing & supply stats decrement tests validating correctness and empty-pile transition semantics.
+
+Workstream marked done; deferred items tracked as general backlog enhancements.
 
 ---
 _End of workstream 17._

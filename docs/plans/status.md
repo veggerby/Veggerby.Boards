@@ -120,7 +120,7 @@
 ## Cross-Cutting Gaps
 
 * **Feature Flag Governance:** Central table exists in `feature-flags.md` and is being kept current (owner, defaults, graduation notes). Continue pruning deprecated scaffolds in next minor.
-* **Benchmarks:** Numbers are scattered. Need a single summary doc (with last commit hash).
+* **Benchmarks:** Numbers were scattered; initial consolidated snapshot added at `docs/performance/summary.md` (expand with additional core + acceleration benchmarks; include commit hash per capture).
 * **Cross-Platform Hash CI:** Replay determinism verified locally but not enforced in CI across OS/arch.
 * **Diagnostics UX:** Trace capture exists but no viewer. CLI viewer MVP would unlock graduation.
 * **LINQ Sweep:** Still pending in several hot/event paths.
@@ -194,8 +194,62 @@
 
 ### 17. Deck-building Core Module
 
-⏳ **Planned.**
+✅ **Done.** (Benchmarks partially captured; alternate end trigger delivered.)
 
-* Scope: deterministic supply, deck/hand/discard zones, draw & shuffle (seeded), action/buy/cleanup phases, scoring.
-* Pending: shuffle artifact, phase sequencer conditions, gain/trash mutators, scoring aggregator, tests & benchmarks.
-* Risks: overbuilding effect system, shuffle allocation cost, premature variant phases.
+Delivered:
+
+* Project scaffolding with `DeckBuildingGameBuilder` and `CardDefinition` artifact.
+* Player zones over `Cards` piles with deterministic transitions backed by seeded RNG.
+* Events/Rules/Mutators implemented and wired:
+  * `RegisterCardDefinitionEvent` (register metadata definitions)
+  * `CreateDeckEvent` (initialize piles and optional supply snapshot)
+  * `GainFromSupplyEvent` (decrement supply, append to target pile)
+  * `DrawWithReshuffleEvent` (reshuffle Discard deterministically into Draw when needed, then draw to Hand)
+  * `TrashFromHandEvent` (remove specified cards from Hand)
+  * `CleanupToDiscardEvent` (move all cards from Hand and InPlay to Discard)
+  * `ComputeScoresEvent` (aggregate victory points -> `ScoreState` per player, idempotent)
+  * `EndGameEvent` (append terminal `GameEndedState` marker post-scoring)
+* Tests covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, cleanup behavior, scoring aggregation/idempotency, termination gating (pre-score ignore, post-score success), and EndGame ordering invariant (ComputeScores precedes EndGame in cleanup phase).
+* Deterministic DecisionPlan baseline locked & updated (added scoring + termination) with guard test + diff; signature advanced.
+* Structural invariants + explicit ordering invariant ensure presence and sequencing (ComputeScores → EndGame) across phases.
+* Feature flag guard + sequential test collection removed flakiness from shared sequencing flag.
+* Action / Buy phase split completed (separate `db-action` and `db-buy`).
+* Scoring + termination integrated; baseline signature advanced & ordering invariant added.
+
+Next:
+
+* Supply configurator scaffold (`DeckBuildingSupplyConfigurator`) delivering fluent card definition + supply registration and deterministic startup event emission (definitions + single create) with ordering, duplicate, undefined supply, and integration tests.
+* Dedicated module docs page (`deck-building.md`) published (phases table, zones, shuffling determinism, supply usage, end-to-end flow, error modes, extension points).
+
+Deferred (not blocking completion):
+
+* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost) – partial capture now includes GainFromSupply (2.94µs) and condition gating (97.6ns) allocations/time.
+* Additional end-game trigger variants (beyond current supply depletion threshold + key pile set) and invariants.
+* Optional bulk definition batch helper (evaluate demand).
+
+Recent optimizations:
+
+* Alternate end trigger (supply depletion threshold and/or key supply pile emptiness) integrated into `EndGameEventCondition`.
+* `DeckSupplyStats` extras (O(1) empty pile tracking) + selective cloning in `GainFromSupplyStateMutator` reducing intermediate allocations.
+* New tests: structural sharing (pile content immutability scope) and supply stats decrement crossing-zero behavior.
+
+
+
+Risks: overbuilding effect system; maintain minimal primitives until card effects require expansion. Baseline regeneration discipline required for future phase additions.
+
+---
+
+## New Capability Delivered – Cards & Decks Module
+
+✅ Initial Cards module (`Veggerby.Boards.Cards`) implemented.
+
+* Scope: card/deck artifacts, immutable `DeckState` with named ordered piles, events (create, shuffle, draw, move, discard), builder wiring using DecisionPlan DSL.
+* Determinism: shuffles use `GameState.Random`; seeding via `GameBuilder.WithSeed` yields reproducible order.
+* Tests: create+draw happy path, deterministic shuffle parity across seeded builders, invalid draw rejection via rule condition.
+* Invariants: minimal board topology and two players included in builder to satisfy core engine requirements.
+
+Open follow-ups:
+
+* Documentation page under `/docs/cards` with usage and deterministic semantics (quick start mirrors tests).
+* Optional v1 extensions: peek/reveal, gain from supply, reshuffle-on-empty policy as explicit event.
+* Workstream linkage: informs Workstream 17 (Deck-building Core) as a foundational subset (zones/piles and shuffle reproducibility).

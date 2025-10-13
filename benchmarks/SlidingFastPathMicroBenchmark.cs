@@ -6,6 +6,7 @@ using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.Internal.Paths;
@@ -183,7 +184,8 @@ public class SlidingFastPathMicroBenchmark
 
         var capabilities = new EngineCapabilities(topology, resolver, accelerationContext);
         var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
-        var engine = new GameEngine(_game, phaseRoot, null, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
+        var plan = DecisionPlan.Compile(phaseRoot);
+        var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
         return new GameProgress(engine, state, null);
     }
 }

@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-10-05
+last_updated: 2025-10-10
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -49,9 +49,9 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
    Generation API, promotion, mate/stalemate, final SAN details.
    Impact: Canonical complex movement + legality reference implementation.
 
-1. **Deterministic Shuffle Artifact (Workstreams 14 & 17)**
-   Seeded reproducible deck/supply permutation with captured provenance.
-   Impact: Standard pattern for any future card/randomized ordering mechanic.
+1. **Cards Module Documentation & Extensions**
+   Cards module delivered (deterministic piles, shuffle, draw/move/discard). Docs page authored under `/docs/cards`. Next: add peek/reveal/gain/reshuffle events.
+   Impact: Unlocks card-based modules and standardizes deterministic card mechanics.
 
 1. **Checkers Capture Chain Enumeration (Workstream 13)**
    Deterministic multi-branch path enumeration + stable ordering.
@@ -63,7 +63,8 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 3 – Strategic Extensions / Validation Modules
 
-1. **Deck-building Phase & Zone Engine (Workstream 17)** – Validates phased zone transitions & shuffle lifecycle.
+1. **Deck-building Core (Workstream 17)** – DONE (benchmarks & alt end trigger deferred). Zone mechanics, Action/Buy split, scoring + termination, supply configurator, docs page, baseline signature + invariants locked. Optional: bulk registration helper (demand pending).
+   * Baseline locked; any new phase/event requires intentional regeneration with updated signature + invariants.
 1. **Ludo Core (Workstream 12)** – Simple race abstraction; good tutorial example.
 1. **Monopoly Economic Loop (Workstream 14)** – Ownership + cash flow baseline (deferred complexity guarded).
 
@@ -85,7 +86,7 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 7. Deterministic Shuffle Artifact
 8. Checkers Capture Chain
 9. Risk Reinforcement/Combat
-10. Deck-building Phases
+10. Deck-building Scoring & Termination
 11. Ludo
 12. Monopoly
 

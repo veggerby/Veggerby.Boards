@@ -94,6 +94,6 @@ public class RandomizedCompiledPatternParityTests
         }
 
         // assert
-        Assert.True(mismatches.Count == 0, "Found mismatches:\n" + string.Join('\n', mismatches));
+        mismatches.Count.Should().Be(0, "Found mismatches:\n" + string.Join('\n', mismatches));
     }
 }

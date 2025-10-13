@@ -1,4 +1,5 @@
 using System.Linq;
+using AwesomeAssertions;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;
@@ -19,11 +20,11 @@ public class ChessBitboardTests
         var ok = progress.TryGetBitboards(out var occupancy, out var perPlayer);
 
         // assert
-        Assert.True(ok);
-        Assert.Equal(progress.State.GetStates<Boards.States.PieceState>().Count(), occupancy.PopCount()); // all pieces occupy unique tiles
-        Assert.Equal(2, perPlayer.Count);
+        ok.Should().BeTrue();
+        occupancy.PopCount().Should().Be(progress.State.GetStates<Boards.States.PieceState>().Count()); // all pieces occupy unique tiles
+        perPlayer.Count.Should().Be(2);
         var white = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White).Value.PopCount();
         var black = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black).Value.PopCount();
-        Assert.Equal(occupancy.PopCount(), white + black);
+        (white + black).Should().Be(occupancy.PopCount());
     }
 }

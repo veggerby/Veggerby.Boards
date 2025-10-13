@@ -6,6 +6,7 @@ using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
+using AwesomeAssertions;
 using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
@@ -37,7 +38,7 @@ public class DeckBuildingSupplyConfiguratorTests
         // assert
         var ds = progress.State.GetState<DeckState>(deck);
         ds.Should().NotBeNull();
-        ds.Supply["copper"].Should().Be(60);
+        ds!.Supply["copper"].Should().Be(60);
         ds.Supply["estate"].Should().Be(24);
     }
 
@@ -83,7 +84,7 @@ public class DeckBuildingSupplyConfiguratorTests
         var events = builder.SupplyConfigurator.BuildStartupEvents(deck);
         foreach (var e in events) { progress = progress.HandleEvent(e); }
         var enumerator = progress.Game.Players.GetEnumerator();
-        Assert.True(enumerator.MoveNext());
+        enumerator.MoveNext().Should().BeTrue();
         var player = enumerator.Current;
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
 
@@ -91,7 +92,7 @@ public class DeckBuildingSupplyConfiguratorTests
         progress = progress.HandleEvent(new GainFromSupplyEvent(player, deck, "copper", DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
+        var ds = progress.State.GetState<DeckState>(deck)!;
         ds.Supply["copper"].Should().Be(4);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(1);
     }

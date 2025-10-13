@@ -1,4 +1,5 @@
 using Veggerby.Boards.Internal;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
@@ -25,7 +26,7 @@ public class FastPathMetricsInvariantTests
         var outcomeTotal = snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail;
 
         // assert
-        Assert.Equal(8, attempts);
-        Assert.Equal(attempts, outcomeTotal);
+        attempts.Should().Be(8);
+        outcomeTotal.Should().Be(attempts);
     }
 }

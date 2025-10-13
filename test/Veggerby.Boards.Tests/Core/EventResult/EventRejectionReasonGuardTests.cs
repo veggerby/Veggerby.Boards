@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Core.EventResult;
 
@@ -18,7 +19,6 @@ public class EventRejectionReasonGuardTests
         var values = Enum.GetValues(typeof(EventRejectionReason)).Cast<EventRejectionReason>().ToArray();
 
         // act
-        // Explicit list - update alongside enum.
         var expected = new[]
         {
             EventRejectionReason.None,
@@ -32,7 +32,7 @@ public class EventRejectionReasonGuardTests
         };
 
         // assert
-        Assert.Equal(expected.Length, values.Length);
-        Assert.True(expected.All(values.Contains), "Enum changed: update mapping test and related classifier logic.");
+        values.Length.Should().Be(expected.Length);
+        values.Should().Contain(expected);
     }
 }

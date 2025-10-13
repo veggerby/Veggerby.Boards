@@ -1,9 +1,9 @@
 using System.Linq;
-
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 
@@ -128,14 +128,14 @@ public class SlidingFastPathParityTests
         var fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
         if (reference is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(reference.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(reference.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var refSeq = reference.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(refSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(refSeq);
     }
 
     [Fact]
@@ -326,14 +326,14 @@ public class SlidingFastPathParityTests
         var compiled = ResolveCompiledOnly(specs, moving, target);
         if (compiled is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(compiled.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(compiled.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var cmpSeq = compiled.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(cmpSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(cmpSeq);
     }
 
     [Fact]

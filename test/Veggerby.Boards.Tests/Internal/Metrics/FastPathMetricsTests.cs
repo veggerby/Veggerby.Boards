@@ -1,5 +1,6 @@
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
@@ -10,118 +11,151 @@ public class FastPathMetricsTests
     [Fact]
     public void GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path default on
         var progress = new LargeLinearBuilder().Compile();
         var piece = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("t0");
         var to = progress.Game.GetTile("t1");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(piece, from, to);
-        Assert.NotNull(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.True(snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1 || snap.FastPathSkipNoServices >= 1);
-        Assert.Equal(snap.Attempts, snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
+
+        // assert
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        (snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1 || snap.FastPathSkipNoServices >= 1).Should().BeTrue();
+        snap.Attempts.Should().Be(snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
     }
 
     [Fact]
     public void GivenDegenerateLargeSingleDirectionBoard_WhenQueryingSlidingRays_ThenGeneratorNeutralized()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new LargeLinearBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("t0");
-        // Exercise fast path resolution (should gracefully skip due to neutralized rays)
+
+        // act (exercise fast path resolution - should gracefully skip due to neutralized rays)
         var path = progress.ResolvePathCompiledFirst(rook, from, progress.Game.GetTile("t1"));
-        Assert.NotNull(path); // Path still resolvable via compiled/legacy resolver fallback
         var metrics = FastPathMetrics.Snapshot();
-        Assert.Equal(1, metrics.Attempts);
-        // No crash and either a skip (no services / attack miss) or an actual hit if heuristics change.
-        Assert.True(metrics.FastPathHits == 1 || metrics.FastPathSkipNoServices >= 0 || metrics.FastPathSkipAttackMiss >= 0);
+
+        // assert
+        path.Should().NotBeNull(); // Path still resolvable via compiled/legacy resolver fallback
+        metrics.Attempts.Should().Be(1);
+        (metrics.FastPathHits == 1 || metrics.FastPathSkipNoServices >= 0 || metrics.FastPathSkipAttackMiss >= 0).Should().BeTrue();
     }
 
     [Fact]
     public void GivenBitboardsEnabled_WhenResolvingSlidingPath_ThenFastPathHitIncrementsCounter()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("v1");
         var to = progress.Game.GetTile("v4");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(rook, from, to);
-        Assert.NotNull(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.Equal(1, snap.FastPathHits);
-        Assert.Equal(0, snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
+
+        // assert
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        snap.FastPathHits.Should().Be(1);
+        (snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail).Should().Be(0);
     }
 
     [Fact]
     public void GivenBitboardsDisabled_WhenResolvingSlidingPath_ThenFastPathSkippedNoPrereqIncrementsCounter()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("v1");
         var to = progress.Game.GetTile("v2");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(rook, from, to);
-        Assert.NotNull(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.Equal(0, snap.FastPathHits);
-        Assert.True(snap.FastPathSkipNoServices + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail >= 1);
+
+        // assert
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        snap.FastPathHits.Should().Be(0);
+        (snap.FastPathSkipNoServices + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail >= 1).Should().BeTrue();
     }
 
     [Fact]
     public void GivenNonSlider_WhenResolvingPath_ThenFastPathSkipNotSliderIncrements()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new NonSliderBuilder().Compile();
         var piece = progress.Game.GetPiece("stone");
         var from = progress.Game.GetTile("x1");
         var to = progress.Game.GetTile("x2");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(piece, from, to);
-        Assert.Null(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.Equal(0, snap.FastPathHits);
-        Assert.True(snap.FastPathSkipNotSlider >= 1);
+
+        // assert
+        path.Should().BeNull();
+        snap.Attempts.Should().Be(1);
+        snap.FastPathHits.Should().Be(0);
+        snap.FastPathSkipNotSlider.Should().BeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
     public void GivenCompiledPatternsEnabledAndFastPathPrereqsMissing_WhenResolving_ThenCompiledHitIncrements()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("v1");
         var to = progress.Game.GetTile("v2");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(rook, from, to);
-        Assert.NotNull(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.True(snap.CompiledHits + snap.LegacyHits >= 1);
+
+        // assert
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        (snap.CompiledHits + snap.LegacyHits >= 1).Should().BeTrue();
     }
 
     [Fact]
     public void GivenCompiledPatternsDisabled_WhenResolving_ThenLegacyHitIncrements()
     {
+        // arrange
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: false);
         var progress = new RookNorthBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("v1");
         var to = progress.Game.GetTile("v2");
+
+        // act
         var path = progress.ResolvePathCompiledFirst(rook, from, to);
-        Assert.NotNull(path);
         var snap = FastPathMetrics.Snapshot();
-        Assert.Equal(1, snap.Attempts);
-        Assert.True(snap.LegacyHits + snap.CompiledHits >= 1);
+
+        // assert
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        (snap.LegacyHits + snap.CompiledHits >= 1).Should().BeTrue();
     }
 
     private sealed class RookNorthBuilder : GameBuilder

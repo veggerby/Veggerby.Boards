@@ -10,6 +10,7 @@ using Veggerby.Boards.Internal;
 using Veggerby.Boards.Simulation;
 using Veggerby.Boards.States;
 
+using AwesomeAssertions;
 using Xunit;
 
 public class SequentialSimulatorTests
@@ -23,10 +24,10 @@ public class SequentialSimulatorTests
         var progress = builder.Compile();
 
         // act
-        void Act() => SequentialSimulator.Run(progress, _ => null);
+        Action act = () => SequentialSimulator.Run(progress, _ => null);
 
         // assert
-        Assert.Throws<InvalidOperationException>(Act);
+        act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class SequentialSimulatorTests
         var terminal2 = SequentialSimulator.Run(progress, Policy, maxDepth: 2);
 
         // assert
-        Assert.Equal(terminal1.State.GetHashCode(), terminal2.State.GetHashCode());
+        terminal1.State.GetHashCode().Should().Be(terminal2.State.GetHashCode());
     }
 
     [Fact]
@@ -83,8 +84,8 @@ public class SequentialSimulatorTests
         var terminal = SequentialSimulator.Run(progress, Policy, Stop, maxDepth: 10);
 
         // assert
-        Assert.NotNull(terminal);
-        Assert.Equal(0, observedDepth);
+        terminal.Should().NotBeNull();
+        observedDepth.Should().Be(0);
     }
 }
 

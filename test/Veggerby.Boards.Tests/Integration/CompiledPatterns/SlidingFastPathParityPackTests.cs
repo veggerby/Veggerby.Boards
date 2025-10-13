@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-
 using Veggerby.Boards.Artifacts.Relations; // TilePath
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 
@@ -153,14 +153,14 @@ public class SlidingFastPathParityPackTests
         // assert
         if (reference is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(reference.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(reference.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var refSeq = reference.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(refSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(refSeq);
     }
 
     public static IEnumerable<object[]> PackScenarios()

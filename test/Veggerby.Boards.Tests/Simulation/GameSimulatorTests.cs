@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AwesomeAssertions;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Simulation;
@@ -86,9 +87,9 @@ public class GameSimulatorTests
         var result = sim.Playout(progress);
 
         // assert
-        Assert.Equal(PlayoutTerminalReason.NoMoves, result.TerminalReason);
-        Assert.Equal(0, result.AppliedEvents);
-        Assert.Same(progress, result.Initial);
+        result.TerminalReason.Should().Be(PlayoutTerminalReason.NoMoves);
+        result.AppliedEvents.Should().Be(0);
+        result.Initial.Should().BeSameAs(progress);
     }
 
     [Fact]
@@ -105,9 +106,9 @@ public class GameSimulatorTests
         var result = sim.Playout(progress);
 
         // assert
-        Assert.Equal(1, result.AppliedEvents);
-        Assert.Equal(PlayoutTerminalReason.MaxDepth, result.TerminalReason);
-        Assert.NotSame(progress.State, result.Final.State);
+        result.AppliedEvents.Should().Be(1);
+        result.TerminalReason.Should().Be(PlayoutTerminalReason.MaxDepth);
+        result.Final.State.Should().NotBeSameAs(progress.State);
     }
 
     [Fact]
@@ -123,8 +124,8 @@ public class GameSimulatorTests
         var batch = await sim.PlayoutManyAsync(progress, 8, degreeOfParallelism: 4);
 
         // assert
-        Assert.Equal(8, batch.Count);
-        Assert.All(batch.Results, r => Assert.Equal(PlayoutTerminalReason.NoMoves, r.TerminalReason));
+        batch.Count.Should().Be(8);
+        batch.Results.Should().OnlyContain(r => r.TerminalReason == PlayoutTerminalReason.NoMoves);
     }
 
     [Fact]
@@ -138,8 +139,11 @@ public class GameSimulatorTests
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        // act/assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() => sim.PlayoutManyAsync(progress, 2, cancellationToken: cts.Token));
+        // act
+        Func<Task> act = () => sim.PlayoutManyAsync(progress, 2, cancellationToken: cts.Token);
+
+        // assert
+        await act.Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -156,8 +160,8 @@ public class GameSimulatorTests
         var result = sim.Playout(progress);
 
         // assert
-        Assert.Equal(PlayoutTerminalReason.TimeLimit, result.TerminalReason);
-        Assert.True(result.AppliedEvents > 0); // should have applied some before time expired
+        result.TerminalReason.Should().Be(PlayoutTerminalReason.TimeLimit);
+        result.AppliedEvents.Should().BeGreaterThan(0); // should have applied some before time expired
     }
 
     [Fact]
@@ -187,16 +191,16 @@ public class GameSimulatorTests
         var batch = new PlayoutBatchResult(results);
 
         // assert
-        Assert.Equal(8, batch.Count);
-        Assert.Equal(5, batch.ProgressedCount);
-        Assert.Equal(5, batch.TotalApplied);
-        Assert.Equal(0, batch.MinApplied);
-        Assert.Equal(1, batch.MaxApplied);
-        Assert.Equal(5d / 8d, batch.AverageApplied, 5);
+        batch.Count.Should().Be(8);
+        batch.ProgressedCount.Should().Be(5);
+        batch.TotalApplied.Should().Be(5);
+        batch.MinApplied.Should().Be(0);
+        batch.MaxApplied.Should().Be(1);
+        batch.AverageApplied.Should().BeApproximately(5d / 8d, 1e-5);
         // histogram: index 0 => 3, index 1 => 5
-        Assert.Equal(2, batch.Histogram.Count);
-        Assert.Equal(3, batch.Histogram[0]);
-        Assert.Equal(5, batch.Histogram[1]);
+        batch.Histogram.Count.Should().Be(2);
+        batch.Histogram[0].Should().Be(3);
+        batch.Histogram[1].Should().Be(5);
     }
 
     private sealed class RecordingObserver : GameSimulator.IPlayoutObserver
@@ -229,11 +233,11 @@ public class GameSimulatorTests
         var result = sim.Playout(progress, observer);
 
         // assert
-        Assert.NotNull(observer.Completed);
-        Assert.Equal(result, observer.Completed);
-        Assert.True(observer.Steps > 0);
-        Assert.Equal(observer.AppliedSteps, result.AppliedEvents); // each step applies exactly one
-        Assert.True(observer.TotalCandidates >= observer.Steps); // at least one candidate per step
+        observer.Completed.Should().NotBeNull();
+        observer.Completed.Should().Be(result);
+        observer.Steps.Should().BeGreaterThan(0);
+        observer.AppliedSteps.Should().Be(result.AppliedEvents); // each step applies exactly one
+        observer.TotalCandidates.Should().BeGreaterThanOrEqualTo(observer.Steps); // at least one candidate per step
     }
 
     [Fact]
@@ -249,12 +253,12 @@ public class GameSimulatorTests
         var candidatesSecond = policy.GetCandidateEvents(progress).OfType<MovePieceGameEvent>().ToList();
 
         // assert
-        Assert.NotEmpty(candidatesFirst);
-        Assert.Equal(candidatesFirst.Count, candidatesSecond.Count); // deterministic count
+        candidatesFirst.Should().NotBeEmpty();
+        candidatesSecond.Should().HaveCount(candidatesFirst.Count); // deterministic count
         for (int i = 0; i < candidatesFirst.Count; i++)
         {
-            Assert.Equal(candidatesFirst[i].Piece.Id, candidatesSecond[i].Piece.Id);
-            Assert.Equal(candidatesFirst[i].To.Id, candidatesSecond[i].To.Id);
+            candidatesSecond[i].Piece.Id.Should().Be(candidatesFirst[i].Piece.Id);
+            candidatesSecond[i].To.Id.Should().Be(candidatesFirst[i].To.Id);
         }
     }
 
@@ -272,9 +276,9 @@ public class GameSimulatorTests
         var batch = sim.PlayoutManyUntil(progress, maxCount: 50, stopPredicate: b => b.Count >= 2 && b.Variance == 0);
 
         // assert
-        Assert.True(batch.Count <= 3); // should stop very early
-        Assert.Equal(0, batch.Variance);
-        Assert.True(batch.Results.All(r => r.AppliedEvents == 2));
+        batch.Count.Should().BeLessThanOrEqualTo(3); // should stop very early
+        batch.Variance.Should().Be(0);
+        batch.Results.Should().OnlyContain(r => r.AppliedEvents == 2);
     }
 
     [Fact]
@@ -300,8 +304,8 @@ public class GameSimulatorTests
         }
 
         // assert
-        Assert.True(batch.ProgressedCount >= 5);
-        Assert.True(batch.Count <= 10); // should not need many to reach threshold
+        batch.ProgressedCount.Should().BeGreaterThanOrEqualTo(5);
+        batch.Count.Should().BeLessThanOrEqualTo(10); // should not need many to reach threshold
     }
 
     [Fact]
@@ -318,7 +322,7 @@ public class GameSimulatorTests
         var batch = await sim.PlayoutManyUntilAsync(progress, maxCount: 128, stopPredicate: b => b.Count >= 4 && b.Variance == 0, waveSize: 8);
 
         // assert
-        Assert.True(batch.Count <= 16);
-        Assert.Equal(0, batch.Variance);
+        batch.Count.Should().BeLessThanOrEqualTo(16);
+        batch.Variance.Should().Be(0);
     }
 }

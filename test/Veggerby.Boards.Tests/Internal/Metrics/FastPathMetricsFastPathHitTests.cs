@@ -1,5 +1,6 @@
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 
@@ -40,9 +41,9 @@ public class FastPathMetricsFastPathHitTests
         var snap = FastPathMetrics.Snapshot();
 
         // assert
-        Assert.NotNull(path);
-        Assert.Equal(1, snap.Attempts);
-        Assert.True(snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1, $"Expected fast-path hit or attack-miss skip, snapshot: hits={snap.FastPathHits}, miss={snap.FastPathSkipAttackMiss}");
-        Assert.Equal(snap.Attempts, snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        (snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1).Should().BeTrue($"Expected fast-path hit or attack-miss skip, snapshot: hits={snap.FastPathHits}, miss={snap.FastPathSkipAttackMiss}");
+        snap.Attempts.Should().Be(snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
     }
 }

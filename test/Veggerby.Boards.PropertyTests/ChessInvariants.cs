@@ -5,6 +5,7 @@ using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.PropertyTests;
 
@@ -148,7 +149,7 @@ public class ChessInvariants
             var updated = progress.HandleEvent(new MovePieceGameEvent(whitePawn!, capturePath));
             var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
             // assert (soft) – ensure count does not drop by more than one
-            Assert.InRange(beforeBlackCount - afterBlackCount, 0, 1);
+        (beforeBlackCount - afterBlackCount).Should().BeInRange(0, 1);
             progress = updated; // keep for potential next iteration, though each loop resets builder anyway
         }
     }
@@ -170,7 +171,7 @@ public class ChessInvariants
         {
             var after = progress.HandleEvent(new MovePieceGameEvent(rook, path));
             // Path should be invalid or ignored due to blocking pawn at a2 → state remains identical
-            Assert.Equal(before, after.State);
+            after.State.Should().Be(before);
         }
     }
 
@@ -188,7 +189,7 @@ public class ChessInvariants
         var first = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
         var second = first.HandleEvent(new MovePieceGameEvent(pawn, path));
         // assert: second application should not move pawn again (state equal)
-        Assert.Equal(first.State, second.State);
+    second.State.Should().Be(first.State);
     }
 
     [Fact]
@@ -212,8 +213,8 @@ public class ChessInvariants
         }
         var before = progress.State;
         var after = progress.HandleEvent(new MovePieceGameEvent(king, path));
-        // assert - because pieces on e1/f1/g1 (queen, bishop, knight) block multi-step king path, move should not apply (state unchanged)
-        Assert.Equal(before, after.State);
+    // assert - because pieces on e1/f1/g1 (queen, bishop, knight) block multi-step king path, move should not apply (state unchanged)
+    after.State.Should().Be(before);
     }
 
     [Fact]
@@ -258,10 +259,8 @@ public class ChessInvariants
 
         // assert
         var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
-        Assert.InRange(initialBlackCount - afterBlackCount, 0, 1); // captured at most one
-        // previous state must remain unchanged
-        Assert.NotEqual(before, updated.State); // a new state object produced (even if piece counts same, transition attempted)
-        // ensure history recorded this event
-        Assert.True(updated.Events.Any());
+    (initialBlackCount - afterBlackCount).Should().BeInRange(0, 1); // captured at most one
+    updated.State.Should().NotBe(before); // new state object
+    updated.Events.Any().Should().BeTrue();
     }
 }

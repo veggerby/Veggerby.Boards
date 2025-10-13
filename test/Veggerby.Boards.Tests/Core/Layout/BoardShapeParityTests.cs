@@ -1,4 +1,5 @@
 using Veggerby.Boards.Chess;
+using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Core.Layout;
 
@@ -12,13 +13,13 @@ public class BoardShapeParityTests
         var progress = builder.Compile();
         var engine = progress.Engine;
         var topology = engine.Capabilities?.Topology;
-        Assert.NotNull(topology);
+        topology.Should().NotBeNull();
 
         // act & assert: every relation must appear in shape mapping
         foreach (var rel in engine.Game.Board.TileRelations)
         {
-            Assert.True(topology.TryGetNeighbor(rel.From, rel.Direction, out var to));
-            Assert.Equal(rel.To, to);
+            topology!.TryGetNeighbor(rel.From, rel.Direction, out var to).Should().BeTrue();
+            to.Should().Be(rel.To);
         }
     }
 }

@@ -17,6 +17,7 @@ Unified, task‑oriented documentation for the Veggerby.Boards engine focusing o
 | [Feature Flags](feature-flags.md) | List of flags, stability, defaults, related docs |
 | [Performance & Benchmarks](performance.md) | Benchmarks schema, movement & fast-path metrics |
 | [Diagnostics & Observability](diagnostics.md) | Tracing, observers, metrics, rejection reasons |
+| [Deck-building Module](deck-building.md) | Dominion-like deterministic deck-building core (supply, phases, scoring) |
 | [Roadmap](ROADMAP.md) | Forward-looking capabilities & planned milestones |
 
 ## Mental Model (TL;DR)

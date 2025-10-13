@@ -6,13 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+
+- Deck-building: Optional supply depletion alternate end trigger via `WithEndTrigger(new DeckBuildingEndTriggerOptions(...))` enabling threshold and/or key pile emptiness to permit `EndGameEvent`.
+ - Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
+ - Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).
+ - Tests: Structural sharing test ensuring only target pile content changes on `GainFromSupplyEvent`; supply stats decrement tests (no increment unless crossing to zero).
+
 > Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
 
 ### Breaking
 
 - Removed legacy rule traversal: the **DecisionPlan** evaluator is now the sole execution path. Feature flags `EnableDecisionPlan` and `EnableDecisionPlanDebugParity` and all dual-run parity scaffolds/tests have been removed. Update any code/tests that referenced these flags.
+- Deck-building: `DeckBuildingEndTriggerOptions` now enforces that at least one termination mechanism is configured (either `emptySupplyPilesThreshold > 0` or a non-empty `keySupplyPileIds`). Constructing with neither now throws `ArgumentException` (previously accepted and ignored). Negative threshold still throws `ArgumentOutOfRangeException`.
 
-### Added
+### Added (earlier)
+
+- New module: Veggerby.Boards.Cards
+- Workstream 17 – Deck-building Core: initial scaffolding
+  - Phase & segment orchestration finalized: dedicated always-active `db-turn` phase handling only `EndTurnSegmentEvent` via `DbEndTurnSegmentAlwaysCondition` + `DbTurnAdvanceStateMutator` (wrapper around internal sequencing mutator) to advance `Start → Main → End` deterministically without leaking sequencing concerns into action rules.
+  - Segmented deck-building phases: `db-setup` (Start) for `CreateDeckEvent`; `db-action` (Main) for draw/reshuffle + trash; `db-buy` (Main) for supply gains; `db-cleanup` (End) for hand/in-play to discard consolidation.
+  - `TurnSegmentStartCondition` semantics refined: when no `TurnState` is present (e.g. sequencing feature flag disabled in focused tests) it now evaluates `Valid` instead of `NotApplicable`, allowing deck initialization to proceed in minimal scenarios while remaining strict once a `TurnState` exists.
+  - Expanded test coverage asserting deck state materialization occurs during Start segment prior to advancing to Main / End, preventing silent gating regressions.
+  - New project `Veggerby.Boards.DeckBuilding` added to the solution.
+  - `DeckBuildingGameBuilder` introduced with minimal topology and players (phases/rules to follow).
+  - `CardDefinition` artifact added (metadata only: name, types, cost, victory points) with XML docs.
+  - `WithCard(cardId)` helper on `DeckBuildingGameBuilder` to register concrete card artifacts deterministically before compile.
+  - Buy phase wiring: `CreateDeckEvent` (init piles + optional supply) and `GainFromSupplyEvent` (decrement supply and append to a target pile) with rules and mutators.
+  - Draw with reshuffle: `DrawWithReshuffleEvent` + rules/mutator to shuffle discard deterministically into draw when needed and perform the draw into hand.
+  - Trash from hand: `TrashFromHandEvent` + rules/mutator to remove specified cards from Hand.
+  - Cleanup: `CleanupToDiscardEvent` + rules/mutator to move all cards from Hand and InPlay to Discard for end-of-turn cleanup.
+
+    - DecisionPlan structural hardening for Deck-building:
+      - Locked deterministic DecisionPlan baseline (`DecisionPlanBaseline`) capturing ordered phase:event entries plus SHA-256 signature.
+      - Deterministic signature & diff test (`DecisionPlanSignatureTests`) guarding against accidental reordering/insertion/removal (updated after Action/Buy phase split).
+      - Baseline capture harness removed (replaced by inline documented regeneration steps in signature test remarks).
+      - Structural invariants test (`DecisionPlanInvariants`) asserting presence of critical event rules across phases (CreateDeck, DrawWithReshuffle, GainFromSupply, TrashFromHand, CleanupToDiscard, EndTurnSegment).
+      - Diagnostic flattened plan dump test (skipped) for targeted debugging retained until phase split lands.
+      - Feature flag guard (`FeatureFlagGuard`) ensuring `EnableTurnSequencing` isolation inside deck-building tests to remove flakiness from shared global flag mutation.
+      - TurnState assertion helpers enforcing single turn state materialization pre-main segment advancement.
+      - Sequential collection definition for deck-building tests disabling parallel execution to eliminate race conditions on feature flags.
+      - Phases split: former combined `db-main` separated into `db-action` (draw, trash) and `db-buy` (gain) with updated baseline and diagnostics.
+  - Scoring + Termination: Added `RegisterCardDefinitionEvent` + `CardDefinitionState`, `ComputeScoresEvent` + `ScoreState` for deterministic victory point aggregation, and `EndGameEvent` + `GameEndedState` wired in cleanup phase (idempotent, gated by `EndGameEventCondition`). DecisionPlan baseline updated with new events & signature; ordering invariant test ensures `ComputeScoresEvent` precedes `EndGameEvent`.
+  - Removed obsolete diagnostic plan dump test after phase split stabilization (reliance now on invariants + signature test only).
+    - Supply configurator scaffold: `DeckBuildingSupplyConfigurator` fluent helper to register card definitions + supply counts and emit deterministic startup events (`RegisterCardDefinitionEvent`s followed by a single `CreateDeckEvent`). Tests cover insertion ordering, duplicate definition rejection, undefined supply safeguard, and `GainFromSupplyEvent` integration.
+    - Deck-building module documentation page (`docs/deck-building.md`) providing phases table, zone descriptions, shuffle determinism notes, supply configurator usage, end-to-end example, error modes, and extension points.
+
+  - Deterministic cards & decks capability: artifacts (`Card`, `Deck`), immutable `DeckState` with named ordered piles, and events for create/shuffle/draw/move/discard.
+  - Deterministic shuffle powered by `GameState.Random` (seed via `GameBuilder.WithSeed`) for full replay reproducibility.
+  - `CardsGameBuilder` with minimal topology and two players to satisfy core invariants, plus helper `CreateInitialDeckEvent()`.
+  - Tests covering create+draw flow, deterministic shuffle parity, and invalid draw rejection.
 
 - Bitboard128 scaffolding: `BitboardSnapshot` now supports boards up to 128 tiles using internal two-segment `Bitboard128` structure (global + per-player masks).
 - Experimental segmented bitboards (`EnableSegmentedBitboards` flag): unified scalable representation supporting 64 and 128 tile boards with parity tests (global + per-player). Currently feature-gated; default off until extended stress + performance benchmarks complete.
@@ -116,6 +159,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Changed
 
 - Acceleration context selection now enables bitboards for boards up to 128 tiles (previously ≤64). Fast path for ≤64 unchanged.
+ - Deck-building: `GainFromSupplyStateMutator` optimized (selective cloning) to allocate only a new list for the target pile instead of cloning every pile prior to `DeckState` freezing, reducing intermediate allocations while preserving immutability guarantees.
+ - Deck-building: `EndGameEventCondition` now fast-paths supply depletion threshold checks via `DeckSupplyStats` (falls back to legacy scan if stats missing for backward compatibility).
 - Sliding attack generator now defensively skips precomputation on degenerate single-direction boards >64 tiles to avoid pathological allocation growth (no functional regression – rays offer no additional branching on such topologies).
 - `BitboardSnapshot` incremental update path extended to handle 128-bit occupancy when active.
 
@@ -130,6 +175,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Centralized chess identifier constants reduced duplication and removed brittle hard-coded literals across codebase & tests.
 - Turn sequencing implementation elevated from experimental shadow mode to default-on core; duplicate rotation logic removed.
 - Refactor sweep to prefer non-throwing `TryGetActivePlayer(out Player)` in safe contexts (conditions/gates) across core and modules (Backgammon, Chess); strict `GetActivePlayer()` retained in invariant-critical paths.
+- Deck-building phase wiring: Action/Buy split completed; baseline updated again after integrating scoring + termination with locked signature and ordering invariant (ComputeScores → EndGame).
+- Invalid game event diagnostics: `InvalidGameEventException.Message` now includes the failing condition reason (e.g. `Invalid game event GainFromSupplyEvent: Unknown pile`) improving debuggability and enabling precise guard-path test assertions.
 
 ### Fixed
 

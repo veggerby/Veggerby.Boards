@@ -1,0 +1,21 @@
+using Veggerby.Boards.DeckBuilding;
+
+namespace Veggerby.Boards.Tests.DeckBuilding;
+
+public class DeckBuildingBuilderHelpersTests
+{
+    [Fact]
+    public void WithCards_RegistersAllAndCompiles()
+    {
+        // arrange
+        var builder = new DeckBuildingGameBuilder();
+        builder.WithCards("a", "b", "c");
+
+        // act
+        var progress = builder.Compile();
+
+        // assert
+        var deck = progress.Game.GetArtifact<Veggerby.Boards.Cards.Deck>("p1-deck");
+        deck.Should().NotBeNull();
+    }
+}

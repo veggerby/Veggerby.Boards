@@ -1,6 +1,5 @@
 using Veggerby.Boards.Internal.Evaluation.Mobility;
 using Veggerby.Boards.Tests.Infrastructure;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Evaluation;
 

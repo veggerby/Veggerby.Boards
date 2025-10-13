@@ -5,7 +5,6 @@ using Veggerby.Boards.Flows.Phases;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Core.Observers;
 

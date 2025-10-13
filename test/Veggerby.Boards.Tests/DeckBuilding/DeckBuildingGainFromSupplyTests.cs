@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
-using Veggerby.Boards.Cards.Mutators;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;

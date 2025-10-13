@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;

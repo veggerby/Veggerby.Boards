@@ -1,6 +1,5 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Paths;
 

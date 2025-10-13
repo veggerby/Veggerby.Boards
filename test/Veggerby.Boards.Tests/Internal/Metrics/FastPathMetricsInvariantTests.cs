@@ -1,5 +1,4 @@
 using Veggerby.Boards.Internal;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Metrics;
 

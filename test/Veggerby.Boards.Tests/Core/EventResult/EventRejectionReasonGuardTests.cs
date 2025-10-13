@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Core.EventResult;
 

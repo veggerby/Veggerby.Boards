@@ -1,15 +1,11 @@
 using System.Collections.Generic;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Support; // TurnStateAssertions
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

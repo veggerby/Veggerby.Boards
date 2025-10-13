@@ -1,5 +1,4 @@
 using Veggerby.Boards.Chess;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Core.Layout;
 

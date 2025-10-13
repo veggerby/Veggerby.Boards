@@ -1,5 +1,4 @@
 using System.Linq;
-using AwesomeAssertions;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;

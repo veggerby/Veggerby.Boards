@@ -1,7 +1,5 @@
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Support;

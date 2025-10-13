@@ -1,8 +1,8 @@
 using System.Linq;
+
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Internal.Occupancy;
 

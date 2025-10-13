@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 

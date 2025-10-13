@@ -3,15 +3,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.DeckBuilding;
-using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events; // IGameEvent
 using Veggerby.Boards.Flows.Rules;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

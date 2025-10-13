@@ -1,9 +1,6 @@
 using System.IO;
 
 using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Backgammon;
 

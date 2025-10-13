@@ -1,7 +1,6 @@
 using System.Linq;
 
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Acceleration;

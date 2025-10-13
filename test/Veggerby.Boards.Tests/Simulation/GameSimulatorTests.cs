@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AwesomeAssertions;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Simulation;

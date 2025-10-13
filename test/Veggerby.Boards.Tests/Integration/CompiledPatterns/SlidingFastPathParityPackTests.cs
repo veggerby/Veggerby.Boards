@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+
 using Veggerby.Boards.Artifacts.Relations; // TilePath
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Infrastructure;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 

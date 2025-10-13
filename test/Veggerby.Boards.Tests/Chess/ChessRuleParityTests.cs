@@ -1,12 +1,5 @@
-using System.Linq;
-
-using AwesomeAssertions;
-
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess;
 

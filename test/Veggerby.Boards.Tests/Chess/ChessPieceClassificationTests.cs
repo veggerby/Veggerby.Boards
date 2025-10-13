@@ -2,8 +2,6 @@ using System.Linq;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
-using AwesomeAssertions;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Chess;
 

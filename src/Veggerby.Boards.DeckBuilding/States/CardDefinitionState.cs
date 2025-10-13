@@ -1,4 +1,3 @@
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.DeckBuilding;

@@ -1,13 +1,8 @@
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.DeckBuilding;
-using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

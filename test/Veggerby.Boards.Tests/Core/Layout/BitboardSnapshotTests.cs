@@ -1,12 +1,5 @@
-using System;
-using System.IO;
-
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
-using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Layout;
 

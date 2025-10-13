@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
-
-using AwesomeAssertions;
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

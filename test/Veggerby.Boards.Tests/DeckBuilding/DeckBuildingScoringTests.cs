@@ -1,15 +1,10 @@
 using System.Collections.Generic;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Artifacts; // Player
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States; // GameProgress
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

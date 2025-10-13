@@ -5,7 +5,6 @@ using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Support; // TurnStateAssertions
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

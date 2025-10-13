@@ -1,9 +1,9 @@
 using System.Linq;
+
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Tests.Infrastructure;
-using AwesomeAssertions;
 
 namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 

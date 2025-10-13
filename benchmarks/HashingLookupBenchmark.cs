@@ -1,10 +1,8 @@
-using System.Linq;
 using BenchmarkDotNet.Attributes;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Artifacts.Patterns;
-using Veggerby.Boards.Internal; // for Constants.Directions
 
 namespace Veggerby.Boards.Benchmarks;
 

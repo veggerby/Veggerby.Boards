@@ -1,7 +1,6 @@
 using System;
 
 using Veggerby.Boards.Cards;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 

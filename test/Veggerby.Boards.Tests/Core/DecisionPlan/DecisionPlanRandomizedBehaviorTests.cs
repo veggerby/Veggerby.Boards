@@ -18,7 +18,7 @@ public class DecisionPlanRandomizedBehaviorTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var rnd = new System.Random(12345);
+        var rnd = new TestDeterministicRng(12345);
 
         // act
         for (var i = 0; i < 12; i++)

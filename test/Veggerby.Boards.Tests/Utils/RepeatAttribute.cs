@@ -24,8 +24,10 @@ public class RepeatAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
+#pragma warning disable RS0030 // Do not use banned APIs
         return [.. Enumerable
             .Range(0, _count)
             .Select(x => new object[] { Guid.NewGuid() })];
+#pragma warning restore RS0030 // Do not use banned APIs
     }
 }

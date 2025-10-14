@@ -18,25 +18,25 @@ public class OccupancyBehaviorTests
         var game = progress.Game;
         // Choose a white pawn with a clear single-step forward move (b2 -> b3) in initial setup.
         var piece = game.GetPiece("white-pawn-2");
-    var fromState = progress.State.GetState<PieceState>(piece);
-    fromState.Should().NotBeNull(); // sanity
-    var from = fromState!.CurrentTile;
+        var fromState = progress.State.GetState<PieceState>(piece);
+        fromState.Should().NotBeNull(); // sanity
+        var from = fromState!.CurrentTile;
         // Target tile one rank forward.
         var to = game.GetTile(ChessIds.Tiles.B3);
         // Pre condition (ground truth via state): source occupied by piece, destination unoccupied.
         var allPieceStates = progress.State.GetStates<PieceState>().ToArray();
-    allPieceStates.Should().Contain(ps => ps.CurrentTile == from && ps.Artifact == piece);
-    allPieceStates.Should().NotContain(ps => ps.CurrentTile == to);
+        allPieceStates.Should().Contain(ps => ps.CurrentTile == from && ps.Artifact == piece);
+        allPieceStates.Should().NotContain(ps => ps.CurrentTile == to);
 
         var path = progress.ResolvePathCompiledFirst(piece, from, to);
-    path.Should().NotBeNull();
+        path.Should().NotBeNull();
 
         // act
         var after = progress.HandleEvent(new MovePieceGameEvent(piece, path!));
 
         // assert (use GameState as source of truth; occupancy should align)
         var afterPieceState = after.State.GetState<PieceState>(piece);
-    afterPieceState.CurrentTile.Should().Be(to);
+        afterPieceState.CurrentTile.Should().Be(to);
 
         var occ = after.Engine.Capabilities.AccelerationContext.Occupancy;
 

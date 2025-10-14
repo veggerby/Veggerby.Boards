@@ -120,7 +120,6 @@ public class ChessInvariants
     public void GivenRandomPawnCaptureScenarios_WhenApplyingCapture_ThenPieceCountDecrementsExactlyOnce()
     {
         // arrange
-        var rng = new System.Random(17);
         for (int i = 0; i < 25; i++)
         {
             var builder = new ChessGameBuilder();
@@ -148,7 +147,7 @@ public class ChessInvariants
             var updated = progress.HandleEvent(new MovePieceGameEvent(whitePawn!, capturePath));
             var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
             // assert (soft) – ensure count does not drop by more than one
-        (beforeBlackCount - afterBlackCount).Should().BeInRange(0, 1);
+            (beforeBlackCount - afterBlackCount).Should().BeInRange(0, 1);
             progress = updated; // keep for potential next iteration, though each loop resets builder anyway
         }
     }
@@ -188,7 +187,7 @@ public class ChessInvariants
         var first = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
         var second = first.HandleEvent(new MovePieceGameEvent(pawn, path));
         // assert: second application should not move pawn again (state equal)
-    second.State.Should().Be(first.State);
+        second.State.Should().Be(first.State);
     }
 
     [Fact]
@@ -212,8 +211,8 @@ public class ChessInvariants
         }
         var before = progress.State;
         var after = progress.HandleEvent(new MovePieceGameEvent(king, path));
-    // assert - because pieces on e1/f1/g1 (queen, bishop, knight) block multi-step king path, move should not apply (state unchanged)
-    after.State.Should().Be(before);
+        // assert - because pieces on e1/f1/g1 (queen, bishop, knight) block multi-step king path, move should not apply (state unchanged)
+        after.State.Should().Be(before);
     }
 
     [Fact]
@@ -258,8 +257,8 @@ public class ChessInvariants
 
         // assert
         var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
-    (initialBlackCount - afterBlackCount).Should().BeInRange(0, 1); // captured at most one
-    updated.State.Should().NotBe(before); // new state object
-    updated.Events.Any().Should().BeTrue();
+        (initialBlackCount - afterBlackCount).Should().BeInRange(0, 1); // captured at most one
+        updated.State.Should().NotBe(before); // new state object
+        updated.Events.Any().Should().BeTrue();
     }
 }

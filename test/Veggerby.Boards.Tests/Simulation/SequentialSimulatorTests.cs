@@ -4,13 +4,14 @@ namespace Veggerby.Boards.Tests.Simulation;
 
 using System;
 
+using AwesomeAssertions;
+
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Simulation;
 using Veggerby.Boards.States;
 
-using AwesomeAssertions;
 using Xunit;
 
 public class SequentialSimulatorTests

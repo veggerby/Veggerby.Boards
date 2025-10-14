@@ -28,7 +28,7 @@ public class BitboardSnapshotBenchmark
         // simple 8x8 like chess (only orthogonal for brevity; diagonals not required for snapshot building)
         var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
         var tiles = new List<Tile>();
-        char[] files = ['a','b','c','d','e','f','g','h'];
+        char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         for (int r = 1; r <= 8; r++)
         {
             foreach (var f in files)
@@ -36,43 +36,43 @@ public class BitboardSnapshotBenchmark
                 tiles.Add(new Tile($"tile-{f}{r}"));
             }
         }
-        Tile T(char f,int r) => tiles.Single(t=>t.Id==$"tile-{f}{r}");
+        Tile T(char f, int r) => tiles.Single(t => t.Id == $"tile-{f}{r}");
         var relations = new List<TileRelation>();
         foreach (var f in files)
         {
-            for (int r=1;r<=8;r++)
+            for (int r = 1; r <= 8; r++)
             {
-                if (r<8) relations.Add(new TileRelation(T(f,r), T(f,r+1), north));
-                if (r>1) relations.Add(new TileRelation(T(f,r), T(f,r-1), south));
-                if (f<'h') relations.Add(new TileRelation(T(f,r), T((char)(f+1), r), east));
-                if (f>'a') relations.Add(new TileRelation(T(f,r), T((char)(f-1), r), west));
+                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
             }
         }
         var board = new Board("bitboard-bench-8x8", relations);
         var white = new Player("white"); var black = new Player("black");
         // create a handful of pieces
         var movers = new List<Piece>();
-        for (int i=0;i<16;i++)
+        for (int i = 0; i < 16; i++)
         {
-            movers.Add(new Piece($"w{i}", white, new[]{ new NullPattern() }));
-            movers.Add(new Piece($"b{i}", black, new[]{ new NullPattern() }));
+            movers.Add(new Piece($"w{i}", white, new[] { new NullPattern() }));
+            movers.Add(new Piece($"b{i}", black, new[] { new NullPattern() }));
         }
         var artifacts = new List<Artifact>();
         artifacts.Add(board); artifacts.Add(white); artifacts.Add(black); artifacts.AddRange(movers);
-        _game = new Game(board, new[]{white,black}, artifacts);
+        _game = new Game(board, new[] { white, black }, artifacts);
         _shape = BoardShape.Build(board);
 
         // place pieces: white first two ranks, black last two ranks (like chess pawns+backline simplified)
         var states = new List<IArtifactState>();
-        int index=0;
-        foreach (var p in movers.Where(p=>p.Owner==white).Take(16))
+        int index = 0;
+        foreach (var p in movers.Where(p => p.Owner == white).Take(16))
         {
             int file = index % 8; int rank = index < 8 ? 1 : 2;
             states.Add(new PieceState(p, T(files[file], rank)));
             index++;
         }
-        index=0;
-        foreach (var p in movers.Where(p=>p.Owner==black).Take(16))
+        index = 0;
+        foreach (var p in movers.Where(p => p.Owner == black).Take(16))
         {
             int file = index % 8; int rank = index < 8 ? 7 : 8;
             states.Add(new PieceState(p, T(files[file], rank)));
@@ -83,9 +83,9 @@ public class BitboardSnapshotBenchmark
         var movedStates = new List<IArtifactState>();
         foreach (var s in states)
         {
-            if (s is PieceState ps && ps.CurrentTile.Id=="tile-a2")
+            if (s is PieceState ps && ps.CurrentTile.Id == "tile-a2")
             {
-                movedStates.Add(new PieceState(ps.Artifact, T('a',3)));
+                movedStates.Add(new PieceState(ps.Artifact, T('a', 3)));
             }
             else
             {
@@ -98,8 +98,8 @@ public class BitboardSnapshotBenchmark
         _pieceLayout = PieceMapLayout.Build(_game);
     }
 
-    [Benchmark(Baseline=true)]
-    public (int pieceCount,int playerCount) InitialBuild()
+    [Benchmark(Baseline = true)]
+    public (int pieceCount, int playerCount) InitialBuild()
     {
         var pieceSnapshot = PieceMapSnapshot.Build(_pieceLayout, _initialState, _shape);
         var bbSnapshot = BitboardSnapshot.Build(_bbLayout, _initialState, _shape);
@@ -108,7 +108,7 @@ public class BitboardSnapshotBenchmark
     }
 
     [Benchmark]
-    public (int pieceCount,int playerCount) PostMoveBuild()
+    public (int pieceCount, int playerCount) PostMoveBuild()
     {
         var pieceSnapshot = PieceMapSnapshot.Build(_pieceLayout, _postMoveState, _shape);
         var bbSnapshot = BitboardSnapshot.Build(_bbLayout, _postMoveState, _shape);

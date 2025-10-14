@@ -1,8 +1,9 @@
 using BenchmarkDotNet.Attributes;
+
 using Veggerby.Boards.Artifacts;
-using Veggerby.Boards.States;
-using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Artifacts.Patterns;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Benchmarks;
 
@@ -41,17 +42,17 @@ public class HashingLookupBenchmark
 
         var board = new Board($"hash-bench-{PieceCount}", relations);
         var white = new Player("white"); var black = new Player("black");
-        var artifacts = new List<Artifact>{board, white, black};
+        var artifacts = new List<Artifact> { board, white, black };
         var whitePieces = new List<Piece>();
         var blackPieces = new List<Piece>();
-        for (int i=0;i<PieceCount/2;i++)
+        for (int i = 0; i < PieceCount / 2; i++)
         {
-            whitePieces.Add(new Piece($"w{i}", white, new[]{ new NullPattern() }));
-            blackPieces.Add(new Piece($"b{i}", black, new[]{ new NullPattern() }));
+            whitePieces.Add(new Piece($"w{i}", white, new[] { new NullPattern() }));
+            blackPieces.Add(new Piece($"b{i}", black, new[] { new NullPattern() }));
         }
         artifacts.AddRange(whitePieces);
         artifacts.AddRange(blackPieces);
-        _game = new Game(board, new[]{white,black}, artifacts);
+        _game = new Game(board, new[] { white, black }, artifacts);
         _tiles = tiles.ToArray();
         _whitePieces = whitePieces.ToArray();
         var states = new List<IArtifactState>();
@@ -67,10 +68,10 @@ public class HashingLookupBenchmark
         _state = GameState.New(states);
     }
 
-    [Benchmark(Baseline=true)]
+    [Benchmark(Baseline = true)]
     public int EnumeratePieceStates()
     {
-        int count=0;
+        int count = 0;
         foreach (var ps in _state.GetStates<PieceState>())
         {
             if (ps.Artifact.Owner.Id == "white") count++;
@@ -81,7 +82,7 @@ public class HashingLookupBenchmark
     [Benchmark]
     public int LookupPiecesById()
     {
-        int hits=0;
+        int hits = 0;
         foreach (var piece in _whitePieces)
         {
             var resolved = _game.GetPiece(piece.Id);
@@ -93,7 +94,7 @@ public class HashingLookupBenchmark
     [Benchmark]
     public int ResolveTilesSequentially()
     {
-        int hits=0;
+        int hits = 0;
         foreach (var tile in _tiles)
         {
             var resolved = _game.GetTile(tile.Id);

@@ -5,11 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using AwesomeAssertions;
+
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Simulation;
 
-using AwesomeAssertions;
 using Xunit;
 
 public class ParallelSimulatorTests

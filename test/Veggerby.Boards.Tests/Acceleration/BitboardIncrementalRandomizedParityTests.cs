@@ -32,7 +32,7 @@ public class BitboardIncrementalRandomizedParityTests
 
     private static GameProgress ApplyRandomMoves(GameProgress progress, int targetMoves, int seed)
     {
-        var rng = new System.Random(seed);
+        var rng = new TestDeterministicRng(seed);
         var board = progress.Game.Board;
         var tiles = board.Tiles.Select(t => t.Id).ToArray();
         var movesApplied = 0;

@@ -1,2 +1,13 @@
 # Banned symbols for the solution
 # Format: <symbol id>;<justification>
+T:System.Random;Use DiceState abstraction for deterministic randomness instead of direct Random
+M:System.Random..ctor;Use DiceState abstraction for deterministic randomness instead of direct Random
+M:System.Random.Shared;Use DiceState abstraction for deterministic randomness instead of direct Random
+M:System.DateTime.get_Now;Non-deterministic; inject a clock or avoid wall time in engine logic
+M:System.DateTime.get_UtcNow;Non-deterministic; inject a clock or avoid wall time in engine logic
+M:System.DateTimeOffset.get_Now;Non-deterministic; inject a clock or avoid wall time in engine logic
+M:System.Guid.NewGuid;Non-deterministic; artifact identities must come from deterministic builder context
+M:System.Environment.get_TickCount;Timing-based non-determinism; avoid in deterministic engine code
+M:System.Environment.get_TickCount64;Timing-based non-determinism; avoid in deterministic engine code
+T:System.Console;No console IO inside core libraries; keep engine pure and side-effect free
+M:System.Console.*;No console IO inside core libraries; keep engine pure and side-effect free

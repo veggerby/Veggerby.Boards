@@ -59,7 +59,7 @@ public class RandomizedCompiledPatternParityTests
         var game = BuildGame();
         var pieces = game.Artifacts.OfType<Piece>().Where(p => p.Owner.Id == "white").ToArray(); // only white-owned pieces
         var tiles = game.Board.Tiles.ToArray();
-        var random = new System.Random(424242); // deterministic seed
+        var random = new TestDeterministicRng(424242); // deterministic seed (custom LCG)
         var table = PatternCompiler.Compile(game);
         var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var compiled = new CompiledPatternResolver(table, game.Board, null, shape);

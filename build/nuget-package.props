@@ -1,0 +1,52 @@
+<Project>
+    <!-- Repository & Source Metadata -->
+    <PropertyGroup>
+        <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <Authors>Jesper Veggerby</Authors>
+    </PropertyGroup>
+
+    <!-- Build Determinism & SourceLink -->
+    <PropertyGroup>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+        <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+        <NeutralLanguage>en</NeutralLanguage>
+    </PropertyGroup>
+
+    <!-- Analysis & Documentation -->
+    <PropertyGroup>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <!-- Default Packaging Properties -->
+    <PropertyGroup>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/veggerby/Veggerby.Boards</PackageProjectUrl>
+        <PackageIcon Condition="Exists('$(DocsFolder)\icon.png')">icon.png</PackageIcon>
+        <PackageReadmeFile Condition="Exists('README.md')">README.md</PackageReadmeFile>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EnablePackageValidation>true</EnablePackageValidation>
+    </PropertyGroup>
+
+    <!-- Additional Files -->
+    <ItemGroup>
+        <None Include="$(DocsFolder)\icon.png" Pack="true" PackagePath="/" Condition="Exists('$(DocsFolder)\icon.png')" />
+        <None Include="README.md" Pack="true" PackagePath="/" Condition="Exists('README.md')" />
+
+        <AdditionalFiles Include="$(BuildFolder)\BannedSymbols.Core.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- SourceLink reference (version managed centrally) -->
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    </ItemGroup>
+
+</Project>

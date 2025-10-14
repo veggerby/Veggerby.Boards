@@ -5,14 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="BannedSymbols.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -22,7 +14,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="AwesomeAssertions" />
   </ItemGroup>
@@ -34,11 +25,6 @@
     <ProjectReference Include="..\..\src\Veggerby.Boards.Go\Veggerby.Boards.Go.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Cards\Veggerby.Boards.Cards.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.DeckBuilding\Veggerby.Boards.DeckBuilding.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- https://medium.com/bluekiri/code-coverage-in-vsts-with-xunit-coverlet-and-reportgenerator-be2a64cd9c2f -->
-    <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.0-rc3" />
   </ItemGroup>
 
   <ItemGroup>

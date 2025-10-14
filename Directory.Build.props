@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RepoRoot>
+        <SolutionRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'Veggerby.Boards.sln'))</SolutionRoot>
+        <DocsFolder>$(RepoRoot)\docs</DocsFolder>
+    </PropertyGroup>
+
+    <Import Project="$(RepoRoot)\build\global.props" />
+</Project>

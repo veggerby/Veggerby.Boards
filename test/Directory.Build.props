@@ -1,4 +1,6 @@
 <Project>
+  <Import Project="..\Directory.Build.props" Condition="Exists('..\Directory.Build.props')" />
+  <Import Project="$(BuildFolder)\tests.props" />
 
   <PropertyGroup>
     <!-- Tests do not need to generate XML docs or enforce missing documentation warnings -->

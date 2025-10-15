@@ -22,7 +22,7 @@ public class PieceDirectionPatternDefinition(GameBuilder builder, PieceDefinitio
     /// <summary>
     /// Gets the configured direction identifiers composing the pattern.
     /// </summary>
-    public IEnumerable<string> DirectionIds { get; private set; }
+    public IEnumerable<string> DirectionIds { get; private set; } = Enumerable.Empty<string>();
 
     /// <summary>
     /// Marks the pattern as repeatable.

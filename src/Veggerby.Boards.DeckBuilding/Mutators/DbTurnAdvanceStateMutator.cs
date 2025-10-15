@@ -14,7 +14,7 @@ public sealed class DbTurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
     public GameState MutateState(GameEngine engine, GameState gameState, EndTurnSegmentEvent @event)
     {
         // locate existing TurnState
-        TurnState current = null;
+        TurnState? current = null;
         foreach (var ts in gameState.GetStates<TurnState>()) { current = ts; break; }
         if (current is null) { return gameState; }
         if (current.Segment != @event.Segment) { return gameState; }

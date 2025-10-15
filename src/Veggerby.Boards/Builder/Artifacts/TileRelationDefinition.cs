@@ -15,15 +15,15 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <summary>
     /// Gets the origin tile identifier.
     /// </summary>
-    public string FromTileId { get; private set; }
+    public string FromTileId { get; private set; } = null!;
     /// <summary>
     /// Gets the destination tile identifier.
     /// </summary>
-    public string ToTileId { get; private set; }
+    public string ToTileId { get; private set; } = null!;
     /// <summary>
     /// Gets the directional identifier (e.g., N, NE) if supplied.
     /// </summary>
-    public string DirectionId { get; private set; }
+    public string DirectionId { get; private set; } = null!;
     /// <summary>
     /// Gets the distance associated with the relation. Defaults to 0 when not set.
     /// </summary>

@@ -17,18 +17,18 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
         var extras = gameState.GetExtras<ChessStateExtras>();
-        if (extras?.EnPassantTargetTileId is null || extras.EnPassantTargetTileId != @event.To.Id)
+        if (extras?.EnPassantTargetTileId is null || @event.To is null || extras.EnPassantTargetTileId != @event.To.Id)
         {
             return gameState; // not an en-passant situation
         }
 
         // Identify victim tile based on mover color (victim is one rank forward from target relative to mover's movement direction).
-        if (!ChessCoordinates.TryParse(@event.To.Id, out var file, out var rank))
+        if (@event.To is null || !ChessCoordinates.TryParse(@event.To.Id, out var file, out var rank))
         {
             return gameState; // invalid target id pattern; defensive no-op
         }
 
-        var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
+    var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
         // White moves north; victim is the pawn that advanced two squares and sits one rank south of the target.
         var victimRank = moverIsWhite ? rank - 1 : rank + 1;
 
@@ -39,7 +39,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
 
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
-        var victimPiece = gameState
+        var victimPiece = victimTile is null ? null : gameState
             .GetPiecesOnTile(victimTile)
             .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(gameState, p.Id));
 
@@ -49,7 +49,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         }
 
         // Move attacker onto en-passant target
-        var attackerNewState = new PieceState(@event.Piece, @event.To);
+    var attackerNewState = new PieceState(@event.Piece, @event.To!);
         var capturedNewState = new CapturedPieceState(victimPiece);
 
         // Reset halfmove, clear en-passant target, update moved set & fullmove if black just moved
@@ -57,7 +57,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         var moved = prevExtras.MovedPieceIds.Contains(@event.Piece.Id)
             ? prevExtras.MovedPieceIds
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
-        string activeId = gameState.TryGetActivePlayer(out var ap)
+        string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
             : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);

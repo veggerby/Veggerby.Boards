@@ -19,7 +19,7 @@ public static class GameStateExtensions
     /// <remarks>
     /// This helper avoids exceptions when zero or multiple active players exist, simplifying conditions and guards.
     /// </remarks>
-    public static bool TryGetActivePlayer(this GameState gameState, out Player activePlayer)
+    public static bool TryGetActivePlayer(this GameState gameState, out Player? activePlayer)
     {
         activePlayer = null;
         var seen = false;
@@ -68,7 +68,7 @@ public static class GameStateExtensions
     /// <param name="tile">The tile to inspect.</param>
     /// <param name="owner">Optional owner filter.</param>
     /// <returns>Enumeration of piece artifacts.</returns>
-    public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player owner = null)
+    public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player? owner = null)
     {
         // Only material piece states (exclude captured)
         return [.. gameState
@@ -80,9 +80,9 @@ public static class GameStateExtensions
     /// <summary>
     /// Gets the captured state for a specific piece or null if the piece is not captured.
     /// </summary>
-    public static CapturedPieceState GetCapturedState(this GameState gameState, Piece piece)
+    public static CapturedPieceState? GetCapturedState(this GameState gameState, Piece piece)
     {
-        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece)) as CapturedPieceState;
+        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece));
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public static class GameStateExtensions
     /// <typeparam name="T">Extras record type.</typeparam>
     /// <param name="gameState">Game state.</param>
     /// <returns>Extras instance or null.</returns>
-    public static T GetExtras<T>(this GameState gameState) where T : class
+    public static T? GetExtras<T>(this GameState gameState) where T : class
     {
         // Find matching generic ExtrasState<T>
         foreach (var state in gameState.ChildStates)
@@ -105,7 +105,8 @@ public static class GameStateExtensions
             {
                 if (state.GetType().GetGenericArguments()[0] == typeof(T))
                 {
-                    return (T)state.GetType().GetProperty("Value").GetValue(state);
+                    var prop = state.GetType().GetProperty("Value");
+                    return prop?.GetValue(state) as T;
                 }
             }
         }
@@ -117,7 +118,7 @@ public static class GameStateExtensions
     /// </summary>
     public static GameState ReplaceExtras<T>(this GameState gameState, T value) where T : class
     {
-        Artifact artifact = null;
+        Artifact? artifact = null;
         foreach (var state in gameState.ChildStates)
         {
             if (state.GetType().IsGenericType && state.GetType().GetGenericTypeDefinition() == typeof(ExtrasState<>) && state.GetType().GetGenericArguments()[0] == typeof(T))

@@ -38,7 +38,7 @@ public enum EventRejectionReason
 /// <param name="Applied">True if a rule applied and produced a successor state.</param>
 /// <param name="Reason">Rejection reason when not applied.</param>
 /// <param name="Message">Optional human-readable detail.</param>
-public readonly record struct EventResult(GameState State, bool Applied, EventRejectionReason Reason, string Message)
+public readonly record struct EventResult(GameState State, bool Applied, EventRejectionReason Reason, string? Message)
 {
     /// <summary>
     /// Creates a successful accepted result.
@@ -48,7 +48,7 @@ public readonly record struct EventResult(GameState State, bool Applied, EventRe
     /// <summary>
     /// Creates a rejected result with the specified reason and optional message.
     /// </summary>
-    public static EventResult Rejected(GameState state, EventRejectionReason reason, string message = null) => new(state, false, reason, message);
+    public static EventResult Rejected(GameState state, EventRejectionReason reason, string? message = null) => new(state, false, reason, message);
 
     /// <summary>
     /// Convenience to project to resulting state (original if rejected) for transitional call sites.

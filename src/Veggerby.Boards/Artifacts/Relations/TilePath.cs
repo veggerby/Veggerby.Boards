@@ -54,7 +54,7 @@ public class TilePath
 
             var chainedTo = Relations
                 .Skip(1)
-                .Aggregate(first.To, (to, relation) => to is not null && relation.From.Equals(to) ? relation.To : null);
+                .Aggregate<TileRelation, Tile?>(first.To, (to, relation) => to is not null && relation.From.Equals(to) ? relation.To : null);
 
             if (chainedTo is null)
             {
@@ -74,7 +74,7 @@ public class TilePath
     /// <summary>
     /// Helper for adding or creating a path in a single call.
     /// </summary>
-    public static TilePath Create(TilePath path, TileRelation relation)
+    public static TilePath Create(TilePath? path, TileRelation relation)
     {
         return path is not null ? path.Add(relation) : new TilePath([relation]);
     }

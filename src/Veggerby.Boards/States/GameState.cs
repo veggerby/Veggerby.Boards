@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Random;
 
@@ -19,10 +18,7 @@ namespace Veggerby.Boards.States;
 public class GameState
 {
     private readonly IDictionary<Artifact, IArtifactState> _childStates;
-    private readonly GameState _previousState;
-    private readonly IRandomSource _random;
-    private readonly ulong? _hash; // computed when hashing feature flag enabled
-    private readonly (ulong Low, ulong High)? _hash128; // upgraded 128-bit hash when enabled
+    private readonly GameState? _previousState;
 
     /// <summary>
     /// Gets the collection of artifact states contained in this snapshot.
@@ -32,28 +28,28 @@ public class GameState
     /// <summary>
     /// Gets the deterministic state hash (when hashing feature flag enabled); otherwise <c>null</c>.
     /// </summary>
-    public ulong? Hash => _hash;
+    public ulong? Hash { get; }
 
     /// <summary>
     /// Gets the 128-bit state hash (when hashing feature flag enabled); otherwise <c>null</c>.
     /// </summary>
-    public (ulong Low, ulong High)? Hash128 => _hash128;
+    public (ulong Low, ulong High)? Hash128 { get; }
 
     /// <summary>
     /// Gets a value indicating whether this is the initial state (no prior state).
     /// </summary>
     public bool IsInitialState => _previousState is null;
 
-    private GameState(IEnumerable<IArtifactState> childStates = null, GameState previousState = null, IRandomSource random = null)
+    private GameState(IEnumerable<IArtifactState>? childStates = null, GameState? previousState = null, IRandomSource? random = null)
     {
         _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
         _previousState = previousState;
-        _random = random;
+        Random = random;
         if (Internal.FeatureFlags.EnableStateHashing)
         {
             // Compute legacy 64-bit and upgraded 128-bit hashes (128-bit built from canonical serialized buffer for now)
-            _hash = ComputeHash();
-            _hash128 = ComputeHash128();
+            Hash = ComputeHash();
+            Hash128 = ComputeHash128();
         }
     }
 
@@ -63,9 +59,9 @@ public class GameState
     /// <typeparam name="T">The artifact state type expected.</typeparam>
     /// <param name="artifact">The artifact.</param>
     /// <returns>The state instance or default when absent or different type.</returns>
-    public T GetState<T>(Artifact artifact) where T : IArtifactState
+    public T? GetState<T>(Artifact artifact) where T : class, IArtifactState
     {
-        return _childStates.ContainsKey(artifact) && _childStates[artifact] is T ? (T)_childStates[artifact] : default(T);
+        return _childStates.ContainsKey(artifact) && _childStates[artifact] is T t ? t : null;
     }
 
     /// <summary>
@@ -131,14 +127,14 @@ public class GameState
     /// </summary>
     /// <param name="newStates">States to merge.</param>
     /// <returns>The new state.</returns>
-    public GameState Next(IEnumerable<IArtifactState> newStates)
+    public GameState Next(IEnumerable<IArtifactState>? newStates)
     {
         return new GameState(
             ChildStates
                 .Except(newStates ?? Enumerable.Empty<IArtifactState>(), new ArtifactStateEqualityComparer())
                 .Concat(newStates ?? Enumerable.Empty<IArtifactState>()),
             this,
-            _random?.Clone());
+            Random?.Clone());
     }
 
     /// <summary>
@@ -159,7 +155,7 @@ public class GameState
 
         var changes = state.ChildStates
             .Join(ChildStates, x => x.Artifact, x => x.Artifact, (from, to) => new ArtifactStateChange(from, to))
-            .Where(x => !x.From.Equals(x.To));
+            .Where(x => x.From is not null && !x.From.Equals(x.To));
 
         return [.. changes, .. additions];
     }
@@ -170,7 +166,7 @@ public class GameState
     /// <param name="initialStates">The initial artifact states.</param>
     /// <param name="random">Optional deterministic random source snapshot.</param>
     /// <returns>The new initial game state.</returns>
-    public static GameState New(IEnumerable<IArtifactState> initialStates, IRandomSource random = null)
+    public static GameState New(IEnumerable<IArtifactState> initialStates, IRandomSource? random = null)
     {
         return new GameState(initialStates, null, random);
     }
@@ -186,7 +182,7 @@ public class GameState
     /// <summary>
     /// Gets the random source snapshot associated with this state (may be null if none assigned).
     /// </summary>
-    public IRandomSource Random => _random;
+    public IRandomSource? Random { get; }
 
     /// <summary>
     /// Computes a 64-bit FNV-1a style hash over artifact states (id + type + serialized state) and RNG snapshot.
@@ -201,18 +197,20 @@ public class GameState
         foreach (var kvp in _childStates.OrderBy(x => x.Key.Id, StringComparer.Ordinal))
         {
             h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(kvp.Key.Id));
-            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(kvp.Key.GetType().FullName));
+            var keyTypeName = kvp.Key.GetType().FullName ?? kvp.Key.GetType().Name;
+            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(keyTypeName));
             var state = kvp.Value;
-            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(state.GetType().FullName));
+            var stateTypeName = state.GetType().FullName ?? state.GetType().Name;
+            h = HashBytes(h, (ReadOnlySpan<byte>)System.Text.Encoding.UTF8.GetBytes(stateTypeName));
             var writer = new Internal.IncrementalHashWriter(h);
             Internal.CanonicalStateSerializer.WriteObject(state, ref writer);
             h = writer.Hash;
         }
 
-        if (_random is not null)
+        if (Random is not null)
         {
             // Serialize RNG seed plus a small deterministic peek (does not mutate original due to clone).
-            var clone = _random.Clone();
+            var clone = Random.Clone();
             Span<byte> seedBytes = stackalloc byte[8];
             BitConverter.TryWriteBytes(seedBytes, clone.Seed);
             h = HashBytes(h, seedBytes);
@@ -246,19 +244,19 @@ public class GameState
         {
             var idBytes = System.Text.Encoding.UTF8.GetBytes(kvp.Key.Id);
             Write(idBytes);
-            var atBytes = System.Text.Encoding.UTF8.GetBytes(kvp.Key.GetType().FullName);
+            var atBytes = System.Text.Encoding.UTF8.GetBytes(kvp.Key.GetType().FullName ?? kvp.Key.GetType().Name);
             Write(atBytes);
             var state = kvp.Value;
-            var stBytes = System.Text.Encoding.UTF8.GetBytes(state.GetType().FullName);
+            var stBytes = System.Text.Encoding.UTF8.GetBytes(state.GetType().FullName ?? state.GetType().Name);
             Write(stBytes);
             var writer = new Internal.IncrementalHashWriter(0); // reuse canonical serializer into temp incremental hash then emit final bytes of 64-bit snapshot
             Internal.CanonicalStateSerializer.WriteObject(state, ref writer);
             var interim = BitConverter.GetBytes(writer.Hash);
             Write(interim);
         }
-        if (_random is not null)
+        if (Random is not null)
         {
-            var clone = _random.Clone();
+            var clone = Random.Clone();
             Span<byte> seedBytes = stackalloc byte[8];
             BitConverter.TryWriteBytes(seedBytes, clone.Seed);
             Write(seedBytes);

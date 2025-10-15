@@ -17,12 +17,10 @@ namespace Veggerby.Boards.Internal.Layout;
 internal readonly struct SegmentedBitboard
 {
     private const int InlineSegmentCapacity = 4; // 4 * 64 = 256 tiles inline before spilling.
-
-    private readonly ulong _s0;
     private readonly ulong _s1;
     private readonly ulong _s2;
     private readonly ulong _s3;
-    private readonly ulong[] _spill; // length = SegmentCount - InlineSegmentCapacity when SegmentCount > InlineSegmentCapacity; may be null when segment count <= inline capacity
+    private readonly ulong[]? _spill; // length = SegmentCount - InlineSegmentCapacity when SegmentCount > InlineSegmentCapacity; nullable when segment count <= inline capacity
 
     /// <summary>
     /// Gets the number of 64-bit segments represented.
@@ -37,14 +35,14 @@ internal readonly struct SegmentedBitboard
     /// <summary>
     /// Gets the low 64 bits (segment 0). Valid regardless of <see cref="SegmentCount"/>.
     /// </summary>
-    public ulong Low64 => _s0;
+    public ulong Low64 { get; }
 
     /// <summary>
     /// Returns an empty bitboard (zero segments => treated as single empty segment).
     /// </summary>
     public static SegmentedBitboard Empty { get; } = new(1, 0UL, 0UL, 0UL, 0UL, null);
 
-    private SegmentedBitboard(int segmentCount, ulong s0, ulong s1, ulong s2, ulong s3, ulong[] spill)
+    private SegmentedBitboard(int segmentCount, ulong s0, ulong s1, ulong s2, ulong s3, ulong[]? spill)
     {
         if (segmentCount <= 0)
         {
@@ -52,7 +50,7 @@ internal readonly struct SegmentedBitboard
         }
 
         SegmentCount = segmentCount;
-        _s0 = s0;
+        Low64 = s0;
         _s1 = s1;
         _s2 = s2;
         _s3 = s3;
@@ -76,7 +74,7 @@ internal readonly struct SegmentedBitboard
         ulong s2 = segments.Length > 2 ? segments[2] : 0UL;
         ulong s3 = segments.Length > 3 ? segments[3] : 0UL;
 
-        ulong[] spill = null;
+    ulong[]? spill = null;
         if (segments.Length > InlineSegmentCapacity)
         {
             var spillLength = segments.Length - InlineSegmentCapacity;
@@ -146,7 +144,7 @@ internal readonly struct SegmentedBitboard
     {
         get
         {
-            if ((_s0 | _s1 | _s2 | _s3) != 0UL)
+            if ((Low64 | _s1 | _s2 | _s3) != 0UL)
             {
                 return true;
             }
@@ -179,7 +177,7 @@ internal readonly struct SegmentedBitboard
     public int PopCount()
     {
         int count = 0;
-        count += BitOperations.PopCount(_s0);
+        count += BitOperations.PopCount(Low64);
         if (SegmentCount > 1)
         {
             count += BitOperations.PopCount(_s1);
@@ -214,11 +212,11 @@ internal readonly struct SegmentedBitboard
         }
 
         // Inline fast path: mutate local copies then construct new instance.
-        ulong s0 = _s0;
+        ulong s0 = Low64;
         ulong s1 = _s1;
         ulong s2 = _s2;
         ulong s3 = _s3;
-        ulong[] spill = _spill;
+    ulong[]? spill = _spill;
 
         switch (segmentIndex)
         {
@@ -260,7 +258,7 @@ internal readonly struct SegmentedBitboard
     {
         return segmentIndex switch
         {
-            0 => _s0,
+            0 => Low64,
             1 => _s1,
             2 => _s2,
             3 => _s3,

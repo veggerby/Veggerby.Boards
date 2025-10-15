@@ -20,7 +20,7 @@ public sealed class DeckState : ArtifactState<Deck>
     /// <summary>
     /// Initializes a new instance of the <see cref="DeckState"/> class.
     /// </summary>
-    public DeckState(Deck deck, IDictionary<string, IList<Card>> piles, IDictionary<string, int> supply = null) : base(deck)
+    public DeckState(Deck deck, IDictionary<string, IList<Card>> piles, IDictionary<string, int>? supply = null) : base(deck)
     {
         ArgumentNullException.ThrowIfNull(piles);
         // Validate deck piles

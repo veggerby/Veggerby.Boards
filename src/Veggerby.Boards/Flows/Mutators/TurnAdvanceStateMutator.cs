@@ -22,7 +22,7 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
         }
 
         // Locate existing TurnState (shadow mode injects exactly one)
-        TurnState currentTurnState = null;
+    TurnState? currentTurnState = null;
         foreach (var ts in gameState.GetStates<TurnState>())
         {
             currentTurnState = ts; // only one expected; take first

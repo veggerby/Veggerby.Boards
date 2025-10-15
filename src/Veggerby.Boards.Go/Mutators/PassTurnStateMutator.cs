@@ -13,7 +13,7 @@ public sealed class PassTurnStateMutator : IStateMutator<PassTurnGameEvent>
     /// </summary>
     public GameState MutateState(GameEngine engine, GameState gameState, PassTurnGameEvent @event)
     {
-        var extras = gameState.GetExtras<GoStateExtras>() ?? new GoStateExtras(null, 0, 19);
+    var extras = gameState.GetExtras<GoStateExtras>() ?? new GoStateExtras(null, 0, 19);
         var updated = extras with { ConsecutivePasses = extras.ConsecutivePasses + 1 };
         return gameState.ReplaceExtras(updated);
     }

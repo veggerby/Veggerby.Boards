@@ -3,6 +3,7 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Backgammon;
@@ -129,18 +130,48 @@ public class BackgammonGameBuilder : GameBuilder
                 .PreProcessEvent(game => new SingleStepMovePieceGameEventPreProcessor(new TileBlockedGameEventCondition(2, PlayerOption.Opponent), game.GetArtifacts<Dice>("dice-1", "dice-2")))
                 .All()
                 .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => new DoublingDiceWithActivePlayerGameEventCondition(game.GetArtifact<Dice>("doubling-dice")))
+                    .If(game => {
+                        var dd = game.GetArtifact<Dice>("doubling-dice");
+                        if (dd is null)
+                        {
+                            return new PermissiveRollDiceCondition();
+                        }
+                        return new DoublingDiceWithActivePlayerGameEventCondition(dd);
+                    })
                     .Then()
-                        .Do(game => new DoublingDiceStateMutator(game.GetArtifact<Dice>("doubling-dice")))
+                        .Do(game => {
+                            var dd = game.GetArtifact<Dice>("doubling-dice");
+                            return dd is null ? NullStateMutator<RollDiceGameEvent<int>>.Instance : new DoublingDiceStateMutator(dd);
+                        })
                 .ForEvent<MovePieceGameEvent>()
                     .If<PieceIsActivePlayerGameEventCondition>()
                         .And(game => new HasDiceValueGameEventCondition(game.GetArtifacts<Dice>("dice-1", "dice-2")))
-                        .And(game => new TileExceptionGameEventCondition(game.GetTile("bar"), game.GetTile("home-white"), game.GetTile("home-black")))
-                        .And(game => new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(game.GetTile("bar")))
+                        .And(game => {
+                            var bar = game.GetTile("bar");
+                            var hw = game.GetTile("home-white");
+                            var hb = game.GetTile("home-black");
+                            if (bar is null && hw is null && hb is null)
+                            {
+                                return new PermissiveMovePieceCondition();
+                            }
+                            // manual filtering without LINQ allocations
+                            var tmp = new System.Collections.Generic.List<Tile>(3);
+                            if (bar is not null) { tmp.Add(bar); }
+                            if (hw is not null) { tmp.Add(hw); }
+                            if (hb is not null) { tmp.Add(hb); }
+                            return new TileExceptionGameEventCondition(tmp.ToArray());
+                        })
+                        .And(game => {
+                            var bar = game.GetTile("bar");
+                            return bar is null ? new PermissiveMovePieceCondition() : new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(bar);
+                        })
                         .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
                     .Then()
                         //.Before<MovePieceStateMutator>()
-                        .Do(game => new ClearToTileStateMutator(game.GetTile("bar"), PlayerOption.Opponent, 1))
+                        .Do(game => {
+                            var bar = game.GetTile("bar");
+                            return bar is null ? NullStateMutator<MovePieceGameEvent>.Instance : new ClearToTileStateMutator(bar, PlayerOption.Opponent, 1);
+                        })
                         .Do<MovePieceStateMutator>()
                         .Do(game => new ClearDiceStateMutator(game.GetArtifacts<Dice>("dice-1", "dice-2")))
                         .Do(game => new NextPlayerStateMutator(
@@ -154,4 +185,23 @@ public class BackgammonGameBuilder : GameBuilder
                     .Then()
                         .Do<DiceStateMutator<int>>();
     }
+}
+
+// Local permissive conditions (public so builder can reference without accessing internal NullGameEventCondition)
+/// <summary>
+/// Public permissive condition used when an expected artifact (doubling dice) is missing; always not applicable.
+/// </summary>
+public sealed class PermissiveRollDiceCondition : IGameEventCondition<RollDiceGameEvent<int>>
+{
+    /// <inheritdoc />
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event) => ConditionResponse.NotApplicable;
+}
+
+/// <summary>
+/// Public permissive condition for move piece events when referenced tiles are missing; always not applicable.
+/// </summary>
+public sealed class PermissiveMovePieceCondition : IGameEventCondition<MovePieceGameEvent>
+{
+    /// <inheritdoc />
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event) => ConditionResponse.NotApplicable;
 }

@@ -15,15 +15,19 @@ public static partial class GameExtensions
     /// <summary>
     /// Attempts to resolve a path using compiled patterns (when enabled) otherwise falls back to visitor-based pattern resolution.
     /// </summary>
-    public static TilePath ResolvePathCompiledFirst(this Game game, Piece piece, Tile from, Tile to)
+    public static TilePath? ResolvePathCompiledFirst(this Game game, Piece? piece, Tile? from, Tile? to)
     {
         // Zero-length path requests are treated as no-op (null) – avoid constructing visitors which throw.
+        if (from is null || to is null || piece is null)
+        {
+            return null;
+        }
         if (from == to)
         {
             return null;
         }
 
-        if (Internal.FeatureFlags.EnableCompiledPatterns && TryGetCompiledResolver(game, out var services))
+        if (Internal.FeatureFlags.EnableCompiledPatterns && TryGetCompiledResolver(game, out var services) && services is not null && services.Resolver is not null)
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
             {
@@ -32,10 +36,7 @@ public static partial class GameExtensions
         }
 
         // Legacy fallback: iterate each declared pattern until one yields a path (supports multi-direction sliders).
-        if (piece is null || from is null || to is null)
-        {
-            return null;
-        }
+        // piece/from/to already validated non-null above
 
         foreach (var pat in piece.Patterns)
         {
@@ -50,7 +51,7 @@ public static partial class GameExtensions
         return null;
     }
 
-    private static bool TryGetCompiledResolver(Game game, out CompiledPatternServices services)
+    private static bool TryGetCompiledResolver(Game game, out CompiledPatternServices? services)
     {
         services = null;
         if (game is null)
@@ -72,7 +73,7 @@ public static partial class GameExtensions
     /// <summary>
     /// Attempts to retrieve compiled pattern services from a progress (engine-bound) context.
     /// </summary>
-    internal static bool TryGetCompiledResolver(this GameProgress progress, out CompiledPatternServices services)
+    internal static bool TryGetCompiledResolver(this GameProgress? progress, out CompiledPatternServices? services)
     {
         services = null;
         if (!Internal.FeatureFlags.EnableCompiledPatterns)
@@ -91,8 +92,12 @@ public static partial class GameExtensions
     /// <summary>
     /// Resolves path preferring compiled patterns when available using progress context; falls back to legacy visitor.
     /// </summary>
-    public static TilePath ResolvePathCompiledFirst(this GameProgress progress, Piece piece, Tile from, Tile to)
+    public static TilePath? ResolvePathCompiledFirst(this GameProgress? progress, Piece? piece, Tile? from, Tile? to)
     {
+        if (progress is null || piece is null || from is null || to is null)
+        {
+            return null;
+        }
         // Short-circuit zero-length requests for parity with legacy semantics.
         if (from == to)
         {
@@ -102,7 +107,7 @@ public static partial class GameExtensions
         // Single source of truth for fast-path attempt / skip / hit metrics.
         Internal.FastPathMetrics.OnAttempt();
 
-        var capabilities = progress?.Engine?.Capabilities;
+    var capabilities = progress.Engine?.Capabilities;
         var accel = capabilities?.AccelerationContext;
         var topology = capabilities?.Topology;
         var pathResolver = capabilities?.PathResolver; // may be a SlidingFastPathResolver decorator
@@ -117,13 +122,14 @@ public static partial class GameExtensions
             }
         }
 
-        TilePath fastPath = null;
+    TilePath? fastPath = null;
         var fastPathAttempted = false;
         // Fast-path reconstruction attempt (metrics gating centralized here).
         if (Internal.FeatureFlags.EnableSlidingFastPath && Internal.FeatureFlags.EnableBitboards && pieceIsSlider && accel?.AttackRays is not null && topology is not null)
         {
             fastPathAttempted = true;
-            fastPath = pathResolver?.Resolve(piece, from, to, progress.State);
+            // piece/from/to proven non-null by earlier guard; null-forgiving silences analyzer while preserving runtime safety.
+            fastPath = pathResolver?.Resolve(piece!, from!, to!, progress.State);
         }
 
         if (fastPathAttempted)
@@ -153,13 +159,17 @@ public static partial class GameExtensions
         }
 
         // Compiled or legacy resolution path after optional fast-path attempt
-        if (progress.TryGetCompiledResolver(out var services) && services.Resolver.TryResolve(piece, from, to, out var compiledPath))
+        if (piece is null || from is null || to is null)
+        {
+            return null;
+        }
+        if (progress.TryGetCompiledResolver(out var services) && services is not null && services.Resolver is not null && services.Resolver.TryResolve(piece!, from!, to!, out var compiledPath))
         {
             Internal.FastPathMetrics.OnCompiledHit();
             return ApplyOccupancySemantics(progress, piece, compiledPath);
         }
 
-        var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
+    var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
         if (legacy is not null)
         {
             Internal.FastPathMetrics.OnLegacyHit();
@@ -168,9 +178,9 @@ public static partial class GameExtensions
         return ApplyOccupancySemantics(progress, piece, legacy);
     }
 
-    private static TilePath ApplyOccupancySemantics(GameProgress progress, Piece movingPiece, TilePath path)
+    private static TilePath? ApplyOccupancySemantics(GameProgress? progress, Piece? movingPiece, TilePath? path)
     {
-        if (path is null)
+        if (progress is null || movingPiece is null || path is null)
         {
             return null;
         }
@@ -194,7 +204,7 @@ public static partial class GameExtensions
             {
                 if (occupancy.TryGetValue(rel.To, out var occ))
                 {
-                    if (occ.Owner.Equals(movingPiece.Owner))
+                    if (occ.Owner?.Equals(movingPiece.Owner) == true)
                     {
                         return null; // cannot land on friendly piece
                     }

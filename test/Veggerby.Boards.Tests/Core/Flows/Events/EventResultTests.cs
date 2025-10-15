@@ -20,7 +20,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             // Phase condition always false => no active phase.
             AddGamePhase("never active")
                 .If(game => new NullGameStateCondition(false))
@@ -40,7 +40,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             AddGamePhase("invalid move phase")
                 .If<NullGameStateCondition>()
                 .Then()
@@ -60,7 +60,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").CanRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").CanRepeat();
             AddDice("d1").HasValue(4);
             AddDice("d2").HasValue(5);
             AddGamePhase("move phase")
@@ -92,7 +92,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             // Provide a rule for a custom no-op event whose mutator returns the same state reference => NotApplicable.
             AddGamePhase("noop phase")
                 .If<NullGameStateCondition>()
@@ -238,7 +238,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             AddGamePhase("throwing phase")
                 .If<NullGameStateCondition>()
                 .Then()

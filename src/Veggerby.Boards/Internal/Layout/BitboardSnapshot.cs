@@ -15,28 +15,33 @@ internal sealed class BitboardSnapshot
     public BitboardLayout Layout { get; }
     // For legacy (<=64 tiles) we keep ulong fields. When tile count exceeds 64 we store a Bitboard128 composite.
     public ulong GlobalOccupancy { get; }
-    public ulong[] PlayerOccupancy { get; } // length = player count; each entry is 64-bit (will extend when >64)
+    public ulong[] PlayerOccupancy { get; } // length = player count; each entry is 64-bit (empty when 128-bit variant)
     public Bitboard128? GlobalOccupancy128 { get; }
-    public Bitboard128[] PlayerOccupancy128 { get; } // length = player count when using 128 variant (null otherwise)
+    public Bitboard128[] PlayerOccupancy128 { get; } // length = player count when using 128 variant (empty when 64-bit variant)
     public SegmentedBitboard? GlobalSegmented { get; }
     public SegmentedBitboard[] PlayerSegmented { get; }
 
-    private BitboardSnapshot(BitboardLayout layout, ulong global, ulong[] perPlayer, SegmentedBitboard? segmentedGlobal = null, SegmentedBitboard[] segmentedPlayers = null)
+    private BitboardSnapshot(BitboardLayout layout, ulong global, ulong[] perPlayer, SegmentedBitboard? segmentedGlobal = null, SegmentedBitboard[]? segmentedPlayers = null)
     {
         Layout = layout;
         GlobalOccupancy = global;
         PlayerOccupancy = perPlayer;
+        // 64-bit variant -> no 128 player occupancy
+        PlayerOccupancy128 = Array.Empty<Bitboard128>();
         GlobalSegmented = segmentedGlobal;
-        PlayerSegmented = segmentedPlayers;
+        PlayerSegmented = segmentedPlayers ?? Array.Empty<SegmentedBitboard>();
     }
 
-    private BitboardSnapshot(BitboardLayout layout, Bitboard128 global128, Bitboard128[] perPlayer128, SegmentedBitboard? segmentedGlobal = null, SegmentedBitboard[] segmentedPlayers = null)
+    private BitboardSnapshot(BitboardLayout layout, Bitboard128 global128, Bitboard128[] perPlayer128, SegmentedBitboard? segmentedGlobal = null, SegmentedBitboard[]? segmentedPlayers = null)
     {
         Layout = layout;
         GlobalOccupancy128 = global128;
         PlayerOccupancy128 = perPlayer128;
+        // 128-bit variant -> no 64-bit player occupancy
+        GlobalOccupancy = 0UL;
+        PlayerOccupancy = Array.Empty<ulong>();
         GlobalSegmented = segmentedGlobal;
-        PlayerSegmented = segmentedPlayers;
+        PlayerSegmented = segmentedPlayers ?? Array.Empty<SegmentedBitboard>();
     }
 
     public static BitboardSnapshot Build(BitboardLayout layout, GameState state, BoardShape shape)
@@ -51,9 +56,9 @@ internal sealed class BitboardSnapshot
             var perPlayer128 = new Bitboard128[layout.PlayerCount];
             var global128 = Bitboard128.Empty;
             SegmentedBitboard? segGlobal = null;
-            SegmentedBitboard[] segPlayers = null;
-            ulong[] segGlobalSegs = null;
-            ulong[][] segPlayerSegs = null;
+            SegmentedBitboard[]? segPlayers = null;
+            ulong[]? segGlobalSegs = null;
+            ulong[][]? segPlayerSegs = null;
             if (Internal.FeatureFlags.EnableSegmentedBitboards)
             {
                 // compute required segment count (ceil(TileCount / 64.0))
@@ -105,7 +110,7 @@ internal sealed class BitboardSnapshot
                 segPlayers = new SegmentedBitboard[layout.PlayerCount];
                 for (int i = 0; i < layout.PlayerCount; i++)
                 {
-                    segPlayers[i] = SegmentedBitboard.FromSegments(segPlayerSegs[i]);
+                    segPlayers[i] = SegmentedBitboard.FromSegments(segPlayerSegs![i]);
                 }
             }
             return new BitboardSnapshot(layout, global128, perPlayer128, segGlobal, segPlayers);
@@ -115,9 +120,9 @@ internal sealed class BitboardSnapshot
         var perPlayer = new ulong[layout.PlayerCount];
 
         SegmentedBitboard? segGlobalLow = null;
-        SegmentedBitboard[] segPlayersLow = null;
-        ulong[] segGlobalSegsLow = null;
-        ulong[][] segPlayerSegsLow = null;
+    SegmentedBitboard[]? segPlayersLow = null;
+    ulong[]? segGlobalSegsLow = null;
+    ulong[][]? segPlayerSegsLow = null;
         if (Internal.FeatureFlags.EnableSegmentedBitboards)
         {
             segGlobalSegsLow = new ulong[1];
@@ -162,7 +167,7 @@ internal sealed class BitboardSnapshot
             segPlayersLow = new SegmentedBitboard[layout.PlayerCount];
             for (int i = 0; i < layout.PlayerCount; i++)
             {
-                segPlayersLow[i] = SegmentedBitboard.FromSegments(segPlayerSegsLow[i]);
+                segPlayersLow[i] = SegmentedBitboard.FromSegments(segPlayerSegsLow![i]);
             }
         }
 

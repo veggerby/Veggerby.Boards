@@ -19,7 +19,7 @@ public sealed class DeckBuildingEndTriggerOptions
     /// </summary>
     /// <param name="emptySupplyPilesThreshold">Number of empty piles required (0 disables threshold).</param>
     /// <param name="keyPileCardIds">Key pile card ids; emptiness of any permits end-game. Null treated as empty.</param>
-    public DeckBuildingEndTriggerOptions(int emptySupplyPilesThreshold = 0, IReadOnlyCollection<string> keyPileCardIds = null)
+    public DeckBuildingEndTriggerOptions(int emptySupplyPilesThreshold = 0, IReadOnlyCollection<string>? keyPileCardIds = null)
     {
         if (emptySupplyPilesThreshold < 0)
         {

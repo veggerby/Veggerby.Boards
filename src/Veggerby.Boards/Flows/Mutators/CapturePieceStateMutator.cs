@@ -26,7 +26,7 @@ public sealed class CapturePieceStateMutator : IStateMutator<MovePieceGameEvent>
         }
 
         var attackerCurrent = gameState.GetState<PieceState>(@event.Piece);
-        if (!attackerCurrent.CurrentTile.Equals(@event.From))
+        if (attackerCurrent is null || attackerCurrent.CurrentTile is null || !attackerCurrent.CurrentTile.Equals(@event.From))
         {
             throw new BoardException("Invalid from tile on capture move event");
         }

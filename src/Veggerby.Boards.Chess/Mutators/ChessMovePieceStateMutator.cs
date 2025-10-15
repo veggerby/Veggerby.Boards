@@ -1,4 +1,5 @@
 using System.Linq;
+using Veggerby.Boards.Artifacts.Relations;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -32,7 +33,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
         // Capture original from tile before inner mutator (needed for castling rights revocation)
-        var originalFromTile = @event.From; // path From prior to mutation
+    var originalFromTile = @event.From; // may be null if path missing endpoints
         var updated = _inner.MutateState(engine, gameState, @event);
         var prevExtras = gameState.GetExtras<ChessStateExtras>();
         if (prevExtras is null)
@@ -45,12 +46,12 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
 
         // Reset en-passant by default; set only if this move is a double-step pawn advance (distance == 2)
-        string enPassantTarget = null;
+    string? enPassantTarget = null;
         var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
         if (ChessPiece.IsPawn(gameState, @event.Piece.Id) && @event.Distance == 2)
         {
             // Robust intermediate inference (supports either 2 single-step relations or a future potential single relation of distance 2)
-            var relations = @event.Path.Relations.ToArray();
+            TileRelation[] relations = @event.Path is null ? System.Array.Empty<TileRelation>() : @event.Path.Relations.ToArray();
             if (relations.Length == 2)
             {
                 // Standard case: two explicit single-step relations; intermediate is first To
@@ -70,7 +71,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         var isPawnAdvance = ChessPiece.IsPawn(gameState, @event.Piece.Id);
         var halfmove = isPawnAdvance ? 0 : prevExtras.HalfmoveClock + 1;
         // Derive active player defensively: prefer ActivePlayerState when present, else infer from mover color sequence assumption (white starts)
-        string activeId = gameState.TryGetActivePlayer(out var ap)
+        string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
             : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);

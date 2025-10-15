@@ -20,14 +20,14 @@ public class CompositeGamePhase : GamePhase
     /// </summary>
     public IEnumerable<GamePhase> ChildPhases => _childPhases.ToList().AsReadOnly();
 
-    internal CompositeGamePhase(int number, string label, IGameStateCondition condition, CompositeGamePhase parent, IEnumerable<IGameEventPreProcessor> preProcessors)
-        : base(number, label, condition, GameEventRule<IGameEvent>.Null, parent, preProcessors)
+        internal CompositeGamePhase(int number, string label, IGameStateCondition condition, CompositeGamePhase? parent, IEnumerable<IGameEventPreProcessor> preProcessors)
+            : base(number, label, condition, GameEventRule<IGameEvent>.Null, parent, preProcessors)
     {
         _childPhases = [];
     }
 
     /// <inheritdoc />
-    public override GamePhase GetActiveGamePhase(GameState gameState)
+    public override GamePhase? GetActiveGamePhase(GameState gameState)
     {
         if (!Condition.Evaluate(gameState).Equals(ConditionResponse.Valid))
         {

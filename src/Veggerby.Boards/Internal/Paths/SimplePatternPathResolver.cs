@@ -13,7 +13,7 @@ internal sealed class SimplePatternPathResolver(Board board) : IPathResolver
 {
     private readonly Board _board = board;
 
-    public TilePath Resolve(Piece piece, Tile from, Tile to, GameState state)
+    public TilePath? Resolve(Piece piece, Tile from, Tile to, GameState state)
     {
         if (piece is null || from is null || to is null || from == to)
         {
@@ -28,6 +28,7 @@ internal sealed class SimplePatternPathResolver(Board board) : IPathResolver
                 return visitor.ResultPath;
             })
             .Where(p => p is not null)
+            .Cast<TilePath>()
             .OrderBy(p => p.Distance)
             .FirstOrDefault();
     }

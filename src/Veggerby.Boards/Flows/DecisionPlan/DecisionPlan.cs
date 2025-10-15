@@ -85,6 +85,7 @@ public sealed class DecisionPlan
         {
             return Array.Empty<int>();
         }
+
         var firstIndex = new Dictionary<string, int>();
         var roots = new int[exclusivity.Length];
         for (int i = 0; i < exclusivity.Length; i++)
@@ -95,13 +96,16 @@ public sealed class DecisionPlan
                 roots[i] = -1;
                 continue;
             }
+
             if (!firstIndex.TryGetValue(g, out var root))
             {
                 root = i;
                 firstIndex[g] = root;
             }
+
             roots[i] = root;
         }
+
         return roots;
     }
 
@@ -117,18 +121,12 @@ public sealed class DecisionPlan
         else
         {
             // Leaf phase
-            bool alwaysValid = false;
-            if (phase.Condition is States.Conditions.NullGameStateCondition nullCondition)
-            {
-                // Evaluate once with a minimal dummy state (NullGameStateCondition ignores the state argument anyway).
-                // We pass null intentionally; implementation does not dereference.
-                var result = nullCondition.Evaluate(null);
-                alwaysValid = ReferenceEquals(result, ConditionResponse.Valid);
-            }
+            bool alwaysValid = phase.Condition is States.Conditions.NullGameStateCondition ngc && ngc.Result;
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
             kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
             var explicitGroup = phase.ExclusivityGroup;
-            string inferred = null;
+            string? inferred = null;
+
             if (string.IsNullOrEmpty(explicitGroup))
             {
                 var condAttr = phase.Condition?.GetType().GetCustomAttribute<ExclusiveGroupAttribute>();
@@ -145,7 +143,8 @@ public sealed class DecisionPlan
                     }
                 }
             }
-            exclusivity.Add(explicitGroup ?? inferred);
+
+            exclusivity.Add(explicitGroup ?? inferred ?? string.Empty);
         }
     }
 
@@ -159,7 +158,7 @@ public sealed class DecisionPlan
     /// <param name="root">Root phase for traversal.</param>
     /// <param name="phaseNumber">Phase number to locate.</param>
     /// <returns>The matching <see cref="GamePhase"/> or null.</returns>
-    internal static GamePhase ResolvePhase(GamePhase root, int phaseNumber)
+    internal static GamePhase? ResolvePhase(GamePhase? root, int phaseNumber)
     {
         if (root is null)
         {
@@ -182,6 +181,7 @@ public sealed class DecisionPlan
                 }
             }
         }
+
         return null;
     }
 
@@ -204,6 +204,7 @@ public sealed class DecisionPlan
                 currentCondition = entries[i].Condition;
             }
         }
+
         // final group
         yield return new DecisionPlanGroup(start, entries.Count - start, currentConditionIsGate: true);
     }

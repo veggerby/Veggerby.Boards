@@ -12,12 +12,12 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured artifact identifier.
     /// </summary>
-    public string ArtifactId { get; private set; }
+    public string ArtifactId { get; private set; } = null!;
 
     /// <summary>
     /// Gets the factory used to create the runtime artifact instance.
     /// </summary>
-    public Func<string, Artifact> Factory { get; private set; }
+    public Func<string, Artifact> Factory { get; private set; } = null!;
 
     /// <summary>
     /// Sets the artifact identifier.

@@ -36,16 +36,16 @@ internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenG
     {
         if (!(_childDefinitions.Any()))
         {
-            return null;
+            return new NullGameStateCondition();
         }
 
         if (_childDefinitions.Count() == 1)
         {
-            return _childDefinitions.Single().Build(game);
+            return _childDefinitions.Single().Build(game) ?? new NullGameStateCondition();
         }
 
         var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-        return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+    return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.All), conditions);
     }
 
     IGamePhaseConditionDefinitionAnd IGamePhaseConditionDefinitionAnd.And(GameStateConditionFactory factory)

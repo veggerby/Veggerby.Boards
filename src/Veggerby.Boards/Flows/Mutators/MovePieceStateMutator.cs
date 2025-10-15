@@ -12,8 +12,7 @@ public class MovePieceStateMutator : IStateMutator<MovePieceGameEvent>
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
         var currentState = gameState.GetState<PieceState>(@event.Piece);
-
-        if (!currentState.CurrentTile.Equals(@event.From))
+        if (currentState is null || currentState.CurrentTile is null || !currentState.CurrentTile.Equals(@event.From))
         {
             throw new BoardException("Invalid from tile on move piece event");
         }

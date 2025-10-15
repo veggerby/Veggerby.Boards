@@ -45,7 +45,7 @@ public class Board : Artifact, IEquatable<Board>
     /// </summary>
     /// <param name="tileId">Tile identifier.</param>
     /// <returns>The tile or null if not found.</returns>
-    public Tile GetTile(string tileId)
+    public Tile? GetTile(string tileId)
     {
         if (string.IsNullOrEmpty(tileId))
         {
@@ -58,7 +58,7 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets a relation originating from a tile in a specific direction.
     /// </summary>
-    public TileRelation GetTileRelation(Tile from, Direction direction)
+    public TileRelation? GetTileRelation(Tile from, Direction direction)
     {
         ArgumentNullException.ThrowIfNull(from);
 
@@ -70,7 +70,7 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets a relation connecting two tiles.
     /// </summary>
-    public TileRelation GetTileRelation(Tile from, Tile to)
+    public TileRelation? GetTileRelation(Tile from, Tile to)
     {
         ArgumentNullException.ThrowIfNull(from);
 

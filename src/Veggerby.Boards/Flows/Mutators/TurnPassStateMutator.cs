@@ -17,7 +17,7 @@ internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
             return gameState;
         }
 
-        TurnState currentTurnState = null;
+    TurnState? currentTurnState = null;
         foreach (var ts in gameState.GetStates<TurnState>()) { currentTurnState = ts; break; }
         if (currentTurnState is null) { return gameState; }
 

@@ -43,6 +43,10 @@ internal sealed class SelectStartingPlayerStateMutator : IStateMutator<RollDiceG
         // Determine starter (higher die value) – white vs black mapping via player ids
         var white = engine.Game.GetPlayer("white");
         var black = engine.Game.GetPlayer("black");
+        if (white is null || black is null)
+        {
+            return gameState; // cannot assign without both players
+        }
         var active = d1.CurrentValue > d2.CurrentValue ? white : black;
         var inactive = ReferenceEquals(active, white) ? black : white;
         return gameState.Next([

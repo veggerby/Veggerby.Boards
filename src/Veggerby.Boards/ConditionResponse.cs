@@ -47,9 +47,9 @@ public class ConditionResponse
     /// <summary>
     /// Gets the optional textual reason.
     /// </summary>
-    public string Reason { get; }
+    public string? Reason { get; }
 
-    private ConditionResponse(ConditionResult result, string reason)
+    private ConditionResponse(ConditionResult result, string? reason)
     {
         Result = result;
         Reason = reason;
@@ -86,7 +86,7 @@ public class ConditionResponse
     /// </summary>
     /// <param name="result">Result value.</param>
     /// <param name="reason">Optional reason.</param>
-    public static ConditionResponse New(ConditionResult result, string reason = null)
+    public static ConditionResponse New(ConditionResult result, string? reason = null)
     {
         return new ConditionResponse(result, reason);
     }

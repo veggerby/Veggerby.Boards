@@ -18,7 +18,7 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
     /// <summary>Total applied events across all playouts.</summary>
     public int TotalApplied => Results.Sum(r => r.AppliedEvents);
 
-    private int[] _histogram;
+    private int[]? _histogram;
 
     /// <summary>
     /// Lazy-computed histogram where index = applied event count and value = number of playouts with that length.

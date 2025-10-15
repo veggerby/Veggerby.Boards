@@ -22,7 +22,11 @@ public sealed class DeckBuildingCreateDeckStateMutator : IStateMutator<CreateDec
         }
         var ds = new DeckState(@event.Deck, piles, @event.Supply);
         var next = state.Next([ds]);
-        var stats = DeckSupplyStats.From(@event.Supply);
-        return next.ReplaceExtras(stats);
+        if (@event.Supply is not null)
+        {
+            var stats = DeckSupplyStats.From(@event.Supply);
+            return next.ReplaceExtras(stats);
+        }
+        return next;
     }
 }

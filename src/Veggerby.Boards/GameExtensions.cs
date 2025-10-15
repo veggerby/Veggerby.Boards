@@ -16,7 +16,7 @@ public static partial class GameExtensions
     /// <summary>
     /// Retrieves a piece by identifier.
     /// </summary>
-    public static Piece GetPiece(this Game game, string id)
+    public static Piece? GetPiece(this Game game, string id)
     {
         return game
             .GetArtifact<Piece>(id);
@@ -25,7 +25,7 @@ public static partial class GameExtensions
     /// <summary>
     /// Retrieves a tile by identifier.
     /// </summary>
-    public static Tile GetTile(this Game game, string id)
+    public static Tile? GetTile(this Game game, string id)
     {
         var tile = game
             .Board
@@ -40,7 +40,7 @@ public static partial class GameExtensions
     /// <summary>
     /// Retrieves a player by identifier.
     /// </summary>
-    public static Player GetPlayer(this Game game, string id)
+    public static Player? GetPlayer(this Game game, string id)
     {
         return game
             .Players
@@ -50,7 +50,7 @@ public static partial class GameExtensions
     /// <summary>
     /// Retrieves an artifact by identifier and type.
     /// </summary>
-    public static T GetArtifact<T>(this Game game, string id) where T : Artifact
+    public static T? GetArtifact<T>(this Game game, string id) where T : Artifact
     {
         return game
             .Artifacts
@@ -102,14 +102,28 @@ public static partial class GameExtensions
     {
         var piece = progress.Game.GetPiece(pieceId);
         var toTile = progress.Game.GetTile(toTileId);
+        if (piece is null || toTile is null)
+        {
+            return progress;
+        }
         var state = progress.State.GetState<PieceState>(piece);
+        if (state is null || state.CurrentTile is null)
+        {
+            return progress;
+        }
 
-        var path = piece.Patterns.Select(pattern =>
+        TilePath? best = null;
+        foreach (var pattern in piece.Patterns)
         {
             var visitor = new ResolveTilePathPatternVisitor(progress.Engine.Game.Board, state.CurrentTile, toTile);
             pattern.Accept(visitor);
-            return visitor.ResultPath;
-        }).Where(x => x is not null).OrderBy(x => x.Distance).FirstOrDefault();
+            if (visitor.ResultPath is not null && (best is null || visitor.ResultPath.Distance < best.Distance))
+            {
+                best = visitor.ResultPath;
+            }
+        }
+
+        var path = best;
 
         if (path is null)
         {

@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Cards;
 /// <summary>
 /// Immutable deck artifact representing a collection of ordered piles of cards (e.g., draw, discard, hand, in-play).
 /// </summary>
-public sealed class Deck : Artifact, IEquatable<Deck>
+public sealed class Deck : Artifact, IEquatable<Deck?>
 {
     /// <summary>
     /// Gets the defined pile identifiers for this deck.
@@ -37,5 +37,5 @@ public sealed class Deck : Artifact, IEquatable<Deck>
     }
 
     /// <inheritdoc />
-    public bool Equals(Deck other) => base.Equals(other);
+    public bool Equals(Deck? other) => base.Equals(other);
 }

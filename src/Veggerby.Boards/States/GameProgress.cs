@@ -50,7 +50,7 @@ public partial class GameProgress
     /// <summary>
     /// Gets the active phase derived from the phase tree and current state.
     /// </summary>
-    public GamePhase Phase { get; }
+    public GamePhase? Phase { get; }
 
     /// <summary>
     /// Gets the event history up to this progress state.
@@ -73,7 +73,7 @@ public partial class GameProgress
     {
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
         var newState = State.Next(newStates);
-        Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, null);
+    Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, new Flows.Events.NullGameEvent());
         return new GameProgress(Engine, newState, Events);
     }
 
@@ -98,7 +98,7 @@ public partial class GameProgress
             var currentEventKind = eventKindFiltering ? EventKindClassifier.Classify(evt) : EventKind.Any;
             var masksEnabled = Internal.FeatureFlags.EnableDecisionPlanMasks && Engine.DecisionPlan.ExclusivityGroupRoots.Length == Engine.DecisionPlan.Entries.Count;
             // Track which group roots have applied (per event) to skip remaining entries in same group when masking enabled.
-            var appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
+            HashSet<int>? appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
             if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
                 // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
@@ -139,7 +139,7 @@ public partial class GameProgress
                         if (masksEnabled)
                         {
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
-                            if (root >= 0 && appliedGroupRoots.Contains(root))
+                            if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
                             {
                                 Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, index);
                                 continue; // another entry in this exclusivity group already applied
@@ -190,7 +190,7 @@ public partial class GameProgress
                                 var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
                                 if (root >= 0)
                                 {
-                                    appliedGroupRoots.Add(root);
+                                    appliedGroupRoots?.Add(root);
                                 }
                             }
 
@@ -199,7 +199,7 @@ public partial class GameProgress
                         }
                         else if (ruleCheck.Result == ConditionResult.Invalid)
                         {
-                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                         }
                     }
 
@@ -217,7 +217,7 @@ public partial class GameProgress
                     if (masksEnabled)
                     {
                         var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
-                        if (root >= 0 && appliedGroupRoots.Contains(root))
+                        if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
                         {
                             Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, i);
                             continue;
@@ -262,7 +262,7 @@ public partial class GameProgress
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
                             if (root >= 0)
                             {
-                                appliedGroupRoots.Add(root);
+                                appliedGroupRoots?.Add(root);
                             }
                         }
 
@@ -271,7 +271,7 @@ public partial class GameProgress
                     }
                     else if (ruleCheck.Result == ConditionResult.Invalid)
                     {
-                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                     }
                 }
             }

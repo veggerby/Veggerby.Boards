@@ -11,7 +11,7 @@ internal sealed class CompiledPathResolverAdapter(ICompiledPatternResolver compi
 {
     private readonly ICompiledPatternResolver _compiled = compiled;
 
-    public TilePath Resolve(Piece piece, Tile from, Tile to, States.GameState state)
+    public TilePath? Resolve(Piece piece, Tile from, Tile to, States.GameState state)
     {
         if (piece is null || from is null || to is null)
         {

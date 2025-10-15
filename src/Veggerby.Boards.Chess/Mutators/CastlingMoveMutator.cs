@@ -21,9 +21,17 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
             return gameState;
         }
 
-        var ownerId = @event.Piece.Owner.Id;
+        var ownerId = @event.Piece.Owner?.Id;
+        if (ownerId is null)
+        {
+            return gameState;
+        }
         var isWhite = ownerId == ChessIds.Players.White;
-        var toId = @event.Path!.To.Id;
+        var toId = @event.Path?.To?.Id;
+        if (toId is null)
+        {
+            return gameState;
+        }
         var isKingSide = toId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
         var isQueenSide = toId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
         if (!isKingSide && !isQueenSide)
@@ -49,7 +57,7 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         }
 
         var kingState = gameState.GetState<PieceState>(@event.Piece);
-        if (!kingState.CurrentTile.Equals(@event.From))
+        if (kingState?.CurrentTile is null || !kingState.CurrentTile.Equals(@event.From))
         {
             throw new BoardException("Invalid king from tile during castling");
         }
@@ -57,9 +65,13 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         // Acquire tiles from engine immutable game
         var kingToTile = engine.Game.GetTile(toId);
         var rookToTile = engine.Game.GetTile(rookDestId);
+        if (kingToTile is null || rookToTile is null)
+        {
+            return gameState;
+        }
 
-        var newKingState = new PieceState(@event.Piece, kingToTile);
-        var newRookState = new PieceState(rookPiece, rookToTile);
+    var newKingState = new PieceState(@event.Piece, kingToTile);
+    var newRookState = new PieceState(rookPiece, rookToTile);
 
         // Bookkeeping: mark both pieces moved, clear en-passant, increment halfmove (king move resets? per FIDE halfmove clock resets only on pawn move or capture → keep +1)
         var movedSet = extras.MovedPieceIds.ToList();

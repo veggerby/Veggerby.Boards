@@ -117,7 +117,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         return ConditionResponse.Valid;
 
         // local helpers
-        string CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
+        string? CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
         {
             if (!IsOnBoard(attackFile, attackRank)) { return null; }
             var tid = $"tile-{attackFile}{attackRank}";
@@ -125,7 +125,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         }
     }
 
-    private static string ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
+    private static string? ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
     {
         foreach (var (df, dr) in directions)
         {
@@ -137,6 +137,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                 var tid = $"tile-{f}{r}";
                 if (isTarget(tid)) { return tid; }
                 var tile = engine.Game.GetTile(tid);
+                if (tile is null) { break; }
                 if (state.GetPiecesOnTile(tile).Any()) { break; }
             }
         }

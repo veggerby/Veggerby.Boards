@@ -10,7 +10,7 @@ public class DirectionDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured direction identifier.
     /// </summary>
-    public string DirectionId { get; private set; }
+    public string DirectionId { get; private set; } = null!; // set via WithId before use
 
     /// <summary>
     /// Sets the direction identifier.

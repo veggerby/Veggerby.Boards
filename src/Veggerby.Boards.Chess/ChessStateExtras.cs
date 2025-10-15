@@ -18,7 +18,7 @@ public sealed record ChessStateExtras(
     bool WhiteCanCastleQueenSide,
     bool BlackCanCastleKingSide,
     bool BlackCanCastleQueenSide,
-    string EnPassantTargetTileId,
+    string? EnPassantTargetTileId,
     int HalfmoveClock,
     int FullmoveNumber,
     string[] MovedPieceIds);

@@ -35,16 +35,18 @@ internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, ITh
     {
         if (!(_childDefinitions.Any()))
         {
-            return null;
+            IGameEventCondition<T> nullCond = new NullGameEventCondition<T>();
+            return nullCond;
         }
 
         if (_childDefinitions.Count() == 1)
         {
-            return _childDefinitions.Single().Build(game);
+            var built = _childDefinitions.Single().Build(game);
+            return built ?? new NullGameEventCondition<T>();
         }
 
         var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-        return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+    return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.Any), conditions);
     }
 
     IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(GameEventConditionFactory<T> factory)

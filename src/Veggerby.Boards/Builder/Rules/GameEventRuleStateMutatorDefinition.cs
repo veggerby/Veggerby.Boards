@@ -69,12 +69,12 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
     {
         if (!(mutatorFactories?.Any() ?? false))
         {
-            return null;
+            return NullStateMutator<T>.Instance;
         }
 
         if (mutatorFactories.Count() == 1)
         {
-            return mutatorFactories.Single()(game);
+            return mutatorFactories.Single()(game) ?? NullStateMutator<T>.Instance;
         }
 
         var mutators = mutatorFactories.Select(x => x(game)).ToArray();
@@ -86,7 +86,7 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
     /// </summary>
     internal IStateMutator<T> BuildBefore(Game game)
     {
-        return BuildMutator(_onBeforeMutators, game); ;
+        return BuildMutator(_onBeforeMutators, game);
     }
 
     /// <summary>
@@ -94,6 +94,6 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
     /// </summary>
     internal IStateMutator<T> BuildAfter(Game game)
     {
-        return BuildMutator(_onAfterMutators, game); ;
+        return BuildMutator(_onAfterMutators, game);
     }
 }

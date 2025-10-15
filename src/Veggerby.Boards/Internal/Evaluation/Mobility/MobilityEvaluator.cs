@@ -23,11 +23,11 @@ namespace Veggerby.Boards.Internal.Evaluation.Mobility;
 internal sealed class MobilityEvaluator
 {
     private readonly BoardShape _shape;
-    private readonly BitboardLayout _layout; // may be null when bitboards disabled
+    private readonly BitboardLayout? _layout; // may be null when bitboards disabled
     private readonly IOccupancyIndex _occupancy;
     private readonly IAttackRays _rays;
 
-    private MobilityEvaluator(BoardShape shape, BitboardLayout layout, IOccupancyIndex occupancy, IAttackRays rays)
+    private MobilityEvaluator(BoardShape shape, BitboardLayout? layout, IOccupancyIndex occupancy, IAttackRays rays)
     {
         _shape = shape;
         _layout = layout;
@@ -35,12 +35,12 @@ internal sealed class MobilityEvaluator
         _rays = rays;
     }
 
-    public static MobilityEvaluator TryCreate(EngineCapabilities caps)
+    public static MobilityEvaluator? TryCreate(EngineCapabilities? caps)
     {
         if (caps?.AccelerationContext is BitboardAccelerationContext bbCtx && caps.AccelerationContext.Occupancy is not null)
         {
             // Reflect board shape field from BitboardAccelerationContext (private _shape).
-            BoardShape shape = null;
+            BoardShape? shape = null;
             var shapeField = typeof(BitboardAccelerationContext).GetField("_shape", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (shapeField is not null)
             {
@@ -52,7 +52,7 @@ internal sealed class MobilityEvaluator
                 return null;
             }
 
-            BitboardLayout layout = null;
+            BitboardLayout? layout = null;
             var layoutField = typeof(BitboardAccelerationContext).GetField("_bitboardLayout", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (layoutField is not null)
             {

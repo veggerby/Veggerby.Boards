@@ -5,6 +5,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Builder.Phases;
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules;
 
 namespace Veggerby.Boards.Builder.Rules;
@@ -29,12 +30,12 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
     {
         if (!(_ruleDefinitions?.Any() ?? false))
         {
-            return null;
+            return GameEventRule<IGameEvent>.Null;
         }
 
         if (_ruleDefinitions.Count() == 1)
         {
-            return _ruleDefinitions.Single().Build(game);
+            return _ruleDefinitions.Single().Build(game) ?? GameEventRule<IGameEvent>.Null;
         }
 
         var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();

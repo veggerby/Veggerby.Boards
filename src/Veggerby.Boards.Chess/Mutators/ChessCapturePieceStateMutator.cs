@@ -43,7 +43,7 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
             ? prevExtras.MovedPieceIds
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
 
-        string activeId = gameState.TryGetActivePlayer(out var ap)
+        string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
             : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
@@ -51,7 +51,7 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
         // We inspect difference between previous and updated piece states to infer captured artifact & its last tile.
         var previousPieceStates = gameState.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
         var updatedPieceStates = updated.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
-        string capturedPieceId = null;
+    string? capturedPieceId = null;
         foreach (var kvp in previousPieceStates)
         {
             if (!updatedPieceStates.ContainsKey(kvp.Key))

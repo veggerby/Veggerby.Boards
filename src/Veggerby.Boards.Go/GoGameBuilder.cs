@@ -56,7 +56,7 @@ public sealed class GoGameBuilder(int size = 19) : GameBuilder
         }
 
         // Initial extras (board size persisted)
-        WithState(new GoStateExtras(null, 0, _size));
+    WithState(new GoStateExtras(null, 0, _size));
 
         AddGamePhase("play")
             .If<InitialGameStateCondition>()

@@ -182,23 +182,21 @@ internal static class CanonicalStateSerializer
 /// </summary>
 internal ref struct IncrementalHashWriter(ulong seed)
 {
-    private ulong _hash = seed; // FNV-1a 64-bit state
-
-    public readonly ulong Hash => _hash;
+    public ulong Hash { get; private set; } = seed;
 
     public void Write(ReadOnlySpan<byte> data)
     {
         foreach (var b in data)
         {
-            _hash ^= b;
-            _hash *= 1099511628211UL; // FNV prime
+            Hash ^= b;
+            Hash *= 1099511628211UL; // FNV prime
         }
     }
 
     public void WriteByte(byte b)
     {
-        _hash ^= b;
-        _hash *= 1099511628211UL;
+        Hash ^= b;
+        Hash *= 1099511628211UL;
     }
 
     public void WriteLittleEndian(ulong value)

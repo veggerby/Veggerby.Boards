@@ -21,7 +21,7 @@ public class SingleStepPath
     /// <param name="diceState">The dice state consumed by the step.</param>
     /// <param name="path">The tile path traversed.</param>
     /// <param name="previous">Optional previous step in the sequence.</param>
-    public SingleStepPath(GameState state, DiceState<int> diceState, TilePath path, SingleStepPath previous = null)
+    public SingleStepPath(GameState state, DiceState<int> diceState, TilePath path, SingleStepPath? previous = null)
     {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(diceState);
@@ -51,7 +51,7 @@ public class SingleStepPath
     /// <summary>
     /// Gets the previous step (if any) in the path chain.
     /// </summary>
-    public SingleStepPath Previous { get; }
+    public SingleStepPath? Previous { get; }
 
     /// <summary>
     /// Gets the ordered sequence of path segments from the first step to this step.

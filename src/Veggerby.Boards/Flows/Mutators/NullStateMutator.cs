@@ -8,6 +8,11 @@ namespace Veggerby.Boards.Flows.Mutators;
 /// </summary>
 public class NullStateMutator<T> : IStateMutator<T> where T : IGameEvent
 {
+    /// <summary>
+    /// Singleton instance to avoid repeated allocations.
+    /// </summary>
+    public static NullStateMutator<T> Instance { get; } = new();
+
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, T @event)
     {

@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Simulation;
 /// Randomness (dice rolls) must be driven by deterministic <see cref="GameState"/> random sources to achieve reproducibility.
 /// </remarks>
 /// <remarks>Initializes a new simulator.</remarks>
-public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options = null)
+public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options = null)
 {
     private readonly IPlayoutPolicy _policy = policy ?? throw new ArgumentNullException(nameof(policy));
     private readonly PlayoutOptions _options = options ?? new PlayoutOptions();
@@ -37,7 +37,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
         /// <param name="candidateCount">Number of candidate events produced this step.</param>
         /// <param name="applied">True if an event applied.</param>
         /// <param name="attempted">The event that was attempted (and applied) when <paramref name="applied"/> is true; otherwise the last attempted candidate or null when none.</param>
-        void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent attempted);
+    void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted);
 
         /// <summary>
         /// Invoked once a playout completes (terminal state reached or safety cap triggered).
@@ -50,7 +50,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     {
         public static readonly NullObserver Instance = new();
         private NullObserver() { }
-        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent attempted) { }
+    public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted) { }
         public void OnCompleted(PlayoutResult result) { }
     }
 
@@ -153,13 +153,13 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <param name="progress">Initial progress snapshot.</param>
     /// <param name="observer">Optional diagnostics observer (receives per-step and completion callbacks).</param>
     /// <returns>Playout result.</returns>
-    public PlayoutResult Playout(GameProgress progress, IPlayoutObserver observer = null)
+    public PlayoutResult Playout(GameProgress progress, IPlayoutObserver? observer = null)
     {
         ArgumentNullException.ThrowIfNull(progress);
 
         var ob = observer ?? NullObserver.Instance;
 
-        var trace = _options.CaptureTrace ? new List<GameState>() : null;
+    List<GameState>? trace = _options.CaptureTrace ? new List<GameState>() : null;
         if (trace is not null)
         {
             trace.Add(progress.State);
@@ -182,7 +182,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
             var candidates = _policy.GetCandidateEvents(current) ?? Enumerable.Empty<IGameEvent>();
             var any = false;
             int candidateCount = 0;
-            IGameEvent attempted = null;
+            IGameEvent? attempted = null;
 
             foreach (var evt in candidates)
             {
@@ -243,7 +243,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="simulatorFactory">Optional factory to create a derived simulator per worker (e.g., wrapping policy with thread-local state).</param>
     /// <returns>Aggregated batch result.</returns>
-    public async Task<PlayoutBatchResult> PlayoutManyAsync(GameProgress progress, int count, int? degreeOfParallelism = null, CancellationToken cancellationToken = default, Func<GameSimulator> simulatorFactory = null)
+    public async Task<PlayoutBatchResult> PlayoutManyAsync(GameProgress progress, int count, int? degreeOfParallelism = null, CancellationToken cancellationToken = default, Func<GameSimulator>? simulatorFactory = null)
     {
         if (count <= 0)
         {

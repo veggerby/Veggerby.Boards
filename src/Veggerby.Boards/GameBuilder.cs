@@ -31,7 +31,7 @@ public abstract class GameBuilder
     /// <summary>
     /// Gets or sets the identifier of the board to create. Must be assigned during <see cref="Build"/>.
     /// </summary>
-    protected string BoardId { get; set; }
+    protected string? BoardId { get; set; }
     private readonly IList<PlayerDefinition> _playerDefinitions = [];
     private readonly IList<TileDefinition> _tileDefinitions = [];
     private readonly IList<DirectionDefinition> _directionDefinitions = [];
@@ -75,6 +75,10 @@ public abstract class GameBuilder
 
         var patterns = pattern.Where(x => x.PieceId == piece.PieceId).ToList();
 
+        if (player is null)
+        {
+            throw new InvalidOperationException($"Piece definition '{piece.PieceId}' references unknown player '{piece.PlayerId}'.");
+        }
         return new Piece(piece.PieceId, player, patterns.Select(x => CreatePattern(x, directions)));
     }
 
@@ -284,7 +288,7 @@ public abstract class GameBuilder
     /// </summary>
     protected abstract void Build();
 
-    private GameProgress _initialGameProgress;
+    private GameProgress? _initialGameProgress;
 
     private IEvaluationObserver _observer = NullEvaluationObserver.Instance;
     private ulong? _seed; // deterministic RNG seed (optional)
@@ -354,26 +358,39 @@ public abstract class GameBuilder
         }
 
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
-        TurnArtifact turnArtifact = null;
+    TurnArtifact? turnArtifact = null;
         if (Internal.FeatureFlags.EnableTurnSequencing)
         {
             turnArtifact = new TurnArtifact("turn-timeline");
             artifacts.Add(turnArtifact);
         }
 
+        if (BoardId is null)
+        {
+            throw new InvalidOperationException("BoardId must be configured before building the game.");
+        }
         var board = new Board(BoardId, relations);
-        var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
+    var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
 
         // compile Initial state
 
         var pieceStates = _piecePositions
-            .Select(x => new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
+            .Select(x =>
+            {
+                var p = game.GetPiece(x.Key) ?? throw new InvalidOperationException($"Unknown piece id '{x.Key}' in initial positions.");
+                var t = game.GetTile(x.Value) ?? throw new InvalidOperationException($"Unknown tile id '{x.Value}' in initial positions.");
+                return new PieceState(p, t);
+            })
             .ToList();
 
         var diceStates = _diceState
-            .Select(x => x.Value is null
-                ? (IArtifactState)new NullDiceState(game.GetArtifact<Dice>(x.Key))
-                : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
+            .Select(x =>
+            {
+                var d = game.GetArtifact<Dice>(x.Key) ?? throw new InvalidOperationException($"Unknown dice id '{x.Key}' in initial dice state.");
+                return x.Value is null
+                    ? (IArtifactState)new NullDiceState(d)
+                    : (IArtifactState)new DiceState<int>(d, x.Value.Value);
+            })
             .ToList();
 
         // Seed base states collection (pieces + dice)
@@ -410,8 +427,10 @@ public abstract class GameBuilder
             {
                 // Wrap via generic runtime constructed ExtrasState<T>
                 var extrasStateType = typeof(ExtrasState<>).MakeGenericType(t);
-                var state = (IArtifactState)Activator.CreateInstance(extrasStateType, art, extras);
-                baseStates.Add(state);
+                if (Activator.CreateInstance(extrasStateType, art, extras) is IArtifactState state)
+                {
+                    baseStates.Add(state);
+                }
             }
         }
 
@@ -428,7 +447,7 @@ public abstract class GameBuilder
 
         // compile GamePhase root
 
-        GamePhase gamePhaseRoot = null;
+    GamePhase? gamePhaseRoot = null;
 
         if (_gamePhaseDefinitions.Any())
         {
@@ -457,11 +476,11 @@ public abstract class GameBuilder
         var shape = Internal.Layout.BoardShape.Build(game.Board);
         var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
 
-        Internal.Paths.IPathResolver pathResolver = null;
+    Internal.Paths.IPathResolver? pathResolver = null;
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
-            Internal.Compiled.BoardAdjacencyCache adjacency = null;
+            Internal.Compiled.BoardAdjacencyCache? adjacency = null;
             if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
             {
                 adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
@@ -508,13 +527,15 @@ public abstract class GameBuilder
             pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
         }
 
-        var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
+    // Ensure non-null pathResolver (legacy visitor resolver fallback already applied earlier if compiled disabled)
+    pathResolver ??= new Internal.Paths.SimplePatternPathResolver(game.Board);
+    var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 
         // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)
-        _initialGameProgress = new GameProgress(engine, initialGameState, null);
+    _initialGameProgress = new GameProgress(engine, initialGameState, Enumerable.Empty<IGameEvent>());
 
-        return _initialGameProgress;
+    return _initialGameProgress;
     }
 
     /// <summary>

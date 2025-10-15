@@ -32,6 +32,10 @@ public static class PolicyHelpers
             foreach (var piece in pieces)
             {
                 var pieceState = state.GetState<PieceState>(piece);
+                if (pieceState is null || pieceState.CurrentTile is null)
+                {
+                    continue;
+                }
                 var from = pieceState.CurrentTile;
                 // Acquire outgoing relations from board
                 var relations = game.Board.TileRelations.Where(r => r.From.Equals(from));

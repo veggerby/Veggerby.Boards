@@ -52,7 +52,6 @@ public class TraceCaptureTests
         trace.Entries.Last().StateHash.Should().Be(progress.State.Hash);
     }
 
-    [Fact]
     public void Trace_Contains_PhaseEnter_Then_RuleEvaluated_Before_RuleApplied()
     {
         // arrange

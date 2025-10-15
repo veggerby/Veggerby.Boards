@@ -13,6 +13,10 @@ public class SelectActivePlayerGameStateMutator : IStateMutator<SelectActivePlay
     {
         var white = engine.Game.GetPlayer("white");
         var black = engine.Game.GetPlayer("black");
+        if (white is null || black is null)
+        {
+            return gameState; // players missing
+        }
         var active = @event.ActivePlayerId == white.Id ? white : black;
         var inactive = ReferenceEquals(active, white) ? black : white;
         return gameState.Next([new ActivePlayerState(active, true), new ActivePlayerState(inactive, false)]);

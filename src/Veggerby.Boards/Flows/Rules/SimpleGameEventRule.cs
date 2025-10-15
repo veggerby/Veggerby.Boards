@@ -36,8 +36,10 @@ public class SimpleGameEventRule<T> : GameEventRule<T> where T : IGameEvent
     /// <param name="onBeforeEvent">Optional pre-mutation mutator.</param>
     /// <param name="onAfterEvent">Optional post-mutation mutator (defaults to <see cref="NullStateMutator{T}"/>).</param>
     /// <returns>The rule instance.</returns>
-    public static IGameEventRule New(IGameEventCondition<T> condition, IStateMutator<T> onBeforeEvent = null, IStateMutator<T> onAfterEvent = null)
+    public static IGameEventRule New(IGameEventCondition<T> condition, IStateMutator<T>? onBeforeEvent = null, IStateMutator<T>? onAfterEvent = null)
     {
-        return new SimpleGameEventRule<T>(condition, onBeforeEvent, onAfterEvent ?? new NullStateMutator<T>());
+        onBeforeEvent ??= NullStateMutator<T>.Instance;
+        onAfterEvent ??= NullStateMutator<T>.Instance;
+        return new SimpleGameEventRule<T>(condition, onBeforeEvent, onAfterEvent);
     }
 }

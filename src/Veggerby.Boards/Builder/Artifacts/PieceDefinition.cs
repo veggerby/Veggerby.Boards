@@ -10,11 +10,11 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured piece identifier.
     /// </summary>
-    public string PieceId { get; private set; }
+    public string PieceId { get; private set; } = null!;
     /// <summary>
     /// Gets the owner player identifier if configured.
     /// </summary>
-    public string PlayerId { get; private set; }
+    public string PlayerId { get; private set; } = null!;
 
     /// <summary>
     /// Sets the piece identifier.

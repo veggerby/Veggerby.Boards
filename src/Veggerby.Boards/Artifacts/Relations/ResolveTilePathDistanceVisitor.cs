@@ -40,7 +40,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <summary>
     /// Gets the resulting path (or null if none matched).
     /// </summary>
-    public TilePath ResultPath { get; private set; }
+    public TilePath? ResultPath { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResolveTilePathDistanceVisitor"/> class.
@@ -74,7 +74,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(MultiDirectionPattern pattern)
     {
-        var paths = new List<TilePath>();
+    var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
             var path = GetPathFromDirection(direction, pattern.IsRepeatable);
@@ -97,7 +97,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     public void Visit(FixedPattern pattern)
     {
         var from = From;
-        TilePath path = null;
+    TilePath? path = null;
         foreach (var direction in pattern.Pattern)
         {
             var relation = Board.GetTileRelation(from, direction);
@@ -112,7 +112,14 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         }
 
         // path will always have a value because there will always be at least ONE direction in FixedPattern
-        ResultPath = path.Distance == Distance ? path : null;
+        if (path is not null && path.Distance == Distance)
+        {
+            ResultPath = path;
+        }
+        else
+        {
+            ResultPath = null;
+        }
     }
 
     /// <inheritdoc />
@@ -127,10 +134,10 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         throw new NotImplementedException();
     }
 
-    private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
+    private TilePath? GetPathFromDirection(Direction direction, bool isRepeatable)
     {
         var from = From;
-        TilePath path = null;
+        TilePath? path = null;
         while (path is null || isRepeatable) // we have not yet taken a step or it is repeatable
         {
             var relation = Board.GetTileRelation(from, direction);

@@ -20,7 +20,7 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
     private readonly IOccupancyIndex _occupancy = occupancy;
     private readonly IPathResolver _inner = inner;
 
-    public TilePath Resolve(Piece piece, Tile from, Tile to, States.GameState state)
+    public TilePath? Resolve(Piece piece, Tile from, Tile to, States.GameState state)
     {
         if (piece is null || from is null || to is null)
         {
@@ -42,7 +42,7 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
         return _inner.Resolve(piece, from, to, state);
     }
 
-    private bool TryResolveViaRays(Piece piece, Tile from, Tile to, States.GameState state, ulong[] rays, int fromIdx, int toIdx, out TilePath path)
+    private bool TryResolveViaRays(Piece piece, Tile from, Tile to, States.GameState state, ulong[] rays, int fromIdx, int toIdx, out TilePath? path)
     {
         path = null;
         if (fromIdx == toIdx)
@@ -122,7 +122,7 @@ internal sealed class SlidingFastPathResolver(BoardShape shape, IAttackRays rays
         foreach (var tile in steps)
         {
             // We must locate the direction from prev to tile. Iterate all directions and pick the matching neighbor.
-            TileRelation rel = null;
+            TileRelation? rel = null;
             if (!_shape.TryGetTileIndex(prev, out var prevIdxLookup))
             {
                 return false;

@@ -17,7 +17,7 @@ public sealed class TurnReplayStateMutator : IStateMutator<TurnReplayEvent>
         }
 
         // Locate existing TurnState; do nothing if absent (shadow emission may be disabled)
-        TurnState currentTurn = null;
+    TurnState? currentTurn = null;
         foreach (var ts in state.GetStates<TurnState>()) { currentTurn = ts; break; }
         if (currentTurn is null) { return state; }
 

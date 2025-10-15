@@ -28,7 +28,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// <summary>
     /// Gets the resolved path, if any.
     /// </summary>
-    public TilePath ResultPath { get; private set; }
+    public TilePath? ResultPath { get; private set; }
 
     /// <summary>
     /// Initializes the visitor with board and endpoints.
@@ -57,7 +57,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(MultiDirectionPattern pattern)
     {
-        var paths = new List<TilePath>();
+    var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
             var path = GetPathFromDirection(direction, pattern.IsRepeatable);
@@ -84,7 +84,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     public void Visit(FixedPattern pattern)
     {
         var from = From;
-        TilePath path = null;
+    TilePath? path = null;
         foreach (var direction in pattern.Pattern)
         {
             var relation = Board.GetTileRelation(from, direction);
@@ -99,7 +99,14 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
         }
 
         // path will always have a value because there will always be at least ONE direction in FixedPattern
-        ResultPath = To.Equals(path.To) ? path : null;
+        if (path is not null && To.Equals(path.To))
+        {
+            ResultPath = path;
+        }
+        else
+        {
+            ResultPath = null;
+        }
     }
 
     /// <summary>
@@ -129,11 +136,17 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
             return;
         }
 
-        TilePath resultPath = null;
+    TilePath? resultPath = null;
 
         foreach (var edge in path.Edges)
         {
-            resultPath = TilePath.Create(resultPath, Board.GetTileRelation(edge.From, edge.To));
+            var relation = Board.GetTileRelation(edge.From, edge.To);
+            if (relation is null)
+            {
+                ResultPath = null;
+                return;
+            }
+            resultPath = TilePath.Create(resultPath, relation);
         }
 
         ResultPath = resultPath;
@@ -142,10 +155,10 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// <summary>
     /// Builds a path by stepping repeatedly in a single direction until destination reached or blocked.
     /// </summary>
-    private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
+    private TilePath? GetPathFromDirection(Direction direction, bool isRepeatable)
     {
         var from = From;
-        TilePath path = null;
+        TilePath? path = null;
         while (path is null || isRepeatable) // we have not yet taken a step or it is repeatable
         {
             var relation = Board.GetTileRelation(from, direction);

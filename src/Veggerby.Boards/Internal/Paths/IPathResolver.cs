@@ -21,5 +21,5 @@ internal interface IPathResolver
     /// <param name="to">Destination tile.</param>
     /// <param name="state">Current immutable game state snapshot.</param>
     /// <returns>A <see cref="TilePath"/> if resolvable; otherwise <c>null</c>.</returns>
-    TilePath Resolve(Piece piece, Tile from, Tile to, States.GameState state);
+    TilePath? Resolve(Piece piece, Tile from, Tile to, States.GameState state);
 }

@@ -80,10 +80,10 @@ public class Board : Artifact, IEquatable<Board>
     }
 
     /// <inheritdoc />
-    public bool Equals(Board other) => base.Equals(other);
+    public bool Equals(Board? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as Board);
+    public override bool Equals(object? obj) => Equals(obj as Board);
 
     /// <inheritdoc />
     public override int GetHashCode()

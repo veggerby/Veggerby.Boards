@@ -4,10 +4,8 @@
   <Import Project="$(BuildFolder)\nuget-package.props" />
 
   <PropertyGroup>
-    <!-- Nullable migration - start with annotations only to avoid large refactor blocking build -->
-    <Nullable>annotations</Nullable>
-    <!-- Temporarily allow nullability diagnostics without failing build; will be removed incrementally -->
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8629;CS8765;CS8767</WarningsNotAsErrors>
+    <Nullable>enable</Nullable>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors)</WarningsNotAsErrors>
   </PropertyGroup>
 
 </Project>

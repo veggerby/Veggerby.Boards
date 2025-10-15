@@ -36,7 +36,7 @@ public class DiceState<T> : ArtifactState<Dice>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as DiceState<T>);
     }
@@ -52,7 +52,7 @@ public class DiceState<T> : ArtifactState<Dice>
     /// </summary>
     /// <param name="other">The other dice state.</param>
     /// <returns><c>true</c> when artifact and value match; otherwise <c>false</c>.</returns>
-    public bool Equals(DiceState<T> other)
+    public bool Equals(DiceState<T>? other)
     {
         if (other is null)
         {

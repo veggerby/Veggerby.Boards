@@ -8,10 +8,10 @@ namespace Veggerby.Boards.Artifacts;
 public class Dice(string id) : Artifact(id), IEquatable<Dice>
 {
     /// <inheritdoc />
-    public bool Equals(Dice other) => base.Equals(other);
+    public bool Equals(Dice? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as Dice);
     }

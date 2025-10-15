@@ -31,10 +31,10 @@ public class CompositeArtifact<T> : Artifact, IEquatable<CompositeArtifact<T>>
     }
 
     /// <inheritdoc />
-    public bool Equals(CompositeArtifact<T> other) => base.Equals(other);
+    public bool Equals(CompositeArtifact<T>? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as CompositeArtifact<T>);
     }

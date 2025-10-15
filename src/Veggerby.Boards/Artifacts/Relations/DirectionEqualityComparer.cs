@@ -8,7 +8,7 @@ namespace Veggerby.Boards.Artifacts.Relations;
 public class DirectionEqualityComparer : IEqualityComparer<Direction>
 {
     /// <inheritdoc />
-    public bool Equals(Direction x, Direction y)
+    public bool Equals(Direction? x, Direction? y)
     {
         if (x is null || y is null)
         {

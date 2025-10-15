@@ -22,10 +22,10 @@ public class Piece(string id, Player owner, IEnumerable<IPattern> patterns) : Ar
     public IEnumerable<IPattern> Patterns { get; } = (patterns ?? Enumerable.Empty<IPattern>()).ToList().AsReadOnly();
 
     /// <inheritdoc />
-    public bool Equals(Piece other) => base.Equals(other);
+    public bool Equals(Piece? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as Piece);
     }

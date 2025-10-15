@@ -16,7 +16,7 @@ internal sealed class ExtrasState<T>(Artifact artifact, T value) : IArtifactStat
 
     public T Value { get; } = value;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is ExtrasState<T> other && Artifact.Equals(other.Artifact) && EqualityComparer<T>.Default.Equals(Value, other.Value);
     }

@@ -51,12 +51,12 @@ public sealed class DeckState : ArtifactState<Deck>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as DeckState);
+    public override bool Equals(object? obj) => Equals(obj as DeckState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as DeckState);
 
-    private bool Equals(DeckState other)
+    private bool Equals(DeckState? other)
     {
         if (other is null)
         {

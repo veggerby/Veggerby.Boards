@@ -28,7 +28,7 @@ public abstract class Artifact : IEquatable<Artifact>
     }
 
     /// <inheritdoc />
-    public bool Equals(Artifact other)
+    public bool Equals(Artifact? other)
     {
         return other is not null
             && GetType().Equals(other.GetType())
@@ -36,7 +36,7 @@ public abstract class Artifact : IEquatable<Artifact>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

@@ -54,7 +54,7 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     public int PassStreak { get; }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as TurnState);
     }
@@ -70,7 +70,7 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// </summary>
     /// <param name="other">Other state.</param>
     /// <returns><c>true</c> if both reference the same artifact and have identical number + segment.</returns>
-    public bool Equals(TurnState other)
+    public bool Equals(TurnState? other)
     {
         if (other is null)
         {

@@ -58,13 +58,13 @@ public class ConditionResponse
     /// <summary>
     /// Indicates equality based on <see cref="Result"/> only (reason is ignored).
     /// </summary>
-    public bool Equals(ConditionResponse other)
+    public bool Equals(ConditionResponse? other)
     {
         return other is not null && Result == other.Result;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

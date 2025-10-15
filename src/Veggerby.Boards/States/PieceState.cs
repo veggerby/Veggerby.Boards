@@ -27,7 +27,7 @@ public class PieceState : ArtifactState<Piece>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as PieceState);
     }
@@ -41,7 +41,7 @@ public class PieceState : ArtifactState<Piece>
     /// <summary>
     /// Typed equality comparison.
     /// </summary>
-    public bool Equals(PieceState other)
+    public bool Equals(PieceState? other)
     {
         if (other is null)
         {

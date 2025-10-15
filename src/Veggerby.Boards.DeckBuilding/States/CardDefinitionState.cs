@@ -15,12 +15,12 @@ public sealed class CardDefinitionState : ArtifactState<CardDefinition>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as CardDefinitionState);
+    public override bool Equals(object? obj) => Equals(obj as CardDefinitionState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as CardDefinitionState);
 
-    private bool Equals(CardDefinitionState other)
+    private bool Equals(CardDefinitionState? other)
     {
         if (other is null) { return false; }
         return Artifact.Equals(other.Artifact);

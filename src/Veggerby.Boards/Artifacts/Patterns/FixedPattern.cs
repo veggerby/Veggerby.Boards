@@ -40,13 +40,13 @@ public class FixedPattern : IPattern
     }
 
     /// <inheritdoc />
-    public bool Equals(FixedPattern other)
+    public bool Equals(FixedPattern? other)
     {
         return other is not null && Pattern.SequenceEqual(other.Pattern);
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

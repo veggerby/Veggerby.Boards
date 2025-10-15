@@ -20,12 +20,12 @@ public sealed class ScoreState : ArtifactState<Player>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as ScoreState);
+    public override bool Equals(object? obj) => Equals(obj as ScoreState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as ScoreState);
 
-    private bool Equals(ScoreState other)
+    private bool Equals(ScoreState? other)
     {
         if (other is null) { return false; }
         return Artifact.Equals(other.Artifact) && VictoryPoints == other.VictoryPoints;

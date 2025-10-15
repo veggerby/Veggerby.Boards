@@ -83,7 +83,7 @@ public class GameState
     /// </summary>
     /// <param name="other">The other state.</param>
     /// <returns><c>true</c> when equal; otherwise <c>false</c>.</returns>
-    public bool Equals(GameState other)
+    public bool Equals(GameState? other)
     {
         if (other is null)
         {
@@ -104,7 +104,7 @@ public class GameState
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

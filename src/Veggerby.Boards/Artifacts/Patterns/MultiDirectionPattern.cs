@@ -48,13 +48,13 @@ public class MultiDirectionPattern : IPattern
     }
 
     /// <inheritdoc />
-    public bool Equals(MultiDirectionPattern other)
+    public bool Equals(MultiDirectionPattern? other)
     {
         return other is not null && IsRepeatable == other.IsRepeatable && !Directions.Except(other.Directions).Any() && !other.Directions.Except(Directions).Any();
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

@@ -14,13 +14,13 @@ public class NullPattern : IPattern
     /// <summary>
     /// Compares two <see cref="NullPattern"/> instances (all instances are considered equal).
     /// </summary>
-    public static bool Equals(NullPattern other)
+    public static bool Equals(NullPattern? other)
     {
         return other is not null;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

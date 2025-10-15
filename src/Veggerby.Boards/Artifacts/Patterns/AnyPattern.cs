@@ -15,13 +15,13 @@ public class AnyPattern : IPattern, IEquatable<AnyPattern>
     }
 
     /// <inheritdoc />
-    public bool Equals(AnyPattern other)
+    public bool Equals(AnyPattern? other)
     {
         return other is not null;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;

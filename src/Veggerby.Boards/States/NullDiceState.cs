@@ -14,7 +14,7 @@ namespace Veggerby.Boards.States;
 public class NullDiceState(Dice dice) : ArtifactState<Dice>(dice)
 {
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as NullDiceState);
     }
@@ -30,7 +30,7 @@ public class NullDiceState(Dice dice) : ArtifactState<Dice>(dice)
     /// </summary>
     /// <param name="other">The other instance.</param>
     /// <returns><c>true</c> if artifacts match; otherwise <c>false</c>.</returns>
-    public bool Equals(NullDiceState other)
+    public bool Equals(NullDiceState? other)
     {
         if (other is null)
         {

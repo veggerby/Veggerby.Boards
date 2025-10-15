@@ -113,6 +113,12 @@ internal sealed class TraceCaptureObserver(IEvaluationObserver inner, Evaluation
     public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
     {
         _trace.Add(new TraceEntry(++_order, "RuleSkipped", phase?.Label, rule?.GetType().Name, null, null, reason.ToString(), ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
-        _inner.OnRuleSkipped(phase, rule, reason, state, ruleIndex);
+        // IEvaluationObserver contract currently requires non-null phase and rule. If either is null we only record the trace entry
+        // (for diagnostics) and suppress the downstream callback to avoid violating nullability. Engine sources should ideally never
+        // propagate null here; this guard preserves safety while retaining trace fidelity.
+        if (phase is not null && rule is not null)
+        {
+            _inner.OnRuleSkipped(phase, rule, reason, state, ruleIndex);
+        }
     }
 }

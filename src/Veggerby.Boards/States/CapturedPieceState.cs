@@ -23,12 +23,12 @@ public sealed class CapturedPieceState : ArtifactState<Piece>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as CapturedPieceState);
+    public override bool Equals(object? obj) => Equals(obj as CapturedPieceState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as CapturedPieceState);
 
-    private bool Equals(CapturedPieceState other)
+    private bool Equals(CapturedPieceState? other)
     {
         if (other is null) { return false; }
         return Artifact.Equals(other.Artifact);

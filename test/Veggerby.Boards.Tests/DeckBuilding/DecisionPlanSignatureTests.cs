@@ -56,7 +56,7 @@ public class DecisionPlanSignatureTests
             yield break;
         }
         var type = rule.GetType();
-        while (type != null && type != typeof(object))
+        while (type is not null && type != typeof(object))
         {
             if (type.IsGenericType)
             {

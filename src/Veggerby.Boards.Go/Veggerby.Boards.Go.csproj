@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Package Metadata -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Description>Veggerby.Boards Go module: immutable Go board (configurable size), stone placement &amp; pass events scaffolding.</Description>
     <PackageTags>board-game;engine;go;weiqi;baduk</PackageTags>
     <PackageId>Veggerby.Boards.Go</PackageId>
@@ -10,4 +11,5 @@
   <ItemGroup>
     <ProjectReference Include="../Veggerby.Boards/Veggerby.Boards.csproj" />
   </ItemGroup>
+
 </Project>

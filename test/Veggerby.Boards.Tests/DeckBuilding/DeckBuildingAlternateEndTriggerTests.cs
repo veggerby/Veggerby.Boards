@@ -14,7 +14,7 @@ public class DeckBuildingAlternateEndTriggerTests
     private static (GameProgress progress, Deck deck) BuildGame(DeckBuildingEndTriggerOptions options)
     {
         var builder = new DeckBuildingGameBuilder();
-        if (options != null)
+        if (options is not null)
         {
             builder.WithEndTrigger(options);
         }

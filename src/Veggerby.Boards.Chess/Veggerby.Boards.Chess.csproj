@@ -2,7 +2,6 @@
 
   <!-- Package Metadata -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Description>Chess implementation components for Veggerby.Boards built atop the core engine.</Description>
     <PackageTags>board-game;game-engine;immutable;rules-engine;chess</PackageTags>
     <PackageId>Veggerby.Boards.Chess</PackageId>

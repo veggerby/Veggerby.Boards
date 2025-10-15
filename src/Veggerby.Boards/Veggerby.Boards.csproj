@@ -2,7 +2,6 @@
 
   <!-- Package Metadata -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Description>Core engine for Veggerby.Boards: immutable board game modeling, artifact states, phases, rules and deterministic game state transitions.</Description>
     <PackageTags>board-game;game-engine;immutable;rules-engine;core</PackageTags>
     <PackageId>Veggerby.Boards</PackageId>

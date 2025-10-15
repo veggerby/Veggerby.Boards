@@ -10,3 +10,4 @@ M:System.Linq.Enumerable.AsParallel;Parallel LINQ introduces nondeterminism and 
 M:System.Linq.ParallelEnumerable.*;Parallel LINQ introduces nondeterminism and overhead; not allowed in core
 M:System.Threading.Tasks.Parallel.For;Parallel execution introduces ordering nondeterminism inside deterministic engine
 M:System.Threading.Tasks.Parallel.ForEach;Parallel execution introduces ordering nondeterminism inside deterministic engine
+M:System.Threading.Tasks.Task.Run;Disallow background task scheduling in deterministic core; use synchronous deterministic flows

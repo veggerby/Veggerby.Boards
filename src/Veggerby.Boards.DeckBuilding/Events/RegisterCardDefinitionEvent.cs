@@ -32,7 +32,7 @@ public sealed class RegisterCardDefinitionEvent : IGameEvent
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(cardId);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        if (types == null) { throw new ArgumentNullException(nameof(types)); }
+        if (types is null) { throw new ArgumentNullException(nameof(types)); }
         if (cost < 0) { throw new ArgumentOutOfRangeException(nameof(cost)); }
         CardId = cardId;
         Name = name;

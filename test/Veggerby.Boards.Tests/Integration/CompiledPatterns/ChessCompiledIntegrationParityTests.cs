@@ -24,13 +24,13 @@ public class ChessCompiledIntegrationParityTests
         var legacyVisitor1 = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to1);
         foreach (var p in piece.Patterns)
         {
-            p.Accept(legacyVisitor1); if (legacyVisitor1.ResultPath != null) break;
+            p.Accept(legacyVisitor1); if (legacyVisitor1.ResultPath is not null) break;
         }
 
         var legacyVisitor2 = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to2);
         foreach (var p in piece.Patterns)
         {
-            p.Accept(legacyVisitor2); if (legacyVisitor2.ResultPath != null) break;
+            p.Accept(legacyVisitor2); if (legacyVisitor2.ResultPath is not null) break;
         }
 
         legacyVisitor1.ResultPath.Should().BeNull("Expected current legacy to fail for single advance for reproduction");

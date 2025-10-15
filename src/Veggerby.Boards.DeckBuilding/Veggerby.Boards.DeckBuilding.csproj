@@ -2,7 +2,6 @@
 
   <!-- Package Metadata -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Description>Deck-building core scaffolding for Veggerby.Boards: deterministic supply and player zones built on Cards module.</Description>
     <PackageTags>board-game;game-engine;immutable;rules-engine;deck-building;cards</PackageTags>
     <PackageId>Veggerby.Boards.DeckBuilding</PackageId>

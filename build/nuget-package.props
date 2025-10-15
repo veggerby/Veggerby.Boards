@@ -1,4 +1,11 @@
 <Project>
+
+    <!-- Framework and Language settings -->
+    <PropertyGroup>
+        <!-- Central multi-targeting for all packable libraries (modules may override if needed) -->
+        <TargetFrameworks Condition="'$(TargetFrameworks)' == ''">net8.0;net9.0</TargetFrameworks>
+    </PropertyGroup>
+
     <!-- Repository & Source Metadata -->
     <PropertyGroup>
         <RepositoryUrl>https://github.com/veggerby/Veggerby.Boards</RepositoryUrl>

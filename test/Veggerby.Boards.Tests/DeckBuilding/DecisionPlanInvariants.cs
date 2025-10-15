@@ -48,7 +48,7 @@ public class DecisionPlanInvariants
 
         // Heuristic: non-composite rules are generic GameEventRule<TEvent>. We discover TEvent via interfaces/base types.
         var type = rule.GetType();
-        while (type != null && type != typeof(object))
+        while (type is not null && type != typeof(object))
         {
             if (type.IsGenericType)
             {

@@ -1,7 +1,20 @@
 <Project>
 
+    <!-- Framework and Language settings -->
+    <PropertyGroup>
+        <!-- Central multi-targeting for all packable libraries (modules may override if needed) -->
+        <TargetFramework Condition="'$(TargetFramework)' == ''">net9.0</TargetFramework>
+    </PropertyGroup>
+
     <ItemGroup>
         <AdditionalFiles Include="$(BuildFolder)\BannedSymbols.Tests.txt" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <!-- Tests do not need to generate XML docs or enforce missing documentation warnings -->
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591;1573;1574;1712</NoWarn>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
 </Project>

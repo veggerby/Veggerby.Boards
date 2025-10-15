@@ -18,7 +18,7 @@ public class GameTimelineInvariantTests
 
         // direct relation fast-path
         var rel = progress.Game.Board.GetTileRelation(from, to);
-        if (rel != null)
+        if (rel is not null)
         {
             return new TilePath([rel]);
         }

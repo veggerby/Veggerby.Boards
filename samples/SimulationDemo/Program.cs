@@ -58,7 +58,7 @@ static GameProgress ApplyMove(GameProgress progress, IGameNomenclature nomenclat
     var from = progress.Game.GetTile(fromTileId);
     var to = progress.Game.GetTile(toTileId);
 
-    if (piece == null || from == null || to == null)
+    if (piece is null || from is null || to is null)
     {
         Console.WriteLine($"(warn) Invalid identifiers for move {pieceId} {fromTileId}->{toTileId}");
         return progress;
@@ -66,7 +66,7 @@ static GameProgress ApplyMove(GameProgress progress, IGameNomenclature nomenclat
 
     // Try resolve via existing patterns (supports multi-step knight paths, sliding, etc.)
     var path = ResolvePath(progress.Game, piece, from, to);
-    if (path == null)
+    if (path is null)
     {
         Console.WriteLine($"(info) {nomenclature.GetPieceName(piece)} intent {nomenclature.GetTileName(from)}->{nomenclature.GetTileName(to)} (unreachable with current patterns)");
         return progress;
@@ -93,7 +93,7 @@ static TilePath? ResolvePath(Game game, Piece piece, Tile from, Tile to)
 
     // Fallback: direct relation (single step) if available
     var rel = game.Board.TileRelations.FirstOrDefault(r => r.From == from && r.To == to);
-    return rel != null ? new TilePath([rel]) : null;
+    return rel is not null ? new TilePath([rel]) : null;
 }
 
 static void RunBackgammonDemo()
@@ -108,7 +108,7 @@ static void RunBackgammonDemo()
     // For deterministic demo we emulate a dice roll event if rule set present.
     // If dice rules not wired in builder, we just print pieces & exit.
     var dice = progress.Game.GetArtifacts<Dice>().FirstOrDefault();
-    if (dice == null)
+    if (dice is null)
     {
         Console.WriteLine("(info) Backgammon dice not present in current builder configuration.");
         return;
@@ -121,11 +121,11 @@ static void RunBackgammonDemo()
 
     // Attempt a simple piece move: pick first movable piece if direct relation exists.
     var piece = rollProgress.Game.GetArtifacts<Piece>().FirstOrDefault();
-    if (piece != null)
+    if (piece is not null)
     {
         var pieceState = rollProgress.State.GetState<PieceState>(piece);
         var rel = rollProgress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
-        if (rel != null)
+        if (rel is not null)
         {
             var path = new TilePath([rel]);
             var moveEvt = new MovePieceGameEvent(piece, path);

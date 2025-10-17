@@ -20,9 +20,9 @@ public class GamePhase
     public int Number { get; }
 
     /// <summary>
-    /// Gets the optional human readable label.
+    /// Gets the human readable label. Returns empty string when no label is specified.
     /// </summary>
-    public string? Label { get; }
+    public string Label { get; }
 
     /// <summary>
     /// Gets the parent composite phase (nullable).
@@ -45,9 +45,9 @@ public class GamePhase
     public IGameEventRule Rule { get; }
 
     /// <summary>
-    /// Gets the optional exclusivity group identifier. Phases sharing a non-null value are mutually exclusive candidates for future masking optimization.
+    /// Gets the exclusivity group identifier. Phases sharing a non-empty value are mutually exclusive candidates for future masking optimization. Returns empty string when no group is specified.
     /// </summary>
-    public string? ExclusivityGroup { get; }
+    public string ExclusivityGroup { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GamePhase"/> class.
@@ -71,11 +71,11 @@ public class GamePhase
         ArgumentNullException.ThrowIfNull(rule);
 
         Number = number;
-        Label = label;
+        Label = label ?? string.Empty;
         Condition = condition;
         Rule = rule;
         PreProcessors = preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>();
-        ExclusivityGroup = exclusivityGroup;
+        ExclusivityGroup = exclusivityGroup ?? string.Empty;
 
         Parent = parent;
         parent?.Add(this);

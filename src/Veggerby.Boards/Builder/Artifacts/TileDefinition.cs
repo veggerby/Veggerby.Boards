@@ -10,7 +10,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured tile identifier.
     /// </summary>
-    public string TileId { get; private set; } = null!;
+    public string TileId { get; private set; } = null!; // LIFECYCLE: set by WithId() before Build()
 
     /// <summary>
     /// Sets the identifier for the tile.

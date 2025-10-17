@@ -29,6 +29,7 @@ public class ChessCastlingCaptureRightsTests
         // Fallback pragmatic test: Simulate capture by moving white rook off and back then performing a fake capture isn't possible without custom events. So skip implementation until a simpler capture route is feasible.
         // act / assert (placeholder) - ensure initial rights intact (test deferred if path complexity too high)
         var extras = progress.State.GetExtras<ChessStateExtras>();
+        extras.Should().NotBeNull();
         extras.WhiteCanCastleKingSide.Should().BeTrue();
         extras.WhiteCanCastleQueenSide.Should().BeTrue();
     }

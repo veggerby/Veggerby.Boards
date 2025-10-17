@@ -27,7 +27,7 @@ public class ArtifactTests
             // arrange
 
             // act
-            var actual = () => new Player(null);
+            var actual = () => new Player(null!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("id");

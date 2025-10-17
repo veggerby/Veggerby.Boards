@@ -16,7 +16,7 @@ internal static class TurnSequencingHelpers
     /// </summary>
     public static GameState ApplyTurnAndRotate(GameEngine engine, GameState prior, TurnState newTurnState)
     {
-    ActivePlayerState? currentActive = null;
+        ActivePlayerState? currentActive = null;
         foreach (var aps in prior.GetStates<ActivePlayerState>())
         {
             if (aps.IsActive)

@@ -21,9 +21,15 @@ public class ChessBitboardTests
         // assert
         ok.Should().BeTrue();
         occupancy.PopCount().Should().Be(progress.State.GetStates<Boards.States.PieceState>().Count()); // all pieces occupy unique tiles
-        perPlayer.Count.Should().Be(2);
-        var white = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White).Value.PopCount();
-        var black = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black).Value.PopCount();
+        perPlayer.Should().NotBeNull();
+        perPlayer!.Count.Should().Be(2);
+        perPlayer.Should().NotBeNull();
+        var whitePair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White);
+        var blackPair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black);
+        whitePair.Value.Should().NotBeNull();
+        blackPair.Value.Should().NotBeNull();
+        var white = whitePair.Value.PopCount();
+        var black = blackPair.Value.PopCount();
         (white + black).Should().Be(occupancy.PopCount());
     }
 }

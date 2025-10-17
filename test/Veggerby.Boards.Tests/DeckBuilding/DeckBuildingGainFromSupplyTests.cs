@@ -21,8 +21,8 @@ public class DeckBuildingGainFromSupplyTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1");
-        var deck = game.GetArtifact<Deck>("p1-deck");
+        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
 
         // initialize deck state with empty piles and supply
 
@@ -35,18 +35,19 @@ public class DeckBuildingGainFromSupplyTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 10 };
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         // transition Start -> Main -> keep Main for buy phase (gain handled in buy phase which uses Main segment gating)
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
-        progress = progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
-        ds.Supply[c1.Id].Should().Be(9);
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Supply[c1.Id].Should().Be(9);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainSingle().Which.Should().Be(c1);
     }
 
@@ -60,8 +61,8 @@ public class DeckBuildingGainFromSupplyTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1");
-        var deck = game.GetArtifact<Deck>("p1-deck");
+        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -72,13 +73,13 @@ public class DeckBuildingGainFromSupplyTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 0 };
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
-        var act = () => progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        var act = () => progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

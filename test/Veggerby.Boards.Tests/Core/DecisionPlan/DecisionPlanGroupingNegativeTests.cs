@@ -31,10 +31,11 @@ public class DecisionPlanGroupingNegativeTests
         using var _ = new Infrastructure.FeatureFlagScope(grouping: true);
 
         // act - simulate grouped evaluation gate path
+        var dummyState = GameState.New(System.Array.Empty<IArtifactState>());
         foreach (var g in plan.Groups)
         {
             var gate = plan.Entries[g.StartIndex];
-            gate.Condition.Evaluate(null); // one evaluation only
+            gate.Condition.Evaluate(dummyState); // one evaluation only
         }
 
         // assert

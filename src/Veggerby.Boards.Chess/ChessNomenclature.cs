@@ -85,8 +85,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         }
 
         // Destination SAN square
-    var toTile = moveEvent.Path?.To;
-    var to = toTile is null ? string.Empty : GetTileName(toTile);
+        var toTile = moveEvent.Path?.To;
+        var to = toTile is null ? string.Empty : GetTileName(toTile);
         if (string.IsNullOrEmpty(to))
         {
             return string.Empty;

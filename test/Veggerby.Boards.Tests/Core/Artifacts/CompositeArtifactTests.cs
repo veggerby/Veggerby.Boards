@@ -32,7 +32,7 @@ public class CompositeArtifactTests
             // arrange
 
             // act
-            var actual = () => new CompositeArtifact<Tile>("combined", null);
+            var actual = () => new CompositeArtifact<Tile>("combined", null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("childArtifacts");

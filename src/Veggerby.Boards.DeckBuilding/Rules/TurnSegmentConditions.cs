@@ -10,7 +10,7 @@ public sealed class TurnSegmentStartCondition : IGameStateCondition
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
-    TurnState? turn = null;
+        TurnState? turn = null;
         foreach (var child in state.ChildStates)
         {
             if (child is TurnState ts)
@@ -38,7 +38,7 @@ public sealed class TurnSegmentMainCondition : IGameStateCondition
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
-    TurnState? turn = null;
+        TurnState? turn = null;
         foreach (var child in state.ChildStates)
         {
             if (child is TurnState ts)
@@ -65,7 +65,7 @@ public sealed class TurnSegmentEndCondition : IGameStateCondition
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
-    TurnState? turn = null;
+        TurnState? turn = null;
         foreach (var child in state.ChildStates)
         {
             if (child is TurnState ts)

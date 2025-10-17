@@ -37,7 +37,7 @@ public class GameEngineTests
 
             // act
             var dummyPlan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(gamePhaseRoot);
-            var actual = () => new GameEngine(null, gamePhaseRoot, dummyPlan);
+            var actual = () => new GameEngine(null!, gamePhaseRoot, dummyPlan);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("game");
@@ -51,7 +51,7 @@ public class GameEngineTests
             var game = builder.Game;
 
             // act
-            var actual = () => new GameEngine(game, null, builder.Engine.DecisionPlan);
+            var actual = () => new GameEngine(game, null!, builder.Engine.DecisionPlan);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("gamePhaseRoot");

@@ -74,7 +74,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(MultiDirectionPattern pattern)
     {
-    var paths = new List<TilePath>();
+        var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
             var path = GetPathFromDirection(direction, pattern.IsRepeatable);
@@ -97,7 +97,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     public void Visit(FixedPattern pattern)
     {
         var from = From;
-    TilePath? path = null;
+        TilePath? path = null;
         foreach (var direction in pattern.Pattern)
         {
             var relation = Board.GetTileRelation(from, direction);

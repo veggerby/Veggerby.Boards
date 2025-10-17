@@ -12,7 +12,7 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 /// </summary>
 public class CompiledChessPatternParityTests
 {
-    private static (TilePath legacy, TilePath compiled) Resolve(Game game, Piece piece, Tile from, Tile to)
+    private static (TilePath? legacy, TilePath? compiled) Resolve(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy (search each pattern until target reached)
         var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
@@ -50,7 +50,7 @@ public class CompiledChessPatternParityTests
         var (legacy, compiled) = Resolve(game, knight, a, n2);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
         compiled.To.Should().Be(legacy.To);
     }
 
@@ -67,7 +67,7 @@ public class CompiledChessPatternParityTests
         var (legacy, compiled) = Resolve(game, rook, a, d);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class CompiledChessPatternParityTests
         var (legacy, compiled) = Resolve(game, bishop, a, c);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class CompiledChessPatternParityTests
         var (legacy, compiled) = Resolve(game, queen, a, c);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 
     [Fact]

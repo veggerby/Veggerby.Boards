@@ -130,7 +130,8 @@ public class BackgammonGameBuilder : GameBuilder
                 .PreProcessEvent(game => new SingleStepMovePieceGameEventPreProcessor(new TileBlockedGameEventCondition(2, PlayerOption.Opponent), game.GetArtifacts<Dice>("dice-1", "dice-2")))
                 .All()
                 .ForEvent<RollDiceGameEvent<int>>()
-                    .If(game => {
+                    .If(game =>
+                    {
                         var dd = game.GetArtifact<Dice>("doubling-dice");
                         if (dd is null)
                         {
@@ -139,14 +140,16 @@ public class BackgammonGameBuilder : GameBuilder
                         return new DoublingDiceWithActivePlayerGameEventCondition(dd);
                     })
                     .Then()
-                        .Do(game => {
+                        .Do(game =>
+                        {
                             var dd = game.GetArtifact<Dice>("doubling-dice");
                             return dd is null ? NullStateMutator<RollDiceGameEvent<int>>.Instance : new DoublingDiceStateMutator(dd);
                         })
                 .ForEvent<MovePieceGameEvent>()
                     .If<PieceIsActivePlayerGameEventCondition>()
                         .And(game => new HasDiceValueGameEventCondition(game.GetArtifacts<Dice>("dice-1", "dice-2")))
-                        .And(game => {
+                        .And(game =>
+                        {
                             var bar = game.GetTile("bar");
                             var hw = game.GetTile("home-white");
                             var hb = game.GetTile("home-black");
@@ -161,14 +164,16 @@ public class BackgammonGameBuilder : GameBuilder
                             if (hb is not null) { tmp.Add(hb); }
                             return new TileExceptionGameEventCondition(tmp.ToArray());
                         })
-                        .And(game => {
+                        .And(game =>
+                        {
                             var bar = game.GetTile("bar");
                             return bar is null ? new PermissiveMovePieceCondition() : new NoPiecesOnTilesGameEventCondition<MovePieceGameEvent>(bar);
                         })
                         .And(game => new TileBlockedGameEventCondition(2, PlayerOption.Opponent))
                     .Then()
                         //.Before<MovePieceStateMutator>()
-                        .Do(game => {
+                        .Do(game =>
+                        {
                             var bar = game.GetTile("bar");
                             return bar is null ? NullStateMutator<MovePieceGameEvent>.Instance : new ClearToTileStateMutator(bar, PlayerOption.Opponent, 1);
                         })

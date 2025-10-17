@@ -7,10 +7,11 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 
 public class CompiledDirectionPatternParityTests
 {
-    private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
+    private static (TilePath? legacy, TilePath? compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
-        var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
-        foreach (var p in piece.Patterns)
+        game.Should().NotBeNull(); piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
+        var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from!, to!);
+        foreach (var p in piece!.Patterns)
         {
             p.Accept(legacyVisitor);
 
@@ -24,7 +25,7 @@ public class CompiledDirectionPatternParityTests
         var table = PatternCompiler.Compile(game);
         var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var resolver = new CompiledPatternResolver(table, game.Board, null, shape);
-        resolver.TryResolve(piece, from, to, out var compiled);
+        resolver.TryResolve(piece!, from!, to!, out var compiled);
 
         return (legacy, compiled);
     }
@@ -44,7 +45,7 @@ public class CompiledDirectionPatternParityTests
         var (legacy, compiled) = ResolveBoth(game, piece, a, c);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 
     [Fact]
@@ -77,6 +78,6 @@ public class CompiledDirectionPatternParityTests
         var (legacy, compiled) = ResolveBoth(game, piece, a, b);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 }

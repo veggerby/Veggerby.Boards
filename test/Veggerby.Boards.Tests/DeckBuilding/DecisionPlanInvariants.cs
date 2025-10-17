@@ -19,7 +19,7 @@ public class DecisionPlanInvariants
     {
         foreach (var entry in plan.Entries)
         {
-            var phaseLabel = entry.Phase?.Label;
+            var phaseLabel = entry.Phase?.Label ?? string.Empty;
             foreach (var evtType in ExtractEventTypes(entry.Rule))
             {
                 yield return (phaseLabel, evtType);

@@ -62,9 +62,9 @@ public class CardsGameBuilder : GameBuilder
 
         // Use artifacts to host deck & cards (no board relations needed for this module)
         var pileIds = new[] { Piles.Draw, Piles.Discard, Piles.Hand, Piles.InPlay };
-    var deck = new Deck("deck-1", pileIds);
-    _deck = deck;
-    AddArtifact(deck.Id).WithFactory(id => deck);
+        var deck = new Deck("deck-1", pileIds);
+        _deck = deck;
+        AddArtifact(deck.Id).WithFactory(id => deck);
 
         var c1 = new Card(CardIds.C1); AddArtifact(c1.Id).WithFactory(id => c1);
         var c2 = new Card(CardIds.C2); AddArtifact(c2.Id).WithFactory(id => c2);

@@ -15,7 +15,8 @@ public class MovePieceGameEventTests
         public void Should_create_event()
         {
             // arrange
-            var piece = new Piece("piece", null, [new DirectionPattern(Direction.Clockwise, true)]);
+            var owner = new Player("p");
+            var piece = new Piece("piece", owner, [new DirectionPattern(Direction.Clockwise, true)]);
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
             var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
@@ -40,7 +41,7 @@ public class MovePieceGameEventTests
             var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
 
             // act
-            var actual = () => new MovePieceGameEvent(null, path);
+            var actual = () => new MovePieceGameEvent(null!, path);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("piece");
@@ -50,10 +51,11 @@ public class MovePieceGameEventTests
         public void Should_throw_with_null_path()
         {
             // arrange
-            var piece = new Piece("piece", null, [new DirectionPattern(Direction.Clockwise, true)]);
+            var owner = new Player("p");
+            var piece = new Piece("piece", owner, [new DirectionPattern(Direction.Clockwise, true)]);
 
             // act
-            var actual = () => new MovePieceGameEvent(piece, null);
+            var actual = () => new MovePieceGameEvent(piece, null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("path");

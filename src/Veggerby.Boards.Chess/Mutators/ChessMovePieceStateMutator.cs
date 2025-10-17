@@ -1,4 +1,5 @@
 using System.Linq;
+
 using Veggerby.Boards.Artifacts.Relations;
 
 using Veggerby.Boards.Flows.Events;
@@ -33,7 +34,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
         // Capture original from tile before inner mutator (needed for castling rights revocation)
-    var originalFromTile = @event.From; // may be null if path missing endpoints
+        var originalFromTile = @event.From; // may be null if path missing endpoints
         var updated = _inner.MutateState(engine, gameState, @event);
         var prevExtras = gameState.GetExtras<ChessStateExtras>();
         if (prevExtras is null)
@@ -46,7 +47,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
 
         // Reset en-passant by default; set only if this move is a double-step pawn advance (distance == 2)
-    string? enPassantTarget = null;
+        string? enPassantTarget = null;
         var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
         if (ChessPiece.IsPawn(gameState, @event.Piece.Id) && @event.Distance == 2)
         {

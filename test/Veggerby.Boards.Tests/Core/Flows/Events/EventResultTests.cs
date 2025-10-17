@@ -110,10 +110,13 @@ public class EventResultTests
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
-        var state = progress.State.GetState<PieceState>(piece);
+        piece.Should().NotBeNull();
+        var state = progress.State.GetState<PieceState>(piece!);
+        state.Should().NotBeNull();
         var toTile = game.GetTile("tile-2");
-        var path = new TilePath([new TileRelation(state.CurrentTile, toTile, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        toTile.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(state!.CurrentTile, toTile!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -122,7 +125,11 @@ public class EventResultTests
         result.Applied.Should().BeTrue();
         result.Reason.Should().Be(EventRejectionReason.None);
         result.State.Should().NotBe(progress.State);
-        result.State.GetState<PieceState>(piece).CurrentTile.Should().Be(toTile);
+        piece.Should().NotBeNull();
+        toTile.Should().NotBeNull();
+        var updatedPieceState = result.State.GetState<PieceState>(piece!);
+        updatedPieceState.Should().NotBeNull();
+        updatedPieceState!.CurrentTile.Should().Be(toTile!);
     }
 
     [Fact]
@@ -148,10 +155,13 @@ public class EventResultTests
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var wrongFrom = game.GetTile("tile-2");
+        wrongFrom.Should().NotBeNull();
         var toTile = game.GetTile("tile-1");
-        var path = new TilePath([new TileRelation(wrongFrom, toTile, Direction.CounterClockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        toTile.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(wrongFrom!, toTile!, Direction.CounterClockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -169,10 +179,13 @@ public class EventResultTests
         var progress = new RuleRejectedGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = game.GetTile("a");
+        from.Should().NotBeNull();
         var to = game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -189,10 +202,13 @@ public class EventResultTests
         var progress = new DiceMismatchGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = game.GetTile("a");
+        from.Should().NotBeNull();
         var to = game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]); // distance 1 not matching dice 4/5
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]); // distance 1 not matching dice 4/5
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -208,11 +224,14 @@ public class EventResultTests
         // arrange
         var progress = new PhaseClosedGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         // Valid single-step path (phase still closed so it won't apply)
         var from = progress.Game.GetTile("a");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -255,10 +274,13 @@ public class EventResultTests
         // arrange
         var progress = new InvalidEventGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = progress.Game.GetTile("a");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);

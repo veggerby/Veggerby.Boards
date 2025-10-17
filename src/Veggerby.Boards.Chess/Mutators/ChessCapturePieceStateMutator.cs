@@ -51,7 +51,7 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
         // We inspect difference between previous and updated piece states to infer captured artifact & its last tile.
         var previousPieceStates = gameState.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
         var updatedPieceStates = updated.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
-    string? capturedPieceId = null;
+        string? capturedPieceId = null;
         foreach (var kvp in previousPieceStates)
         {
             if (!updatedPieceStates.ContainsKey(kvp.Key))

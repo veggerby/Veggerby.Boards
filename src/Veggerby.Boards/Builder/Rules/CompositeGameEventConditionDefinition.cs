@@ -46,7 +46,7 @@ internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, ITh
         }
 
         var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-    return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.Any), conditions);
+        return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.Any), conditions);
     }
 
     IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(GameEventConditionFactory<T> factory)

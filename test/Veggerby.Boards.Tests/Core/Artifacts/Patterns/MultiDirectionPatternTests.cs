@@ -41,7 +41,7 @@ public class MultiDirectionPatternTests
         {
             // arrange
             // act
-            var actual = () => new MultiDirectionPattern(null);
+            var actual = () => new MultiDirectionPattern(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("directions");

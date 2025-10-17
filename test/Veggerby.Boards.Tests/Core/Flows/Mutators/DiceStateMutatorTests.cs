@@ -19,7 +19,8 @@ public class DiceStateMutatorTests
             var initialState = engine.State;
             var mutator = new DiceStateMutator<int>();
             var dice = game.GetArtifact<Dice>("dice");
-            var @event = new RollDiceGameEvent<int>(new DiceState<int>(dice, 4));
+            dice.Should().NotBeNull();
+            var @event = new RollDiceGameEvent<int>(new DiceState<int>(dice!, 4));
 
             // act
             var actual = mutator.MutateState(engine.Engine, initialState, @event);
@@ -27,8 +28,9 @@ public class DiceStateMutatorTests
             // assert
             actual.Should().NotBe(initialState);
             actual.IsInitialState.Should().BeFalse();
-            var diceState = actual.GetState<DiceState<int>>(dice);
-            diceState.CurrentValue.Should().Be(4);
+            var diceState = actual.GetState<DiceState<int>>(dice!);
+            diceState.Should().NotBeNull();
+            diceState!.CurrentValue.Should().Be(4);
         }
     }
 }

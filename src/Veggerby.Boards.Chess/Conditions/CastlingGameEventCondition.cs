@@ -31,7 +31,7 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
         // Resolve role via metadata (no string heuristics)
-    if (@event.Piece is null || !ChessPiece.IsKing(state, @event.Piece.Id))
+        if (@event.Piece is null || !ChessPiece.IsKing(state, @event.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a king");
         }

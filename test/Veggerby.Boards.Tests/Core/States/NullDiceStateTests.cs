@@ -28,7 +28,7 @@ public class NullDiceStateTests
             // arrange (nothing to arrange)
 
             // act
-            var actual = () => new NullDiceState(null);
+            var actual = () => new NullDiceState(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("artifact");
@@ -101,7 +101,8 @@ public class NullDiceStateTests
         {
             // arrange
             var dice = new Dice("dice");
-            var piece = new Piece("piece", null, null);
+            var owner = new Player("p");
+            var piece = new Piece("piece", owner, System.Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
             var tile = new Tile("tile");
             var state1 = new NullDiceState(dice);
             var state2 = new PieceState(piece, tile);

@@ -9,6 +9,7 @@
         <LangVersion>latest</LangVersion>
         <!-- Enforce nullable reference types across libraries -->
         <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup>

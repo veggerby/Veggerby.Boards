@@ -37,7 +37,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
         /// <param name="candidateCount">Number of candidate events produced this step.</param>
         /// <param name="applied">True if an event applied.</param>
         /// <param name="attempted">The event that was attempted (and applied) when <paramref name="applied"/> is true; otherwise the last attempted candidate or null when none.</param>
-    void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted);
+        void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted);
 
         /// <summary>
         /// Invoked once a playout completes (terminal state reached or safety cap triggered).
@@ -50,7 +50,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
     {
         public static readonly NullObserver Instance = new();
         private NullObserver() { }
-    public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted) { }
+        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted) { }
         public void OnCompleted(PlayoutResult result) { }
     }
 
@@ -159,7 +159,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
 
         var ob = observer ?? NullObserver.Instance;
 
-    List<GameState>? trace = _options.CaptureTrace ? new List<GameState>() : null;
+        List<GameState>? trace = _options.CaptureTrace ? new List<GameState>() : null;
         if (trace is not null)
         {
             trace.Add(progress.State);

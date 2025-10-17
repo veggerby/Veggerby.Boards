@@ -57,7 +57,7 @@ public class GamePhaseTests
             var parent = GamePhase.NewParent(1);
 
             // act
-            var actual = () => GamePhase.New(1, "test", null, GameEventRule<IGameEvent>.Null, parent);
+            var actual = () => GamePhase.New(1, "test", null!, GameEventRule<IGameEvent>.Null, parent);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("condition");
@@ -71,7 +71,7 @@ public class GamePhaseTests
             var parent = GamePhase.NewParent(1);
 
             // act
-            var actual = () => GamePhase.New(1, "test", new NullGameStateCondition(), null, parent);
+            var actual = () => GamePhase.New(1, "test", new NullGameStateCondition(), null!, parent);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("rule");
@@ -84,7 +84,7 @@ public class GamePhaseTests
 
         public GetActiveGamePhase()
         {
-            _initialGameState = GameState.New(null);
+            _initialGameState = GameState.New(System.Array.Empty<IArtifactState>());
         }
 
         [Fact]

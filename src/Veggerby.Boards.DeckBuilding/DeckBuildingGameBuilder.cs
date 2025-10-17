@@ -83,10 +83,10 @@ public class DeckBuildingGameBuilder : GameBuilder
 
         // Player decks (share pile identifiers)
         var pileIds = new[] { Piles.Draw, Piles.Discard, Piles.Hand, Piles.InPlay };
-    _p1Deck = new Deck("p1-deck", pileIds);
-    _p2Deck = new Deck("p2-deck", pileIds);
-    AddArtifact(_p1Deck.Id).WithFactory(_ => _p1Deck!);
-    AddArtifact(_p2Deck.Id).WithFactory(_ => _p2Deck!);
+        _p1Deck = new Deck("p1-deck", pileIds);
+        _p2Deck = new Deck("p2-deck", pileIds);
+        AddArtifact(_p1Deck.Id).WithFactory(_ => _p1Deck!);
+        AddArtifact(_p2Deck.Id).WithFactory(_ => _p2Deck!);
 
         // Minimal card definitions + concrete cards (supply will be set by callers via events later)
         // Project scope: keep builder lean; supply/state created through events in tests or higher-level builders.

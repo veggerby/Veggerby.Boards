@@ -48,9 +48,12 @@ public class GameSimulatorTests
             public GameState MutateState(GameEngine engine, GameState state, ToggleEvent @event)
             {
                 var piece = engine.Game.GetPiece("piece");
-                var pieceState = state.GetState<PieceState>(piece);
-                var to = engine.Game.GetTile(pieceState.CurrentTile.Id == "a" ? "b" : "a");
-                var newPieceState = new PieceState(pieceState.Artifact, to);
+                piece.Should().NotBeNull();
+                var pieceState = state.GetState<PieceState>(piece!);
+                pieceState.Should().NotBeNull();
+                var to = engine.Game.GetTile(pieceState!.CurrentTile.Id == "a" ? "b" : "a");
+                to.Should().NotBeNull();
+                var newPieceState = new PieceState(pieceState!.Artifact, to!);
                 return state.Next([newPieceState]);
             }
         }
@@ -204,8 +207,8 @@ public class GameSimulatorTests
 
     private sealed class RecordingObserver : GameSimulator.IPlayoutObserver
     {
-        public int Steps; public int AppliedSteps; public int TotalCandidates; public PlayoutResult Completed;
-        public void OnStep(GameProgress p, int stepIndex, int candidateCount, bool applied, IGameEvent attempted)
+        public int Steps; public int AppliedSteps; public int TotalCandidates; public PlayoutResult? Completed;
+        public void OnStep(GameProgress p, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted)
         {
             Steps++;
             TotalCandidates += candidateCount;
@@ -233,7 +236,7 @@ public class GameSimulatorTests
 
         // assert
         observer.Completed.Should().NotBeNull();
-        observer.Completed.Should().Be(result);
+        observer.Completed!.Should().Be(result);
         observer.Steps.Should().BeGreaterThan(0);
         observer.AppliedSteps.Should().Be(result.AppliedEvents); // each step applies exactly one
         observer.TotalCandidates.Should().BeGreaterThanOrEqualTo(observer.Steps); // at least one candidate per step

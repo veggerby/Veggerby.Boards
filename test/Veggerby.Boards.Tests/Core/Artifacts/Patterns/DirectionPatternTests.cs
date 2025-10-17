@@ -26,7 +26,7 @@ public class DirectionPatternTests
         {
             // arrange
             // act
-            var actual = () => new DirectionPattern(null);
+            var actual = () => new DirectionPattern(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("direction");

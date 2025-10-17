@@ -44,7 +44,7 @@ public class DiceGameStateConditionTests
             var dice = new Dice("dice");
 
             // act
-            var actual = () => new DiceGameStateCondition<int>(null, CompositeMode.All);
+            var actual = () => new DiceGameStateCondition<int>(null!, CompositeMode.All);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("dice");
@@ -85,7 +85,7 @@ public class DiceGameStateConditionTests
         {
             // arrange
             var dice = new Dice("dice");
-            var gameState = GameState.New(null);
+            var gameState = GameState.New(null!);
             var condition = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
             // act
@@ -188,7 +188,7 @@ public class DiceGameStateConditionTests
             // arrange
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
-            var gameState = GameState.New(null);
+            var gameState = GameState.New(null!);
             var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
             // act

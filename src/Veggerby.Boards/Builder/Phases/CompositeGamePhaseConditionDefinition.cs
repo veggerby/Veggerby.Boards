@@ -45,7 +45,7 @@ internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenG
         }
 
         var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-    return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.All), conditions);
+        return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.All), conditions);
     }
 
     IGamePhaseConditionDefinitionAnd IGamePhaseConditionDefinitionAnd.And(GameStateConditionFactory factory)

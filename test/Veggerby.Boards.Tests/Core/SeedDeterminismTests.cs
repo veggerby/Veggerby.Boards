@@ -17,7 +17,9 @@ public class SeedDeterminismTests
         var progress2 = builder2.Compile();
 
         // assert
-        progress1.State.Random.Seed.Should().Be(seed);
-        progress2.State.Random.Seed.Should().Be(seed);
+        progress1.State.Random.Should().NotBeNull();
+        progress2.State.Random.Should().NotBeNull();
+        progress1.State.Random!.Seed.Should().Be(seed);
+        progress2.State.Random!.Seed.Should().Be(seed);
     }
 }

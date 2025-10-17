@@ -8,6 +8,7 @@ using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.TestHelpers;
 
 namespace Veggerby.Boards.Tests.Core.Flows.Rules;
 
@@ -31,7 +32,7 @@ public class SimpleGameEventRuleTests
         {
             // arrange
             // act
-            var actual = () => SimpleGameEventRule<NullGameEvent>.New((IGameEventCondition<NullGameEvent>)null);
+            var actual = () => SimpleGameEventRule<NullGameEvent>.New((IGameEventCondition<NullGameEvent>)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("condition");
@@ -77,7 +78,7 @@ public class SimpleGameEventRuleTests
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
             // act
-            var actual = () => rule.Check(engine.Engine, engine.State, null);
+            var actual = () => rule.Check(engine.Engine, engine.State, (IGameEvent)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("@event");
@@ -107,22 +108,24 @@ public class SimpleGameEventRuleTests
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
-            var piece = game.GetPiece("piece-1");
-            var from = game.GetTile("tile-1");
-            var to = game.GetTile("tile-2");
+            var piece = game.GetPiece("piece-1").EnsureNotNull();
+            var from = game.GetTile("tile-1").EnsureNotNull();
+            var to = game.GetTile("tile-2").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             piece.Patterns.Single().Accept(visitor);
-            var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
+            var path = visitor.ResultPath;
+            path.Should().NotBeNull();
+            var @event = new MovePieceGameEvent(piece, path!);
             var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                 new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Valid),
                 null,
                 new MovePieceStateMutator());
 
             // act
-            var actual = rule.HandleEvent(null, initialState, @event);
+            var actual = rule.HandleEvent(null!, initialState, @event);
 
             // assert
-            var newPieceState = actual.GetState<PieceState>(piece);
+            var newPieceState = actual.GetState<PieceState>(piece).EnsureNotNull();
             newPieceState.CurrentTile.Should().Be(to);
         }
 
@@ -133,23 +136,25 @@ public class SimpleGameEventRuleTests
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
-            var piece = game.GetPiece("piece-1");
-            var from = game.GetTile("tile-1");
-            var to = game.GetTile("tile-2");
+            var piece = game.GetPiece("piece-1").EnsureNotNull();
+            var from = game.GetTile("tile-1").EnsureNotNull();
+            var to = game.GetTile("tile-2").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             piece.Patterns.Single().Accept(visitor);
-            var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
+            var path = visitor.ResultPath;
+            path.Should().NotBeNull();
+            var @event = new MovePieceGameEvent(piece, path!);
             var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                 new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.NotApplicable),
                 null,
                 new MovePieceStateMutator());
 
             // act
-            var actual = rule.HandleEvent(null, initialState, @event);
+            var actual = rule.HandleEvent(null!, initialState, @event);
 
             // assert
             actual.Should().Be(initialState);
-            var newPieceState = actual.GetState<PieceState>(piece);
+            var newPieceState = actual.GetState<PieceState>(piece).EnsureNotNull();
             newPieceState.CurrentTile.Should().Be(from);
         }
 
@@ -160,12 +165,14 @@ public class SimpleGameEventRuleTests
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
-            var piece = game.GetPiece("piece-1");
-            var from = game.GetTile("tile-1");
-            var to = game.GetTile("tile-2");
+            var piece = game.GetPiece("piece-1").EnsureNotNull();
+            var from = game.GetTile("tile-1").EnsureNotNull();
+            var to = game.GetTile("tile-2").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             piece.Patterns.Single().Accept(visitor);
-            var @event = new MovePieceGameEvent(piece, visitor.ResultPath);
+            var path = visitor.ResultPath;
+            path.Should().NotBeNull();
+            var @event = new MovePieceGameEvent(piece, path!);
             var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                 new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Invalid),
                 null,
@@ -186,16 +193,16 @@ public class SimpleGameEventRuleTests
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
-            var piece = game.GetPiece("piece-1");
-            var from = game.GetTile("tile-1");
-            var to = game.GetTile("tile-2");
+            var piece = game.GetPiece("piece-1").EnsureNotNull();
+            var from = game.GetTile("tile-1").EnsureNotNull();
+            var to = game.GetTile("tile-2").EnsureNotNull();
             var rule = SimpleGameEventRule<MovePieceGameEvent>.New(
                 new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => ConditionResponse.Invalid),
                 null,
                 new MovePieceStateMutator());
 
             // act
-            var actual = () => rule.HandleEvent(engine.Engine, initialState, null);
+            var actual = () => rule.HandleEvent(engine.Engine, initialState, (MovePieceGameEvent)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("@event");
@@ -205,11 +212,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_same_state()
         {
             // arrange
-            var state = GameState.New(null);
+            var state = GameState.New(Array.Empty<IArtifactState>());
             var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
 
             // act
-            var actual = rule.HandleEvent(null, state, new NullGameEvent());
+            var actual = rule.HandleEvent(null!, state, new NullGameEvent());
 
             // assert
             actual.Should().Be(state);
@@ -219,11 +226,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_with_null_event_on_explicit_interface()
         {
             // arrange
-            var state = GameState.New(null);
+            var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
             // act
-            var actual = () => rule.HandleEvent(null, state, null);
+            var actual = () => rule.HandleEvent(null!, state, (IGameEvent)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("@event");
@@ -233,11 +240,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
         {
             // arrange
-            var state = GameState.New(null);
+            var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
             // act
-            var actual = rule.HandleEvent(null, state, new NullGameEvent());
+            var actual = rule.HandleEvent(null!, state, new NullGameEvent());
 
             // assert
             actual.Should().Be(state);

@@ -21,7 +21,7 @@ public class DeckBuildingTrashFromHandTests
         builder.WithCard(c1.Id);
         builder.WithCard(c2.Id);
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),
@@ -29,7 +29,7 @@ public class DeckBuildingTrashFromHandTests
             [DeckBuildingGameBuilder.Piles.Hand] = new List<Card> { c1, c2 },
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
@@ -39,8 +39,9 @@ public class DeckBuildingTrashFromHandTests
         progress = progress.HandleEvent(new TrashFromHandEvent(deck, new List<Card> { c1 }));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
-        ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Should().ContainSingle().Which.Should().Be(c2);
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Hand].Should().ContainSingle().Which.Should().Be(c2);
     }
 
     [Fact]
@@ -54,7 +55,7 @@ public class DeckBuildingTrashFromHandTests
         builder.WithCard(c1.Id);
         builder.WithCard(c2.Id);
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card> { c1 },
@@ -62,13 +63,13 @@ public class DeckBuildingTrashFromHandTests
             [DeckBuildingGameBuilder.Piles.Hand] = new List<Card>(),
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
-        var act = () => progress.HandleEvent(new TrashFromHandEvent(deck, new List<Card> { c2 }));
+        var act = () => progress.HandleEvent(new TrashFromHandEvent(deck!, new List<Card> { c2 }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

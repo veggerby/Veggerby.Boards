@@ -107,7 +107,7 @@ public static partial class GameExtensions
         // Single source of truth for fast-path attempt / skip / hit metrics.
         Internal.FastPathMetrics.OnAttempt();
 
-    var capabilities = progress.Engine?.Capabilities;
+        var capabilities = progress.Engine?.Capabilities;
         var accel = capabilities?.AccelerationContext;
         var topology = capabilities?.Topology;
         var pathResolver = capabilities?.PathResolver; // may be a SlidingFastPathResolver decorator
@@ -122,7 +122,7 @@ public static partial class GameExtensions
             }
         }
 
-    TilePath? fastPath = null;
+        TilePath? fastPath = null;
         var fastPathAttempted = false;
         // Fast-path reconstruction attempt (metrics gating centralized here).
         if (Internal.FeatureFlags.EnableSlidingFastPath && Internal.FeatureFlags.EnableBitboards && pieceIsSlider && accel?.AttackRays is not null && topology is not null)
@@ -169,7 +169,7 @@ public static partial class GameExtensions
             return ApplyOccupancySemantics(progress, piece, compiledPath);
         }
 
-    var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
+        var legacy = progress.Game.ResolvePathCompiledFirst(piece, from, to);
         if (legacy is not null)
         {
             Internal.FastPathMetrics.OnLegacyHit();

@@ -73,7 +73,7 @@ public partial class GameProgress
     {
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
         var newState = State.Next(newStates);
-    Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, new Flows.Events.NullGameEvent());
+        Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, new Flows.Events.NullGameEvent());
         return new GameProgress(Engine, newState, Events);
     }
 

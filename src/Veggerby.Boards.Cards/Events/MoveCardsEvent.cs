@@ -35,7 +35,7 @@ public sealed class MoveCardsEvent : IGameEvent
         ToPileId = toPileId ?? throw new ArgumentNullException(nameof(toPileId));
         if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
         Count = count;
-    Cards = null;
+        Cards = null;
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public sealed class MoveCardsEvent : IGameEvent
         Deck = deck ?? throw new ArgumentNullException(nameof(deck));
         FromPileId = fromPileId ?? throw new ArgumentNullException(nameof(fromPileId));
         ToPileId = toPileId ?? throw new ArgumentNullException(nameof(toPileId));
-    Cards = cards ?? throw new ArgumentNullException(nameof(cards));
+        Cards = cards ?? throw new ArgumentNullException(nameof(cards));
         Count = null;
     }
 }

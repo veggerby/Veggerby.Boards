@@ -13,7 +13,7 @@ public class DiceStateTests
         public void Should_create_dice_state()
         {
             // assert
-            var dice = new Dice("dice");
+            var dice = new Dice("dice"); dice.Should().NotBeNull();
 
             // act
             var actual = new DiceState<int>(dice, 5);
@@ -29,7 +29,7 @@ public class DiceStateTests
             // assert
 
             // act
-            var actual = () => new DiceState<int>(null, 5);
+            var actual = () => new DiceState<int>(null!, 5);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("artifact");
@@ -42,7 +42,7 @@ public class DiceStateTests
             var dice = new Dice("dice");
 
             // act
-            var actual = () => new DiceState<string>(dice, null);
+            var actual = () => new DiceState<string>(dice, null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("currentValue");
@@ -130,7 +130,8 @@ public class DiceStateTests
         {
             // arrange
             var dice = new Dice("dice");
-            var piece = new Piece("piece", null, null);
+            var owner = new Player("p");
+            var piece = new Piece("piece", owner, System.Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
             var tile = new Tile("tile");
             var state1 = new DiceState<int>(dice, 5);
             var state2 = new PieceState(piece, tile);

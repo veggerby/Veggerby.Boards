@@ -22,8 +22,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions.Should().Equal([condition1, condition2]);
         }
 
         [Fact]
@@ -40,8 +42,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2, condition3]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions.Should().Equal([condition1, condition2, condition3]);
         }
 
         [Fact]
@@ -58,9 +62,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition)
-                .ChildConditions
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions
                 .OfType<CompositeGameStateCondition>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.Any);
         }
@@ -81,8 +86,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions.Should().Equal([condition1, condition2]);
         }
 
         [Fact]
@@ -99,8 +106,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2, condition3]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions.Should().Equal([condition1, condition2, condition3]);
         }
 
         [Fact]
@@ -117,9 +126,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition)
-                .ChildConditions
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions
                 .OfType<CompositeGameStateCondition>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.All);
         }

@@ -28,7 +28,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             return gameState; // invalid target id pattern; defensive no-op
         }
 
-    var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
+        var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
         // White moves north; victim is the pawn that advanced two squares and sits one rank south of the target.
         var victimRank = moverIsWhite ? rank - 1 : rank + 1;
 
@@ -49,7 +49,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         }
 
         // Move attacker onto en-passant target
-    var attackerNewState = new PieceState(@event.Piece, @event.To!);
+        var attackerNewState = new PieceState(@event.Piece, @event.To!);
         var capturedNewState = new CapturedPieceState(victimPiece);
 
         // Reset halfmove, clear en-passant target, update moved set & fullmove if black just moved

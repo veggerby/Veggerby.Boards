@@ -30,7 +30,8 @@ public class ObserverBatchingTests
         var unbatched = new ChessGameBuilder().WithObserver(rec1).Compile();
 
         var piece = unbatched.Game.GetPiece("white-pawn-5"); // e2 pawn
-        var path = TestPathHelper.ResolveFirstValidPath(unbatched.Game, piece, "e2", "e4", "e3");
+        piece.Should().NotBeNull();
+        var path = TestPathHelper.ResolveFirstValidPath(unbatched.Game, piece!, "e2", "e4", "e3");
         path.Should().NotBeNull("movement semantics changed causing path resolution failure");
         var evt = new MovePieceGameEvent(piece, path!);
 
@@ -41,7 +42,8 @@ public class ObserverBatchingTests
         var rec2 = new RecordingObserver();
         var batched = new ChessGameBuilder().WithObserver(rec2).Compile();
         var piece2 = batched.Game.GetPiece("white-pawn-5");
-        var path2 = TestPathHelper.ResolveFirstValidPath(batched.Game, piece2, "e2", "e4", "e3");
+        piece2.Should().NotBeNull();
+        var path2 = TestPathHelper.ResolveFirstValidPath(batched.Game, piece2!, "e2", "e4", "e3");
         path2.Should().NotBeNull();
         var evt2 = new MovePieceGameEvent(piece2, path2!);
         batched = batched.HandleEvent(evt2);

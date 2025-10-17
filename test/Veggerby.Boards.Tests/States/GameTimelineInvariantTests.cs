@@ -13,23 +13,27 @@ public class GameTimelineInvariantTests
     private static TilePath BuildSingleStep(GameProgress progress, string fromId, string toId)
     {
         // try common algebraic ids first, then legacy prefixed variant
-        var from = TryGetTile(progress, fromId) ?? TryGetTile(progress, $"tile-{fromId}")!;
-        var to = TryGetTile(progress, toId) ?? TryGetTile(progress, $"tile-{toId}")!;
+        var from = TryGetTile(progress, fromId) ?? TryGetTile(progress, $"tile-{fromId}");
+        var to = TryGetTile(progress, toId) ?? TryGetTile(progress, $"tile-{toId}");
+        from.Should().NotBeNull("expected non-null from tile id {0}", fromId);
+        to.Should().NotBeNull("expected non-null to tile id {0}", toId);
+        var fromNonNull = from!;
+        var toNonNull = to!;
 
         // direct relation fast-path
-        var rel = progress.Game.Board.GetTileRelation(from, to);
+        var rel = progress.Game.Board.GetTileRelation(fromNonNull, toNonNull);
         if (rel is not null)
         {
             return new TilePath([rel]);
         }
 
         // fallback: pattern visitor (compiled-first resolver parity path)
-        var path = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to).ResultPath;
-        path.Should().NotBeNull("expected non-null path between {0} -> {1}", from.Id, to.Id);
+        var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromNonNull, toNonNull).ResultPath;
+        path.Should().NotBeNull("expected non-null path between {0} -> {1}", fromNonNull.Id, toNonNull.Id);
         return path!;
     }
 
-    private static Artifacts.Tile TryGetTile(GameProgress progress, string id)
+    private static Artifacts.Tile? TryGetTile(GameProgress progress, string id)
     {
         try
         {
@@ -51,12 +55,14 @@ public class GameTimelineInvariantTests
         var timeline = GameTimeline.Create(initialState);
 
         var whitePawn = progress.Game.GetPiece("white-pawn-2");
+        whitePawn.Should().NotBeNull();
         var path1 = BuildSingleStep(progress, "b2", "b3");
         var afterFirst = progress.HandleEvent(new MovePieceGameEvent(whitePawn, path1));
 
         var blackPawn = afterFirst.Game.GetPiece("black-pawn-2");
+        blackPawn.Should().NotBeNull();
         var path2 = BuildSingleStep(afterFirst, "b7", "b6");
-        var afterSecond = afterFirst.HandleEvent(new MovePieceGameEvent(blackPawn, path2));
+        var afterSecond = afterFirst.HandleEvent(new MovePieceGameEvent(blackPawn!, path2));
 
         var t2 = timeline.Push(afterFirst.State);
         var t3 = t2.Push(afterSecond.State);
@@ -86,15 +92,18 @@ public class GameTimelineInvariantTests
 
         // three alternating pawn moves (white b2->b3, black b7->b6, white g2->g3)
         var wPawnB = progress.Game.GetPiece("white-pawn-2");
-        var move1 = progress.HandleEvent(new MovePieceGameEvent(wPawnB, BuildSingleStep(progress, "b2", "b3")));
+        wPawnB.Should().NotBeNull();
+        var move1 = progress.HandleEvent(new MovePieceGameEvent(wPawnB!, BuildSingleStep(progress, "b2", "b3")));
         moves.Add(move1);
 
         var bPawnB = move1.Game.GetPiece("black-pawn-2");
-        var move2 = move1.HandleEvent(new MovePieceGameEvent(bPawnB, BuildSingleStep(move1, "b7", "b6")));
+        bPawnB.Should().NotBeNull();
+        var move2 = move1.HandleEvent(new MovePieceGameEvent(bPawnB!, BuildSingleStep(move1, "b7", "b6")));
         moves.Add(move2);
 
         var wPawnG = move2.Game.GetPiece("white-pawn-7"); // g-file pawn
-        var move3 = move2.HandleEvent(new MovePieceGameEvent(wPawnG, BuildSingleStep(move2, "g2", "g3")));
+        wPawnG.Should().NotBeNull();
+        var move3 = move2.HandleEvent(new MovePieceGameEvent(wPawnG!, BuildSingleStep(move2, "g2", "g3")));
         moves.Add(move3);
 
         var t = timeline;

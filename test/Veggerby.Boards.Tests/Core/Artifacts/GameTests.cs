@@ -41,7 +41,7 @@ public class GameTests
             var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
             // act
-            var actual = () => new Game(null, [player1, player2], [piece1, piece2]);
+            var actual = () => new Game(null!, [player1, player2], [piece1, piece2]);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("board");
@@ -58,7 +58,7 @@ public class GameTests
             var piece2 = new Piece("piece2", player2, [new DirectionPattern(Direction.North)]);
 
             // act
-            var actual = () => new Game(board, null, [piece1, piece2]);
+            var actual = () => new Game(board, null!, [piece1, piece2]);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("players");
@@ -90,7 +90,7 @@ public class GameTests
             var player2 = new Player("player2");
 
             // act
-            var actual = () => new Game(board, [player1, player2], null);
+            var actual = () => new Game(board, [player1, player2], null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("artifacts");

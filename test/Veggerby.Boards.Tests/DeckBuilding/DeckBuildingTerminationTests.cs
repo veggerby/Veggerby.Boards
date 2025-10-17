@@ -9,7 +9,7 @@ namespace Veggerby.Boards.Tests.DeckBuilding;
 
 public class DeckBuildingTerminationTests
 {
-    private static (GameProgress progress, Deck deck) BuildGame()
+    private static (GameProgress progress, Deck? deck) BuildGame()
     {
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("estate");
@@ -24,10 +24,14 @@ public class DeckBuildingTerminationTests
         // arrange
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame();
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         // Register definition and create deck
         progress = progress.HandleEvent(new RegisterCardDefinitionEvent("estate", "Estate", new List<string> { "Victory" }, 2, 1));
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("estate") } },
+        var estate = progress.Game.GetArtifact<Card>("estate");
+        estate.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ estate! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
@@ -50,6 +54,8 @@ public class DeckBuildingTerminationTests
         // arrange
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame();
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Main));
         progress = progress.HandleEvent(new CleanupToDiscardEvent(deck));

@@ -120,9 +120,9 @@ internal sealed class BitboardSnapshot
         var perPlayer = new ulong[layout.PlayerCount];
 
         SegmentedBitboard? segGlobalLow = null;
-    SegmentedBitboard[]? segPlayersLow = null;
-    ulong[]? segGlobalSegsLow = null;
-    ulong[][]? segPlayerSegsLow = null;
+        SegmentedBitboard[]? segPlayersLow = null;
+        ulong[]? segGlobalSegsLow = null;
+        ulong[][]? segPlayerSegsLow = null;
         if (Internal.FeatureFlags.EnableSegmentedBitboards)
         {
             segGlobalSegsLow = new ulong[1];

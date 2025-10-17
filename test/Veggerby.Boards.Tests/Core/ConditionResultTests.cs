@@ -93,7 +93,7 @@ public class ConditionResultTests
         [InlineData(ConditionResult.Valid, "", "ConditionResponse Valid/")]
         [InlineData(ConditionResult.Ignore, "not relevant", "ConditionResponse Ignore/not relevant")]
         [InlineData(ConditionResult.Invalid, "fail", "ConditionResponse Invalid/fail")]
-        public void Should_return_valid_string(ConditionResult result, string reason, string expected)
+        public void Should_return_valid_string(ConditionResult result, string? reason, string expected)
         {
             // arrange
             var checkState = ConditionResponse.New(result, reason);

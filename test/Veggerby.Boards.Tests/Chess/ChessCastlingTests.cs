@@ -1,5 +1,6 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.TestHelpers;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 using static Veggerby.Boards.Chess.ChessIds.Tiles;
@@ -29,12 +30,13 @@ public class ChessCastlingTests
         // Attempt castling using explicit helper
         progress = progress.Castle(ChessIds.Players.White, kingSide: true);
         // assert
-        var king = progress.Game.GetPiece(WhiteKing);
-        var rook = progress.Game.GetPiece(WhiteRook2);
-        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.G1);
-        progress.State.GetState<PieceState>(rook).CurrentTile.Id.Should().Be(ChessIds.Tiles.F1);
+        var king = progress.Game.GetPiece(WhiteKing).EnsureNotNull();
+        var rook = progress.Game.GetPiece(WhiteRook2).EnsureNotNull();
+        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.G1);
+        progress.State.GetRequiredPieceState(rook).CurrentTile.Id.Should().Be(ChessIds.Tiles.F1);
         var extras = progress.State.GetExtras<ChessStateExtras>();
-        extras.WhiteCanCastleKingSide.Should().BeFalse();
+        extras.Should().NotBeNull();
+        extras!.WhiteCanCastleKingSide.Should().BeFalse();
         extras.WhiteCanCastleQueenSide.Should().BeFalse();
     }
 
@@ -49,8 +51,8 @@ public class ChessCastlingTests
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged
-        var king = progress.Game.GetPiece(WhiteKing);
-        progress.State.GetState<PieceState>(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.E1);
+        var king = progress.Game.GetPiece(WhiteKing).EnsureNotNull();
+        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.E1);
         before.Should().NotBeSameAs(null); // guard
     }
 }

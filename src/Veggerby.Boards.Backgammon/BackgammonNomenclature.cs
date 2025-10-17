@@ -41,10 +41,10 @@ public sealed class BackgammonNomenclature : IGameNomenclature
         {
             return string.Empty;
         }
-    var fromTile = moveEvent.Path?.From;
-    var toTile = moveEvent.Path?.To;
-    var from = fromTile is null ? string.Empty : GetTileName(fromTile);
-    var to = toTile is null ? string.Empty : GetTileName(toTile);
+        var fromTile = moveEvent.Path?.From;
+        var toTile = moveEvent.Path?.To;
+        var from = fromTile is null ? string.Empty : GetTileName(fromTile);
+        var to = toTile is null ? string.Empty : GetTileName(toTile);
         return $"move {moveEvent.Piece.Id} {from}->{to}";
     }
 

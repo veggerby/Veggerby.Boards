@@ -60,7 +60,7 @@ public class DiceState<T> : ArtifactState<Dice>
             return false;
         }
 
-    return Artifact.Equals(other.Artifact) && EqualityComparer<T>.Default.Equals(CurrentValue, other.CurrentValue);
+        return Artifact.Equals(other.Artifact) && EqualityComparer<T>.Default.Equals(CurrentValue, other.CurrentValue);
     }
 
     /// <inheritdoc />

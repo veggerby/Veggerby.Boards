@@ -24,7 +24,8 @@ public class DecisionPlanDiagnosticTests
         {
             foreach (var evtType in ExtractEventTypes(entry.Rule))
             {
-                yield return (i, entry.Phase?.Label, evtType, entry.ConditionIsAlwaysValid);
+                var phaseLabel = entry.Phase?.Label ?? string.Empty;
+                yield return (i, phaseLabel, evtType, entry.ConditionIsAlwaysValid);
             }
             i++;
         }

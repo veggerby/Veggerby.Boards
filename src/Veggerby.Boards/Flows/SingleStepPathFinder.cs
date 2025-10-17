@@ -83,7 +83,7 @@ public class SingleStepPathFinder
             return Enumerable.Empty<SingleStepPath>();
         }
 
-    var diceStates = Dice.Select(x => state.GetState<DiceState<int>>(x)).Where(x => x is not null).Cast<DiceState<int>>();
+        var diceStates = Dice.Select(x => state.GetState<DiceState<int>>(x)).Where(x => x is not null).Cast<DiceState<int>>();
 
         if (!diceStates.Any())
         {

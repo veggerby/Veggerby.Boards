@@ -16,9 +16,10 @@ public class CardsModuleEdgeTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
+        deck.Should().NotBeNull();
 
         // act
-        Action act = () => progress.HandleEvent(new DrawCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 100));
+        Action act = () => progress.HandleEvent(new DrawCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 100));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();
@@ -32,17 +33,20 @@ public class CardsModuleEdgeTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
+        deck.Should().NotBeNull();
         // move 4 to hand, leaving 1 in draw
-        progress = progress.HandleEvent(new MoveCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 4));
-        var before = progress.State.GetState<DeckState>(deck);
-        var beforeIds = before.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).ToArray();
+        progress = progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 4));
+        var before = progress.State.GetState<DeckState>(deck!);
+        before.Should().NotBeNull();
+        var beforeIds = before!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).ToArray();
 
         // act
-        progress = progress.HandleEvent(new ShuffleDeckEvent(deck, CardsGameBuilder.Piles.Draw));
+        progress = progress.HandleEvent(new ShuffleDeckEvent(deck!, CardsGameBuilder.Piles.Draw));
 
         // assert
-        var after = progress.State.GetState<DeckState>(deck);
-        after.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).Should().Equal(beforeIds);
+        var after = progress.State.GetState<DeckState>(deck!);
+        after.Should().NotBeNull();
+        after!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).Should().Equal(beforeIds);
     }
 
     [Fact]
@@ -55,13 +59,15 @@ public class CardsModuleEdgeTests
         var deck = create.Deck;
         var after = progress.HandleEvent(create).State;
         var ds1 = after.GetState<DeckState>(deck);
+        ds1.Should().NotBeNull();
 
         // act
         var ds2 = after.GetState<DeckState>(deck);
+        ds2.Should().NotBeNull();
 
         // assert
-        ds1.Equals(ds2).Should().BeTrue();
-        ds1.GetHashCode().Should().Be(ds2.GetHashCode());
+        ds1!.Equals(ds2).Should().BeTrue();
+        ds1.GetHashCode().Should().Be(ds2!.GetHashCode());
     }
 
     [Fact]
@@ -84,7 +90,7 @@ public class CardsModuleEdgeTests
         var deck = new Deck("d", new[] { "discard" });
 
         // act
-        Action act = () => new DiscardCardsEvent(deck, CardsGameBuilder.Piles.Discard, null);
+        Action act = () => new DiscardCardsEvent(deck, CardsGameBuilder.Piles.Discard, null!);
 
         // assert
         act.Should().Throw<ArgumentNullException>();
@@ -155,9 +161,10 @@ public class CardsModuleEdgeTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
+        deck.Should().NotBeNull();
 
         // act
-        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 10));
+        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 10));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();
@@ -171,10 +178,11 @@ public class CardsModuleEdgeTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
+        deck.Should().NotBeNull();
         var fake = new Card("non-existent");
 
         // act
-        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck, CardsGameBuilder.Piles.Discard, new[] { fake }));
+        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck!, CardsGameBuilder.Piles.Discard, new[] { fake }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

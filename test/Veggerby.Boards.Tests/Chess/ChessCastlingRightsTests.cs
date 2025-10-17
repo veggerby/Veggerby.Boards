@@ -1,5 +1,6 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.TestHelpers;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 using static Veggerby.Boards.Chess.ChessIds.Tiles;
@@ -16,7 +17,7 @@ public class ChessCastlingRightsTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        var extrasBefore = progress.State.GetRequiredExtras<ChessStateExtras>();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
 
@@ -26,7 +27,7 @@ public class ChessCastlingRightsTests
         progress = progress.Move(WhiteRook2, H2); // rook moves from original square
 
         // assert
-        var extras = progress.State.GetExtras<ChessStateExtras>();
+        var extras = progress.State.GetRequiredExtras<ChessStateExtras>();
         extras.WhiteCanCastleKingSide.Should().BeFalse();
         extras.WhiteCanCastleQueenSide.Should().BeTrue();
         extras.BlackCanCastleKingSide.Should().BeTrue();
@@ -44,7 +45,7 @@ public class ChessCastlingRightsTests
         progress = progress.Move(WhiteRook1, A2);
 
         // assert
-        var extras = progress.State.GetExtras<ChessStateExtras>();
+        var extras = progress.State.GetRequiredExtras<ChessStateExtras>();
         extras.WhiteCanCastleQueenSide.Should().BeFalse();
         extras.WhiteCanCastleKingSide.Should().BeTrue();
     }

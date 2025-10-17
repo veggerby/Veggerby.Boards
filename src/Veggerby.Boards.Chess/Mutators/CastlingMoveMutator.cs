@@ -70,8 +70,8 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
             return gameState;
         }
 
-    var newKingState = new PieceState(@event.Piece, kingToTile);
-    var newRookState = new PieceState(rookPiece, rookToTile);
+        var newKingState = new PieceState(@event.Piece, kingToTile);
+        var newRookState = new PieceState(rookPiece, rookToTile);
 
         // Bookkeeping: mark both pieces moved, clear en-passant, increment halfmove (king move resets? per FIDE halfmove clock resets only on pawn move or capture → keep +1)
         var movedSet = extras.MovedPieceIds.ToList();

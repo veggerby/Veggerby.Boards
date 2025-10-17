@@ -17,16 +17,20 @@ public class ChessCapturedStateTests
         // arrange
         var progress = new ChessCaptureScenarioBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen);
+        queen.Should().NotBeNull();
         var blackPawn = progress.Game.GetPiece(BlackPawn5); // e7
-                                                            // act (queen captures directly)
+        blackPawn.Should().NotBeNull();
+        // act (queen captures directly)
         progress = progress.Move(WhiteQueen, E7);
 
         // assert
-        progress.State.IsCaptured(blackPawn).Should().BeTrue("black pawn must be marked captured");
+        progress.State.IsCaptured(blackPawn!).Should().BeTrue("black pawn must be marked captured");
         var destTile = progress.Game.GetTile(ChessIds.Tiles.E7);
-        progress.State.GetPiecesOnTile(destTile).Any(p => p.Equals(blackPawn))
+        destTile.Should().NotBeNull();
+        progress.State.GetPiecesOnTile(destTile!).Any(p => p.Equals(blackPawn))
             .Should().BeFalse("captured piece should not appear on destination tile occupancy");
-        var queenState = progress.State.GetState<PieceState>(queen);
-        queenState.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
+        var queenState = progress.State.GetState<PieceState>(queen!);
+        queenState.Should().NotBeNull();
+        queenState!.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
     }
 }

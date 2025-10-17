@@ -33,6 +33,7 @@ public class ChessCastlingSafetyTests
 
         // pre-assert sanity
         var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        extrasBefore.Should().NotBeNull();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
 
@@ -44,6 +45,7 @@ public class ChessCastlingSafetyTests
         ex.Should().BeOfType<InvalidGameEventException>();
         // Current implementation does not surface attacked square id in exception message; future improvement could assert message details.
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
+        extrasAfter.Should().NotBeNull();
         // Rights must remain (castling was denied without moving king/rook)
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
         extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue();
@@ -73,6 +75,7 @@ public class ChessCastlingSafetyTests
         progress = progress.Move(BlackKnight2, B3);        // b2 -> b3 now attacking c1
 
         var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        extrasBefore.Should().NotBeNull();
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
 
@@ -83,6 +86,7 @@ public class ChessCastlingSafetyTests
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
+        extrasAfter.Should().NotBeNull();
         extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue(); // rights unchanged (attempt denied)
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
     }

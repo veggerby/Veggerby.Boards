@@ -74,7 +74,7 @@ public class GamePhase
         Label = label;
         Condition = condition;
         Rule = rule;
-    PreProcessors = preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>();
+        PreProcessors = preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>();
         ExclusivityGroup = exclusivityGroup;
 
         Parent = parent;

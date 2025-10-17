@@ -1,6 +1,7 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Chess.Support;
+using Veggerby.Boards.Tests.TestHelpers;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 using static Veggerby.Boards.Chess.ChessIds.Tiles;
@@ -18,7 +19,7 @@ public class ChessPawnDoubleStepInvalidTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var pawn = progress.Game.GetPiece(WhitePawn5);
+        var pawn = progress.Game.GetPiece(WhitePawn5).EnsureNotNull();
         // act1 single move e2->e3
         progress = progress.Move(WhitePawn5, E3);
         var afterSingle = progress;
@@ -27,7 +28,7 @@ public class ChessPawnDoubleStepInvalidTests
         // attempt illegal double-step e3->e5 (skipping e4)
         progress = progress.Move(WhitePawn5, E5);
         // assert: pawn remained on e3 (ignored)
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
+        progress.State.GetRequiredPieceState(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
         // ensure new state reference not advanced by illegal attempt (identity equality ok) - semantics: Move returns same progress when ignored
         progress.Should().BeSameAs(progress);
     }
@@ -37,12 +38,12 @@ public class ChessPawnDoubleStepInvalidTests
     {
         // arrange
         var progress = new BlockedDoubleStepScenarioBuilder().Compile();
-        var pawn = progress.Game.GetPiece("white-pawn-test");
-        var before = progress.State.GetState<PieceState>(pawn).CurrentTile;
+        var pawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
+        var before = progress.State.GetRequiredPieceState(pawn).CurrentTile;
         // act (attempt e2->e4 with e3 occupied)
         progress = progress.Move("white-pawn-test", "e4");
         // assert
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Should().Be(before);
+        progress.State.GetRequiredPieceState(pawn).CurrentTile.Should().Be(before);
     }
 
     [Fact]
@@ -50,11 +51,11 @@ public class ChessPawnDoubleStepInvalidTests
     {
         // arrange
         var progress = new DestinationOccupiedDoubleStepScenarioBuilder().Compile();
-        var pawn = progress.Game.GetPiece("white-pawn-test");
-        var before = progress.State.GetState<PieceState>(pawn).CurrentTile;
+        var pawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
+        var before = progress.State.GetRequiredPieceState(pawn).CurrentTile;
         // act (attempt e2->e4 with e4 occupied)
         progress = progress.Move("white-pawn-test", "e4");
         // assert
-        progress.State.GetState<PieceState>(pawn).CurrentTile.Should().Be(before);
+        progress.State.GetRequiredPieceState(pawn).CurrentTile.Should().Be(before);
     }
 }

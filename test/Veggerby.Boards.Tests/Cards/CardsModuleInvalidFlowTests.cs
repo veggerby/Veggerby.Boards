@@ -37,13 +37,15 @@ public class CardsModuleInvalidFlowTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
-        var ds = progress.State.GetState<DeckState>(deck);
-        var draw = ds.Piles[CardsGameBuilder.Piles.Draw];
+        deck.Should().NotBeNull();
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        var draw = ds!.Piles[CardsGameBuilder.Piles.Draw];
         var notInDraw = ds.Piles[CardsGameBuilder.Piles.Hand]; // empty, so craft a fake
         var fake = new Card("not-in-draw");
 
         // act
-        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { draw[0], fake }));
+        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { draw[0], fake }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();
@@ -57,11 +59,13 @@ public class CardsModuleInvalidFlowTests
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
         var deck = progress.Game.GetArtifact<Deck>("deck-1");
-        var ds = progress.State.GetState<DeckState>(deck);
-        var card = ds.Piles[CardsGameBuilder.Piles.Draw][0];
+        deck.Should().NotBeNull();
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        var card = ds!.Piles[CardsGameBuilder.Piles.Draw][0];
 
         // act
-        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck, "unknown", new[] { card }));
+        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck!, "unknown", new[] { card }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

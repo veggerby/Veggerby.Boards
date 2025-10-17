@@ -26,7 +26,7 @@ public class FixedPatternTests
         {
             // arrange
             // act
-            var actual = () => new FixedPattern(null);
+            var actual = () => new FixedPattern(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("pattern");

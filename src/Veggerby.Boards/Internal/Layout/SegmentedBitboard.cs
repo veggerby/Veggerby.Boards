@@ -74,7 +74,7 @@ internal readonly struct SegmentedBitboard
         ulong s2 = segments.Length > 2 ? segments[2] : 0UL;
         ulong s3 = segments.Length > 3 ? segments[3] : 0UL;
 
-    ulong[]? spill = null;
+        ulong[]? spill = null;
         if (segments.Length > InlineSegmentCapacity)
         {
             var spillLength = segments.Length - InlineSegmentCapacity;
@@ -216,7 +216,7 @@ internal readonly struct SegmentedBitboard
         ulong s1 = _s1;
         ulong s2 = _s2;
         ulong s3 = _s3;
-    ulong[]? spill = _spill;
+        ulong[]? spill = _spill;
 
         switch (segmentIndex)
         {

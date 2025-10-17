@@ -98,10 +98,10 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
 
         var generator = new DoublingDiceValueGenerator();
         var value = generator.GetValue(baseState);
-    var firstOwner = inactivePlayer ?? activePlayer; // fallback: assign someone if opponent missing
+        var firstOwner = inactivePlayer ?? activePlayer; // fallback: assign someone if opponent missing
         var lastTurn = turnState?.TurnNumber ?? 0;
-    var firstOwnerNonNull = firstOwner ?? throw new InvalidOperationException("Unable to determine doubling dice owner.");
-    var first = new DoublingDiceState(DoublingDice, value, firstOwnerNonNull, lastTurn);
+        var firstOwnerNonNull = firstOwner ?? throw new InvalidOperationException("Unable to determine doubling dice owner.");
+        var first = new DoublingDiceState(DoublingDice, value, firstOwnerNonNull, lastTurn);
         return state.Next([first]);
     }
 }

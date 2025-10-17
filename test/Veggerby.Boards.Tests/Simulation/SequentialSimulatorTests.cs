@@ -47,7 +47,8 @@ public class SequentialSimulatorTests
         IGameEvent? Policy(GameState s)
         {
             var king = game.GetPiece("white-king");
-            var pieceState = s.GetState<PieceState>(king);
+            king.Should().NotBeNull();
+            var pieceState = s.GetState<PieceState>(king!);
             if (pieceState is null)
             {
                 return null;

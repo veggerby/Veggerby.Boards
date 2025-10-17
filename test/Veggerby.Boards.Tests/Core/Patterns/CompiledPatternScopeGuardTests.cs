@@ -84,7 +84,7 @@ public class CompiledPatternScopeGuardTests
         var game = new Game(board, new[] { player }, new[] { piece });
 
         // act legacy: resolve a->c (fixed) then a->b (direction) then a->d (multi-ray alternative) using visitor order semantics
-        TilePath legacyFixed = null; TilePath legacyRay = null; TilePath legacyMulti = null;
+        TilePath? legacyFixed = null; TilePath? legacyRay = null; TilePath? legacyMulti = null;
         foreach (var target in new[] { c, b, d })
         {
             var visitor = new ResolveTilePathPatternVisitor(board, a, target);
@@ -103,12 +103,27 @@ public class CompiledPatternScopeGuardTests
         var resolver = new CompiledPatternResolver(table, board, null, shape);
 
         resolver.TryResolve(piece, a, c, out var compiledFixed).Should().BeTrue();
+        compiledFixed.Should().NotBeNull();
         resolver.TryResolve(piece, a, b, out var compiledRay).Should().BeTrue();
+        compiledRay.Should().NotBeNull();
         resolver.TryResolve(piece, a, d, out var compiledMulti).Should().BeTrue();
+        compiledMulti.Should().NotBeNull();
 
         // assert parity on distances & endpoints
-        compiledFixed.To.Should().Be(legacyFixed.To); compiledFixed.Distance.Should().Be(legacyFixed.Distance);
-        compiledRay.To.Should().Be(legacyRay.To); compiledRay.Distance.Should().Be(legacyRay.Distance);
-        compiledMulti.To.Should().Be(legacyMulti.To); compiledMulti.Distance.Should().Be(legacyMulti.Distance);
+        legacyFixed.Should().NotBeNull();
+        var legacyFixedPath = legacyFixed!;
+        var compiledFixedPath = compiledFixed!;
+        compiledFixedPath.To.Should().Be(legacyFixedPath.To);
+        compiledFixedPath.Distance.Should().Be(legacyFixedPath.Distance);
+        legacyRay.Should().NotBeNull();
+        var legacyRayPath = legacyRay!;
+        var compiledRayPath = compiledRay!;
+        compiledRayPath.To.Should().Be(legacyRayPath.To);
+        compiledRayPath.Distance.Should().Be(legacyRayPath.Distance);
+        legacyMulti.Should().NotBeNull();
+        var legacyMultiPath = legacyMulti!;
+        var compiledMultiResolvedPath = compiledMulti!;
+        compiledMultiResolvedPath.To.Should().Be(legacyMultiPath.To);
+        compiledMultiResolvedPath.Distance.Should().Be(legacyMultiPath.Distance);
     }
 }

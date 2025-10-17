@@ -15,11 +15,11 @@ public class CompositeGameStateConditionTests
         public void Should_throw_with_null_child_condition_and()
         {
             // arrange
-            IGameStateCondition condition1 = null;
-            IGameStateCondition condition2 = null;
+            IGameStateCondition? condition1 = null;
+            IGameStateCondition? condition2 = null;
 
             // act
-            var actual = () => condition1.And(condition2);
+            var actual = () => condition1!.And(condition2!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
@@ -29,11 +29,11 @@ public class CompositeGameStateConditionTests
         public void Should_throw_with_null_child_condition_or()
         {
             // arrange
-            IGameStateCondition condition1 = null;
-            IGameStateCondition condition2 = null;
+            IGameStateCondition? condition1 = null;
+            IGameStateCondition? condition2 = null;
 
             // act
-            var actual = () => condition1.Or(condition2);
+            var actual = () => condition1!.Or(condition2!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
@@ -46,7 +46,7 @@ public class CompositeGameStateConditionTests
 
         public Evaluate()
         {
-            _state = GameState.New(null);
+            _state = GameState.New(System.Array.Empty<IArtifactState>());
         }
 
         [Fact]

@@ -15,7 +15,8 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 /// </summary>
 public class CompiledPatternComprehensiveParityTests
 {
-    private static (TilePath legacy, TilePath compiled) Resolve(Game game, Piece piece, Tile from, Tile to, bool enableCache = false, bool enableShape = false)
+    // Both legacy (visitor) and compiled resolver may legitimately produce no path (null); reflect that in tuple element nullability.
+    private static (TilePath? legacy, TilePath? compiled) Resolve(Game game, Piece piece, Tile from, Tile to, bool enableCache = false, bool enableShape = false)
     {
         var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
         foreach (var p in piece.Patterns)
@@ -256,11 +257,15 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pfcv", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy1, compiled1) = Resolve(game, piece, tiles[0], tiles[2]);
+        legacy1.Should().NotBeNull();
+        compiled1.Should().NotBeNull();
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy2, compiled2) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
-            compiled1.Distance.Should().Be(compiled2.Distance);
-            legacy1.Distance.Should().Be(legacy2.Distance);
+            legacy2.Should().NotBeNull();
+            compiled2.Should().NotBeNull();
+            compiled1!.Distance.Should().Be(compiled2!.Distance);
+            legacy1!.Distance.Should().Be(legacy2!.Distance);
         }
     }
 
@@ -276,11 +281,15 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmcc", player, [new MultiDirectionPattern([d1, d2], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, a, d);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, a, d, enableCache: true);
-            compiledCached.Distance.Should().Be(compiled.Distance);
-            legacyCached.Distance.Should().Be(legacy.Distance);
+            legacyCached.Should().NotBeNull();
+            compiledCached.Should().NotBeNull();
+            compiledCached!.Distance.Should().Be(compiled!.Distance);
+            legacyCached!.Distance.Should().Be(legacy!.Distance);
         }
     }
 
@@ -316,8 +325,8 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, a, b, enableCache: true);
-            compiledCached.Distance.Should().Be(compiled.Distance);
-            legacyCached.Distance.Should().Be(legacy.Distance);
+            compiledCached!.Distance.Should().Be(compiled!.Distance);
+            legacyCached!.Distance.Should().Be(legacy!.Distance);
         }
     }
 
@@ -331,11 +340,15 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pffp", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
         using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, tiles[0], tiles[2], enableShape: true);
-            compiledFast.Distance.Should().Be(compiled.Distance);
-            legacyFast.Distance.Should().Be(legacy.Distance);
+            legacyFast.Should().NotBeNull();
+            compiledFast.Should().NotBeNull();
+            compiledFast!.Distance.Should().Be(compiled!.Distance);
+            legacyFast!.Distance.Should().Be(legacy!.Distance);
         }
     }
 
@@ -349,11 +362,15 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pdfp", player, [new DirectionPattern(dirs[0], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3]);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
         using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, tiles[0], tiles[3], enableShape: true);
-            compiledFast.Distance.Should().Be(compiled.Distance);
-            legacyFast.Distance.Should().Be(legacy.Distance);
+            legacyFast.Should().NotBeNull();
+            compiledFast.Should().NotBeNull();
+            compiledFast!.Distance.Should().Be(compiled!.Distance);
+            legacyFast!.Distance.Should().Be(legacy!.Distance);
         }
     }
 
@@ -372,8 +389,8 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, a, d, enableShape: true);
-            compiledFast.Distance.Should().Be(compiled.Distance);
-            legacyFast.Distance.Should().Be(legacy.Distance);
+            compiledFast!.Distance.Should().Be(compiled!.Distance);
+            legacyFast!.Distance.Should().Be(legacy!.Distance);
         }
     }
 

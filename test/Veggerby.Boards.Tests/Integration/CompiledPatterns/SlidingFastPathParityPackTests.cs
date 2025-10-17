@@ -130,26 +130,25 @@ public class SlidingFastPathParityPackTests
         }
     }
 
-    private static TilePath ResolveWithFlags(IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
+    private static TilePath? ResolveWithFlags(IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
         using var scope = new FeatureFlagScope(compiledPatterns: compiled, bitboards: bitboards, boardShape: true);
         // Sliding fast-path is enabled by default; enabling bitboards triggers decorator eligibility. For clarity keep explicit intent:
         // (If repository defaults change later, tests remain deterministic via scope controlling bitboards prerequisite.)
         var builder = new PackBuilder(specs);
         var progress = builder.Compile();
-        var piece = progress.Game.GetPiece(moving.Id);
-        var from = progress.Game.GetTile(moving.FromTile);
-        var to = progress.Game.GetTile(target);
+        var piece = progress.Game.GetPiece(moving.Id); var from = progress.Game.GetTile(moving.FromTile); var to = progress.Game.GetTile(target);
+        piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
         if (from == to) { return null; }
-        return progress.ResolvePathCompiledFirst(piece, from, to);
+        return progress.ResolvePathCompiledFirst(piece!, from!, to!);
     }
 
     private static void AssertParity(IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         // arrange reference (compiled only, no bitboards)
-        var reference = ResolveWithFlags(specs, moving, target, bitboards: false, compiled: true);
+        TilePath? reference = ResolveWithFlags(specs, moving, target, bitboards: false, compiled: true);
         // act fast-path
-        var fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
+        TilePath? fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
         // assert
         if (reference is null)
         {

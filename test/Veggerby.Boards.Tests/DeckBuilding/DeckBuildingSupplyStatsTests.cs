@@ -20,8 +20,8 @@ public class DeckBuildingSupplyStatsTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1");
-        var deck = game.GetArtifact<Deck>("p1-deck");
+        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -32,18 +32,20 @@ public class DeckBuildingSupplyStatsTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 3 }; // >1 so first decrement does not cross zero
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         var beforeStats = progress.State.GetExtras<DeckSupplyStats>();
-        beforeStats.EmptyPiles.Should().Be(0);
+        beforeStats.Should().NotBeNull();
+        beforeStats!.EmptyPiles.Should().Be(0);
         beforeStats.TotalPiles.Should().Be(1);
 
         // act
-        progress = progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
         var afterStats = progress.State.GetExtras<DeckSupplyStats>();
-        afterStats.EmptyPiles.Should().Be(0); // not crossed zero yet
+        afterStats.Should().NotBeNull();
+        afterStats!.EmptyPiles.Should().Be(0); // not crossed zero yet
         afterStats.TotalPiles.Should().Be(1);
     }
 
@@ -57,8 +59,8 @@ public class DeckBuildingSupplyStatsTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1");
-        var deck = game.GetArtifact<Deck>("p1-deck");
+        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -69,17 +71,19 @@ public class DeckBuildingSupplyStatsTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 1 }; // decrement will cross to zero
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         var beforeStats = progress.State.GetExtras<DeckSupplyStats>();
-        beforeStats.EmptyPiles.Should().Be(0);
+        beforeStats.Should().NotBeNull();
+        beforeStats!.EmptyPiles.Should().Be(0);
 
         // act
-        progress = progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
         var afterStats = progress.State.GetExtras<DeckSupplyStats>();
-        afterStats.EmptyPiles.Should().Be(1); // crossed to zero
+        afterStats.Should().NotBeNull();
+        afterStats!.EmptyPiles.Should().Be(1); // crossed to zero
         afterStats.TotalPiles.Should().Be(1);
     }
 }

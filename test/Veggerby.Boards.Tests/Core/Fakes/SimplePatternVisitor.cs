@@ -6,7 +6,7 @@ namespace Veggerby.Boards.Tests.Core.Fakes;
 
 public class SimplePatternVisitor : IPatternVisitor
 {
-    public Type Type { get; private set; }
+    public Type Type { get; private set; } = typeof(NullPattern); // initialized to satisfy non-null contract
 
     public void Visit(MultiDirectionPattern pattern)
     {

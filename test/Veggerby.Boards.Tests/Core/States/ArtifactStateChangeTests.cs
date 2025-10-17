@@ -13,7 +13,7 @@ public class ArtifactStateChangeTests
         public void Should_initial_state_change()
         {
             // arrange
-            var piece = new Piece("piece", null, null);
+            var piece = new Piece("piece", null!, null!);
             var from = new Tile("tile-from");
             var to = new Tile("tile-to");
             var stateFrom = new PieceState(piece, from);
@@ -33,7 +33,7 @@ public class ArtifactStateChangeTests
             // arrange
 
             // act
-            var actual = () => new ArtifactStateChange(null, null);
+            var actual = () => new ArtifactStateChange(null!, null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("to").WithMessage("*Both From and To cannot be null*");
@@ -43,8 +43,8 @@ public class ArtifactStateChangeTests
         public void Should_throw_with_different_artifacts()
         {
             // arrange
-            var piece1 = new Piece("piece1", null, null);
-            var piece2 = new Piece("piece2", null, null);
+            var piece1 = new Piece("piece1", null!, null!);
+            var piece2 = new Piece("piece2", null!, null!);
             var from = new Tile("tile-from");
             var to = new Tile("tile-to");
             var stateFrom = new PieceState(piece1, from);

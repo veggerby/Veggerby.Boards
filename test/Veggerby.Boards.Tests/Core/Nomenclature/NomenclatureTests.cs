@@ -20,7 +20,7 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var piece = new Piece("white-pawn-5", owner: null, patterns: []);
+        var piece = new Piece("white-pawn-5", owner: null!, patterns: []);
 
         // act
         var name = nomenclature.GetPieceName(piece);
@@ -48,7 +48,7 @@ public class NomenclatureTests
     {
         // arrange
         var nomenclature = new ChessNomenclature();
-        var pawn = new Piece("white-pawn-5", owner: null, patterns: []);
+        var pawn = new Piece("white-pawn-5", owner: null!, patterns: []);
         var from = new Tile(ChessIds.Tiles.E2);
         var mid = new Tile(ChessIds.Tiles.E3);
         var to = new Tile(ChessIds.Tiles.E4);

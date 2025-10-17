@@ -24,7 +24,7 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
             return false; // fallback to legacy expected
         }
 
-    TilePath? best = null;
+        TilePath? best = null;
         foreach (var pattern in piecePatterns.Patterns)
         {
             switch (pattern.Kind)

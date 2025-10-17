@@ -29,7 +29,7 @@ public class PieceTests
             var player = new Player("player");
 
             // act
-            var actual = new Piece("piece", player, null);
+            var actual = new Piece("piece", player, null!);
 
             // assert
             actual.Owner.Should().Be(player);

@@ -49,7 +49,7 @@ public static partial class GameExtensions
 
         // Build horizontal path relations (two steps toward rook)
         char fromFile = start[5];
-    char toFile = destination.Id[5];
+        char toFile = destination.Id[5];
         int step = fromFile < toFile ? 1 : -1;
         var rank = start[6];
         var relations = new List<TileRelation>();

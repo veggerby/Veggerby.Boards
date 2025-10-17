@@ -358,7 +358,7 @@ public abstract class GameBuilder
         }
 
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
-    TurnArtifact? turnArtifact = null;
+        TurnArtifact? turnArtifact = null;
         if (Internal.FeatureFlags.EnableTurnSequencing)
         {
             turnArtifact = new TurnArtifact("turn-timeline");
@@ -370,7 +370,7 @@ public abstract class GameBuilder
             throw new InvalidOperationException("BoardId must be configured before building the game.");
         }
         var board = new Board(BoardId, relations);
-    var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
+        var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
 
         // compile Initial state
 
@@ -447,7 +447,7 @@ public abstract class GameBuilder
 
         // compile GamePhase root
 
-    GamePhase? gamePhaseRoot = null;
+        GamePhase? gamePhaseRoot = null;
 
         if (_gamePhaseDefinitions.Any())
         {
@@ -476,7 +476,7 @@ public abstract class GameBuilder
         var shape = Internal.Layout.BoardShape.Build(game.Board);
         var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
 
-    Internal.Paths.IPathResolver? pathResolver = null;
+        Internal.Paths.IPathResolver? pathResolver = null;
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
@@ -527,15 +527,15 @@ public abstract class GameBuilder
             pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
         }
 
-    // Ensure non-null pathResolver (legacy visitor resolver fallback already applied earlier if compiled disabled)
-    pathResolver ??= new Internal.Paths.SimplePatternPathResolver(game.Board);
-    var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
+        // Ensure non-null pathResolver (legacy visitor resolver fallback already applied earlier if compiled disabled)
+        pathResolver ??= new Internal.Paths.SimplePatternPathResolver(game.Board);
+        var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 
         // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)
-    _initialGameProgress = new GameProgress(engine, initialGameState, Enumerable.Empty<IGameEvent>());
+        _initialGameProgress = new GameProgress(engine, initialGameState, Enumerable.Empty<IGameEvent>());
 
-    return _initialGameProgress;
+        return _initialGameProgress;
     }
 
     /// <summary>

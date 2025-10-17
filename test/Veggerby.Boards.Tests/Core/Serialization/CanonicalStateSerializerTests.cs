@@ -24,7 +24,7 @@ public class CanonicalStateSerializerTests
         int turnNumber,
         TurnSegment segment,
         int dummyValue,
-        IEnumerable<string> artifactInsertionOrder = null)
+    IEnumerable<string>? artifactInsertionOrder = null)
     {
         // Direct artifact construction (no builder required) – hashing only depends on Artifact.Id + state properties.
         var player = new Player("p1");

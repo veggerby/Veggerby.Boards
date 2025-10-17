@@ -97,7 +97,7 @@ public class SlidingFastPathParityTests
         }
     }
 
-    private static TilePath ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
+    private static TilePath? ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
         using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
         // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
@@ -292,7 +292,7 @@ public class SlidingFastPathParityTests
 
     // ---------------- Decorator Direct Parity (fast-path vs compiled only) ----------------
 
-    private static TilePath ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    private static TilePath? ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;
@@ -306,7 +306,7 @@ public class SlidingFastPathParityTests
         finally { FeatureFlags.EnableSlidingFastPath = prev; }
     }
 
-    private static TilePath ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    private static TilePath? ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;

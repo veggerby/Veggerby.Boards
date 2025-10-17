@@ -22,17 +22,18 @@ public class DeckBuildingSupplyConfiguratorTests
             .AddSupply("estate", 24));
         builder.WithCards("copper", "estate");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
 
         // act
-        var events = builder.SupplyConfigurator.BuildStartupEvents(deck);
+        builder.SupplyConfigurator.Should().NotBeNull();
+        var events = builder.SupplyConfigurator!.BuildStartupEvents(deck!);
         foreach (var e in events)
         {
             progress = progress.HandleEvent(e);
         }
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
+        var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
         ds!.Supply["copper"].Should().Be(60);
         ds.Supply["estate"].Should().Be(24);
@@ -76,16 +77,17 @@ public class DeckBuildingSupplyConfiguratorTests
             .AddSupply("copper", 5));
         builder.WithCards("copper");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
-        var events = builder.SupplyConfigurator.BuildStartupEvents(deck);
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        builder.SupplyConfigurator.Should().NotBeNull();
+        var events = builder.SupplyConfigurator!.BuildStartupEvents(deck!);
         foreach (var e in events) { progress = progress.HandleEvent(e); }
         var enumerator = progress.Game.Players.GetEnumerator();
         enumerator.MoveNext().Should().BeTrue();
-        var player = enumerator.Current;
+        var player = enumerator.Current; player.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
 
         // act
-        progress = progress.HandleEvent(new GainFromSupplyEvent(player, deck, "copper", DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(player!, deck!, "copper", DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
         var ds = progress.State.GetState<DeckState>(deck)!;

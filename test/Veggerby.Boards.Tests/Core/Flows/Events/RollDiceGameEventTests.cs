@@ -30,7 +30,7 @@ public class RollDiceGameEventTests
             // arrange
 
             // act
-            var actual = () => new RollDiceGameEvent<int>(null);
+            var actual = () => new RollDiceGameEvent<int>(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("states");

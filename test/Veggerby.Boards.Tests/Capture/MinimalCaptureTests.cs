@@ -22,22 +22,29 @@ public class MinimalCaptureTests
         var a1 = progress.Game.GetTile(ChessIds.Tiles.A1);
         var a2 = progress.Game.GetTile(ChessIds.Tiles.A2);
         var a3 = progress.Game.GetTile(ChessIds.Tiles.A3);
+        white.Should().NotBeNull();
+        black.Should().NotBeNull();
+        a1.Should().NotBeNull();
+        a2.Should().NotBeNull();
+        a3.Should().NotBeNull();
         // Build multi-step path a1 -> a2 -> a3
         var rel1 = progress.Game.Board.TileRelations.Single(r => r.From.Equals(a1) && r.To.Equals(a2));
         var rel2 = progress.Game.Board.TileRelations.Single(r => r.From.Equals(a2) && r.To.Equals(a3));
         var path = new TilePath([rel1, rel2]);
-        var evt = new MovePieceGameEvent(white, path);
+        var evt = new MovePieceGameEvent(white!, path);
 
         // act
         var beforeState = progress.State;
         var updated = progress.HandleEvent(evt);
 
         // assert attacker relocation
-        updated.State.GetState<PieceState>(white).CurrentTile.Should().Be(a3);
+        var whiteState = updated.State.GetState<PieceState>(white!);
+        whiteState.Should().NotBeNull();
+        whiteState!.CurrentTile.Should().Be(a3);
         // captured state marker exists
-        updated.State.IsCaptured(black).Should().BeTrue();
+        updated.State.IsCaptured(black!).Should().BeTrue();
         // destination no longer lists black piece
-        updated.State.GetPiecesOnTile(a3).Any(p => p.Equals(black)).Should().BeFalse();
+        updated.State.GetPiecesOnTile(a3!).Any(p => p.Equals(black)).Should().BeFalse();
 
         // state diff expectations:
         // - attacker PieceState replaced (relocation) (net 0)
@@ -73,10 +80,10 @@ public class MinimalCaptureTests
         // white-slider present both before and after with different tile
         beforeMap.ContainsKey(white.Id).Should().BeTrue();
         afterMap.ContainsKey(white.Id).Should().BeTrue();
-        beforeMap[white.Id].Should().Be(a1.Id);
-        afterMap[white.Id].Should().Be(a3.Id);
+        beforeMap[white!.Id].Should().Be(a1!.Id);
+        afterMap[white.Id].Should().Be(a3!.Id);
         // black-block removed
-        beforeMap.ContainsKey(black.Id).Should().BeTrue();
+        beforeMap.ContainsKey(black!.Id).Should().BeTrue();
         afterMap.ContainsKey(black.Id).Should().BeFalse();
         // No other ids changed (no extras, so only two pieces exist originally)
         beforeMap.Keys.Except(new[] { white.Id, black.Id }).Should().BeEmpty();

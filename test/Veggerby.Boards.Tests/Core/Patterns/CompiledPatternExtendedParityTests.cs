@@ -13,7 +13,7 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 /// </summary>
 public class CompiledPatternExtendedParityTests
 {
-    private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
+    private static (TilePath? legacy, TilePath? compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
         var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
         foreach (var p in piece.Patterns)
@@ -54,7 +54,7 @@ public class CompiledPatternExtendedParityTests
         // assert
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
         compiled.Relations.Count().Should().Be(legacy.Relations.Count());
     }
 
@@ -79,7 +79,7 @@ public class CompiledPatternExtendedParityTests
 
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        compiled.Distance.Should().Be(legacy.Distance);
+        compiled!.Distance.Should().Be(legacy!.Distance);
     }
 
     [Fact]

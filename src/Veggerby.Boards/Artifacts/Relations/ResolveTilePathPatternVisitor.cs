@@ -57,7 +57,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(MultiDirectionPattern pattern)
     {
-    var paths = new List<TilePath>();
+        var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
             var path = GetPathFromDirection(direction, pattern.IsRepeatable);
@@ -84,7 +84,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     public void Visit(FixedPattern pattern)
     {
         var from = From;
-    TilePath? path = null;
+        TilePath? path = null;
         foreach (var direction in pattern.Pattern)
         {
             var relation = Board.GetTileRelation(from, direction);
@@ -136,7 +136,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
             return;
         }
 
-    TilePath? resultPath = null;
+        TilePath? resultPath = null;
 
         foreach (var edge in path.Edges)
         {

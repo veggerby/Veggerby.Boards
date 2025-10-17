@@ -38,8 +38,11 @@ public class SimulationProgressingTests
         var detailed = SequentialSimulator.RunDetailed(progress, state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
+            piece.Should().NotBeNull();
             var pieceState = state.GetState<PieceState>(piece);
+            pieceState.Should().NotBeNull();
             var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+            rel.Should().NotBeNull();
             var path = new TilePath([rel]);
             return new MovePieceGameEvent(piece, path);
         }, maxDepth: 1);
@@ -47,7 +50,12 @@ public class SimulationProgressingTests
         detailed.Result.TerminalReason.Should().Be(PlayoutTerminalReason.MaxDepth);
         detailed.Metrics.AppliedEvents.Should().Be(1);
         detailed.Metrics.PolicyCalls.Should().Be(1);
-        detailed.Result.Final.State.GetState<PieceState>(progress.Game.GetArtifacts<Piece>().First()).CurrentTile.Id.Should().Be("t2");
+        var finalPiece = progress.Game.GetArtifacts<Piece>().First();
+        finalPiece.Should().NotBeNull();
+        var finalPieceState = detailed.Result.Final.State.GetState<PieceState>(finalPiece);
+        finalPieceState.Should().NotBeNull();
+        finalPieceState!.CurrentTile.Should().NotBeNull();
+        finalPieceState!.CurrentTile!.Id.Should().Be("t2");
     }
 
     [Fact]
@@ -67,8 +75,11 @@ public class SimulationProgressingTests
             {
                 call++;
                 var piece = progress.Game.GetArtifacts<Piece>().First();
+                piece.Should().NotBeNull();
                 var pieceState = state.GetState<PieceState>(piece);
+                pieceState.Should().NotBeNull();
                 var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+                rel.Should().NotBeNull();
                 var path = new TilePath([rel]);
                 return new MovePieceGameEvent(piece, path);
             }
@@ -89,8 +100,11 @@ public class SimulationProgressingTests
         PlayoutPolicy policy = state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
+            piece.Should().NotBeNull();
             var pieceState = state.GetState<PieceState>(piece);
+            pieceState.Should().NotBeNull();
             var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+            rel.Should().NotBeNull();
             var path = new TilePath([rel]);
             return new MovePieceGameEvent(piece, path);
         };
@@ -124,7 +138,9 @@ public class SimulationProgressingTests
                 {
                     call++;
                     var pieceState = state.GetState<PieceState>(piece);
+                    pieceState.Should().NotBeNull();
                     var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+                    rel.Should().NotBeNull();
                     var path = new TilePath([rel]);
                     return new MovePieceGameEvent(piece, path);
                 }
@@ -164,7 +180,9 @@ public class SimulationProgressingTests
             {
                 calls++;
                 var pieceState = state.GetState<PieceState>(piece);
+                pieceState.Should().NotBeNull();
                 var rel = progress.Game.Board.TileRelations.First(r => r.From == pieceState.CurrentTile);
+                rel.Should().NotBeNull();
                 return new MovePieceGameEvent(piece, new TilePath([rel]));
             }
             calls++;

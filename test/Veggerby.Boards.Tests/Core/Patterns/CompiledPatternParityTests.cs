@@ -10,7 +10,8 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 
 public class CompiledPatternParityTests
 {
-    private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
+    // Both legacy visitor and compiled resolver may yield no path; model both tuple elements as nullable.
+    private static (TilePath? legacy, TilePath? compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy
         var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);

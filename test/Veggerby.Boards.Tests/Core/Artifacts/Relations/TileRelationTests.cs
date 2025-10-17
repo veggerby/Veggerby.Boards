@@ -49,7 +49,7 @@ public class TileRelationTests
             var to = new Tile("tile-2");
 
             // act
-            var actual = () => new TileRelation(null, to, Direction.CounterClockwise, 5);
+            var actual = () => new TileRelation(null!, to, Direction.CounterClockwise, 5);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("from");
@@ -61,7 +61,7 @@ public class TileRelationTests
             var from = new Tile("tile-1");
 
             // act
-            var actual = () => new TileRelation(from, null, Direction.CounterClockwise, 5);
+            var actual = () => new TileRelation(from, null!, Direction.CounterClockwise, 5);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("to");
@@ -74,7 +74,7 @@ public class TileRelationTests
             var to = new Tile("tile-2");
 
             // act
-            var actual = () => new TileRelation(from, to, null, 5);
+            var actual = () => new TileRelation(from, to, null!, 5);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("direction");

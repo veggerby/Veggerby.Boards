@@ -16,23 +16,28 @@ public class ChessBlockingTests
     {
         // arrange
         var progress = new ChessGameBuilder().Compile();
-        var queen = progress.Game.GetPiece(WhiteQueen); // on d1
-        var target = progress.Game.GetTile(ChessIds.Tiles.D4); // path crosses d2 (occupied by pawn)
-        var state = progress.State.GetState<PieceState>(queen);
+        var queen = progress.Game.GetPiece(WhiteQueen);
+        queen.Should().NotBeNull();
+        var target = progress.Game.GetTile(ChessIds.Tiles.D4);
+        target.Should().NotBeNull();
+        var state = progress.State.GetState<PieceState>(queen!);
+        state.Should().NotBeNull();
         var path = queen.Patterns.Select(p =>
         {
-            var v = new ResolveTilePathPatternVisitor(progress.Game.Board, state.CurrentTile, target);
+            var v = new ResolveTilePathPatternVisitor(progress.Game.Board, state!.CurrentTile, target!);
             p.Accept(v);
             return v.ResultPath;
         }).FirstOrDefault(p => p is not null);
-
-        var evt = new MovePieceGameEvent(queen, path);
+        path.Should().NotBeNull();
+        var evt = new MovePieceGameEvent(queen!, path!);
 
         // act
         var updated = progress.HandleEvent(evt);
 
         // assert
-        updated.State.GetState<PieceState>(queen).CurrentTile.Should().Be(state.CurrentTile); // unchanged
+        var updatedQueenState = updated.State.GetState<PieceState>(queen!);
+        updatedQueenState.Should().NotBeNull();
+        updatedQueenState!.CurrentTile.Should().Be(state!.CurrentTile); // unchanged
     }
 
 }

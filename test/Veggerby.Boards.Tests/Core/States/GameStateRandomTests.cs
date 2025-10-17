@@ -28,8 +28,9 @@ public class GameStateRandomTests
 
         // assert
         next.Random.Should().NotBeNull();
-        next.Random.Should().NotBeSameAs(state.Random);
-        next.Random.Seed.Should().Be(state.Random.Seed);
+        state.Random.Should().NotBeNull();
+        next.Random!.Should().NotBeSameAs(state.Random!);
+        next.Random!.Seed.Should().Be(state.Random!.Seed);
     }
 
     [Fact]
@@ -45,6 +46,6 @@ public class GameStateRandomTests
 
         // assert
         updated.Random.Should().NotBeNull();
-        updated.Random.Seed.Should().Be(999UL);
+        updated.Random!.Seed.Should().Be(999UL);
     }
 }

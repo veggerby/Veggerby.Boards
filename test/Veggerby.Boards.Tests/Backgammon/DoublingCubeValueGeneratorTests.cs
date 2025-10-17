@@ -54,7 +54,7 @@ public class DoublingCubeValueGeneratorTests
             var generator = new DoublingDiceValueGenerator();
 
             // act
-            var actual = () => generator.GetValue(null);
+            var actual = () => generator.GetValue(null!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("currentState");

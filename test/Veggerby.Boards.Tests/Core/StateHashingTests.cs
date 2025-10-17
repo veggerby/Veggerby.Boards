@@ -52,8 +52,13 @@ public class StateHashingTests
         var from = a.Game.GetTile("tile-1");
         var to = a.Game.GetTile("tile-2");
         var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+        var piece = a.Game.GetPiece(pieceId);
+        piece.Should().NotBeNull();
+        var move = new MovePieceGameEvent(piece!, path);
 
         // act
         a = a.HandleEvent(move);
@@ -74,8 +79,13 @@ public class StateHashingTests
         var from = a.Game.GetTile("tile-1");
         var to = a.Game.GetTile("tile-2");
         var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+        var piece = a.Game.GetPiece(pieceId);
+        piece.Should().NotBeNull();
+        var move = new MovePieceGameEvent(piece!, path);
 
         // act
         a = a.HandleEvent(move); // move piece
@@ -108,8 +118,13 @@ public class StateHashingTests
         var from = a.Game.GetTile("tile-1");
         var to = a.Game.GetTile("tile-2");
         var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var move = new MovePieceGameEvent(a.Game.GetPiece(pieceId), path);
+        var piece = a.Game.GetPiece(pieceId);
+        piece.Should().NotBeNull();
+        var move = new MovePieceGameEvent(piece!, path);
 
         // act
         a = a.HandleEvent(move);

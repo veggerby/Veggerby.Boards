@@ -10,7 +10,7 @@ public class PlayerDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured player identifier.
     /// </summary>
-    public string PlayerId { get; private set; } = null!;
+    public string PlayerId { get; private set; } = null!; // LIFECYCLE: set by WithId() before Build()
 
     /// <summary>
     /// Assigns the identifier for the player being defined.

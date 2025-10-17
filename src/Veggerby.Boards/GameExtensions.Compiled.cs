@@ -15,6 +15,10 @@ public static partial class GameExtensions
     /// <summary>
     /// Attempts to resolve a path using compiled patterns (when enabled) otherwise falls back to visitor-based pattern resolution.
     /// </summary>
+    /// <returns>
+    /// Non-null on success; <c>null</c> indicates the attempted resolution failed (e.g., blocked or invalid).
+    /// Callers should branch once and avoid chaining. Consider using <see cref="TryResolvePath(Game, Piece, Tile, Tile, out TilePath?)"/> for cleaner flow control.
+    /// </returns>
     public static TilePath? ResolvePathCompiledFirst(this Game game, Piece? piece, Tile? from, Tile? to)
     {
         // Zero-length path requests are treated as no-op (null) – avoid constructing visitors which throw.
@@ -92,6 +96,10 @@ public static partial class GameExtensions
     /// <summary>
     /// Resolves path preferring compiled patterns when available using progress context; falls back to legacy visitor.
     /// </summary>
+    /// <returns>
+    /// Non-null on success; <c>null</c> indicates the attempted resolution failed (e.g., blocked or invalid).
+    /// Callers should branch once and avoid chaining. Consider using <see cref="TryResolvePath(GameProgress, Piece, Tile, Tile, out TilePath?)"/> for cleaner flow control.
+    /// </returns>
     public static TilePath? ResolvePathCompiledFirst(this GameProgress? progress, Piece? piece, Tile? from, Tile? to)
     {
         if (progress is null || piece is null || from is null || to is null)

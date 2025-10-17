@@ -29,7 +29,7 @@ public class ChessCaptureScaffoldingTests
         var queenState = progress.State.GetState<PieceState>(whiteQueen!);
         queenState.Should().NotBeNull();
         queenState!.CurrentTile.Should().NotBeNull();
-        queenState!.CurrentTile!.Id.Should().Be(ChessIds.Tiles.E7);
+        queenState!.CurrentTile!.Id.Should().Be(E7);
         progress.State.IsCaptured(blackPawn!).Should().BeTrue();
         progress.State.GetPiecesOnTile(queenState!.CurrentTile)
             .Should().NotContain(p => p.Equals(blackPawn));

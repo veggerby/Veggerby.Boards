@@ -1,3 +1,5 @@
+using System;
+
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
@@ -11,6 +13,9 @@ public sealed class TurnReplayStateMutator : IStateMutator<TurnReplayEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, TurnReplayEvent gameEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(gameEvent);
         if (!Internal.FeatureFlags.EnableTurnSequencing)
         {
             return state; // inert when sequencing disabled

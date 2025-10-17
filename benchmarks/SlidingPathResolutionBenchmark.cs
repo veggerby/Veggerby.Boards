@@ -345,11 +345,11 @@ public class SlidingPathResolutionBenchmark
             var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
 
             // Minimal phase root (no rules needed for path resolution benchmark)
-            var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
+            var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
             // DecisionPlan mandatory (GameEngine enforces non-null); compile minimal plan for benchmark phase root.
             var plan = DecisionPlan.Compile(phaseRoot);
             var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-            return new GameProgress(engine, state, null);
+            return new GameProgress(engine, state, Enumerable.Empty<Veggerby.Boards.Flows.Events.IGameEvent>());
         }
 
         _progressEmpty = Build(new HashSet<Tile>());

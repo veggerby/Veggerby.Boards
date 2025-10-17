@@ -57,6 +57,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(MultiDirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
@@ -75,6 +76,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(NullPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = null;
     }
 
@@ -83,6 +85,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(FixedPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var from = From;
         TilePath? path = null;
         foreach (var direction in pattern.Pattern)
@@ -114,6 +117,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(DirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
     }
 
@@ -122,6 +126,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// </summary>
     public void Visit(AnyPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         // https://en.wikipedia.org/wiki/Johnson%27s_algorithm
         var q = new Tile("q");
         var graph = new Graph<Tile>(Board.Tiles, Board.TileRelations.Select(x => new Edge<Tile>(x.From, x.To, x.Distance)));

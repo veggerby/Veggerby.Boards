@@ -131,7 +131,7 @@ public class DiceStateTests
             // arrange
             var dice = new Dice("dice");
             var owner = new Player("p");
-            var piece = new Piece("piece", owner, System.Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
+            var piece = new Piece("piece", owner, Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
             var tile = new Tile("tile");
             var state1 = new DiceState<int>(dice, 5);
             var state2 = new PieceState(piece, tile);

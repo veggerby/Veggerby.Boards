@@ -24,5 +24,9 @@ public class DirectionEqualityComparer : IEqualityComparer<Direction>
     }
 
     /// <inheritdoc />
-    public int GetHashCode(Direction obj) => obj.GetHashCode();
+    public int GetHashCode(Direction obj)
+    {
+        ArgumentNullException.ThrowIfNull(obj);
+        return obj.GetHashCode();
+    }
 }

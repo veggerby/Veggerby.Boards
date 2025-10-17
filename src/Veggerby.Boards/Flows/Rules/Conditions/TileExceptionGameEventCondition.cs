@@ -38,6 +38,9 @@ public class TileExceptionGameEventCondition : IGameEventCondition<MovePieceGame
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         return Tiles.Contains(@event.To) ? ConditionResponse.Invalid : ConditionResponse.Valid;
     }
 }

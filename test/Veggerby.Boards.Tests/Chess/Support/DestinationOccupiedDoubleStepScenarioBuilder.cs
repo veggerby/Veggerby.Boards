@@ -64,7 +64,7 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
         WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
         WithPiece("black-bishop-blocker").OnTile(ChessIds.Tiles.E4);
 
-        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
+        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 
         AddGamePhase("move pieces")
             .If<NullGameStateCondition>()

@@ -40,6 +40,8 @@ public class SingleStepMovePieceGameEventPreProcessor : IGameEventPreProcessor
     /// <inheritdoc />
     public IEnumerable<IGameEvent> ProcessEvent(GameProgress progress, IGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(@event);
         if (!(@event is MovePieceGameEvent))
         {
             return [@event];

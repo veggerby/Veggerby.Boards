@@ -49,11 +49,11 @@ public class Bitboard128SnapshotTests
         var progress = new SyntheticLargeBoardBuilder(72).Compile();
         var game = progress.Game; game.Should().NotBeNull();
         var state = progress.State; state.Should().NotBeNull();
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
-        var layout = Veggerby.Boards.Internal.Layout.BitboardLayout.Build(game);
+        var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
+        var layout = Boards.Internal.Layout.BitboardLayout.Build(game);
 
         // act
-        var snapshot = Veggerby.Boards.Internal.Layout.BitboardSnapshot.Build(layout, state, shape);
+        var snapshot = Boards.Internal.Layout.BitboardSnapshot.Build(layout, state, shape);
 
         // assert
         var occupancy = snapshot.GlobalOccupancy128;

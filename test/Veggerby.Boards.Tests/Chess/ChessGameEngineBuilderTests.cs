@@ -31,26 +31,26 @@ public class ChessGameEngineBuilderTests
         }
 
         // Spot-check orientation on corners and a few interior tiles
-        ExpectRelation(ChessIds.Tiles.A1, Constants.Directions.North, ChessIds.Tiles.A2);
-        ExpectRelation(ChessIds.Tiles.A1, Constants.Directions.East, ChessIds.Tiles.B1);
-        ExpectRelation(ChessIds.Tiles.A1, Constants.Directions.NorthEast, ChessIds.Tiles.B2);
+        ExpectRelation(A1, Constants.Directions.North, A2);
+        ExpectRelation(A1, Constants.Directions.East, B1);
+        ExpectRelation(A1, Constants.Directions.NorthEast, B2);
 
-        ExpectRelation(ChessIds.Tiles.H1, Constants.Directions.North, ChessIds.Tiles.H2);
-        ExpectRelation(ChessIds.Tiles.H1, Constants.Directions.West, ChessIds.Tiles.G1);
-        ExpectRelation(ChessIds.Tiles.H1, Constants.Directions.NorthWest, ChessIds.Tiles.G2);
+        ExpectRelation(H1, Constants.Directions.North, H2);
+        ExpectRelation(H1, Constants.Directions.West, G1);
+        ExpectRelation(H1, Constants.Directions.NorthWest, G2);
 
-        ExpectRelation(ChessIds.Tiles.A8, Constants.Directions.South, ChessIds.Tiles.A7);
-        ExpectRelation(ChessIds.Tiles.A8, Constants.Directions.East, ChessIds.Tiles.B8);
-        ExpectRelation(ChessIds.Tiles.A8, Constants.Directions.SouthEast, ChessIds.Tiles.B7);
+        ExpectRelation(A8, Constants.Directions.South, A7);
+        ExpectRelation(A8, Constants.Directions.East, B8);
+        ExpectRelation(A8, Constants.Directions.SouthEast, B7);
 
-        ExpectRelation(ChessIds.Tiles.H8, Constants.Directions.South, ChessIds.Tiles.H7);
-        ExpectRelation(ChessIds.Tiles.H8, Constants.Directions.West, ChessIds.Tiles.G8);
-        ExpectRelation(ChessIds.Tiles.H8, Constants.Directions.SouthWest, ChessIds.Tiles.G7);
+        ExpectRelation(H8, Constants.Directions.South, H7);
+        ExpectRelation(H8, Constants.Directions.West, G8);
+        ExpectRelation(H8, Constants.Directions.SouthWest, G7);
 
-        ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.North, ChessIds.Tiles.D5);
-        ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.South, ChessIds.Tiles.D3);
-        ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.East, ChessIds.Tiles.E4);
-        ExpectRelation(ChessIds.Tiles.D4, Constants.Directions.West, ChessIds.Tiles.C4);
+        ExpectRelation(D4, Constants.Directions.North, D5);
+        ExpectRelation(D4, Constants.Directions.South, D3);
+        ExpectRelation(D4, Constants.Directions.East, E4);
+        ExpectRelation(D4, Constants.Directions.West, C4);
 
         // piece state assertions (standard chess initial placement)
         (string PieceId, string TileId)[] whiteBack =

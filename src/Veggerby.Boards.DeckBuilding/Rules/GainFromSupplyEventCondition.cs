@@ -14,6 +14,7 @@ public sealed class GainFromSupplyEventCondition : IGameEventCondition<GainFromS
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, GainFromSupplyEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
 

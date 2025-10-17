@@ -31,6 +31,9 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Require active turn sequencing flag for multi-turn gating; if disabled behave as original single first doubling semantics.
         var turnState = state.GetStates<TurnState>().FirstOrDefault();
 

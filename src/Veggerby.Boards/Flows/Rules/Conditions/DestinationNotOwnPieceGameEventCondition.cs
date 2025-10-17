@@ -17,6 +17,9 @@ public sealed class DestinationNotOwnPieceGameEventCondition : IGameEventConditi
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var anyFriendly = state.GetPiecesOnTile(@event.To).Any(ps => ps.Owner?.Equals(@event.Piece.Owner) ?? false);
         return anyFriendly
             ? ConditionResponse.Ignore("Destination occupied by friendly piece")

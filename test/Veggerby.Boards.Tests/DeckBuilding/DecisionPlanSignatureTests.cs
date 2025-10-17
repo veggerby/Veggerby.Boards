@@ -74,7 +74,7 @@ public class DecisionPlanSignatureTests
     [Fact]
     public void DecisionPlan_Matches_Locked_Baseline()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
 

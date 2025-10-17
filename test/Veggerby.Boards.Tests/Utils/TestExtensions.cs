@@ -10,6 +10,9 @@ public static class TestExtensions
 {
     public static void ShouldHavePieceState(this GameProgress progress, string pieceId, string tileId)
     {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(pieceId);
+        ArgumentNullException.ThrowIfNull(tileId);
         var piece = progress.Game.GetPiece(pieceId);
         piece.Should().NotBeNull($"PieceState - piece {pieceId} not found");
 
@@ -24,6 +27,9 @@ public static class TestExtensions
 
     public static void ShouldHaveTileWithRelations(this Game game, string tileId, params Tuple<string, string>[] relations)
     {
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(tileId);
+        ArgumentNullException.ThrowIfNull(relations);
         var tile = game.GetTile(tileId);
         tile.Should().NotBeNull($"Game - tile {tileId} not found");
 

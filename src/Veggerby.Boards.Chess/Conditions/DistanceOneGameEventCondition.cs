@@ -18,6 +18,9 @@ public sealed class DistanceOneGameEventCondition : IGameEventCondition<MovePiec
     /// <returns>ConditionResponse.Valid when distance is one, else Ignore.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(moveEvent);
         return moveEvent.Distance == 1
             ? ConditionResponse.Valid
             : ConditionResponse.Ignore("Distance not one");

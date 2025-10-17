@@ -16,6 +16,9 @@ public sealed class ForwardPawnDirectionGameEventCondition : IGameEventCondition
     /// </summary>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(moveEvent);
         if (!ChessPiece.IsPawn(state, moveEvent.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");

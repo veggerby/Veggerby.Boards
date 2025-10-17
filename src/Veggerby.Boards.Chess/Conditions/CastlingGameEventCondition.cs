@@ -30,6 +30,9 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Resolve role via metadata (no string heuristics)
         if (@event.Piece is null || !ChessPiece.IsKing(state, @event.Piece.Id))
         {

@@ -144,6 +144,7 @@ public class GameState
     /// <returns>Enumeration of changes (additions and modifications).</returns>
     public IEnumerable<ArtifactStateChange> CompareTo(GameState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
         if (Equals(state))
         {
             return Enumerable.Empty<ArtifactStateChange>();

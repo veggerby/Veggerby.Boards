@@ -25,7 +25,7 @@ public class MovePiecesFromToTileStateMutator : IStateMutator<MovePieceGameEvent
     /// <param name="maxNumber">Optional maximum number of pieces allowed on the source tile for the move to occur.</param>
     public MovePiecesFromToTileStateMutator(Tile to, PlayerOption player, int? maxNumber = null)
     {
-        System.ArgumentNullException.ThrowIfNull(to);
+        ArgumentNullException.ThrowIfNull(to);
 
         To = to;
         Player = player;
@@ -50,6 +50,9 @@ public class MovePiecesFromToTileStateMutator : IStateMutator<MovePieceGameEvent
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var pieces = gameState.GetPiecesOnTile(@event.To);
 
         if (Player == PlayerOption.Self)

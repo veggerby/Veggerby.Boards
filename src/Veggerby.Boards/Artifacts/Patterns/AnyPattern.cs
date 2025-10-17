@@ -11,6 +11,7 @@ public class AnyPattern : IPattern, IEquatable<AnyPattern>
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 

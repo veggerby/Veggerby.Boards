@@ -15,6 +15,9 @@ public class HasValidPathGameEventCondition : IGameEventCondition<MovePieceGameE
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var pieceState = state.GetState<PieceState>(@event.Piece);
         if (pieceState is null || pieceState.CurrentTile is null || !pieceState.CurrentTile.Equals(@event.From))
         {

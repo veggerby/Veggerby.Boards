@@ -13,7 +13,7 @@ public class DeckBuildingSupplyHelperTests
     [Fact]
     public void BuildSupply_WhenUsedWithCreateDeck_ThenGainFromSupplyDecrements()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("copper");

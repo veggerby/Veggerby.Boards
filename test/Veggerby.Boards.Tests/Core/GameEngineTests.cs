@@ -36,7 +36,7 @@ public class GameEngineTests
             var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
             // act
-            var dummyPlan = Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(gamePhaseRoot);
+            var dummyPlan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(gamePhaseRoot);
             var actual = () => new GameEngine(null!, gamePhaseRoot, dummyPlan);
 
             // assert

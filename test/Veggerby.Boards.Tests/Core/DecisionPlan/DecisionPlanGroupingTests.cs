@@ -42,7 +42,7 @@ public class DecisionPlanGroupingTests
         // We trigger condition evaluation by invoking the linear logic intentionally via a minimal GameProgress-like check.
         // Instead of constructing full engine, directly iterate groups similar to GameProgress logic.
         var groups = plan.Groups;
-        var dummyState = GameState.New(System.Array.Empty<IArtifactState>());
+        var dummyState = GameState.New(Array.Empty<IArtifactState>());
         foreach (var g in groups)
         {
             var gate = plan.Entries[g.StartIndex];
@@ -72,7 +72,7 @@ public class DecisionPlanGroupingTests
         FeatureFlags.EnableDecisionPlanGrouping = true;
         // act
         // Evaluate using same semantics as internal plan evaluation for gating: evaluate group gate only.
-        var dummyState = GameState.New(System.Array.Empty<IArtifactState>());
+        var dummyState = GameState.New(Array.Empty<IArtifactState>());
         foreach (var g in plan.Groups)
         {
             var gate = plan.Entries[g.StartIndex];

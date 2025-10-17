@@ -36,6 +36,7 @@ public class FixedPattern : IPattern
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 

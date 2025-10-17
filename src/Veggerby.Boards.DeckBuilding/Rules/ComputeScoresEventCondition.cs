@@ -11,6 +11,9 @@ public sealed class ComputeScoresEventCondition : IGameEventCondition<ComputeSco
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, ComputeScoresEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // If any ScoreState already present treat as Ignore (idempotent) so other events can proceed.
         foreach (var _ in state.GetStates<ScoreState>())
         {

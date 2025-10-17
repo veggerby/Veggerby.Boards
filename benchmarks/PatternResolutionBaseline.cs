@@ -60,11 +60,11 @@ public class PatternResolutionBaseline
     {
         var visitor = new ResolveTilePathPatternVisitor(_game.Board, _from, _to);
         _piece.Patterns.First().Accept(visitor);
-        return visitor.ResultPath; // expected non-null
+        return visitor.ResultPath!; // baseline expects full path given fixed pattern
     }
 
     [Benchmark]
-    public TilePath Resolve_Compiled()
+    public TilePath? Resolve_Compiled()
     {
         _compiledResolver.TryResolve(_piece, _from, _to, out var path);
         return path; // currently null until compiler populated

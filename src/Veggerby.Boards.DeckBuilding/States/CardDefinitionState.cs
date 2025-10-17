@@ -29,6 +29,6 @@ public sealed class CardDefinitionState : ArtifactState<CardDefinition>
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return System.HashCode.Combine(GetType(), Artifact);
+        return HashCode.Combine(GetType(), Artifact);
     }
 }

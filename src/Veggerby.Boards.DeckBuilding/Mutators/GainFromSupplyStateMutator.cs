@@ -15,6 +15,9 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, GainFromSupplyEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var deckState = gameState.GetState<DeckState>(@event.Deck);
         if (deckState is null)
         {

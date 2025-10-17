@@ -35,6 +35,9 @@ public class NextPlayerStateMutator : IStateMutator<IGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, IGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var response = Condition.Evaluate(gameState);
 
         if (response.Result != ConditionResult.Valid)

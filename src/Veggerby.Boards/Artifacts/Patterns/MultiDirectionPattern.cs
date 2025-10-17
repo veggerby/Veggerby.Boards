@@ -44,6 +44,7 @@ public class MultiDirectionPattern : IPattern
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 

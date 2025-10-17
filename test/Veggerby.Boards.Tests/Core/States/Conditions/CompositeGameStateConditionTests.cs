@@ -46,7 +46,7 @@ public class CompositeGameStateConditionTests
 
         public Evaluate()
         {
-            _state = GameState.New(System.Array.Empty<IArtifactState>());
+            _state = GameState.New(Array.Empty<IArtifactState>());
         }
 
         [Fact]

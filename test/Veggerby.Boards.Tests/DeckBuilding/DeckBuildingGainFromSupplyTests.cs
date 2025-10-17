@@ -13,7 +13,7 @@ public class DeckBuildingGainFromSupplyTests
     [Fact]
     public void GivenSupply_WhenGainToDiscard_ThenCardAppendedAndSupplyDecremented()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         // register test card artifacts before compile
@@ -54,7 +54,7 @@ public class DeckBuildingGainFromSupplyTests
     [Fact]
     public void GivenInsufficientSupply_WhenGain_ThenRejected()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var c1 = new Card("silver");

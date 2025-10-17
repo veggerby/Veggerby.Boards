@@ -84,7 +84,7 @@ public class GamePhaseTests
 
         public GetActiveGamePhase()
         {
-            _initialGameState = GameState.New(System.Array.Empty<IArtifactState>());
+            _initialGameState = GameState.New(Array.Empty<IArtifactState>());
         }
 
         [Fact]

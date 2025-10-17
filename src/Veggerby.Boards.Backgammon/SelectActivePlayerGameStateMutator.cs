@@ -11,6 +11,9 @@ public class SelectActivePlayerGameStateMutator : IStateMutator<SelectActivePlay
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, SelectActivePlayerGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var white = engine.Game.GetPlayer("white");
         var black = engine.Game.GetPlayer("black");
         if (white is null || black is null)

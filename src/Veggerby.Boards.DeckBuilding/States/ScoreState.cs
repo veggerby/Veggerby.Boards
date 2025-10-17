@@ -32,5 +32,5 @@ public sealed class ScoreState : ArtifactState<Player>
     }
 
     /// <inheritdoc />
-    public override int GetHashCode() => System.HashCode.Combine(GetType(), Artifact, VictoryPoints);
+    public override int GetHashCode() => HashCode.Combine(GetType(), Artifact, VictoryPoints);
 }

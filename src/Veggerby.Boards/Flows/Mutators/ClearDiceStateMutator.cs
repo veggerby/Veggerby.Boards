@@ -37,6 +37,9 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var diceState = Dice
             .Select(dice => state.GetState<DiceState<int>>(dice))
             .FirstOrDefault(x => x is not null && x.CurrentValue.Equals(@event.Path.Distance));

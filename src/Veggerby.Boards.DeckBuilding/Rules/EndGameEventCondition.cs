@@ -25,6 +25,9 @@ public sealed class EndGameEventCondition : IGameEventCondition<EndGameEvent>
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, EndGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Already ended
         if (state.GetStates<GameEndedState>().Any())
         {

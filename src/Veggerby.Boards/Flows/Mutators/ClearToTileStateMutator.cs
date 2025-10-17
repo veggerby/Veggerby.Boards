@@ -48,6 +48,9 @@ public class ClearToTileStateMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var pieces = gameState.GetPiecesOnTile(@event.To);
 
         if (!pieces.Any())

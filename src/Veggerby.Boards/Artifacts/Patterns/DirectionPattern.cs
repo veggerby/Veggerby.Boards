@@ -35,6 +35,7 @@ public class DirectionPattern : IPattern, IEquatable<DirectionPattern>
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 

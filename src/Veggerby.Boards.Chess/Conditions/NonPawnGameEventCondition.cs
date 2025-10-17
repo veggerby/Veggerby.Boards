@@ -13,6 +13,9 @@ public sealed class NonPawnGameEventCondition : IGameEventCondition<MovePieceGam
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
         if (ChessPiece.IsPawn(state, @event.Piece.Id))
         {

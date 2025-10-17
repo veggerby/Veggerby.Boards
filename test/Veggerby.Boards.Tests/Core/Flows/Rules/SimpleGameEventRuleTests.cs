@@ -122,7 +122,7 @@ public class SimpleGameEventRuleTests
                 new MovePieceStateMutator());
 
             // act
-            var actual = rule.HandleEvent(null!, initialState, @event);
+            var actual = rule.HandleEvent(engine.Engine, initialState, @event);
 
             // assert
             var newPieceState = actual.GetState<PieceState>(piece).EnsureNotNull();
@@ -150,7 +150,7 @@ public class SimpleGameEventRuleTests
                 new MovePieceStateMutator());
 
             // act
-            var actual = rule.HandleEvent(null!, initialState, @event);
+            var actual = rule.HandleEvent(engine.Engine, initialState, @event);
 
             // assert
             actual.Should().Be(initialState);
@@ -214,9 +214,10 @@ public class SimpleGameEventRuleTests
             // arrange
             var state = GameState.New(Array.Empty<IArtifactState>());
             var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
+            var engine = new TestGameBuilder().Compile();
 
             // act
-            var actual = rule.HandleEvent(null!, state, new NullGameEvent());
+            var actual = rule.HandleEvent(engine.Engine, state, new NullGameEvent());
 
             // assert
             actual.Should().Be(state);
@@ -228,9 +229,10 @@ public class SimpleGameEventRuleTests
             // arrange
             var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+            var engine = new TestGameBuilder().Compile();
 
             // act
-            var actual = () => rule.HandleEvent(null!, state, (IGameEvent)null!);
+            var actual = () => rule.HandleEvent(engine.Engine, state, (IGameEvent)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("@event");
@@ -242,9 +244,10 @@ public class SimpleGameEventRuleTests
             // arrange
             var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
+            var engine = new TestGameBuilder().Compile();
 
             // act
-            var actual = rule.HandleEvent(null!, state, new NullGameEvent());
+            var actual = rule.HandleEvent(engine.Engine, state, new NullGameEvent());
 
             // assert
             actual.Should().Be(state);

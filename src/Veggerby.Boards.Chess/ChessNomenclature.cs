@@ -401,7 +401,7 @@ public sealed class ChessNomenclature : IGameNomenclature
             .ToList();
 
         updatedStates.Add(new States.PieceState(moveEvent.Piece, destination));
-        var post = Veggerby.Boards.States.GameState.New(updatedStates);
+        var post = States.GameState.New(updatedStates);
 
         // For each mover side piece, see if any pattern reaches king square
         var kingTile = opponentKingState.CurrentTile;

@@ -42,7 +42,7 @@ public class DecisionPlanBaselineCaptureTests
     [Fact(Skip = "Baseline captured; leave skipped unless intentionally regenerating.")]
     public void CapturePlan()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
         var lines = plan.Entries
@@ -50,7 +50,7 @@ public class DecisionPlanBaselineCaptureTests
             .Select(p => $"##PLAN-BL## {p.Phase}:{p.Event}")
             .ToList();
         var joined = string.Join("|", lines.Select(l => l.Substring("##PLAN-BL## ".Length)));
-        var hash = System.Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(joined.Replace("##PLAN-BL## ", ""))));
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(joined.Replace("##PLAN-BL## ", ""))));
         lines.Add($"##PLAN-BL-SHA## {hash}");
         // Force visible output by failing intentionally (unskip when capturing)
         lines.Count.Should().Be(-1, string.Join("\n", lines)); // preserved for future regeneration when unskipped

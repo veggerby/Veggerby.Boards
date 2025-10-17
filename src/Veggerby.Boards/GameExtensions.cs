@@ -18,6 +18,8 @@ public static partial class GameExtensions
     /// </summary>
     public static Piece? GetPiece(this Game game, string id)
     {
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(id);
         return game
             .GetArtifact<Piece>(id);
     }
@@ -27,10 +29,12 @@ public static partial class GameExtensions
     /// </summary>
     public static Tile? GetTile(this Game game, string id)
     {
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(id);
         var tile = game
             .Board
             .GetTile(id);
-        if (tile is null && !string.IsNullOrEmpty(id) && !id.StartsWith("tile-", System.StringComparison.Ordinal))
+        if (tile is null && !string.IsNullOrEmpty(id) && !id.StartsWith("tile-", StringComparison.Ordinal))
         {
             tile = game.Board.GetTile($"tile-{id}");
         }
@@ -42,6 +46,8 @@ public static partial class GameExtensions
     /// </summary>
     public static Player? GetPlayer(this Game game, string id)
     {
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(id);
         return game
             .Players
             .SingleOrDefault(x => x.Id.Equals(id));
@@ -52,6 +58,8 @@ public static partial class GameExtensions
     /// </summary>
     public static T? GetArtifact<T>(this Game game, string id) where T : Artifact
     {
+        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull(id);
         return game
             .Artifacts
             .OfType<T>()
@@ -63,6 +71,7 @@ public static partial class GameExtensions
     /// </summary>
     public static IEnumerable<T> GetArtifacts<T>(this Game game, params string[] ids) where T : Artifact
     {
+        ArgumentNullException.ThrowIfNull(game);
         return [.. game
             .Artifacts
             .OfType<T>()
@@ -74,6 +83,7 @@ public static partial class GameExtensions
     /// </summary>
     public static GameProgress RollDice(this GameProgress progress, params string[] ids)
     {
+        ArgumentNullException.ThrowIfNull(progress);
         var dice = progress.Game.GetArtifacts<Dice>(ids);
 
         var states = dice
@@ -100,6 +110,9 @@ public static partial class GameExtensions
     /// </remarks>
     public static GameProgress Move(this GameProgress progress, string pieceId, string toTileId)
     {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(pieceId);
+        ArgumentNullException.ThrowIfNull(toTileId);
         var piece = progress.Game.GetPiece(pieceId);
         var toTile = progress.Game.GetTile(toTileId);
         if (piece is null || toTile is null)

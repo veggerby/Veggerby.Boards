@@ -17,6 +17,9 @@ public sealed class PathNotObstructedGameEventCondition : IGameEventCondition<Mo
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var (blocked, tileId) = MovementPathValidator.IsPathObstructed(state, @event);
         return blocked
             ? ConditionResponse.Ignore($"Path blocked at {tileId}")

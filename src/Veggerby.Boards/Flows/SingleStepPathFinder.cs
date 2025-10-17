@@ -51,6 +51,12 @@ public class SingleStepPathFinder
 
     private SingleStepPath? GetSingleStep(GameEngine engine, PieceState pieceState, IPattern pattern, GameState state, DiceState<int> diceState, Tile to, SingleStepPath? previousStep = null)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(pieceState);
+        ArgumentNullException.ThrowIfNull(pattern);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(diceState);
+        ArgumentNullException.ThrowIfNull(to);
         var visitor = new ResolveTilePathDistanceVisitor(engine.Game.Board, pieceState.CurrentTile, to, diceState.CurrentValue, false);
         pattern.Accept(visitor);
 
@@ -76,6 +82,10 @@ public class SingleStepPathFinder
 
     private IEnumerable<SingleStepPath> FindSingleSteps(GameEngine engine, Piece piece, GameState state, Tile to, SingleStepPath? previousStep)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(to);
         var pieceState = state.GetState<PieceState>(piece);
 
         if (pieceState is null)
@@ -98,6 +108,10 @@ public class SingleStepPathFinder
 
     private IEnumerable<SingleStepPath> ContinueStep(GameEngine engine, Piece piece, Tile to, SingleStepPath step)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(to);
+        ArgumentNullException.ThrowIfNull(step);
         return FindSingleSteps(engine, piece, step.NewState, to, step);
     }
 
@@ -112,6 +126,11 @@ public class SingleStepPathFinder
     /// <returns>All successful paths ending on <paramref name="to"/>.</returns>
     public IEnumerable<SingleStepPath> GetPaths(GameEngine engine, GameState state, Piece piece, Tile from, Tile to)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(to);
         var pieceState = state.GetState<PieceState>(piece);
 
         if (pieceState is null || pieceState.CurrentTile is null || !pieceState.CurrentTile.Equals(from))

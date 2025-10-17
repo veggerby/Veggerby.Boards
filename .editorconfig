@@ -178,12 +178,12 @@ csharp_preserve_single_line_statements = true
 dotnet_diagnostic.RS0030.severity = error
 
 # Nullability and guard hygiene
-dotnet_diagnostic.CA1062.severity = suggestion    # Validate public params (will elevate to warning/error after cleanup)
-dotnet_diagnostic.CS8600.severity = warning       # Converting null literal or possible null value to non-nullable type
-dotnet_diagnostic.CS8602.severity = warning       # Dereference of a possibly null reference
-dotnet_diagnostic.CS8603.severity = warning       # Possible null reference return
-dotnet_diagnostic.CS8618.severity = warning       # Non-nullable field must contain a non-null value when exiting constructor
-dotnet_diagnostic.CS8625.severity = warning       # Cannot convert null literal to non-nullable reference type
+dotnet_diagnostic.CA1062.severity = error    # Validate public params (will elevate to warning/error after cleanup)
+dotnet_diagnostic.CS8600.severity = error    # Converting null literal or possible null value to non-nullable type
+dotnet_diagnostic.CS8602.severity = error    # Dereference of a possibly null reference
+dotnet_diagnostic.CS8603.severity = error    # Possible null reference return
+dotnet_diagnostic.CS8618.severity = error    # Non-nullable field must contain a non-null value when exiting constructor
+dotnet_diagnostic.CS8625.severity = error    # Cannot convert null literal to non-nullable reference type
 
 #### Naming styles ####
 [*.{cs,vb}]

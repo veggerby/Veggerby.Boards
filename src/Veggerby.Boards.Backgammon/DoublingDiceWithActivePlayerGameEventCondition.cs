@@ -31,6 +31,9 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Ensure event specifically targets the doubling cube artifact (single dice state)
         var newStates = @event.NewDiceStates.ToList();
         var targetsDoublingCube = newStates.Count == 1 && newStates[0].Artifact.Equals(DoublingDice);

@@ -16,9 +16,9 @@ public sealed class FeatureFlagGuard : IDisposable
 
     public static FeatureFlagGuard ForceTurnSequencing(bool enable = true)
     {
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = enable;
-        return new FeatureFlagGuard(() => Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = enable;
+        return new FeatureFlagGuard(() => Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
     }
 
     public void Dispose()

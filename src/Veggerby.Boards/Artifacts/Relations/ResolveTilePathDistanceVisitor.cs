@@ -74,6 +74,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(MultiDirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
@@ -90,12 +91,14 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(NullPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = null;
     }
 
     /// <inheritdoc />
     public void Visit(FixedPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var from = From;
         TilePath? path = null;
         foreach (var direction in pattern.Pattern)
@@ -125,12 +128,14 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(DirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
     }
 
     /// <inheritdoc />
     public void Visit(AnyPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         throw new NotImplementedException();
     }
 

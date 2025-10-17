@@ -26,8 +26,8 @@ internal class GameEventRuleDefinition<T>(GameBuilder builder, IGameEventRuleDef
     public IGameEventRule Build(Game game)
     {
         var condition = _conditionDefinition?.Build(game);
-        var onBefore = _mutatorsDefinition?.BuildBefore(game) ?? Veggerby.Boards.Flows.Mutators.NullStateMutator<T>.Instance;
-        var onAfter = _mutatorsDefinition?.BuildAfter(game) ?? Veggerby.Boards.Flows.Mutators.NullStateMutator<T>.Instance;
+        var onBefore = _mutatorsDefinition?.BuildBefore(game) ?? Flows.Mutators.NullStateMutator<T>.Instance;
+        var onAfter = _mutatorsDefinition?.BuildAfter(game) ?? Flows.Mutators.NullStateMutator<T>.Instance;
 
         return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid), onBefore, onAfter);
     }

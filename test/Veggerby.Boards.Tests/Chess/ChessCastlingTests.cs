@@ -32,8 +32,8 @@ public class ChessCastlingTests
         // assert
         var king = progress.Game.GetPiece(WhiteKing).EnsureNotNull();
         var rook = progress.Game.GetPiece(WhiteRook2).EnsureNotNull();
-        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.G1);
-        progress.State.GetRequiredPieceState(rook).CurrentTile.Id.Should().Be(ChessIds.Tiles.F1);
+        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(G1);
+        progress.State.GetRequiredPieceState(rook).CurrentTile.Id.Should().Be(F1);
         var extras = progress.State.GetExtras<ChessStateExtras>();
         extras.Should().NotBeNull();
         extras!.WhiteCanCastleKingSide.Should().BeFalse();
@@ -52,7 +52,7 @@ public class ChessCastlingTests
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged
         var king = progress.Game.GetPiece(WhiteKing).EnsureNotNull();
-        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(ChessIds.Tiles.E1);
+        progress.State.GetRequiredPieceState(king).CurrentTile.Id.Should().Be(E1);
         before.Should().NotBeSameAs(null); // guard
     }
 }

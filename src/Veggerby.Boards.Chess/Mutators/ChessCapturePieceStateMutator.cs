@@ -32,6 +32,9 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
     /// </summary>
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var updated = _inner.MutateState(engine, gameState, @event);
         var prevExtras = gameState.GetExtras<ChessStateExtras>();
         if (prevExtras is null)

@@ -81,6 +81,10 @@ static GameProgress ApplyMove(GameProgress progress, IGameNomenclature nomenclat
 
 static TilePath? ResolvePath(Game game, Piece piece, Tile from, Tile to)
 {
+    ArgumentNullException.ThrowIfNull(game);
+    ArgumentNullException.ThrowIfNull(piece);
+    ArgumentNullException.ThrowIfNull(from);
+    ArgumentNullException.ThrowIfNull(to);
     foreach (var pattern in piece.Patterns)
     {
         var visitor = new Veggerby.Boards.Artifacts.Relations.ResolveTilePathPatternVisitor(game.Board, from, to);
@@ -124,13 +128,20 @@ static void RunBackgammonDemo()
     if (piece is not null)
     {
         var pieceState = rollProgress.State.GetState<PieceState>(piece);
+        if (pieceState is null)
+        {
+            Console.WriteLine("(info) Piece state not found; skipping move.");
+            Console.WriteLine();
+            return;
+        }
         var rel = rollProgress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
         if (rel is not null)
         {
             var path = new TilePath([rel]);
             var moveEvt = new MovePieceGameEvent(piece, path);
             var next = rollProgress.HandleEvent(moveEvt);
-            var newTile = next.State.GetState<PieceState>(piece).CurrentTile.Id;
+            var movedPieceState = next.State.GetState<PieceState>(piece);
+            var newTile = movedPieceState is not null ? movedPieceState.CurrentTile.Id : "(unknown)";
             var notation = nomenclature.Describe(rollProgress.Game, rollProgress.State, moveEvt);
             Console.WriteLine($"Applied move: {notation}");
             BackgammonBoardRenderer.Write(next.Game, next.State, Console.Out);

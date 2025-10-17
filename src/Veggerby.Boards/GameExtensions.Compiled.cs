@@ -21,6 +21,7 @@ public static partial class GameExtensions
     /// </returns>
     public static TilePath? ResolvePathCompiledFirst(this Game game, Piece? piece, Tile? from, Tile? to)
     {
+        ArgumentNullException.ThrowIfNull(game);
         // Zero-length path requests are treated as no-op (null) – avoid constructing visitors which throw.
         if (from is null || to is null || piece is null)
         {
@@ -102,6 +103,7 @@ public static partial class GameExtensions
     /// </returns>
     public static TilePath? ResolvePathCompiledFirst(this GameProgress? progress, Piece? piece, Tile? from, Tile? to)
     {
+        ArgumentNullException.ThrowIfNull(progress);
         if (progress is null || piece is null || from is null || to is null)
         {
             return null;

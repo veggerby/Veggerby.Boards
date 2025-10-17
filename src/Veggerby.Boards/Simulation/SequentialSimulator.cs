@@ -112,7 +112,7 @@ public static class SequentialSimulator
 
             applied++;
             current = next;
-            if (Internal.FeatureFlags.EnableTurnSequencing)
+            if (FeatureFlags.EnableTurnSequencing)
             {
                 if (nextEvent is TurnPassEvent)
                 {

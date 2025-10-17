@@ -27,7 +27,7 @@ public class CompiledPatternComprehensiveParityTests
         var legacy = legacyVisitor.ResultPath;
         var table = PatternCompiler.Compile(game);
         var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
-        var adjacency = enableCache ? Veggerby.Boards.Internal.Compiled.BoardAdjacencyCache.Build(game.Board) : null;
+        var adjacency = enableCache ? Boards.Internal.Compiled.BoardAdjacencyCache.Build(game.Board) : null;
         var resolver = new CompiledPatternResolver(table, game.Board, adjacency, shape);
         resolver.TryResolve(piece, from, to, out var compiled);
         return (legacy, compiled);

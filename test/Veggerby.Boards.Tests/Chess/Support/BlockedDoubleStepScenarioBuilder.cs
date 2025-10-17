@@ -69,7 +69,7 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
         WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
         WithPiece("black-knight-blocker").OnTile(ChessIds.Tiles.E3);
 
-        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
+        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 
         // Movement phase replicate ordering: only need forward move & double-step (capture rules unnecessary here)
         AddGamePhase("move pieces")

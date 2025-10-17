@@ -15,6 +15,9 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, DrawWithReshuffleEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         if (@event.Count == 0)
         {
             return state;

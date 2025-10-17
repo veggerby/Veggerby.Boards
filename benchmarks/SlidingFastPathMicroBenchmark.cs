@@ -183,9 +183,9 @@ public class SlidingFastPathMicroBenchmark
         }
 
         var capabilities = new EngineCapabilities(topology, resolver, accelerationContext);
-        var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
+        var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
         var plan = DecisionPlan.Compile(phaseRoot);
         var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-        return new GameProgress(engine, state, null);
+        return new GameProgress(engine, state, Enumerable.Empty<Veggerby.Boards.Flows.Events.IGameEvent>());
     }
 }

@@ -19,6 +19,8 @@ public static partial class GameExtensions
     /// <param name="kingSide">True for king-side, false for queen-side.</param>
     public static GameProgress Castle(this GameProgress progress, string color, bool kingSide)
     {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(color);
         var kingId = color + ChessIds.PieceSuffixes.King;
         var game = progress.Game;
         var king = game.GetPiece(kingId);

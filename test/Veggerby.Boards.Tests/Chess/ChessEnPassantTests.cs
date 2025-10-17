@@ -22,7 +22,7 @@ public class ChessEnPassantTests
         progress = progress.Move("white-pawn-test", E4);
         var extrasAfterDouble = progress.State.GetExtras<ChessStateExtras>();
         extrasAfterDouble.Should().NotBeNull();
-        extrasAfterDouble!.EnPassantTargetTileId.Should().Be(ChessIds.Tiles.E3);
+        extrasAfterDouble!.EnPassantTargetTileId.Should().Be(E3);
 
         // act2: black captures en-passant d4xe3 (south-east one step)
         progress = progress.Move("black-pawn-test", E3);
@@ -32,7 +32,7 @@ public class ChessEnPassantTests
         extrasAfterCapture.Should().NotBeNull();
         extrasAfterCapture!.EnPassantTargetTileId.Should().BeNull();
         var blackPawn = progress.Game.GetPiece("black-pawn-test").EnsureNotNull();
-        progress.State.GetRequiredPieceState(blackPawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
+        progress.State.GetRequiredPieceState(blackPawn).CurrentTile.Id.Should().Be(E3);
         var whitePawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
         progress.State.GetCapturedState(whitePawn).Should().NotBeNull();
     }
@@ -46,7 +46,7 @@ public class ChessEnPassantTests
         progress = progress.Move("white-pawn-test", E4);
         var extrasPostDouble = progress.State.GetExtras<ChessStateExtras>();
         extrasPostDouble.Should().NotBeNull();
-        extrasPostDouble!.EnPassantTargetTileId.Should().Be(ChessIds.Tiles.E3);
+        extrasPostDouble!.EnPassantTargetTileId.Should().Be(E3);
 
         // act: black moves auxiliary pawn h7->h6 (non-en-passant)
         progress = progress.Move("black-pawn-aux", H6);
@@ -56,7 +56,7 @@ public class ChessEnPassantTests
         extrasPostAux.Should().NotBeNull();
         extrasPostAux!.EnPassantTargetTileId.Should().BeNull();
         var whitePawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
-        progress.State.GetRequiredPieceState(whitePawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E4);
+        progress.State.GetRequiredPieceState(whitePawn).CurrentTile.Id.Should().Be(E4);
     }
     [Fact]
     public void GivenInitialPosition_WhenWhitePawnDoubleSteps_ThenEnPassantTargetSet()
@@ -73,7 +73,7 @@ public class ChessEnPassantTests
         // assert
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
         extrasAfter.Should().NotBeNull();
-        extrasAfter!.EnPassantTargetTileId.Should().Be(ChessIds.Tiles.E3);
+        extrasAfter!.EnPassantTargetTileId.Should().Be(E3);
     }
 
     [Fact(Skip = "Replaced by canonical scenario: black captures white double-step using dedicated scenario builder")]
@@ -87,7 +87,7 @@ public class ChessEnPassantTests
         progress = progress.Move(BlackPawn4, D5);
         var extrasMid = progress.State.GetExtras<ChessStateExtras>();
         extrasMid.Should().NotBeNull();
-        extrasMid!.EnPassantTargetTileId.Should().Be(ChessIds.Tiles.D6);
+        extrasMid!.EnPassantTargetTileId.Should().Be(D6);
 
         // act (white pawn captures en-passant e4xd5 onto d6)
         progress = progress.Move(WhitePawn5, D6);
@@ -98,7 +98,7 @@ public class ChessEnPassantTests
         extrasAfter!.EnPassantTargetTileId.Should().BeNull();
 
         var whitePawn = progress.Game.GetPiece(WhitePawn5).EnsureNotNull();
-        progress.State.GetRequiredPieceState(whitePawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.D6);
+        progress.State.GetRequiredPieceState(whitePawn).CurrentTile.Id.Should().Be(D6);
 
         var blackPawn = progress.Game.GetPiece(BlackPawn4).EnsureNotNull();
         progress.State.GetCapturedState(blackPawn).Should().NotBeNull();

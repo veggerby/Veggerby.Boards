@@ -16,6 +16,9 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
     /// </summary>
     public GameState MutateState(GameEngine engine, GameState gameState, PlaceStoneGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         // Reject placement if tile occupied
         if (gameState.GetStates<PieceState>().Any(ps => ps.CurrentTile.Equals(@event.Target)))
         {

@@ -15,6 +15,9 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var extras = gameState.GetExtras<ChessStateExtras>();
         if (extras is null)
         {

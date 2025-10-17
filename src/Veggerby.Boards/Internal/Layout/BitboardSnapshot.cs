@@ -59,7 +59,7 @@ internal sealed class BitboardSnapshot
             SegmentedBitboard[]? segPlayers = null;
             ulong[]? segGlobalSegs = null;
             ulong[][]? segPlayerSegs = null;
-            if (Internal.FeatureFlags.EnableSegmentedBitboards)
+            if (FeatureFlags.EnableSegmentedBitboards)
             {
                 // compute required segment count (ceil(TileCount / 64.0))
                 int segCount = (shape.TileCount + 63) / 64;
@@ -123,7 +123,7 @@ internal sealed class BitboardSnapshot
         SegmentedBitboard[]? segPlayersLow = null;
         ulong[]? segGlobalSegsLow = null;
         ulong[][]? segPlayerSegsLow = null;
-        if (Internal.FeatureFlags.EnableSegmentedBitboards)
+        if (FeatureFlags.EnableSegmentedBitboards)
         {
             segGlobalSegsLow = new ulong[1];
             segPlayerSegsLow = new ulong[layout.PlayerCount][];

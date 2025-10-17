@@ -65,6 +65,7 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
     /// <returns><see cref="ConditionResponse.Valid"/> if the composite dice rule is satisfied; otherwise <see cref="ConditionResponse.Invalid"/>.</returns>
     public ConditionResponse Evaluate(GameState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
         var rolledDice = new List<Dice>();
         foreach (var d in Dice)
         {

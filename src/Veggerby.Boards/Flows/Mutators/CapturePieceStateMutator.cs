@@ -16,6 +16,9 @@ public sealed class CapturePieceStateMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var opponentPiece = gameState
             .GetPiecesOnTile(@event.To)
             .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner));

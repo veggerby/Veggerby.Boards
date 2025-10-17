@@ -13,7 +13,7 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenCardsInHandAndInPlay_WhenCleanup_ThenAllMoveToDiscardAndSourcesCleared()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithSeed(123UL);
@@ -57,7 +57,7 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenNoCardsInHandOrInPlay_WhenCleanup_ThenNoOp()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var progress = builder.Compile();

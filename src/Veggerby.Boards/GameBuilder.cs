@@ -359,7 +359,7 @@ public abstract class GameBuilder
 
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
         TurnArtifact? turnArtifact = null;
-        if (Internal.FeatureFlags.EnableTurnSequencing)
+        if (FeatureFlags.EnableTurnSequencing)
         {
             turnArtifact = new TurnArtifact("turn-timeline");
             artifacts.Add(turnArtifact);

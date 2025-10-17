@@ -11,6 +11,9 @@ public sealed class EndGameStateMutator : IStateMutator<EndGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, EndGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Idempotent: if already ended, no change
         foreach (var _ in state.GetStates<GameEndedState>()) { return state; }
         return state.Next([new GameEndedState()]);

@@ -33,9 +33,14 @@ public class TraceCaptureOverheadBenchmark
             var pawn = game.GetPiece(ChessIds.Pieces.WhitePawn2);
             var from = game.GetTile(ChessIds.Tiles.E2);
             var to = game.GetTile(ChessIds.Tiles.E4);
+            if (pawn is null || from is null || to is null)
+            {
+                // Fallback: leave _event as null!; benchmark invocation will throw early which is acceptable for setup failure.
+                throw new InvalidOperationException("Required chess artifacts not found for benchmark setup.");
+            }
             var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
             pawn.Patterns.First().Accept(visitor);
-            var path = visitor.ResultPath!;
+            var path = visitor.ResultPath ?? throw new InvalidOperationException("Expected non-null path for benchmark pawn pattern.");
             _event = new MovePieceGameEvent(pawn, path);
         }
         finally

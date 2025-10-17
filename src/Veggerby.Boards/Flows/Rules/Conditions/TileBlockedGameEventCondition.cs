@@ -46,6 +46,9 @@ public class TileBlockedGameEventCondition : IGameEventCondition<MovePieceGameEv
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var pieceStates = state
             .GetPiecesOnTile(@event.To)
             .GroupBy(x => x.Owner.Equals(@event.Piece.Owner) ? PlayerOption.Self : PlayerOption.Opponent)

@@ -27,6 +27,9 @@ public class SimpleGameStateMutator<T> : IStateMutator<T> where T : IGameEvent
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, T @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var artifactState = _stateFunc(@event);
         if (artifactState is null)
         {

@@ -22,6 +22,7 @@ public sealed class DeckState : ArtifactState<Deck>
     /// </summary>
     public DeckState(Deck deck, IDictionary<string, IList<Card>> piles, IDictionary<string, int>? supply = null) : base(deck)
     {
+        ArgumentNullException.ThrowIfNull(deck);
         ArgumentNullException.ThrowIfNull(piles);
         // Validate deck piles
         foreach (var required in deck.Piles)

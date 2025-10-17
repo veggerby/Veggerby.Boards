@@ -44,7 +44,7 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenStartSegment_WhenActionPhaseEventSubmitted_ThenIgnored()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
         var progress = build.progress; var p1Deck = build.p1Deck;
@@ -66,7 +66,7 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenMainSegment_WhenCleanupEventSubmitted_ThenIgnored()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
         var progress = build.progress; var p1Deck = build.p1Deck;
@@ -89,7 +89,7 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenMainSegment_WhenActionEventSubmitted_ThenProcessed()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
         var progress = build.progress; var p1Deck = build.p1Deck;
@@ -115,7 +115,7 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenEndSegment_WhenGainEventSubmitted_ThenIgnored()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
         var progress = build.progress; var p1Deck = build.p1Deck; var p1 = build.p1;

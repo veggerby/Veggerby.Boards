@@ -24,6 +24,9 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
     /// <returns>Valid when criteria met, Ignore otherwise, or Fail when invariant missing.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(moveEvent);
         var @event = moveEvent; // local alias to retain prior variable name usage
         if (!ChessPiece.IsPawn(state, @event.Piece.Id))
         {

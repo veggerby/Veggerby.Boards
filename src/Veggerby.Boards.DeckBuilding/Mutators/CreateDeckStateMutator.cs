@@ -15,7 +15,10 @@ public sealed class DeckBuildingCreateDeckStateMutator : IStateMutator<CreateDec
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, CreateDeckEvent @event)
     {
-        var piles = new Dictionary<string, IList<Card>>(System.StringComparer.Ordinal);
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
+        var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
         foreach (var kv in @event.Piles)
         {
             piles[kv.Key] = kv.Value?.ToList() ?? new List<Card>();

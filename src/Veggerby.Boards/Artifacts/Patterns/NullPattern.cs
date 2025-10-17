@@ -8,6 +8,7 @@ public class NullPattern : IPattern
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 

@@ -16,6 +16,9 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
     /// </summary>
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var extras = gameState.GetExtras<ChessStateExtras>();
         if (extras?.EnPassantTargetTileId is null || @event.To is null || extras.EnPassantTargetTileId != @event.To.Id)
         {

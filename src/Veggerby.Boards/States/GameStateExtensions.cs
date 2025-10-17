@@ -21,6 +21,7 @@ public static class GameStateExtensions
     /// </remarks>
     public static bool TryGetActivePlayer(this GameState gameState, out Player? activePlayer)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
         activePlayer = null;
         var seen = false;
         foreach (var aps in gameState.GetStates<ActivePlayerState>())
@@ -54,6 +55,7 @@ public static class GameStateExtensions
     /// <exception cref="System.InvalidOperationException">Thrown when zero or multiple active players are present.</exception>
     public static Player GetActivePlayer(this GameState gameState)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
         return gameState
             .GetStates<ActivePlayerState>()
             .Where(x => x.IsActive)
@@ -70,6 +72,8 @@ public static class GameStateExtensions
     /// <returns>Enumeration of piece artifacts.</returns>
     public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player? owner = null)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(tile);
         // Only material piece states (exclude captured)
         return [.. gameState
             .GetStates<PieceState>()
@@ -82,6 +86,8 @@ public static class GameStateExtensions
     /// </summary>
     public static CapturedPieceState? GetCapturedState(this GameState gameState, Piece piece)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(piece);
         return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece));
     }
 
@@ -98,6 +104,7 @@ public static class GameStateExtensions
     /// <returns>Extras instance or null.</returns>
     public static T? GetExtras<T>(this GameState gameState) where T : class
     {
+        ArgumentNullException.ThrowIfNull(gameState);
         // Find matching generic ExtrasState<T>
         foreach (var state in gameState.ChildStates)
         {
@@ -118,6 +125,8 @@ public static class GameStateExtensions
     /// </summary>
     public static GameState ReplaceExtras<T>(this GameState gameState, T value) where T : class
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(value);
         Artifact? artifact = null;
         foreach (var state in gameState.ChildStates)
         {

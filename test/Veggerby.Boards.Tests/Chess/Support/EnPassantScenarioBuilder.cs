@@ -91,7 +91,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         }
 
         // Chess extras baseline
-        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
+        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 
         // Role metadata for test pieces
         var roles = new System.Collections.Generic.Dictionary<string, ChessPieceRole>
@@ -120,7 +120,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         WithState(new ChessPieceColorsExtras(colors));
 
         // Guard: ensure every added piece has both role and color metadata (defensive for future edits)
-        Tests.Chess.Support.MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
+        MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
 
         // Active player projection now explicit via WithActivePlayer declarations above.
 

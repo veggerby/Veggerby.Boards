@@ -115,7 +115,7 @@ public class BitboardSnapshotTests
         // also: when pieceMap is null, snapshot should be returned unchanged (reference equality ok)
         // passing correct index but null pieceMap keeps original instance
         var noChange = snapshot.UpdateForMove(pcW!, fromTileIndex: pcWIndex, toTileIndex: 5, pieceMap: null!, shape: shape);
-        object.ReferenceEquals(noChange, snapshot).Should().BeTrue();
+        ReferenceEquals(noChange, snapshot).Should().BeTrue();
     }
 
     [Fact]

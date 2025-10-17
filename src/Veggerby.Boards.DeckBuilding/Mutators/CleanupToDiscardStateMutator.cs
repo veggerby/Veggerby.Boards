@@ -15,6 +15,9 @@ public sealed class CleanupToDiscardStateMutator : IStateMutator<CleanupToDiscar
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, CleanupToDiscardEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var ds = state.GetState<DeckState>(@event.Deck);
         if (ds is null)
         {

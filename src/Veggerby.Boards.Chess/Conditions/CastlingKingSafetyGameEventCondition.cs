@@ -30,6 +30,9 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
         if (!ChessPiece.IsKing(state, @event.Piece.Id)) { return ConditionResponse.Ignore("Not a king"); }
         var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;

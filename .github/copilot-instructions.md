@@ -47,6 +47,11 @@ Docs (`/docs`): conceptual explanations and extension guidance. Update when intr
 * Favor explicit loops in perf‑sensitive paths over LINQ.
 * Tests always segmented with `// arrange`, `// act`, `// assert` comments.
 
+## Formatting Preferences
+* Always insert a blank line between methods, properties, and major logical sections.
+* Avoid consecutive code lines without separation of concern.
+* Maintain at least one blank line before return statements, after variable declarations, and before region or comment blocks.
+
 ## Engine Semantics & Invariants
 
 * Artifacts: equality = type + Id; immutable once built.

@@ -12,14 +12,35 @@ namespace Veggerby.Boards.Internal.Layout;
 /// </summary>
 internal sealed class BitboardSnapshot
 {
-    public BitboardLayout Layout { get; }
+    public BitboardLayout Layout
+    {
+        get;
+    }
     // For legacy (<=64 tiles) we keep ulong fields. When tile count exceeds 64 we store a Bitboard128 composite.
-    public ulong GlobalOccupancy { get; }
-    public ulong[] PlayerOccupancy { get; } // length = player count; each entry is 64-bit (empty when 128-bit variant)
-    public Bitboard128? GlobalOccupancy128 { get; }
-    public Bitboard128[] PlayerOccupancy128 { get; } // length = player count when using 128 variant (empty when 64-bit variant)
-    public SegmentedBitboard? GlobalSegmented { get; }
-    public SegmentedBitboard[] PlayerSegmented { get; }
+    public ulong GlobalOccupancy
+    {
+        get;
+    }
+    public ulong[] PlayerOccupancy
+    {
+        get;
+    } // length = player count; each entry is 64-bit (empty when 128-bit variant)
+    public Bitboard128? GlobalOccupancy128
+    {
+        get;
+    }
+    public Bitboard128[] PlayerOccupancy128
+    {
+        get;
+    } // length = player count when using 128 variant (empty when 64-bit variant)
+    public SegmentedBitboard? GlobalSegmented
+    {
+        get;
+    }
+    public SegmentedBitboard[] PlayerSegmented
+    {
+        get;
+    }
 
     private BitboardSnapshot(BitboardLayout layout, ulong global, ulong[] perPlayer, SegmentedBitboard? segmentedGlobal = null, SegmentedBitboard[]? segmentedPlayers = null)
     {

@@ -16,7 +16,10 @@ internal class GameEventConditionDefinition<T> : GameEventConditionDefinitionBas
         ConditionFactory = conditionFactory;
     }
 
-    public GameEventConditionFactory<T> ConditionFactory { get; }
+    public GameEventConditionFactory<T> ConditionFactory
+    {
+        get;
+    }
 
     internal override IGameEventCondition<T> Build(Game game)
     {

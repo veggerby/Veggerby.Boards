@@ -29,7 +29,11 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
 
         // Reset ko & pass count on placement
         var extras = gameState.GetExtras<GoStateExtras>() ?? new GoStateExtras(null, 0, 19);
-        var updatedExtras = extras with { KoTileId = null, ConsecutivePasses = 0 };
+        var updatedExtras = extras with
+        {
+            KoTileId = null,
+            ConsecutivePasses = 0
+        };
         var withExtras = gameState.ReplaceExtras(updatedExtras);
         return withExtras.Next([newPieceState]);
     }

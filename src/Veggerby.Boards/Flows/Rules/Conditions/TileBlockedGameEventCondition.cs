@@ -36,12 +36,18 @@ public class TileBlockedGameEventCondition : IGameEventCondition<MovePieceGameEv
     /// <summary>
     /// Gets the blocking threshold.
     /// </summary>
-    public int NumberOfPiecesToBlock { get; }
+    public int NumberOfPiecesToBlock
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the player selection included in the count.
     /// </summary>
-    public PlayerOption OccupiedBy { get; }
+    public PlayerOption OccupiedBy
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)

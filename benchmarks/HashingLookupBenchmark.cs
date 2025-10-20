@@ -41,7 +41,8 @@ public class HashingLookupBenchmark
         }
 
         var board = new Board($"hash-bench-{PieceCount}", relations);
-        var white = new Player("white"); var black = new Player("black");
+        var white = new Player("white");
+        var black = new Player("black");
         var artifacts = new List<Artifact> { board, white, black };
         var whitePieces = new List<Piece>();
         var blackPieces = new List<Piece>();
@@ -74,7 +75,8 @@ public class HashingLookupBenchmark
         int count = 0;
         foreach (var ps in _state.GetStates<PieceState>())
         {
-            if (ps.Artifact.Owner.Id == "white") count++;
+            if (ps.Artifact.Owner.Id == "white")
+                count++;
         }
         return count;
     }
@@ -86,7 +88,8 @@ public class HashingLookupBenchmark
         foreach (var piece in _whitePieces)
         {
             var resolved = _game.GetPiece(piece.Id);
-            if (resolved is not null) hits++;
+            if (resolved is not null)
+                hits++;
         }
         return hits;
     }
@@ -98,7 +101,8 @@ public class HashingLookupBenchmark
         foreach (var tile in _tiles)
         {
             var resolved = _game.GetTile(tile.Id);
-            if (resolved is not null) hits++;
+            if (resolved is not null)
+                hits++;
         }
         return hits;
     }

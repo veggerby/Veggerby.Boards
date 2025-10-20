@@ -17,37 +17,58 @@ public class GamePhase
     /// <summary>
     /// Gets the sequential number identifying this phase.
     /// </summary>
-    public int Number { get; }
+    public int Number
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the human readable label. Returns empty string when no label is specified.
     /// </summary>
-    public string Label { get; }
+    public string Label
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the parent composite phase (nullable).
     /// </summary>
-    public CompositeGamePhase? Parent { get; }
+    public CompositeGamePhase? Parent
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the event pre-processors applied before rule evaluation.
     /// </summary>
-    public IEnumerable<IGameEventPreProcessor> PreProcessors { get; }
+    public IEnumerable<IGameEventPreProcessor> PreProcessors
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the activation condition for the phase.
     /// </summary>
-    public IGameStateCondition Condition { get; }
+    public IGameStateCondition Condition
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the rule executed when the phase is active.
     /// </summary>
-    public IGameEventRule Rule { get; }
+    public IGameEventRule Rule
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the exclusivity group identifier. Phases sharing a non-empty value are mutually exclusive candidates for future masking optimization. Returns empty string when no group is specified.
     /// </summary>
-    public string ExclusivityGroup { get; }
+    public string ExclusivityGroup
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GamePhase"/> class.

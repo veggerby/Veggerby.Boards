@@ -39,7 +39,8 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
                             var rel = Resolve(current, dir);
                             if (rel is null)
                             {
-                                ok = false; break;
+                                ok = false;
+                                break;
                             }
                             localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
@@ -58,7 +59,8 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
                         while (true)
                         {
                             var rel = Resolve(current, dir);
-                            if (rel is null) break;
+                            if (rel is null)
+                                break;
                             localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
                             if (current.Equals(to))
@@ -66,7 +68,8 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
                                 best = SelectShortest(best, localPath);
                                 break;
                             }
-                            if (!pattern.IsRepeatable) break;
+                            if (!pattern.IsRepeatable)
+                                break;
                         }
                     }
                     break;
@@ -78,7 +81,8 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
                         while (true)
                         {
                             var rel = Resolve(current, dir);
-                            if (rel is null) break;
+                            if (rel is null)
+                                break;
                             localPath = TilePath.Create(localPath, rel);
                             current = rel.To;
                             if (current.Equals(to))
@@ -86,7 +90,8 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
                                 best = SelectShortest(best, localPath);
                                 break; // found path for this direction
                             }
-                            if (!pattern.IsRepeatable) break;
+                            if (!pattern.IsRepeatable)
+                                break;
                         }
                     }
                     break;
@@ -98,8 +103,10 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
 
     private static TilePath? SelectShortest(TilePath? currentBest, TilePath? candidate)
     {
-        if (candidate is null) return currentBest;
-        if (currentBest is null) return candidate;
+        if (candidate is null)
+            return currentBest;
+        if (currentBest is null)
+            return candidate;
         return candidate.Distance < currentBest.Distance ? candidate : currentBest;
     }
 

@@ -12,7 +12,10 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 internal sealed class RecordingCondition<TEvent> : IGameEventCondition<TEvent> where TEvent : IGameEvent
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameEngine engine, GameState state, TEvent @event)
     {
         Evaluations++;

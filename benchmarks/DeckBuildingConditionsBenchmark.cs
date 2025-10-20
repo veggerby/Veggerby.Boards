@@ -75,7 +75,11 @@ public class DeckBuildingConditionsBenchmark
     public GameProgress GainFromSupply_FailUnknownPile()
     {
         var gp = _progress;
-        try { gp = gp.HandleEvent(_gainInvalidPile); } catch (InvalidGameEventException) { }
+        try
+        {
+            gp = gp.HandleEvent(_gainInvalidPile);
+        }
+        catch (InvalidGameEventException) { }
         return gp;
     }
 

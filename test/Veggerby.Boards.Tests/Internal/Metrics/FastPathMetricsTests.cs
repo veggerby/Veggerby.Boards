@@ -164,7 +164,10 @@ public class FastPathMetricsTests
             BoardId = "rook-north";
             AddDirection(Constants.Directions.North);
             AddPlayer("white");
-            AddTile("v1"); AddTile("v2"); AddTile("v3"); AddTile("v4");
+            AddTile("v1");
+            AddTile("v2");
+            AddTile("v3");
+            AddTile("v4");
             WithTile("v1").WithRelationTo("v2").InDirection(Constants.Directions.North);
             WithTile("v2").WithRelationTo("v3").InDirection(Constants.Directions.North);
             WithTile("v3").WithRelationTo("v4").InDirection(Constants.Directions.North);
@@ -179,7 +182,8 @@ public class FastPathMetricsTests
             BoardId = "non-slider";
             AddDirection(Constants.Directions.East);
             AddPlayer("white");
-            AddTile("x1"); AddTile("x2");
+            AddTile("x1");
+            AddTile("x2");
             WithTile("x1").WithRelationTo("x2").InDirection(Constants.Directions.East);
             AddPiece("stone").WithOwner("white").OnTile("x1");
         }

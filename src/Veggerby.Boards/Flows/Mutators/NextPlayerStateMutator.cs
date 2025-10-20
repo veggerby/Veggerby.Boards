@@ -30,7 +30,10 @@ public class NextPlayerStateMutator : IStateMutator<IGameEvent>
     /// <summary>
     /// Gets the condition that must be valid for the active player to advance.
     /// </summary>
-    public IGameStateCondition Condition { get; }
+    public IGameStateCondition Condition
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, IGameEvent @event)

@@ -11,11 +11,20 @@ namespace Veggerby.Boards.Cards;
 public sealed class DiscardCardsEvent : IGameEvent
 {
     /// <summary>Gets the deck artifact.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
     /// <summary>Gets the destination pile identifier.</summary>
-    public string ToPileId { get; }
+    public string ToPileId
+    {
+        get;
+    }
     /// <summary>Gets the ordered list of cards to move into the destination pile.</summary>
-    public IReadOnlyList<Card> Cards { get; }
+    public IReadOnlyList<Card> Cards
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscardCardsEvent"/> class.

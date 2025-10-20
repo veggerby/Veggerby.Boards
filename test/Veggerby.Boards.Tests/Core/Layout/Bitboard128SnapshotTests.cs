@@ -47,8 +47,10 @@ public class Bitboard128SnapshotTests
     {
         // arrange
         var progress = new SyntheticLargeBoardBuilder(72).Compile();
-        var game = progress.Game; game.Should().NotBeNull();
-        var state = progress.State; state.Should().NotBeNull();
+        var game = progress.Game;
+        game.Should().NotBeNull();
+        var state = progress.State;
+        state.Should().NotBeNull();
         var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var layout = Boards.Internal.Layout.BitboardLayout.Build(game);
 

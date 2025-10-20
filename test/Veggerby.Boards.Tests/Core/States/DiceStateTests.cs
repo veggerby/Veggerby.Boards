@@ -13,7 +13,8 @@ public class DiceStateTests
         public void Should_create_dice_state()
         {
             // assert
-            var dice = new Dice("dice"); dice.Should().NotBeNull();
+            var dice = new Dice("dice");
+            dice.Should().NotBeNull();
 
             // act
             var actual = new DiceState<int>(dice, 5);

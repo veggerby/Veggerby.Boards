@@ -26,7 +26,10 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
     /// <summary>
     /// Gets the doubling dice artifact.
     /// </summary>
-    public Dice DoublingDice { get; }
+    public Dice DoublingDice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)

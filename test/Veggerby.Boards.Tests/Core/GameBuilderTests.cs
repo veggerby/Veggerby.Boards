@@ -89,15 +89,22 @@ public class GameBuilderTests
             actual.State.ChildStates.OfType<DiceState<int>>().Count().Should().Be(1);
 
             var game = actual.Game;
-            var piece1 = game.GetPiece("piece-1"); piece1.Should().NotBeNull();
-            var piece2 = game.GetPiece("piece-2"); piece2.Should().NotBeNull();
-            var pieceN = game.GetPiece("piece-n"); pieceN.Should().NotBeNull();
+            var piece1 = game.GetPiece("piece-1");
+            piece1.Should().NotBeNull();
+            var piece2 = game.GetPiece("piece-2");
+            piece2.Should().NotBeNull();
+            var pieceN = game.GetPiece("piece-n");
+            pieceN.Should().NotBeNull();
 
-            var tile1 = game.GetTile("tile-1"); tile1.Should().NotBeNull();
-            var tile2 = game.GetTile("tile-2"); tile2.Should().NotBeNull();
+            var tile1 = game.GetTile("tile-1");
+            tile1.Should().NotBeNull();
+            var tile2 = game.GetTile("tile-2");
+            tile2.Should().NotBeNull();
 
-            var dice = game.GetArtifact<Dice>("dice"); dice.Should().NotBeNull();
-            var dice2 = game.GetArtifact<Dice>("dice-secondary"); dice2.Should().NotBeNull();
+            var dice = game.GetArtifact<Dice>("dice");
+            dice.Should().NotBeNull();
+            var dice2 = game.GetArtifact<Dice>("dice-secondary");
+            dice2.Should().NotBeNull();
 
 
             var state1 = actual.State.GetState<PieceState>(piece1!);

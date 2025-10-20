@@ -10,7 +10,13 @@ namespace Veggerby.Boards.Internal.Acceleration;
 /// </summary>
 internal interface IAccelerationContext
 {
-    IOccupancyIndex Occupancy { get; }
-    IAttackRays AttackRays { get; }
+    IOccupancyIndex Occupancy
+    {
+        get;
+    }
+    IAttackRays AttackRays
+    {
+        get;
+    }
     void OnStateTransition(GameState previous, GameState current, IGameEvent evt);
 }

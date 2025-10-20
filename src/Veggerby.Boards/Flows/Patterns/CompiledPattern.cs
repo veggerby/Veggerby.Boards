@@ -20,9 +20,18 @@ internal enum CompiledPatternKind
 /// </summary>
 internal sealed class CompiledPattern
 {
-    public CompiledPatternKind Kind { get; }
-    public Direction[] Directions { get; } // For Fixed this is the exact ordered steps; for Ray a single element; for MultiRay the candidate directions.
-    public bool IsRepeatable { get; }
+    public CompiledPatternKind Kind
+    {
+        get;
+    }
+    public Direction[] Directions
+    {
+        get;
+    } // For Fixed this is the exact ordered steps; for Ray a single element; for MultiRay the candidate directions.
+    public bool IsRepeatable
+    {
+        get;
+    }
 
     private CompiledPattern(CompiledPatternKind kind, Direction[] directions, bool isRepeatable)
     {

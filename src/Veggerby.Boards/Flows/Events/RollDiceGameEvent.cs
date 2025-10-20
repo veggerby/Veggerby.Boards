@@ -15,7 +15,10 @@ public class RollDiceGameEvent<T> : IGameEvent
     /// <summary>
     /// Gets the new dice states.
     /// </summary>
-    public IEnumerable<DiceState<T>> NewDiceStates { get; }
+    public IEnumerable<DiceState<T>> NewDiceStates
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RollDiceGameEvent{T}"/> class.

@@ -31,7 +31,10 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
     /// <summary>
     /// Gets the parent rule definitions to allow chaining additional event specific rules.
     /// </summary>
-    public IGameEventRuleDefinitions Parent { get; }
+    public IGameEventRuleDefinitions Parent
+    {
+        get;
+    }
 
     IGameEventRuleStateMutatorDefinition<T> IGameEventRuleStateMutatorDefinitionBefore<T>.Before(StateMutatorFactory<T> mutator)
     {

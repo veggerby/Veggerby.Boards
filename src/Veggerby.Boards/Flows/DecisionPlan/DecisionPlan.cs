@@ -28,29 +28,44 @@ public sealed class DecisionPlan
     /// <summary>
     /// Gets the ordered list of compiled entries (leaf phases) considered during evaluation.
     /// </summary>
-    public IReadOnlyList<DecisionPlanEntry> Entries { get; }
+    public IReadOnlyList<DecisionPlanEntry> Entries
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the optional list of compiled groups (when grouping feature enabled at compile time).
     /// Groups provide gate predicates evaluated once prior to scanning member entries.
     /// </summary>
-    internal IReadOnlyList<DecisionPlanGroup> Groups { get; }
+    internal IReadOnlyList<DecisionPlanGroup> Groups
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the supported event kinds per entry (index aligned with <see cref="Entries"/>). Internal experimental.
     /// </summary>
-    internal EventKind[] SupportedKinds { get; }
+    internal EventKind[] SupportedKinds
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the optional exclusivity group id per entry (index aligned with <see cref="Entries"/>). Null when no exclusivity declared.
     /// </summary>
-    internal string[] ExclusivityGroups { get; }
+    internal string[] ExclusivityGroups
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets an array mapping each entry index to the first index of its exclusivity group. When masks are enabled and an entry in a group succeeds,
     /// subsequent entries whose group root has been applied are skipped. Entries without a group have value -1.
     /// </summary>
-    internal int[] ExclusivityGroupRoots { get; }
+    internal int[] ExclusivityGroupRoots
+    {
+        get;
+    }
 
     private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds, string[] exclusivityGroups)
     {

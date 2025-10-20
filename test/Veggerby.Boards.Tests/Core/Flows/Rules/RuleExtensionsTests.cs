@@ -23,7 +23,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.All);
             composite.Rules.Should().Equal([rule1, rule2]);
         }
@@ -41,7 +42,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.All);
             composite.Rules.Should().Equal([rule1, rule2, rule3]);
         }
@@ -59,7 +61,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.All);
             composite.Rules
                 .OfType<CompositeGameEventRule>()
@@ -81,7 +84,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.Any);
             composite.Rules.Should().Equal([rule1, rule2]);
         }
@@ -99,7 +103,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.Any);
             composite.Rules.Should().Equal([rule1, rule2, rule3]);
         }
@@ -117,7 +122,8 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            var composite = actual as CompositeGameEventRule; composite.Should().NotBeNull();
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
             composite!.CompositeMode.Should().Be(CompositeMode.Any);
             composite.Rules
                 .OfType<CompositeGameEventRule>()

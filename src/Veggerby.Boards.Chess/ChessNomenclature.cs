@@ -226,8 +226,14 @@ public sealed class ChessNomenclature : IGameNomenclature
                             if (sameRank && (allEast || allWest))
                             {
                                 var notation = allEast ? "O-O" : "O-O-O"; // east assumed king-side, west queen-side
-                                if (IsCheckAfter(game, state, moveEvent)) { notation += "+"; }
-                                if (IsCheckmateAfter(game, state, moveEvent)) { notation += "#"; }
+                                if (IsCheckAfter(game, state, moveEvent))
+                                {
+                                    notation += "+";
+                                }
+                                if (IsCheckmateAfter(game, state, moveEvent))
+                                {
+                                    notation += "#";
+                                }
                                 return notation;
                             }
                         }
@@ -263,8 +269,14 @@ public sealed class ChessNomenclature : IGameNomenclature
                 if (promote)
                 {
                     var promo = baseText + "=Q"; // assume queen promotion
-                    if (IsCheckAfter(game, state, moveEvent)) { promo += "+"; }
-                    if (IsCheckmateAfter(game, state, moveEvent)) { promo += "#"; }
+                    if (IsCheckAfter(game, state, moveEvent))
+                    {
+                        promo += "+";
+                    }
+                    if (IsCheckmateAfter(game, state, moveEvent))
+                    {
+                        promo += "#";
+                    }
                     return promo;
                 }
             }
@@ -311,8 +323,14 @@ public sealed class ChessNomenclature : IGameNomenclature
         {
             // No ambiguity; append check/mate markers
             var suffix = string.Empty;
-            if (IsCheckAfter(game, state, moveEvent)) { suffix += "+"; }
-            if (IsCheckmateAfter(game, state, moveEvent)) { suffix += "#"; }
+            if (IsCheckAfter(game, state, moveEvent))
+            {
+                suffix += "+";
+            }
+            if (IsCheckmateAfter(game, state, moveEvent))
+            {
+                suffix += "#";
+            }
             return baseText + suffix;
         }
 
@@ -367,8 +385,14 @@ public sealed class ChessNomenclature : IGameNomenclature
         }
 
         string result = isCapture ? $"{designator}{disambiguator}x{to}" : $"{designator}{disambiguator}{to}";
-        if (IsCheckAfter(game, state, moveEvent)) { result += "+"; }
-        if (IsCheckmateAfter(game, state, moveEvent)) { result += "#"; }
+        if (IsCheckAfter(game, state, moveEvent))
+        {
+            result += "+";
+        }
+        if (IsCheckmateAfter(game, state, moveEvent))
+        {
+            result += "#";
+        }
         return result;
     }
 

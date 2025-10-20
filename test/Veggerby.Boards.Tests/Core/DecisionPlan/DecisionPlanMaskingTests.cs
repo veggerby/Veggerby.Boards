@@ -52,10 +52,14 @@ public class DecisionPlanMaskingTests
     {
         // arrange
         var plan = Build(true, false);
-        var piece = plan.Game.GetPiece("a"); piece.Should().NotBeNull();
-        var pieceB = plan.Game.GetPiece("b"); pieceB.Should().NotBeNull();
-        var tile2 = plan.Game.Board.GetTile("tile-2-1"); tile2.Should().NotBeNull();
-        var fromState = plan.State.GetState<PieceState>(piece!); fromState.Should().NotBeNull();
+        var piece = plan.Game.GetPiece("a");
+        piece.Should().NotBeNull();
+        var pieceB = plan.Game.GetPiece("b");
+        pieceB.Should().NotBeNull();
+        var tile2 = plan.Game.Board.GetTile("tile-2-1");
+        tile2.Should().NotBeNull();
+        var fromState = plan.State.GetState<PieceState>(piece!);
+        fromState.Should().NotBeNull();
         var relation = plan.Game.Board.TileRelations.First(r => r.From.Equals(fromState!.CurrentTile) && r.To.Equals(tile2!));
         var path = new TilePath([relation]);
         var evt = new MovePieceGameEvent(piece, path);

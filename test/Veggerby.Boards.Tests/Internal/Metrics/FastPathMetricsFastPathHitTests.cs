@@ -15,7 +15,9 @@ public class FastPathMetricsFastPathHitTests
             BoardId = "fastpath-rook";
             AddDirection(Constants.Directions.East);
             AddPlayer("white");
-            AddTile("a1"); AddTile("b1"); AddTile("c1");
+            AddTile("a1");
+            AddTile("b1");
+            AddTile("c1");
             WithTile("a1").WithRelationTo("b1").InDirection(Constants.Directions.East);
             WithTile("b1").WithRelationTo("c1").InDirection(Constants.Directions.East);
             AddPiece("rook").WithOwner("white").HasDirection(Constants.Directions.East).CanRepeat().OnTile("a1");

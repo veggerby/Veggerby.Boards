@@ -27,7 +27,10 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <summary>
     /// Gets the distance associated with the relation. Defaults to 0 when not set.
     /// </summary>
-    public int Distance { get; private set; }
+    public int Distance
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Sets the origin tile identifier.

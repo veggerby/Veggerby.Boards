@@ -14,7 +14,9 @@ using Veggerby.Boards.States.Conditions;
 namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 // Simple test events
-internal sealed class SkipReasonNoOpStateEvent : IStateMutationGameEvent { }
+internal sealed class SkipReasonNoOpStateEvent : IStateMutationGameEvent
+{
+}
 
 internal sealed class SkipReasonBuilder : GameBuilder
 {
@@ -66,11 +68,21 @@ internal sealed class CapturingSkipObserver : IEvaluationObserver
 {
     public List<RuleSkipReason> Reasons { get; } = new();
 
-    public void OnPhaseEnter(Boards.Flows.Phases.GamePhase phase, GameState state) { }
-    public void OnRuleEvaluated(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { }
-    public void OnRuleApplied(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
-    public void OnEventIgnored(IGameEvent @event, GameState state) { }
-    public void OnStateHashed(GameState state, ulong hash) { }
+    public void OnPhaseEnter(Boards.Flows.Phases.GamePhase phase, GameState state)
+    {
+    }
+    public void OnRuleEvaluated(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+    {
+    }
+    public void OnRuleApplied(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+    {
+    }
+    public void OnEventIgnored(IGameEvent @event, GameState state)
+    {
+    }
+    public void OnStateHashed(GameState state, ulong hash)
+    {
+    }
     public void OnRuleSkipped(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) => Reasons.Add(reason);
 }
 

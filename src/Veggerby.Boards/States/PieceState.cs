@@ -12,7 +12,10 @@ public class PieceState : ArtifactState<Piece>
     /// <summary>
     /// Gets the tile on which the piece currently resides.
     /// </summary>
-    public Tile CurrentTile { get; }
+    public Tile CurrentTile
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PieceState"/> class.

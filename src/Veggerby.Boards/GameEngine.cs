@@ -20,32 +20,50 @@ public class GameEngine
     /// <summary>
     /// Gets the immutable structural <see cref="Game"/> (board, players, artifacts).
     /// </summary>
-    public Game Game { get; }
+    public Game Game
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the root of the compiled phase tree used for resolving applicable rules.
     /// </summary>
-    public GamePhase GamePhaseRoot { get; }
+    public GamePhase GamePhaseRoot
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the compiled decision plan (leaf phase ordering + rules). Always non-null (legacy traversal removed).
     /// </summary>
-    internal DecisionPlan DecisionPlan { get; }
+    internal DecisionPlan DecisionPlan
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the evaluation observer used for instrumentation (never null).
     /// </summary>
-    internal IEvaluationObserver Observer { get; }
+    internal IEvaluationObserver Observer
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the optional capability set (may be null when no experimental subsystems enabled).
     /// </summary>
-    internal EngineCapabilities? Capabilities { get; }
+    internal EngineCapabilities? Capabilities
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the last evaluation trace (if trace capture feature enabled); otherwise <c>null</c>.
     /// </summary>
-    internal Internal.Tracing.EvaluationTrace? LastTrace { get; }
+    internal Internal.Tracing.EvaluationTrace? LastTrace
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameEngine"/> class.

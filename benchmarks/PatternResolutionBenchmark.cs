@@ -89,7 +89,8 @@ public class PatternResolutionBenchmark
                 }
             }
 
-            if (visitor.ResultPath is not null) count++;
+            if (visitor.ResultPath is not null)
+                count++;
         }
         return count;
     }

@@ -31,11 +31,17 @@ public class SingleStepMovePieceGameEventPreProcessor : IGameEventPreProcessor
     /// <summary>
     /// Gets the per-step validation condition.
     /// </summary>
-    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition { get; }
+    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition
+    {
+        get;
+    }
     /// <summary>
     /// Gets the dice considered for step construction.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public IEnumerable<IGameEvent> ProcessEvent(GameProgress progress, IGameEvent @event)

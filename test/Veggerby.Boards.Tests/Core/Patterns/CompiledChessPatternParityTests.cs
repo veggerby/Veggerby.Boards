@@ -38,9 +38,15 @@ public class CompiledChessPatternParityTests
     public void GivenKnightLShape_WhenResolving_ThenCompiledMatchesLegacy()
     {
         // Board shaped minimal to support an L: a -> b (east), then b -> n1 (north), n1 -> n2 (north)
-        var north = new Direction(Constants.Directions.North); var east = new Direction(Constants.Directions.East);
-        var a = new Tile("a"); var b = new Tile("b"); var n1 = new Tile("n1"); var n2 = new Tile("n2");
-        var ab = new TileRelation(a, b, east); var b_n1 = new TileRelation(b, n1, north); var n1_n2 = new TileRelation(n1, n2, north);
+        var north = new Direction(Constants.Directions.North);
+        var east = new Direction(Constants.Directions.East);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var n1 = new Tile("n1");
+        var n2 = new Tile("n2");
+        var ab = new TileRelation(a, b, east);
+        var b_n1 = new TileRelation(b, n1, north);
+        var n1_n2 = new TileRelation(n1, n2, north);
         var board = new Board("knight-board", [ab, b_n1, n1_n2]);
         var player = new Player("pl");
         // Knight pattern example: east + north + north
@@ -58,8 +64,13 @@ public class CompiledChessPatternParityTests
     public void GivenRookLikeSlider_WhenResolvingLongestChain_ThenCompiledMatchesLegacy()
     {
         var north = new Direction(Constants.Directions.North);
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
-        var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north); var cd = new TileRelation(c, d, north);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var ab = new TileRelation(a, b, north);
+        var bc = new TileRelation(b, c, north);
+        var cd = new TileRelation(c, d, north);
         var board = new Board("rook-board", [ab, bc, cd]);
         var player = new Player("pl");
         var rook = new Piece("rk", player, [new DirectionPattern(north, isRepeatable: true)]);
@@ -74,8 +85,11 @@ public class CompiledChessPatternParityTests
     public void GivenMultiDirectionDiagonal_WhenResolving_ThenCompiledMatchesLegacy()
     {
         var ne = new Direction("ne");
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var ab = new TileRelation(a, b, ne); var bc = new TileRelation(b, c, ne);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var ab = new TileRelation(a, b, ne);
+        var bc = new TileRelation(b, c, ne);
         var board = new Board("bishop-board", [ab, bc]);
         var player = new Player("pl");
         var bishop = new Piece("bp", player, [new MultiDirectionPattern([ne], isRepeatable: true)]);
@@ -89,10 +103,16 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenQueenMultiRay_WhenResolvingDirectionBranch_ThenCompiledMatchesLegacy()
     {
-        var north = new Direction(Constants.Directions.North); var east = new Direction(Constants.Directions.East);
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
+        var north = new Direction(Constants.Directions.North);
+        var east = new Direction(Constants.Directions.East);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
         // model vertical chain a->b->c, plus side branch from a->d east (queen choosing direction set)
-        var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north); var ad = new TileRelation(a, d, east);
+        var ab = new TileRelation(a, b, north);
+        var bc = new TileRelation(b, c, north);
+        var ad = new TileRelation(a, d, east);
         var board = new Board("queen-board", [ab, bc, ad]);
         var player = new Player("pl");
         var queen = new Piece("qn", player, [new MultiDirectionPattern([north, east], isRepeatable: true)]);
@@ -108,8 +128,11 @@ public class CompiledChessPatternParityTests
     public void GivenPawnSingleStepNonRepeatable_WhenResolvingBeyondFirstStep_BothNull()
     {
         var north = new Direction(Constants.Directions.North);
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var ab = new TileRelation(a, b, north); var bc = new TileRelation(b, c, north);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var ab = new TileRelation(a, b, north);
+        var bc = new TileRelation(b, c, north);
         var board = new Board("pawn-board", [ab, bc]);
         var player = new Player("pl");
         var pawn = new Piece("pw", player, [new DirectionPattern(north, isRepeatable: false)]);

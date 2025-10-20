@@ -114,7 +114,10 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         foreach (var tileConst in pathCheckTiles)
         {
             // Skip destination here; it will be validated for emptiness after loop.
-            if (tileConst == to.Id) { continue; }
+            if (tileConst == to.Id)
+            {
+                continue;
+            }
             var tile = engine.Game.GetTile(tileConst);
             if (tile is null)
             {

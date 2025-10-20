@@ -14,12 +14,14 @@ public class DecisionPlanBaselineCaptureTests
 {
     private static System.Collections.Generic.IEnumerable<System.Type> ExtractEventTypes(IGameEventRule rule)
     {
-        if (rule is null) yield break;
+        if (rule is null)
+            yield break;
         if (rule is CompositeGameEventRule composite)
         {
             foreach (var child in composite.Rules)
             {
-                foreach (var t in ExtractEventTypes(child)) yield return t;
+                foreach (var t in ExtractEventTypes(child))
+                    yield return t;
             }
             yield break;
         }

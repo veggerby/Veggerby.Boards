@@ -23,16 +23,31 @@ public class TraceObserverBatchOverheadBenchmark
 {
     private sealed class CountingObserver : IEvaluationObserver
     {
-        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state) { }
-        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { }
-        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
-        public void OnEventIgnored(IGameEvent @event, GameState state) { }
-        public void OnStateHashed(GameState state, ulong hash) { }
-        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
+        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state)
+        {
+        }
+        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+        {
+        }
+        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+        {
+        }
+        public void OnEventIgnored(IGameEvent @event, GameState state)
+        {
+        }
+        public void OnStateHashed(GameState state, ulong hash)
+        {
+        }
+        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+        {
+        }
     }
 
     [Params(false, true)]
-    public bool SimulatedPlanMode { get; set; }
+    public bool SimulatedPlanMode
+    {
+        get; set;
+    }
 
     private GameProgress _baseline = null!;
     private GameProgress _observer = null!;

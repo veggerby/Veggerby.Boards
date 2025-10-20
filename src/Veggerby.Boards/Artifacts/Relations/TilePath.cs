@@ -12,7 +12,10 @@ public class TilePath
     /// <summary>
     /// Gets the ordered relations comprising the path.
     /// </summary>
-    public IEnumerable<TileRelation> Relations { get; }
+    public IEnumerable<TileRelation> Relations
+    {
+        get;
+    }
     /// <summary>
     /// Gets all tiles on the path including start and end.
     /// </summary>

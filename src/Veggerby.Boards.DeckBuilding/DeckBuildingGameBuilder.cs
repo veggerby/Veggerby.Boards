@@ -16,7 +16,10 @@ public class DeckBuildingGameBuilder : GameBuilder
     private DeckBuildingEndTriggerOptions? _endTriggerOptions; // optional end trigger config (instance)
 
     /// <summary>Supply configurator instance (set via extension) enabling startup event generation. Public read-only for test consumption.</summary>
-    public DeckBuildingSupplyConfigurator? SupplyConfigurator { get; internal set; }
+    public DeckBuildingSupplyConfigurator? SupplyConfigurator
+    {
+        get; internal set;
+    }
 
     /// <summary>Standard pile identifiers for player decks.</summary>
     public static class Piles

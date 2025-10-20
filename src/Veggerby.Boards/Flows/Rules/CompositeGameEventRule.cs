@@ -19,12 +19,18 @@ public class CompositeGameEventRule : IGameEventRule
     /// <summary>
     /// Gets the child rules participating in this composite.
     /// </summary>
-    public IEnumerable<IGameEventRule> Rules { get; }
+    public IEnumerable<IGameEventRule> Rules
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the composition mode.
     /// </summary>
-    public CompositeMode CompositeMode { get; }
+    public CompositeMode CompositeMode
+    {
+        get;
+    }
 
     private CompositeGameEventRule(IEnumerable<IGameEventRule> rules, CompositeMode compositeMode)
     {

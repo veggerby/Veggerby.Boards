@@ -28,7 +28,10 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
             currentTurnState = ts; // only one expected; take first
             break;
         }
-        if (currentTurnState is null) { return gameState; }
+        if (currentTurnState is null)
+        {
+            return gameState;
+        }
 
         var turnArtifact = currentTurnState.Artifact;
         if (currentTurnState.Segment != @event.Segment)

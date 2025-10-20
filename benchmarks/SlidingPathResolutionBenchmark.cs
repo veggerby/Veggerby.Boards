@@ -113,7 +113,8 @@ public class SlidingPathResolutionBenchmark
         }
 
         var board = new Board("bench-sliding-8x8", relations);
-        var white = new Player("white"); var black = new Player("black");
+        var white = new Player("white");
+        var black = new Player("black");
 
         // Slider archetypes
         _rook = new Piece("rook", white, [new DirectionPattern(north, true), new DirectionPattern(east, true), new DirectionPattern(south, true), new DirectionPattern(west, true)]);
@@ -173,7 +174,8 @@ public class SlidingPathResolutionBenchmark
                 pattern.Accept(visitor);
                 if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {
-                    count++; break;
+                    count++;
+                    break;
                 }
             }
         }

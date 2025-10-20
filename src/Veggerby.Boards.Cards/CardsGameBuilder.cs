@@ -66,11 +66,16 @@ public class CardsGameBuilder : GameBuilder
         _deck = deck;
         AddArtifact(deck.Id).WithFactory(id => deck);
 
-        var c1 = new Card(CardIds.C1); AddArtifact(c1.Id).WithFactory(id => c1);
-        var c2 = new Card(CardIds.C2); AddArtifact(c2.Id).WithFactory(id => c2);
-        var c3 = new Card(CardIds.C3); AddArtifact(c3.Id).WithFactory(id => c3);
-        var c4 = new Card(CardIds.C4); AddArtifact(c4.Id).WithFactory(id => c4);
-        var c5 = new Card(CardIds.C5); AddArtifact(c5.Id).WithFactory(id => c5);
+        var c1 = new Card(CardIds.C1);
+        AddArtifact(c1.Id).WithFactory(id => c1);
+        var c2 = new Card(CardIds.C2);
+        AddArtifact(c2.Id).WithFactory(id => c2);
+        var c3 = new Card(CardIds.C3);
+        AddArtifact(c3.Id).WithFactory(id => c3);
+        var c4 = new Card(CardIds.C4);
+        AddArtifact(c4.Id).WithFactory(id => c4);
+        var c5 = new Card(CardIds.C5);
+        AddArtifact(c5.Id).WithFactory(id => c5);
 
         _initialPiles[Piles.Draw] = new List<Card> { c1, c2, c3, c4, c5 };
         _initialPiles[Piles.Discard] = new List<Card>();

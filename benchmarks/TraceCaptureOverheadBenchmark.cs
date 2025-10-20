@@ -15,7 +15,10 @@ namespace Veggerby.Boards.Benchmarks;
 public class TraceCaptureOverheadBenchmark
 {
     [Params(false, true)]
-    public bool EnableTraceCapture { get; set; }
+    public bool EnableTraceCapture
+    {
+        get; set;
+    }
 
     private GameProgress _progress = null!;
     private MovePieceGameEvent _event = null!;

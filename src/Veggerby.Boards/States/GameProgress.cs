@@ -40,22 +40,34 @@ public partial class GameProgress
     /// <summary>
     /// Gets the engine context.
     /// </summary>
-    public GameEngine Engine { get; }
+    public GameEngine Engine
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the current state snapshot.
     /// </summary>
-    public GameState State { get; }
+    public GameState State
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the active phase derived from the phase tree and current state.
     /// </summary>
-    public GamePhase? Phase { get; }
+    public GamePhase? Phase
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the event history up to this progress state.
     /// </summary>
-    public IEnumerable<IGameEvent> Events { get; }
+    public IEnumerable<IGameEvent> Events
+    {
+        get;
+    }
 
     // Removed internal snapshot exposure (non-leaky acceleration context now authoritative)
 

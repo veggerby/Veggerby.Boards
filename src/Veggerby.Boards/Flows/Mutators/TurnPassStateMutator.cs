@@ -18,8 +18,15 @@ internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
         }
 
         TurnState? currentTurnState = null;
-        foreach (var ts in gameState.GetStates<TurnState>()) { currentTurnState = ts; break; }
-        if (currentTurnState is null) { return gameState; }
+        foreach (var ts in gameState.GetStates<TurnState>())
+        {
+            currentTurnState = ts;
+            break;
+        }
+        if (currentTurnState is null)
+        {
+            return gameState;
+        }
 
         var advancedTurnState = new TurnState(currentTurnState.Artifact, currentTurnState.TurnNumber + 1, TurnSegment.Start, currentTurnState.PassStreak + 1);
         return TurnSequencingHelpers.ApplyTurnAndRotate(engine, gameState, advancedTurnState);

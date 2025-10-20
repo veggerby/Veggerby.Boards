@@ -103,8 +103,14 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
         {
             return 0;
         }
-        if (p <= 0) { return MinApplied; }
-        if (p >= 100) { return MaxApplied; }
+        if (p <= 0)
+        {
+            return MinApplied;
+        }
+        if (p >= 100)
+        {
+            return MaxApplied;
+        }
         var ordered = Results.Select(r => r.AppliedEvents).OrderBy(v => v).ToArray();
         var rank = (int)Math.Ceiling((p / 100d) * ordered.Length);
         var index = Math.Max(1, rank) - 1;

@@ -28,12 +28,18 @@ public class GameState
     /// <summary>
     /// Gets the deterministic state hash (when hashing feature flag enabled); otherwise <c>null</c>.
     /// </summary>
-    public ulong? Hash { get; }
+    public ulong? Hash
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the 128-bit state hash (when hashing feature flag enabled); otherwise <c>null</c>.
     /// </summary>
-    public (ulong Low, ulong High)? Hash128 { get; }
+    public (ulong Low, ulong High)? Hash128
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a value indicating whether this is the initial state (no prior state).
@@ -102,9 +108,12 @@ public class GameState
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((GameState)obj);
     }
 
@@ -183,7 +192,10 @@ public class GameState
     /// <summary>
     /// Gets the random source snapshot associated with this state (may be null if none assigned).
     /// </summary>
-    public IRandomSource? Random { get; }
+    public IRandomSource? Random
+    {
+        get;
+    }
 
     /// <summary>
     /// Computes a 64-bit FNV-1a style hash over artifact states (id + type + serialized state) and RNG snapshot.

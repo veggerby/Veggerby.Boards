@@ -31,7 +31,10 @@ public class CompositeStateMutator<T> : IStateMutator<T> where T : IGameEvent
     /// <summary>
     /// Gets the child mutators.
     /// </summary>
-    public IEnumerable<IStateMutator<T>> ChildMutators { get; }
+    public IEnumerable<IStateMutator<T>> ChildMutators
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, T @event)

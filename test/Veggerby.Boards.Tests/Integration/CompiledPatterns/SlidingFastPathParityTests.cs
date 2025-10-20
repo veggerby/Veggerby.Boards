@@ -30,10 +30,17 @@ public class SlidingFastPathParityTests
 
         protected override void Build()
         {
-            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
-            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
+            AddDirection(Constants.Directions.North);
+            AddDirection(Constants.Directions.South);
+            AddDirection(Constants.Directions.East);
+            AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast);
+            AddDirection(Constants.Directions.NorthWest);
+            AddDirection(Constants.Directions.SouthEast);
+            AddDirection(Constants.Directions.SouthWest);
 
-            AddPlayer("white"); AddPlayer("black");
+            AddPlayer("white");
+            AddPlayer("black");
 
             var files = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
             for (int rank = 1; rank <= 8; rank++)
@@ -50,14 +57,40 @@ public class SlidingFastPathParityTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North); }
-                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South); }
-                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East); }
-                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West); }
-                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast); }
-                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest); }
-                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast); }
-                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest); }
+                    var northRank = rank + 1;
+                    if (northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North);
+                    }
+                    var southRank = rank - 1;
+                    if (southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South);
+                    }
+                    if (file < 'h')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East);
+                    }
+                    if (file > 'a')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West);
+                    }
+                    if (file < 'h' && northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast);
+                    }
+                    if (file > 'a' && northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest);
+                    }
+                    if (file < 'h' && southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast);
+                    }
+                    if (file > 'a' && southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest);
+                    }
                 }
             }
 
@@ -90,7 +123,8 @@ public class SlidingFastPathParityTests
                         break;
                     case "immobile":
                         break; // no directions
-                    default: throw new System.InvalidOperationException("Unknown piece spec type");
+                    default:
+                        throw new System.InvalidOperationException("Unknown piece spec type");
                 }
                 pd.OnTile(spec.FromTile);
             }
@@ -302,7 +336,10 @@ public class SlidingFastPathParityTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        try
+        {
+            return progress.ResolvePathCompiledFirst(piece, from, to);
+        }
         finally { FeatureFlags.EnableSlidingFastPath = prev; }
     }
 
@@ -316,7 +353,10 @@ public class SlidingFastPathParityTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        try
+        {
+            return progress.ResolvePathCompiledFirst(piece, from, to);
+        }
         finally { FeatureFlags.EnableSlidingFastPath = prev; }
     }
 

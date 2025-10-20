@@ -21,7 +21,8 @@ public class DeckBuildingTrashFromHandTests
         builder.WithCard(c1.Id);
         builder.WithCard(c2.Id);
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),
@@ -55,7 +56,8 @@ public class DeckBuildingTrashFromHandTests
         builder.WithCard(c1.Id);
         builder.WithCard(c2.Id);
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card> { c1 },

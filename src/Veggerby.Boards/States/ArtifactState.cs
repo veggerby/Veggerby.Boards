@@ -13,7 +13,10 @@ public abstract class ArtifactState<T> : IArtifactState where T : Artifact
     /// <summary>
     /// Gets the associated artifact instance.
     /// </summary>
-    public T Artifact { get; }
+    public T Artifact
+    {
+        get;
+    }
 
     Artifact IArtifactState.Artifact => Artifact;
 

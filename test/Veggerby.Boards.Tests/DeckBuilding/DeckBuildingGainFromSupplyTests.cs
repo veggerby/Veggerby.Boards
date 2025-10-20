@@ -21,8 +21,10 @@ public class DeckBuildingGainFromSupplyTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
-        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var p1 = game.GetPlayer("P1");
+        p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // initialize deck state with empty piles and supply
 
@@ -61,8 +63,10 @@ public class DeckBuildingGainFromSupplyTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
-        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var p1 = game.GetPlayer("P1");
+        p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {

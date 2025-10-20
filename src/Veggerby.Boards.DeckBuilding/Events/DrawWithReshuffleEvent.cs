@@ -13,10 +13,16 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class DrawWithReshuffleEvent : IGameEvent
 {
     /// <summary>The deck to draw from.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
 
     /// <summary>The number of cards to draw.</summary>
-    public int Count { get; }
+    public int Count
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DrawWithReshuffleEvent"/> class.

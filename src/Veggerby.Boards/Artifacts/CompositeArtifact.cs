@@ -13,7 +13,10 @@ public class CompositeArtifact<T> : Artifact, IEquatable<CompositeArtifact<T>>
     /// <summary>
     /// Gets the child artifacts.
     /// </summary>
-    public IEnumerable<T> ChildArtifacts { get; }
+    public IEnumerable<T> ChildArtifacts
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CompositeArtifact{T}"/> class.

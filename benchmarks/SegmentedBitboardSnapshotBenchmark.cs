@@ -17,8 +17,16 @@ public class SegmentedBitboardSnapshotBenchmark
 {
     private record BenchmarkBoard(Board Board, Game Game, GameState State, BitboardLayout Layout, BoardShape Shape);
 
-    [Params(64, 128)] public int TileCount { get; set; }
-    [Params(false, true)] public bool SegmentedEnabled { get; set; }
+    [Params(64, 128)]
+    public int TileCount
+    {
+        get; set;
+    }
+    [Params(false, true)]
+    public bool SegmentedEnabled
+    {
+        get; set;
+    }
 
     private BenchmarkBoard _ctx = null!;
 
@@ -102,14 +110,18 @@ public class SegmentedBitboardSnapshotBenchmark
                     {
                         var nf = (char)(f + df);
                         var nr = r + dr;
-                        if (nr < 1 || nr > 8 || nf < 'a' || nf > 'h') { continue; }
+                        if (nr < 1 || nr > 8 || nf < 'a' || nf > 'h')
+                        {
+                            continue;
+                        }
                         relations.Add(new TileRelation(T(f, r), T(nf, nr), new Direction(id)));
                     }
                 }
             }
         }
         var board = new Board("grid-64", relations);
-        var white = new Player("p1"); var black = new Player("p2");
+        var white = new Player("p1");
+        var black = new Player("p2");
         // Construct pieces with empty pattern lists (patterns not needed for snapshot build)
         var pieces = new List<Piece>(32);
         for (int i = 0; i < 16; i++)
@@ -146,7 +158,8 @@ public class SegmentedBitboardSnapshotBenchmark
         }
         relations.Add(new TileRelation(tiles[tileCount - 1], tiles[0], east)); // wrap
         var board = new Board($"linear-{tileCount}", relations);
-        var p1 = new Player("p1"); var p2 = new Player("p2");
+        var p1 = new Player("p1");
+        var p2 = new Player("p2");
         var pieces = new List<Piece>();
         for (int i = 0; i < tileCount; i += 4)
         {

@@ -18,7 +18,10 @@ public class DiceState<T> : ArtifactState<Dice>
     /// <summary>
     /// Gets the current (rolled) value for the die.
     /// </summary>
-    public T CurrentValue { get; }
+    public T CurrentValue
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceState{T}"/> class.

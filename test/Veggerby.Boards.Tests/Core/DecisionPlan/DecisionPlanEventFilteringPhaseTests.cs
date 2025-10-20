@@ -17,7 +17,10 @@ internal sealed class TestPhaseControlEvent(string phaseId) : IPhaseControlGameE
 
 internal sealed class RecordingConditionPhase<TEvent> : IGameEventCondition<TEvent> where TEvent : IGameEvent
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameEngine engine, GameState state, TEvent @event)
     {
         Evaluations++;

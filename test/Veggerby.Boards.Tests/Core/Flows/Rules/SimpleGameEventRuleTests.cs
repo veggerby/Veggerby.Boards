@@ -46,7 +46,8 @@ public class SimpleGameEventRuleTests
         {
             // arrange
             var engine = new TestGameBuilder().Compile();
-            var rule = GameEventRule<NullGameEvent>.Null; ;
+            var rule = GameEventRule<NullGameEvent>.Null;
+            ;
 
             // act
             var actual = rule.Check(engine.Engine, engine.State, new NullGameEvent());

@@ -10,9 +10,18 @@ namespace Veggerby.Boards.Internal.Layout;
 /// </summary>
 internal sealed class PieceMapSnapshot
 {
-    public PieceMapLayout Layout { get; }
-    public short[] PieceTileIndices { get; } // length = piece count
-    public short[] PlayerPieceCounts { get; } // length = player count
+    public PieceMapLayout Layout
+    {
+        get;
+    }
+    public short[] PieceTileIndices
+    {
+        get;
+    } // length = piece count
+    public short[] PlayerPieceCounts
+    {
+        get;
+    } // length = player count
 
     private PieceMapSnapshot(PieceMapLayout layout, short[] pieceTileIndices, short[] playerPieceCounts)
     {

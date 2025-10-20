@@ -26,25 +26,42 @@ public class PatternResolutionLargeSampleBenchmark
     public void Setup()
     {
         // Build 8x8 grid with orthogonal + diagonal relations (subset adequate for typical chess movement shapes).
-        var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
-        var ne = new Direction("ne"); var nw = new Direction("nw"); var se = new Direction("se"); var sw = new Direction("sw");
+        var north = new Direction(Constants.Directions.North);
+        var south = new Direction(Constants.Directions.South);
+        var east = new Direction(Constants.Directions.East);
+        var west = new Direction(Constants.Directions.West);
+        var ne = new Direction("ne");
+        var nw = new Direction("nw");
+        var se = new Direction("se");
+        var sw = new Direction("sw");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
-        var tiles = new List<Tile>(); var relations = new List<TileRelation>();
+        var tiles = new List<Tile>();
+        var relations = new List<TileRelation>();
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        for (int r = 1; r <= 8; r++) foreach (var f in files) tiles.Add(new Tile($"{f}{r}"));
+        for (int r = 1; r <= 8; r++)
+            foreach (var f in files)
+                tiles.Add(new Tile($"{f}{r}"));
         Tile T(char f, int r) => tiles[(r - 1) * 8 + (f - 'a')];
         foreach (var f in files)
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
-                if (f < 'h' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
-                if (f > 'a' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
-                if (f < 'h' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
-                if (f > 'a' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                if (r < 8)
+                    relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1)
+                    relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                if (f < 'h' && r < 8)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                if (f > 'a' && r < 8)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                if (f < 'h' && r > 1)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                if (f > 'a' && r > 1)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
             }
         }
         var board = new Board("large-sample-board", relations);
@@ -73,7 +90,11 @@ public class PatternResolutionLargeSampleBenchmark
             var piece = piecePool[rnd.Next(piecePool.Length)];
             var from = tiles[rnd.Next(tiles.Count)];
             var to = tiles[rnd.Next(tiles.Count)];
-            if (from == to) { i--; continue; } // enforce non-zero length
+            if (from == to)
+            {
+                i--;
+                continue;
+            } // enforce non-zero length
             _queries.Add((piece, from, to));
         }
     }
@@ -88,7 +109,11 @@ public class PatternResolutionLargeSampleBenchmark
             foreach (var p in piece.Patterns)
             {
                 p.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to)) { hits++; break; }
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
+                {
+                    hits++;
+                    break;
+                }
             }
         }
         return hits;
@@ -100,7 +125,8 @@ public class PatternResolutionLargeSampleBenchmark
         int hits = 0;
         foreach (var (piece, from, to) in _queries)
         {
-            if (_compiled.TryResolve(piece, from, to, out var path) && path is not null && path.To.Equals(to)) hits++;
+            if (_compiled.TryResolve(piece, from, to, out var path) && path is not null && path.To.Equals(to))
+                hits++;
         }
         return hits;
     }

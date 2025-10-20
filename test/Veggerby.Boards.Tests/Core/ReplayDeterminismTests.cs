@@ -20,11 +20,15 @@ public class ReplayDeterminismTests
         var b = builder.WithSeed(seed).Compile();
 
         var pieceId = "piece-1";
-        var from = a.Game.GetTile("tile-1"); from.Should().NotBeNull();
-        var to = a.Game.GetTile("tile-2"); to.Should().NotBeNull();
-        var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to)); relation.Should().NotBeNull();
+        var from = a.Game.GetTile("tile-1");
+        from.Should().NotBeNull();
+        var to = a.Game.GetTile("tile-2");
+        to.Should().NotBeNull();
+        var relation = a.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var piece = a.Game.GetPiece(pieceId); piece.Should().NotBeNull();
+        var piece = a.Game.GetPiece(pieceId);
+        piece.Should().NotBeNull();
         var move = new MovePieceGameEvent(piece!, path);
 
         // deterministic sequence: move piece forth then back twice

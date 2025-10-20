@@ -15,32 +15,50 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <summary>
     /// Gets the board on which resolution occurs.
     /// </summary>
-    public Board Board { get; }
+    public Board Board
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the origin tile.
     /// </summary>
-    public Tile From { get; }
+    public Tile From
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the destination tile.
     /// </summary>
-    public Tile To { get; }
+    public Tile To
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the target distance that a resolved path must satisfy.
     /// </summary>
-    public int Distance { get; }
+    public int Distance
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a value indicating whether paths shorter than <see cref="Distance"/> may be accepted when the target tile is reached early.
     /// </summary>
-    public bool AllowOvershootDistance { get; }
+    public bool AllowOvershootDistance
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the resulting path (or null if none matched).
     /// </summary>
-    public TilePath? ResultPath { get; private set; }
+    public TilePath? ResultPath
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResolveTilePathDistanceVisitor"/> class.

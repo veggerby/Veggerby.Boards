@@ -22,7 +22,10 @@ public sealed class CardDefinitionState : ArtifactState<CardDefinition>
 
     private bool Equals(CardDefinitionState? other)
     {
-        if (other is null) { return false; }
+        if (other is null)
+        {
+            return false;
+        }
         return Artifact.Equals(other.Artifact);
     }
 

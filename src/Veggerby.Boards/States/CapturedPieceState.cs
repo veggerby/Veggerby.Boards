@@ -30,7 +30,10 @@ public sealed class CapturedPieceState : ArtifactState<Piece>
 
     private bool Equals(CapturedPieceState? other)
     {
-        if (other is null) { return false; }
+        if (other is null)
+        {
+            return false;
+        }
         return Artifact.Equals(other.Artifact);
     }
 

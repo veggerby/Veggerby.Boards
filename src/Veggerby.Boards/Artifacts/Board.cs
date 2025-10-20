@@ -14,12 +14,18 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets all tiles belonging to the board.
     /// </summary>
-    public IEnumerable<Tile> Tiles { get; }
+    public IEnumerable<Tile> Tiles
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets all relations between tiles.
     /// </summary>
-    public IEnumerable<TileRelation> TileRelations { get; }
+    public IEnumerable<TileRelation> TileRelations
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Board"/> class.

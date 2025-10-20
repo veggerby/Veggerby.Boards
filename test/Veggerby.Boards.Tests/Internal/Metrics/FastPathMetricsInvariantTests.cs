@@ -10,14 +10,22 @@ public class FastPathMetricsInvariantTests
         // arrange
         FastPathMetrics.Reset();
         // Simulate attempts: 1 fast-path hit, 2 compiled hits, 1 legacy hit, and various skips
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnFastPathHit();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnCompiledHit();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnCompiledHit();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnLegacyHit();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnFastPathSkipNoServices();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnFastPathSkipNotSlider();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnFastPathSkipAttackMiss();
-        FastPathMetrics.OnAttempt(); FastPathMetrics.OnFastPathSkipReconstructFail();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnFastPathHit();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnCompiledHit();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnCompiledHit();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnLegacyHit();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnFastPathSkipNoServices();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnFastPathSkipNotSlider();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnFastPathSkipAttackMiss();
+        FastPathMetrics.OnAttempt();
+        FastPathMetrics.OnFastPathSkipReconstructFail();
 
         // act
         var snap = FastPathMetrics.Snapshot();

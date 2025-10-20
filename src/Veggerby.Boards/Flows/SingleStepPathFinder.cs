@@ -42,12 +42,18 @@ public class SingleStepPathFinder
     /// <summary>
     /// Gets the condition evaluated for each single movement step.
     /// </summary>
-    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition { get; }
+    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the dice referenced for movement distance resolution.
     /// </summary>
-    public Dice[] Dice { get; }
+    public Dice[] Dice
+    {
+        get;
+    }
 
     private SingleStepPath? GetSingleStep(GameEngine engine, PieceState pieceState, IPattern pattern, GameState state, DiceState<int> diceState, Tile to, SingleStepPath? previousStep = null)
     {

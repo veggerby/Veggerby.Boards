@@ -18,9 +18,12 @@ public class PieceStateMutatorTests
             var game = engine.Game;
             var initialState = engine.State;
             var mutator = new MovePieceStateMutator();
-            var piece = game.GetPiece("piece-1"); piece.Should().NotBeNull();
-            var state = initialState.GetState<PieceState>(piece!); state.Should().NotBeNull();
-            var toTile = game.GetTile("tile-2"); toTile.Should().NotBeNull();
+            var piece = game.GetPiece("piece-1");
+            piece.Should().NotBeNull();
+            var state = initialState.GetState<PieceState>(piece!);
+            state.Should().NotBeNull();
+            var toTile = game.GetTile("tile-2");
+            toTile.Should().NotBeNull();
             var path = new TilePath([new TileRelation(state!.CurrentTile, toTile!, Direction.Clockwise)]);
             var @event = new MovePieceGameEvent(piece!, path);
 
@@ -43,11 +46,15 @@ public class PieceStateMutatorTests
             var game = engine.Game;
             var initialState = engine.State;
             var mutator = new MovePieceStateMutator();
-            var piece = game.GetPiece("piece-1"); piece.Should().NotBeNull();
-            var state = initialState.GetState<PieceState>(piece!); state.Should().NotBeNull();
+            var piece = game.GetPiece("piece-1");
+            piece.Should().NotBeNull();
+            var state = initialState.GetState<PieceState>(piece!);
+            state.Should().NotBeNull();
 
-            var fromTile = game.GetTile("tile-2"); fromTile.Should().NotBeNull();
-            var toTile = game.GetTile("tile-1"); toTile.Should().NotBeNull();
+            var fromTile = game.GetTile("tile-2");
+            fromTile.Should().NotBeNull();
+            var toTile = game.GetTile("tile-1");
+            toTile.Should().NotBeNull();
 
             var path = new TilePath([new TileRelation(fromTile!, toTile!, Direction.CounterClockwise)]);
             var @event = new MovePieceGameEvent(piece!, path);

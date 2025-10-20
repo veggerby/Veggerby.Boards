@@ -20,7 +20,9 @@ file sealed class DelegatePlayoutPolicy(Func<GameProgress, IEnumerable<IGameEven
 
 public class GameSimulatorTests
 {
-    private sealed class NoOpEvent : IGameEvent { }
+    private sealed class NoOpEvent : IGameEvent
+    {
+    }
 
     // Builder producing a trivial phase that produces no candidate events (policy returns none)
     private sealed class NoOpGameBuilder : GameBuilder
@@ -41,7 +43,9 @@ public class GameSimulatorTests
     // Builder that applies an event once by moving a pseudo piece (state hash change via random source reseed)
     private sealed class SingleApplyBuilder : GameBuilder
     {
-        public sealed class ToggleEvent : IGameEvent { }
+        public sealed class ToggleEvent : IGameEvent
+        {
+        }
 
         private sealed class ToggleMutator : Flows.Mutators.IStateMutator<ToggleEvent>
         {
@@ -217,7 +221,10 @@ public class GameSimulatorTests
                 AppliedSteps++;
             }
         }
-        public void OnCompleted(PlayoutResult result) { Completed = result; }
+        public void OnCompleted(PlayoutResult result)
+        {
+            Completed = result;
+        }
     }
 
     [Fact]

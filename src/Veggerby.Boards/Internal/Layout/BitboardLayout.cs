@@ -18,12 +18,18 @@ internal sealed class BitboardLayout
     /// <summary>
     /// Stable ordered player array (ordinal by id) matching indices used in occupancy bitboards.
     /// </summary>
-    public Player[] Players { get; }
+    public Player[] Players
+    {
+        get;
+    }
 
     /// <summary>
     /// Stable ordered piece array (ordinal by id) matching indices used for optional per-piece masks.
     /// </summary>
-    public Piece[] Pieces { get; }
+    public Piece[] Pieces
+    {
+        get;
+    }
 
     private BitboardLayout(Dictionary<Player, int> p2i, Dictionary<Piece, int> piece2i, Player[] players, Piece[] pieces)
     {

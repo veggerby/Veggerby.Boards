@@ -24,17 +24,26 @@ public sealed class GameTimeline
     /// <summary>
     /// Gets the immutable sequence of past states (oldest -> newest).
     /// </summary>
-    public ImmutableArray<GameState> Past { get; }
+    public ImmutableArray<GameState> Past
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the current state (cursor position).
     /// </summary>
-    public GameState Present { get; }
+    public GameState Present
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the immutable sequence of future states available for redo (earliest -> latest).
     /// </summary>
-    public ImmutableArray<GameState> Future { get; }
+    public ImmutableArray<GameState> Future
+    {
+        get;
+    }
 
     /// <summary>
     /// Creates a new timeline seeded with an initial present state.

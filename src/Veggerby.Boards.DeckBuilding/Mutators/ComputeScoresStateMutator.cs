@@ -19,7 +19,10 @@ public sealed class ComputeScoresStateMutator : IStateMutator<ComputeScoresEvent
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
         // Prevent double computation (condition should block but guard anyway for purity).
-        foreach (var _ in state.GetStates<ScoreState>()) { return state; }
+        foreach (var _ in state.GetStates<ScoreState>())
+        {
+            return state;
+        }
 
         // Build lookup: cardId -> victory points
         var vp = new Dictionary<string, int>(StringComparer.Ordinal);

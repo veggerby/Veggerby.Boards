@@ -10,7 +10,10 @@ namespace Veggerby.Boards.Tests.Core.States;
 
 public class GameStateTests
 {
-    public Game Game { get; }
+    public Game Game
+    {
+        get;
+    }
     public GameStateTests()
     {
         Game = new TestGameBuilder().Compile().Game;

@@ -16,7 +16,10 @@ internal abstract class GameEventConditionDefinitionBase<T> : DefinitionBase whe
         Parent = parent;
     }
 
-    public IThenStateMutator<T> Parent { get; }
+    public IThenStateMutator<T> Parent
+    {
+        get;
+    }
 
     internal abstract IGameEventCondition<T> Build(Game game);
 }

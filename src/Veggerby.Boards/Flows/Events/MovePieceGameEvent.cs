@@ -13,11 +13,17 @@ public class MovePieceGameEvent : IGameEvent
     /// <summary>
     /// Gets the moving piece.
     /// </summary>
-    public Piece Piece { get; }
+    public Piece Piece
+    {
+        get;
+    }
     /// <summary>
     /// Gets the traversed path.
     /// </summary>
-    public TilePath Path { get; }
+    public TilePath Path
+    {
+        get;
+    }
     /// <summary>
     /// Gets the origin tile.
     /// </summary>

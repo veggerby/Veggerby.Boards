@@ -22,7 +22,10 @@ public class TurnSequencingCoreTests
     {
         private readonly Action _reset = reset;
 
-        public void Dispose() { _reset(); }
+        public void Dispose()
+        {
+            _reset();
+        }
     }
 
     [Fact]

@@ -14,7 +14,10 @@ public sealed class Deck : Artifact, IEquatable<Deck?>
     /// <summary>
     /// Gets the defined pile identifiers for this deck.
     /// </summary>
-    public IReadOnlyList<string> Piles { get; }
+    public IReadOnlyList<string> Piles
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Deck"/> class.

@@ -33,7 +33,10 @@ public class TileExceptionGameEventCondition : IGameEventCondition<MovePieceGame
     /// <summary>
     /// Gets the forbidden tiles.
     /// </summary>
-    public Tile[] Tiles { get; }
+    public Tile[] Tiles
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)

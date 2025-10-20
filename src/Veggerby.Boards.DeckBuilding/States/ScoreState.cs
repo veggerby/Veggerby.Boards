@@ -9,7 +9,10 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class ScoreState : ArtifactState<Player>
 {
     /// <summary>Gets the victory point total.</summary>
-    public int VictoryPoints { get; }
+    public int VictoryPoints
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScoreState"/> class.
@@ -27,7 +30,10 @@ public sealed class ScoreState : ArtifactState<Player>
 
     private bool Equals(ScoreState? other)
     {
-        if (other is null) { return false; }
+        if (other is null)
+        {
+            return false;
+        }
         return Artifact.Equals(other.Artifact) && VictoryPoints == other.VictoryPoints;
     }
 

@@ -12,7 +12,10 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 internal sealed class CountingCondition(bool result) : IGameStateCondition
 {
     private readonly bool _result = result;
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
 
     public ConditionResponse Evaluate(GameState state)
     {

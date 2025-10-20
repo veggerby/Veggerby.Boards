@@ -46,9 +46,12 @@ public class SimpleGameStateMutatorTests
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
-            var piece = game.GetPiece("piece-1"); piece.Should().NotBeNull();
-            var state = initialState.GetState<PieceState>(piece!); state.Should().NotBeNull();
-            var toTile = game.GetTile("tile-2"); toTile.Should().NotBeNull();
+            var piece = game.GetPiece("piece-1");
+            piece.Should().NotBeNull();
+            var state = initialState.GetState<PieceState>(piece!);
+            state.Should().NotBeNull();
+            var toTile = game.GetTile("tile-2");
+            toTile.Should().NotBeNull();
 
             var path = new TilePath([new TileRelation(state!.CurrentTile!, toTile!, Direction.Clockwise)]);
             var @event = new MovePieceGameEvent(piece!, path);
@@ -61,7 +64,8 @@ public class SimpleGameStateMutatorTests
             // assert
             actual.Should().NotBe(initialState);
             actual.IsInitialState.Should().BeFalse();
-            var pieceState = actual.GetState<PieceState>(piece!); pieceState.Should().NotBeNull();
+            var pieceState = actual.GetState<PieceState>(piece!);
+            pieceState.Should().NotBeNull();
             pieceState!.CurrentTile.Should().Be(toTile);
         }
 

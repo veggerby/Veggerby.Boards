@@ -43,11 +43,17 @@ public class ConditionResponse
     /// <summary>
     /// Gets the result classification.
     /// </summary>
-    public ConditionResult Result { get; }
+    public ConditionResult Result
+    {
+        get;
+    }
     /// <summary>
     /// Gets the optional textual reason.
     /// </summary>
-    public string? Reason { get; }
+    public string? Reason
+    {
+        get;
+    }
 
     private ConditionResponse(ConditionResult result, string? reason)
     {
@@ -66,9 +72,12 @@ public class ConditionResponse
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((ConditionResponse)obj);
     }
 

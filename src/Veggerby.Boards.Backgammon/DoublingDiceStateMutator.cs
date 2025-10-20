@@ -26,7 +26,10 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
     /// <summary>
     /// Gets the doubling dice artifact.
     /// </summary>
-    public Dice DoublingDice { get; }
+    public Dice DoublingDice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
@@ -50,7 +53,11 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
             // find the other player (Backgammon is strictly two-player in this module)
             foreach (var p in engine.Game.Players)
             {
-                if (!p.Equals(activePlayer)) { inactivePlayer = p; break; }
+                if (!p.Equals(activePlayer))
+                {
+                    inactivePlayer = p;
+                    break;
+                }
             }
         }
 

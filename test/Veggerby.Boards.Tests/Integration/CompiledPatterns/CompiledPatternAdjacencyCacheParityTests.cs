@@ -33,8 +33,12 @@ public class CompiledPatternAdjacencyCacheParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
-            var piece = progress.Game.GetPiece(pieceId); var from = progress.Game.GetTile($"tile-{fromId}"); var to = progress.Game.GetTile($"tile-{toId}");
-            piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
+            var piece = progress.Game.GetPiece(pieceId);
+            var from = progress.Game.GetTile($"tile-{fromId}");
+            var to = progress.Game.GetTile($"tile-{toId}");
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
             without = ResolveCompiled(progress, piece!, from!, to!);
         }
 
@@ -42,13 +46,21 @@ public class CompiledPatternAdjacencyCacheParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
-            var piece = progress.Game.GetPiece(pieceId); var from = progress.Game.GetTile($"tile-{fromId}"); var to = progress.Game.GetTile($"tile-{toId}");
-            piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
+            var piece = progress.Game.GetPiece(pieceId);
+            var from = progress.Game.GetTile($"tile-{fromId}");
+            var to = progress.Game.GetTile($"tile-{toId}");
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
             with = ResolveCompiled(progress, piece!, from!, to!);
         }
 
         // assert
-        if (without is null) { with.Should().BeNull(); return; }
+        if (without is null)
+        {
+            with.Should().BeNull();
+            return;
+        }
         with.Should().NotBeNull();
         with!.Distance.Should().Be(without!.Distance);
         with.To.Should().Be(without.To);
@@ -65,16 +77,24 @@ public class CompiledPatternAdjacencyCacheParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
-            var piece = progress.Game.GetPiece("white-pawn-5"); var from = progress.Game.GetTile(ChessIds.Tiles.E2); var to = progress.Game.GetTile(ChessIds.Tiles.E4);
-            piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
+            var piece = progress.Game.GetPiece("white-pawn-5");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
             without = ResolveCompiled(progress, piece!, from!, to!);
         }
         TilePath? with;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
-            var piece = progress.Game.GetPiece("white-pawn-5"); var from = progress.Game.GetTile(ChessIds.Tiles.E2); var to = progress.Game.GetTile(ChessIds.Tiles.E4);
-            piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
+            var piece = progress.Game.GetPiece("white-pawn-5");
+            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
             with = ResolveCompiled(progress, piece!, from!, to!);
         }
 

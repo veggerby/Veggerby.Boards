@@ -127,8 +127,16 @@ public static partial class GameExtensions
         {
             foreach (var pat in piece.Patterns)
             {
-                if (pat is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable) { pieceIsSlider = true; break; }
-                if (pat is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable) { pieceIsSlider = true; break; }
+                if (pat is Artifacts.Patterns.DirectionPattern dp && dp.IsRepeatable)
+                {
+                    pieceIsSlider = true;
+                    break;
+                }
+                if (pat is Artifacts.Patterns.MultiDirectionPattern md && md.IsRepeatable)
+                {
+                    pieceIsSlider = true;
+                    break;
+                }
             }
         }
 

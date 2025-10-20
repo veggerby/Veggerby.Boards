@@ -26,7 +26,8 @@ public class DeckBuildingCleanupToDiscardTests
         builder.WithCard(c3.Id);
         builder.WithCard(c4.Id);
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -61,7 +62,8 @@ public class DeckBuildingCleanupToDiscardTests
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),

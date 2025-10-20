@@ -18,7 +18,8 @@ public class DeckBuildingSupplyHelperTests
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("copper");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),
@@ -34,7 +35,8 @@ public class DeckBuildingSupplyHelperTests
         // act
         var enumerator = progress.Game.Players.GetEnumerator();
         enumerator.MoveNext().Should().BeTrue();
-        var player = enumerator.Current; player.Should().NotBeNull();
+        var player = enumerator.Current;
+        player.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
         progress = progress.HandleEvent(new GainFromSupplyEvent(player!, deck!, "copper", DeckBuildingGameBuilder.Piles.Discard));
 

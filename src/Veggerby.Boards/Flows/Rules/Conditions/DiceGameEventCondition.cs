@@ -32,7 +32,10 @@ public class DiceGameEventCondition<T> : IGameEventCondition<RollDiceGameEvent<T
     /// <summary>
     /// Gets the required dice.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<T> @event)

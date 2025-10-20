@@ -78,8 +78,14 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
 
         // Bookkeeping: mark both pieces moved, clear en-passant, increment halfmove (king move resets? per FIDE halfmove clock resets only on pawn move or capture → keep +1)
         var movedSet = extras.MovedPieceIds.ToList();
-        if (!movedSet.Contains(@event.Piece.Id)) { movedSet.Add(@event.Piece.Id); }
-        if (!movedSet.Contains(rookPiece.Id)) { movedSet.Add(rookPiece.Id); }
+        if (!movedSet.Contains(@event.Piece.Id))
+        {
+            movedSet.Add(@event.Piece.Id);
+        }
+        if (!movedSet.Contains(rookPiece.Id))
+        {
+            movedSet.Add(rookPiece.Id);
+        }
 
         var fullmove = extras.FullmoveNumber + (ownerId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = extras with

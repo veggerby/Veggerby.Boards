@@ -22,16 +22,24 @@ public class DeckBuildingTurnSegmentGatingTests
         var p2Deck = compiled.Game.GetArtifact<Deck>("p2-deck");
         p1Deck.Should().NotBeNull();
         p2Deck.Should().NotBeNull();
-        Player? p1 = null; foreach (var pl in compiled.Game.Players) { p1 = pl; break; }
+        Player? p1 = null;
+        foreach (var pl in compiled.Game.Players)
+        {
+            p1 = pl;
+            break;
+        }
         p1.Should().NotBeNull();
         return (compiled.Engine, compiled, p1Deck!, p2Deck!, p1!);
     }
 
     private static IDictionary<string, IList<Card>> MakeSimplePiles(Game game)
     {
-        var c1 = game.GetArtifact<Card>("c1"); c1.Should().NotBeNull();
-        var c2 = game.GetArtifact<Card>("c2"); c2.Should().NotBeNull();
-        var c3 = game.GetArtifact<Card>("c3"); c3.Should().NotBeNull();
+        var c1 = game.GetArtifact<Card>("c1");
+        c1.Should().NotBeNull();
+        var c2 = game.GetArtifact<Card>("c2");
+        c2.Should().NotBeNull();
+        var c3 = game.GetArtifact<Card>("c3");
+        c3.Should().NotBeNull();
         return new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card> { c1!, c2!, c3! },
@@ -47,7 +55,8 @@ public class DeckBuildingTurnSegmentGatingTests
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
-        var progress = build.progress; var p1Deck = build.p1Deck;
+        var progress = build.progress;
+        var p1Deck = build.p1Deck;
         p1Deck.Should().NotBeNull();
         var piles = MakeSimplePiles(progress.Game);
         var supply = new Dictionary<string, int>();
@@ -69,7 +78,8 @@ public class DeckBuildingTurnSegmentGatingTests
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
-        var progress = build.progress; var p1Deck = build.p1Deck;
+        var progress = build.progress;
+        var p1Deck = build.p1Deck;
         p1Deck.Should().NotBeNull();
         var piles = MakeSimplePiles(progress.Game);
         var afterCreate = progress.HandleEvent(new CreateDeckEvent(p1Deck!, piles, new Dictionary<string, int>()));
@@ -92,7 +102,8 @@ public class DeckBuildingTurnSegmentGatingTests
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
-        var progress = build.progress; var p1Deck = build.p1Deck;
+        var progress = build.progress;
+        var p1Deck = build.p1Deck;
         p1Deck.Should().NotBeNull();
         var piles = MakeSimplePiles(progress.Game);
         var afterCreate = progress.HandleEvent(new CreateDeckEvent(p1Deck!, piles, new Dictionary<string, int>()));
@@ -118,7 +129,9 @@ public class DeckBuildingTurnSegmentGatingTests
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
-        var progress = build.progress; var p1Deck = build.p1Deck; var p1 = build.p1;
+        var progress = build.progress;
+        var p1Deck = build.p1Deck;
+        var p1 = build.p1;
         p1Deck.Should().NotBeNull();
         p1.Should().NotBeNull();
         var piles = MakeSimplePiles(progress.Game);

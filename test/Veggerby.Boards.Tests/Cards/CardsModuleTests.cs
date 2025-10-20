@@ -48,7 +48,8 @@ public class CardsModuleTests
         // act
         var s1 = p1.HandleEvent(create1).State;
         var s2 = p2.HandleEvent(create2).State;
-        var deck1 = create1.Deck; var deck2 = create2.Deck;
+        var deck1 = create1.Deck;
+        var deck2 = create2.Deck;
         deck1.Should().NotBeNull();
         deck2.Should().NotBeNull();
         var shuffle = new ShuffleDeckEvent(deck1!, CardsGameBuilder.Piles.Draw);

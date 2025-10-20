@@ -14,7 +14,8 @@ public class CardsModuleInvalidFlowTests
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var deck = new Deck("d", new[] { CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand });
-        var c1 = new Card("x1"); var c2 = new Card("x2");
+        var c1 = new Card("x1");
+        var c2 = new Card("x2");
         var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal)
         {
             { CardsGameBuilder.Piles.Draw, new List<Card> { c1, c2 } }

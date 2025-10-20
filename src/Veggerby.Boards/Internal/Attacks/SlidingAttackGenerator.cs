@@ -86,15 +86,22 @@ internal sealed class SlidingAttackGenerator : IAttackRays
         }
         var global = bitboards?.GlobalOccupancy ?? 0UL;
         var ownerIndexByTile = new sbyte[_shape.TileCount];
-        for (int i = 0; i < ownerIndexByTile.Length; i++) ownerIndexByTile[i] = -1;
+        for (int i = 0; i < ownerIndexByTile.Length; i++)
+            ownerIndexByTile[i] = -1;
         if (pieceMap is not null)
         {
             for (int pIdx = 0; pIdx < pieceMap.Layout.PieceCount; pIdx++)
             {
                 var tileIdx = pieceMap.PieceTileIndices[pIdx];
-                if (tileIdx < 0) { continue; }
+                if (tileIdx < 0)
+                {
+                    continue;
+                }
                 var pieceOwner = pieceMap.Layout.Pieces[pIdx].Owner;
-                if (pieceOwner is null) { continue; }
+                if (pieceOwner is null)
+                {
+                    continue;
+                }
                 if (pieceMap.Layout.TryGetPlayerIndex(pieceOwner, out var ownerIdx))
                 {
                     ownerIndexByTile[tileIdx] = (sbyte)ownerIdx;

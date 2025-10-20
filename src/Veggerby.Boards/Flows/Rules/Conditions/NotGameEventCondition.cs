@@ -25,7 +25,10 @@ public class NotGameEventConditon<T> : IGameEventCondition<T> where T : IGameEve
     /// <summary>
     /// Gets the wrapped condition.
     /// </summary>
-    public IGameEventCondition<T> InnerCondition { get; }
+    public IGameEventCondition<T> InnerCondition
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)

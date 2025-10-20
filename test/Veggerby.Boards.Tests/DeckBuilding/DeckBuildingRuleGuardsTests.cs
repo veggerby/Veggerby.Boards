@@ -16,8 +16,10 @@ public class DeckBuildingRuleGuardsTests
         var builder = new DeckBuildingGameBuilder();
         builder.WithCard("c1");
         var progress = builder.Compile();
-        var p1 = progress.Game.GetPlayer("P1"); p1.Should().NotBeNull();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var p1 = progress.Game.GetPlayer("P1");
+        p1.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // act
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
@@ -35,8 +37,10 @@ public class DeckBuildingRuleGuardsTests
         var builder = new DeckBuildingGameBuilder();
         builder.WithCard("c1");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
-        var p1 = progress.Game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
+        var p1 = progress.Game.GetPlayer("P1");
+        p1.Should().NotBeNull();
 
         // minimal deck state with supply set
         var piles = new Dictionary<string, IList<Card>>{
@@ -60,8 +64,10 @@ public class DeckBuildingRuleGuardsTests
         var builder = new DeckBuildingGameBuilder();
         // Intentionally do NOT register card artifact
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
-        var p1 = progress.Game.GetPlayer("P1"); p1.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
+        var p1 = progress.Game.GetPlayer("P1");
+        p1.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>{
             { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },
@@ -84,7 +90,8 @@ public class DeckBuildingRuleGuardsTests
         var builder = new DeckBuildingGameBuilder().WithEndTrigger(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 1));
         builder.WithCard("c1");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // supply with one empty pile condition satisfied, but no scores computed yet
         var piles = new Dictionary<string, IList<Card>>{
@@ -109,7 +116,8 @@ public class DeckBuildingRuleGuardsTests
         var builder = new DeckBuildingGameBuilder().WithEndTrigger(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 1));
         builder.WithCard("c1");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>{
             { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },

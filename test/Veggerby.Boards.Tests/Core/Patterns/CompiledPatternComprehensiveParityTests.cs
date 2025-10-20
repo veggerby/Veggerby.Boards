@@ -22,7 +22,10 @@ public class CompiledPatternComprehensiveParityTests
         foreach (var p in piece.Patterns)
         {
             p.Accept(legacyVisitor);
-            if (legacyVisitor.ResultPath is not null && legacyVisitor.ResultPath.To.Equals(to)) { break; }
+            if (legacyVisitor.ResultPath is not null && legacyVisitor.ResultPath.To.Equals(to))
+            {
+                break;
+            }
         }
         var legacy = legacyVisitor.ResultPath;
         var table = PatternCompiler.Compile(game);
@@ -51,7 +54,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("px", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 2
@@ -64,7 +69,8 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("px", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles.Length > 2 ? tiles[2] : new Tile("ghost"));
-        legacy.Should().BeNull(); compiled.Should().BeNull();
+        legacy.Should().BeNull();
+        compiled.Should().BeNull();
     }
 
     // 3
@@ -77,7 +83,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("p", player, [new DirectionPattern(dirs[0], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[4]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 4
@@ -90,7 +98,8 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("p", player, [new DirectionPattern(dirs[0], false)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
-        legacy.Should().BeNull(); compiled.Should().BeNull();
+        legacy.Should().BeNull();
+        compiled.Should().BeNull();
     }
 
     // 5
@@ -103,7 +112,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("p", player, [new MultiDirectionPattern([dirs[0]], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 6
@@ -111,15 +122,25 @@ public class CompiledPatternComprehensiveParityTests
     public void MultiDirection_TwoBranches_ShortestSelected()
     {
         // topology: a->b->c->d and a->e (shortcut). multi-direction repeatable chooses shortest a->e vs a->d
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d"); var e = new Tile("e");
-        var dir = new Direction("fwd"); var shortDir = new Direction("jump");
-        var rAB = new TileRelation(a, b, dir); var rBC = new TileRelation(b, c, dir); var rCD = new TileRelation(c, d, dir); var rAE = new TileRelation(a, e, shortDir);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var e = new Tile("e");
+        var dir = new Direction("fwd");
+        var shortDir = new Direction("jump");
+        var rAB = new TileRelation(a, b, dir);
+        var rBC = new TileRelation(b, c, dir);
+        var rCD = new TileRelation(c, d, dir);
+        var rAE = new TileRelation(a, e, shortDir);
         var board = new Board("b-md-short", [rAB, rBC, rCD, rAE]);
         var player = new Player("p");
         var piece = new Piece("p", player, [new MultiDirectionPattern([dir, shortDir], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, a, e);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 7
@@ -146,7 +167,8 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("p", player, [new NullPattern()]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[1]);
-        legacy.Should().BeNull(); compiled.Should().BeNull();
+        legacy.Should().BeNull();
+        compiled.Should().BeNull();
     }
 
     // 9
@@ -161,7 +183,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -177,7 +201,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2], enableShape: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -193,7 +219,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3], enableCache: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -201,9 +229,15 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_WithCache_Parity()
     {
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
-        var d1 = new Direction("d1"); var d2 = new Direction("d2");
-        var rAB = new TileRelation(a, b, d1); var rAC = new TileRelation(a, c, d2); var rCD = new TileRelation(c, d, d2);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var d1 = new Direction("d1");
+        var d2 = new Direction("d2");
+        var rAB = new TileRelation(a, b, d1);
+        var rAC = new TileRelation(a, c, d2);
+        var rCD = new TileRelation(c, d, d2);
         var board = new Board("b-mc", [rAB, rAC, rCD]);
         var player = new Player("p");
         var piece = new Piece("pmc", player, [new MultiDirectionPattern([d1, d2], true)]);
@@ -211,7 +245,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, a, d, enableCache: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -227,7 +263,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[4], enableCache: true, enableShape: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -243,7 +281,9 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3], enableShape: true);
-            legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+            legacy.Should().NotBeNull();
+            compiled.Should().NotBeNull();
+            compiled.Distance.Should().Be(legacy.Distance);
         }
     }
 
@@ -273,9 +313,16 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_ShortestSelection_ConsistencyWithCache()
     {
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
-        var d1 = new Direction("d1"); var d2 = new Direction("d2");
-        var rAB = new TileRelation(a, b, d1); var rAC = new TileRelation(a, c, d2); var rCD = new TileRelation(c, d, d2); var rBD = new TileRelation(b, d, d1);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var d1 = new Direction("d1");
+        var d2 = new Direction("d2");
+        var rAB = new TileRelation(a, b, d1);
+        var rAC = new TileRelation(a, c, d2);
+        var rCD = new TileRelation(c, d, d2);
+        var rBD = new TileRelation(b, d, d1);
         var board = new Board("b-mcc", [rAB, rAC, rCD, rBD]);
         var player = new Player("p");
         var piece = new Piece("pmcc", player, [new MultiDirectionPattern([d1, d2], true)]);
@@ -306,7 +353,10 @@ public class CompiledPatternComprehensiveParityTests
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
-            legacy.Should().BeNull(); compiled.Should().BeNull(); legacyCached.Should().BeNull(); compiledCached.Should().BeNull();
+            legacy.Should().BeNull();
+            compiled.Should().BeNull();
+            legacyCached.Should().BeNull();
+            compiledCached.Should().BeNull();
         }
     }
 
@@ -314,9 +364,13 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_CacheDoesNotChangeShortestChoice()
     {
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var dir1 = new Direction("d1"); var dir2 = new Direction("d2");
-        var rAB = new TileRelation(a, b, dir1); var rAC = new TileRelation(a, c, dir2);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var dir1 = new Direction("d1");
+        var dir2 = new Direction("d2");
+        var rAB = new TileRelation(a, b, dir1);
+        var rAC = new TileRelation(a, c, dir2);
         var board = new Board("b-mdchoice", [rAB, rAC]);
         var player = new Player("p");
         var piece = new Piece("pmchoice", player, [new MultiDirectionPattern([dir1, dir2], false)]);
@@ -378,9 +432,16 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_FastPathDoesNotAlterShortest()
     {
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
-        var d1 = new Direction("d1"); var d2 = new Direction("d2");
-        var rAB = new TileRelation(a, b, d1); var rAC = new TileRelation(a, c, d2); var rCD = new TileRelation(c, d, d2); var rBD = new TileRelation(b, d, d1);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var d1 = new Direction("d1");
+        var d2 = new Direction("d2");
+        var rAB = new TileRelation(a, b, d1);
+        var rAC = new TileRelation(a, c, d2);
+        var rCD = new TileRelation(c, d, d2);
+        var rBD = new TileRelation(b, d, d1);
         var board = new Board("b-mff", [rAB, rAC, rCD, rBD]);
         var player = new Player("p");
         var piece = new Piece("pmff", player, [new MultiDirectionPattern([d1, d2], true)]);
@@ -406,7 +467,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmix", player, [new DirectionPattern(dirs[0], false), new FixedPattern([dirs[0], dirs[0]])]); // first pattern only one step
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]); // only reachable via second pattern; first fails
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 23
@@ -419,7 +482,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmix2", player, [new AnyPattern(), new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 24
@@ -432,7 +497,9 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmix3", player, [new NullPattern(), new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 
     // 25
@@ -445,6 +512,8 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmix4", player, [new DirectionPattern(dirs[0], false), new DirectionPattern(dirs[0], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3]);
-        legacy.Should().NotBeNull(); compiled.Should().NotBeNull(); compiled.Distance.Should().Be(legacy.Distance);
+        legacy.Should().NotBeNull();
+        compiled.Should().NotBeNull();
+        compiled.Distance.Should().Be(legacy.Distance);
     }
 }

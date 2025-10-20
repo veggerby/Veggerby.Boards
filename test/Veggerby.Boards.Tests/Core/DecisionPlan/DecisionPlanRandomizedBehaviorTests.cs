@@ -47,7 +47,12 @@ public class DecisionPlanRandomizedBehaviorTests
                     : new[] { "c6", "h6" };
                 foreach (var dest in knightMoves)
                 {
-                    try { progress = progress.Move(knightId, dest); break; } catch { /* ignore */ }
+                    try
+                    {
+                        progress = progress.Move(knightId, dest);
+                        break;
+                    }
+                    catch { /* ignore */ }
                 }
             }
         }

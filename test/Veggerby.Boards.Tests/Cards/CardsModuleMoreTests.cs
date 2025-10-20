@@ -63,7 +63,8 @@ public class CardsModuleMoreTests
         var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
         var draw = ds.Piles[CardsGameBuilder.Piles.Draw];
-        var c1 = draw[0]; var c3 = draw[2];
+        var c1 = draw[0];
+        var c3 = draw[2];
 
         // act
         progress = progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { c3, c1 }));

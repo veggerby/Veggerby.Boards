@@ -10,7 +10,10 @@ public abstract class DefinitionBase
     /// <summary>
     /// Gets the associated <see cref="GameBuilder"/> used to register new definitions.
     /// </summary>
-    protected GameBuilder Builder { get; }
+    protected GameBuilder Builder
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes the definition with the owning <see cref="GameBuilder"/>.

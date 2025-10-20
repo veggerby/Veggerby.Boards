@@ -13,5 +13,7 @@ namespace Veggerby.Boards.Tests.Acceleration;
 public class SlidingFastPathAllocationTests
 {
     [Fact(Skip = "Neutralized pending public allocation / fast-path test seam")]
-    public void Placeholder() { }
+    public void Placeholder()
+    {
+    }
 }

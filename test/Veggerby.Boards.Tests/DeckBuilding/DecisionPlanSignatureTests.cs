@@ -114,7 +114,11 @@ public class DecisionPlanSignatureTests
         {
             var e = i < expected.Length ? expected[i] : "<missing>";
             var a = i < actual.Length ? actual[i] : "<missing>";
-            if (!string.Equals(e, a, StringComparison.Ordinal)) { firstMismatch = i; break; }
+            if (!string.Equals(e, a, StringComparison.Ordinal))
+            {
+                firstMismatch = i;
+                break;
+            }
         }
         if (firstMismatch == -1)
         {

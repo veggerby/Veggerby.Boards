@@ -47,7 +47,10 @@ public class Direction : IEquatable<Direction>
     /// <summary>
     /// Gets the direction identifier.
     /// </summary>
-    public string Id { get; }
+    public string Id
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new direction with an identifier.
@@ -73,10 +76,14 @@ public class Direction : IEquatable<Direction>
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj is AnyDirection) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj is AnyDirection)
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
 
         return Equals((Direction)obj);
     }

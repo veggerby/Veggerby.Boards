@@ -49,10 +49,14 @@ internal static class XXHash128
             int limit = length - 32;
             while (offset <= limit)
             {
-                acc1 = Round(acc1, ReadUInt64(data, offset)); offset += 8;
-                acc2 = Round(acc2, ReadUInt64(data, offset)); offset += 8;
-                acc3 = Round(acc3, ReadUInt64(data, offset)); offset += 8;
-                acc4 = Round(acc4, ReadUInt64(data, offset)); offset += 8;
+                acc1 = Round(acc1, ReadUInt64(data, offset));
+                offset += 8;
+                acc2 = Round(acc2, ReadUInt64(data, offset));
+                offset += 8;
+                acc3 = Round(acc3, ReadUInt64(data, offset));
+                offset += 8;
+                acc4 = Round(acc4, ReadUInt64(data, offset));
+                offset += 8;
             }
         }
 

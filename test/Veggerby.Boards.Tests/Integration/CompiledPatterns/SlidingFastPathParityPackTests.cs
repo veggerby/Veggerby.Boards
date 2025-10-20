@@ -31,10 +31,17 @@ public class SlidingFastPathParityPackTests
 
         protected override void Build()
         {
-            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
-            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
+            AddDirection(Constants.Directions.North);
+            AddDirection(Constants.Directions.South);
+            AddDirection(Constants.Directions.East);
+            AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast);
+            AddDirection(Constants.Directions.NorthWest);
+            AddDirection(Constants.Directions.SouthEast);
+            AddDirection(Constants.Directions.SouthWest);
 
-            AddPlayer("white"); AddPlayer("black");
+            AddPlayer("white");
+            AddPlayer("black");
 
             var files = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
             for (int rank = 1; rank <= 8; rank++)
@@ -51,7 +58,8 @@ public class SlidingFastPathParityPackTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var n = rank + 1; var s = rank - 1;
+                    var n = rank + 1;
+                    var s = rank - 1;
                     if (n <= 8)
                     {
                         WithTile(id).WithRelationTo(tileId(file, n)).InDirection(Constants.Directions.North);
@@ -123,7 +131,8 @@ public class SlidingFastPathParityPackTests
                         break;
                     case "immobile":
                         break; // intentionally no directions
-                    default: throw new System.InvalidOperationException("Unknown piece spec type");
+                    default:
+                        throw new System.InvalidOperationException("Unknown piece spec type");
                 }
                 pd.OnTile(spec.FromTile);
             }
@@ -137,9 +146,16 @@ public class SlidingFastPathParityPackTests
         // (If repository defaults change later, tests remain deterministic via scope controlling bitboards prerequisite.)
         var builder = new PackBuilder(specs);
         var progress = builder.Compile();
-        var piece = progress.Game.GetPiece(moving.Id); var from = progress.Game.GetTile(moving.FromTile); var to = progress.Game.GetTile(target);
-        piece.Should().NotBeNull(); from.Should().NotBeNull(); to.Should().NotBeNull();
-        if (from == to) { return null; }
+        var piece = progress.Game.GetPiece(moving.Id);
+        var from = progress.Game.GetTile(moving.FromTile);
+        var to = progress.Game.GetTile(target);
+        piece.Should().NotBeNull();
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        if (from == to)
+        {
+            return null;
+        }
         return progress.ResolvePathCompiledFirst(piece!, from!, to!);
     }
 

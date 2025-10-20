@@ -47,8 +47,10 @@ public class BitboardSnapshotTests
 
         // assert
         // global bits for tiles t1 and t3 should be set (use shape indices)
-        var t1 = game.GetTile("t1"); t1.Should().NotBeNull();
-        var t3 = game.GetTile("t3"); t3.Should().NotBeNull();
+        var t1 = game.GetTile("t1");
+        t1.Should().NotBeNull();
+        var t3 = game.GetTile("t3");
+        t3.Should().NotBeNull();
         shape.TryGetTileIndex(t1!, out var i1).Should().BeTrue();
         shape.TryGetTileIndex(t3!, out var i3).Should().BeTrue();
         (snapshot.GlobalOccupancy & (1UL << i1)).Should().NotBe(0UL);
@@ -100,7 +102,8 @@ public class BitboardSnapshotTests
         var shape = BoardShape.Build(game.Board);
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
-        var pcW = game.GetPiece("pcW"); pcW.Should().NotBeNull();
+        var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
         ulong beforeGlobal = snapshot.GlobalOccupancy;
 
         // act
@@ -130,10 +133,13 @@ public class BitboardSnapshotTests
         var shape = BoardShape.Build(game.Board);
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
-        var pcW = game.GetPiece("pcW"); pcW.Should().NotBeNull();
+        var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
 
-        var t1m = game.GetTile("t1"); t1m.Should().NotBeNull();
-        var t5m = game.GetTile("t5"); t5m.Should().NotBeNull();
+        var t1m = game.GetTile("t1");
+        t1m.Should().NotBeNull();
+        var t5m = game.GetTile("t5");
+        t5m.Should().NotBeNull();
         shape.TryGetTileIndex(t1m!, out var fromIdx).Should().BeTrue();
         shape.TryGetTileIndex(t5m!, out var toIdx).Should().BeTrue();
 
@@ -184,10 +190,13 @@ public class BitboardSnapshotTests
         var shape = BoardShape.Build(game.Board);
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
-        var pcW = game.GetPiece("pcW"); pcW.Should().NotBeNull();
+        var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
 
-        var t70 = game.GetTile("t70"); t70.Should().NotBeNull();
-        var t5 = game.GetTile("t5"); t5.Should().NotBeNull();
+        var t70 = game.GetTile("t70");
+        t70.Should().NotBeNull();
+        var t5 = game.GetTile("t5");
+        t5.Should().NotBeNull();
         shape.TryGetTileIndex(t70!, out var fromIdx).Should().BeTrue();
         shape.TryGetTileIndex(t5!, out var toIdx).Should().BeTrue();
 

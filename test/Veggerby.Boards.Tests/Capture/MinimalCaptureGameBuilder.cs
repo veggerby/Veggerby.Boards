@@ -61,16 +61,34 @@ internal sealed class MinimalCaptureGameBuilder : GameBuilder
 internal sealed class CaptureTrackingObserver : IEvaluationObserver
 {
     public static readonly CaptureTrackingObserver Instance = new CaptureTrackingObserver();
-    private CaptureTrackingObserver() { }
+    private CaptureTrackingObserver()
+    {
+    }
 
-    public bool CaptureMutatorApplied { get; private set; }
-    public bool MoveMutatorApplied { get; private set; }
+    public bool CaptureMutatorApplied
+    {
+        get; private set;
+    }
+    public bool MoveMutatorApplied
+    {
+        get; private set;
+    }
 
-    public void OnPhaseEnter(GamePhase phase, GameState state) { }
-    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { }
-    public void OnEventIgnored(IGameEvent @event, GameState state) { }
-    public void OnStateHashed(GameState state, ulong hash) { }
-    public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
+    public void OnPhaseEnter(GamePhase phase, GameState state)
+    {
+    }
+    public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+    {
+    }
+    public void OnEventIgnored(IGameEvent @event, GameState state)
+    {
+    }
+    public void OnStateHashed(GameState state, ulong hash)
+    {
+    }
+    public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+    {
+    }
     public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
     {
         // Heuristic: infer mutator by resulting state change (captured piece present) vs simple move.

@@ -8,7 +8,10 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 internal sealed class CountingFalseCondition : IGameStateCondition
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameState state)
     {
         Evaluations++;

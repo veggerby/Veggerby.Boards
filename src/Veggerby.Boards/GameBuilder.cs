@@ -31,7 +31,10 @@ public abstract class GameBuilder
     /// <summary>
     /// Gets or sets the identifier of the board to create. Must be assigned during <see cref="Build"/>.
     /// </summary>
-    protected string? BoardId { get; set; }
+    protected string? BoardId
+    {
+        get; set;
+    }
     private readonly IList<PlayerDefinition> _playerDefinitions = [];
     private readonly IList<TileDefinition> _tileDefinitions = [];
     private readonly IList<DirectionDefinition> _directionDefinitions = [];

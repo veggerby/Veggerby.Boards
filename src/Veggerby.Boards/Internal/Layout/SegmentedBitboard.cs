@@ -25,7 +25,10 @@ internal readonly struct SegmentedBitboard
     /// <summary>
     /// Gets the number of 64-bit segments represented.
     /// </summary>
-    public int SegmentCount { get; }
+    public int SegmentCount
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a value indicating whether this bitboard contains exactly one 64-bit segment (&lt;=64 tiles).
@@ -35,7 +38,10 @@ internal readonly struct SegmentedBitboard
     /// <summary>
     /// Gets the low 64 bits (segment 0). Valid regardless of <see cref="SegmentCount"/>.
     /// </summary>
-    public ulong Low64 { get; }
+    public ulong Low64
+    {
+        get;
+    }
 
     /// <summary>
     /// Returns an empty bitboard (zero segments => treated as single empty segment).

@@ -49,9 +49,15 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
     private sealed class NullObserver : IPlayoutObserver
     {
         public static readonly NullObserver Instance = new();
-        private NullObserver() { }
-        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted) { }
-        public void OnCompleted(PlayoutResult result) { }
+        private NullObserver()
+        {
+        }
+        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted)
+        {
+        }
+        public void OnCompleted(PlayoutResult result)
+        {
+        }
     }
 
     /// <summary>

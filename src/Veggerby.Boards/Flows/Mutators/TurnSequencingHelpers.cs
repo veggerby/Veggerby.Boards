@@ -21,7 +21,8 @@ internal static class TurnSequencingHelpers
         {
             if (aps.IsActive)
             {
-                currentActive = aps; break;
+                currentActive = aps;
+                break;
             }
         }
         if (currentActive is null)
@@ -43,7 +44,10 @@ internal static class TurnSequencingHelpers
         else
         {
             var tmp = new List<Player>();
-            foreach (var p in playersEnumerable) { tmp.Add(p); }
+            foreach (var p in playersEnumerable)
+            {
+                tmp.Add(p);
+            }
             players = tmp.ToArray();
         }
         var total = players.Length;
@@ -52,7 +56,14 @@ internal static class TurnSequencingHelpers
             return prior.Next([newTurnState]);
         }
         var idx = -1;
-        for (var i = 0; i < total; i++) { if (players[i].Equals(currentActive.Artifact)) { idx = i; break; } }
+        for (var i = 0; i < total; i++)
+        {
+            if (players[i].Equals(currentActive.Artifact))
+            {
+                idx = i;
+                break;
+            }
+        }
         if (idx == -1)
         {
             return prior.Next([newTurnState]);

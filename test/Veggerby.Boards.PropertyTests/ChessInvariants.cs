@@ -30,11 +30,17 @@ public class ChessInvariants
         var pawn = progress.Game.GetPiece("white-pawn-5"); // e2
         var fromTile = progress.Game.GetTile("e2");
         var toTile = progress.Game.GetTile("e4");
-        if (pawn is null || fromTile is null || toTile is null) { return true; } // vacuous success
+        if (pawn is null || fromTile is null || toTile is null)
+        {
+            return true;
+        } // vacuous success
         fromTile.Should().NotBeNull();
         toTile.Should().NotBeNull();
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromTile!, toTile!).ResultPath;
-        if (path is null) { return true; }
+        if (path is null)
+        {
+            return true;
+        }
         var before = progress.State;
         var beforePieceState = before.GetStates<PieceState>().Single(ps => ps.Artifact == pawn);
         var after = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
@@ -54,11 +60,17 @@ public class ChessInvariants
         var pawn = progress.Game.GetPiece("white-pawn-5");
         var fromTile = progress.Game.GetTile("e2");
         var toTile = progress.Game.GetTile("e4");
-        if (pawn is null || fromTile is null || toTile is null) { return true; }
+        if (pawn is null || fromTile is null || toTile is null)
+        {
+            return true;
+        }
         fromTile.Should().NotBeNull();
         toTile.Should().NotBeNull();
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromTile!, toTile!).ResultPath;
-        if (path is null) { return true; }
+        if (path is null)
+        {
+            return true;
+        }
         var moveEvent = new MovePieceGameEvent(pawn, path);
         var first = progress.HandleEvent(moveEvent);
         // attempt the same event again from the original progress should yield identical result OR be ignored
@@ -84,9 +96,15 @@ public class ChessInvariants
             var toName = $"{fileChar}3"; // single step to keep always legal
             var fromTile = progress.Game.GetTile(fromName);
             var toTile = progress.Game.GetTile(toName);
-            if (pawn is null || fromTile is null || toTile is null) { continue; }
+            if (pawn is null || fromTile is null || toTile is null)
+            {
+                continue;
+            }
             var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromTile, toTile).ResultPath;
-            if (path is null) { continue; }
+            if (path is null)
+            {
+                continue;
+            }
             progress = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
             applied++;
         }
@@ -104,9 +122,15 @@ public class ChessInvariants
         var pawn = progress.Game.GetPiece("white-pawn-5");
         var fromTile = progress.Game.GetTile("e2");
         var toTile = progress.Game.GetTile("e4");
-        if (pawn is null || fromTile is null || toTile is null) { return true; }
+        if (pawn is null || fromTile is null || toTile is null)
+        {
+            return true;
+        }
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, fromTile, toTile).ResultPath;
-        if (path is null) { return true; }
+        if (path is null)
+        {
+            return true;
+        }
         progress = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
         var afterWhiteCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.White);
         return afterWhiteCount == initialWhiteCount;
@@ -131,7 +155,10 @@ public class ChessInvariants
             // Place a white pawn and black pawn in an artificial capture position (white pawn at rank 5 capturing diagonally)
             var whitePawn = progress.Game.GetPiece("white-pawn-5");
             var blackPawn = progress.Game.GetPiece("black-pawn-5");
-            if (whitePawn is null || blackPawn is null) { continue; }
+            if (whitePawn is null || blackPawn is null)
+            {
+                continue;
+            }
             // choose a diagonal capture (simulate moving white pawn from e2 to e4 first so a later capture is plausible)
             var e2 = progress.Game.GetTile("e2");
             var e4 = progress.Game.GetTile("e4");
@@ -149,10 +176,16 @@ public class ChessInvariants
             // reposition a black pawn in front-left or front-right (simulate by selecting c7/d7.. etc). We'll attempt a capture from e4 to d5
             var d5 = progress.Game.GetTile("d5");
             var e4Tile = progress.Game.GetTile("e4");
-            if (d5 is null || e4Tile is null) { continue; }
+            if (d5 is null || e4Tile is null)
+            {
+                continue;
+            }
             // attempt path for capture (may be null if illegal in current simplified engine state)
             var capturePath = new ResolveTilePathPatternVisitor(progress.Game.Board, e4Tile, d5).ResultPath;
-            if (capturePath is null) { continue; }
+            if (capturePath is null)
+            {
+                continue;
+            }
             var beforeBlackCount = progress.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
             var updated = progress.HandleEvent(new MovePieceGameEvent(whitePawn!, capturePath));
             var afterBlackCount = updated.State.GetStates<PieceState>().Count(ps => ps.Artifact.Owner.Id == ChessIds.Players.Black);
@@ -172,7 +205,10 @@ public class ChessInvariants
         var rook = progress.Game.GetPiece("white-rook-1");
         var from = progress.Game.GetTile("a1");
         var to = progress.Game.GetTile("a4");
-        if (rook is null || from is null || to is null) { return; }
+        if (rook is null || from is null || to is null)
+        {
+            return;
+        }
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, from, to).ResultPath;
         var before = progress.State;
         if (path is not null)
@@ -195,7 +231,10 @@ public class ChessInvariants
         e2.Should().NotBeNull();
         e4.Should().NotBeNull();
         var path = new ResolveTilePathPatternVisitor(progress.Game.Board, e2!, e4!).ResultPath;
-        if (pawn is null || path is null) { return; }
+        if (pawn is null || path is null)
+        {
+            return;
+        }
         var first = progress.HandleEvent(new MovePieceGameEvent(pawn, path));
         var second = first.HandleEvent(new MovePieceGameEvent(pawn, path));
         // assert: second application should not move pawn again (state equal)

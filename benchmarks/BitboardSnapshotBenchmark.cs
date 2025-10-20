@@ -26,7 +26,10 @@ public class BitboardSnapshotBenchmark
     public void Setup()
     {
         // simple 8x8 like chess (only orthogonal for brevity; diagonals not required for snapshot building)
-        var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
+        var north = new Direction(Constants.Directions.North);
+        var south = new Direction(Constants.Directions.South);
+        var east = new Direction(Constants.Directions.East);
+        var west = new Direction(Constants.Directions.West);
         var tiles = new List<Tile>();
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         for (int r = 1; r <= 8; r++)
@@ -42,14 +45,19 @@ public class BitboardSnapshotBenchmark
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                if (r < 8)
+                    relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1)
+                    relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
             }
         }
         var board = new Board("bitboard-bench-8x8", relations);
-        var white = new Player("white"); var black = new Player("black");
+        var white = new Player("white");
+        var black = new Player("black");
         // create a handful of pieces
         var movers = new List<Piece>();
         for (int i = 0; i < 16; i++)
@@ -58,7 +66,10 @@ public class BitboardSnapshotBenchmark
             movers.Add(new Piece($"b{i}", black, new[] { new NullPattern() }));
         }
         var artifacts = new List<Artifact>();
-        artifacts.Add(board); artifacts.Add(white); artifacts.Add(black); artifacts.AddRange(movers);
+        artifacts.Add(board);
+        artifacts.Add(white);
+        artifacts.Add(black);
+        artifacts.AddRange(movers);
         _game = new Game(board, new[] { white, black }, artifacts);
         _shape = BoardShape.Build(board);
 
@@ -67,14 +78,16 @@ public class BitboardSnapshotBenchmark
         int index = 0;
         foreach (var p in movers.Where(p => p.Owner == white).Take(16))
         {
-            int file = index % 8; int rank = index < 8 ? 1 : 2;
+            int file = index % 8;
+            int rank = index < 8 ? 1 : 2;
             states.Add(new PieceState(p, T(files[file], rank)));
             index++;
         }
         index = 0;
         foreach (var p in movers.Where(p => p.Owner == black).Take(16))
         {
-            int file = index % 8; int rank = index < 8 ? 7 : 8;
+            int file = index % 8;
+            int rank = index < 8 ? 7 : 8;
             states.Add(new PieceState(p, T(files[file], rank)));
             index++;
         }

@@ -26,12 +26,18 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
     /// <summary>
     /// Gets the distinct dice participating in this condition.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the composite evaluation mode applied to the dice results.
     /// </summary>
-    public CompositeMode Mode { get; }
+    public CompositeMode Mode
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceGameStateCondition{TValue}"/> class.

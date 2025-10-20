@@ -10,12 +10,18 @@ public class ArtifactStateChange
     /// <summary>
     /// Gets the previous state (null if newly created in the target state).
     /// </summary>
-    public IArtifactState? From { get; }
+    public IArtifactState? From
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the new state (null if removed in the target state).
     /// </summary>
-    public IArtifactState? To { get; }
+    public IArtifactState? To
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance ensuring both states (when present) reference the same artifact.

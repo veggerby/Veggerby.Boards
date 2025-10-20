@@ -36,22 +36,34 @@ public class SingleStepPath
     /// <summary>
     /// Gets the game state after this movement step.
     /// </summary>
-    public GameState NewState { get; }
+    public GameState NewState
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the dice state consumed when performing this step.
     /// </summary>
-    public DiceState<int> DiceState { get; }
+    public DiceState<int> DiceState
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the path segment for this step.
     /// </summary>
-    public TilePath Path { get; }
+    public TilePath Path
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the previous step (if any) in the path chain.
     /// </summary>
-    public SingleStepPath? Previous { get; }
+    public SingleStepPath? Previous
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the ordered sequence of path segments from the first step to this step.

@@ -20,8 +20,10 @@ public class DeckBuildingGainFromSupplyStructuralSharingTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var game = progress.Game;
-        var p1 = game.GetPlayer("P1"); p1.Should().NotBeNull();
-        var deck = game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var p1 = game.GetPlayer("P1");
+        p1.Should().NotBeNull();
+        var deck = game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var drawList = new List<Card>();
         var discardList = new List<Card>();
@@ -40,7 +42,8 @@ public class DeckBuildingGainFromSupplyStructuralSharingTests
         progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
 
-        var before = progress.State.GetState<DeckState>(deck!); before.Should().NotBeNull();
+        var before = progress.State.GetState<DeckState>(deck!);
+        before.Should().NotBeNull();
         var beforeDraw = before.Piles[DeckBuildingGameBuilder.Piles.Draw];
         var beforeDiscard = before.Piles[DeckBuildingGameBuilder.Piles.Discard];
         var beforeHand = before.Piles[DeckBuildingGameBuilder.Piles.Hand];
@@ -50,7 +53,8 @@ public class DeckBuildingGainFromSupplyStructuralSharingTests
         progress = progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var after = progress.State.GetState<DeckState>(deck!); after.Should().NotBeNull();
+        var after = progress.State.GetState<DeckState>(deck!);
+        after.Should().NotBeNull();
         var afterDraw = after.Piles[DeckBuildingGameBuilder.Piles.Draw];
         var afterDiscard = after.Piles[DeckBuildingGameBuilder.Piles.Discard];
         var afterHand = after.Piles[DeckBuildingGameBuilder.Piles.Hand];

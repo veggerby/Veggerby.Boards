@@ -41,10 +41,22 @@ public sealed class GoGameBuilder(int size = 19) : GameBuilder
             {
                 var id = $"tile-{x}-{y}";
                 var tile = AddTile(id);
-                if (x > 1) { tile.WithRelationTo($"tile-{x - 1}-{y}").InDirection(Constants.Directions.West); }
-                if (x < _size) { tile.WithRelationTo($"tile-{x + 1}-{y}").InDirection(Constants.Directions.East); }
-                if (y > 1) { tile.WithRelationTo($"tile-{x}-{y - 1}").InDirection(Constants.Directions.North); }
-                if (y < _size) { tile.WithRelationTo($"tile-{x}-{y + 1}").InDirection(Constants.Directions.South); }
+                if (x > 1)
+                {
+                    tile.WithRelationTo($"tile-{x - 1}-{y}").InDirection(Constants.Directions.West);
+                }
+                if (x < _size)
+                {
+                    tile.WithRelationTo($"tile-{x + 1}-{y}").InDirection(Constants.Directions.East);
+                }
+                if (y > 1)
+                {
+                    tile.WithRelationTo($"tile-{x}-{y - 1}").InDirection(Constants.Directions.North);
+                }
+                if (y < _size)
+                {
+                    tile.WithRelationTo($"tile-{x}-{y + 1}").InDirection(Constants.Directions.South);
+                }
             }
         }
 

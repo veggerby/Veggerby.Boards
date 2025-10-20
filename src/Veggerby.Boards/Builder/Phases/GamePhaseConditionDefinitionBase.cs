@@ -15,7 +15,10 @@ internal abstract class GamePhaseConditionDefinitionBase : DefinitionBase
         Parent = parent;
     }
 
-    public IThenGameEventRule Parent { get; }
+    public IThenGameEventRule Parent
+    {
+        get;
+    }
 
     internal abstract IGameStateCondition Build(Game game);
 }

@@ -16,19 +16,31 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     /// <summary>
     /// Gets the board context for relation lookup.
     /// </summary>
-    public Board Board { get; }
+    public Board Board
+    {
+        get;
+    }
     /// <summary>
     /// Gets the origin tile.
     /// </summary>
-    public Tile From { get; }
+    public Tile From
+    {
+        get;
+    }
     /// <summary>
     /// Gets the destination tile.
     /// </summary>
-    public Tile To { get; }
+    public Tile To
+    {
+        get;
+    }
     /// <summary>
     /// Gets the resolved path, if any.
     /// </summary>
-    public TilePath? ResultPath { get; private set; }
+    public TilePath? ResultPath
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Initializes the visitor with board and endpoints.

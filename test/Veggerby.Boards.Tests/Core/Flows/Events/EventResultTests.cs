@@ -76,7 +76,9 @@ public class EventResultTests
 
     private class NoMoveRuleGameBuilder : GameBuilder
     {
-        public class NoOpGameEvent : IGameEvent { }
+        public class NoOpGameEvent : IGameEvent
+        {
+        }
 
         private class NoOpMutator : IStateMutator<NoOpGameEvent>
         {

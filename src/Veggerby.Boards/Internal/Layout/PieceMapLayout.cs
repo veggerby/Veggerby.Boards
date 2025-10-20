@@ -11,8 +11,14 @@ namespace Veggerby.Boards.Internal.Layout;
 /// </summary>
 internal sealed class PieceMapLayout
 {
-    public Player[] Players { get; }
-    public Piece[] Pieces { get; }
+    public Player[] Players
+    {
+        get;
+    }
+    public Piece[] Pieces
+    {
+        get;
+    }
     private readonly Dictionary<Player, int> _playerToIndex;
     private readonly Dictionary<Piece, int> _pieceToIndex;
     public int PlayerCount => Players.Length;

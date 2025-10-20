@@ -22,7 +22,8 @@ public class DeckBuildingSupplyConfiguratorTests
             .AddSupply("estate", 24));
         builder.WithCards("copper", "estate");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // act
         builder.SupplyConfigurator.Should().NotBeNull();
@@ -77,13 +78,18 @@ public class DeckBuildingSupplyConfiguratorTests
             .AddSupply("copper", 5));
         builder.WithCards("copper");
         var progress = builder.Compile();
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck"); deck.Should().NotBeNull();
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         builder.SupplyConfigurator.Should().NotBeNull();
         var events = builder.SupplyConfigurator!.BuildStartupEvents(deck!);
-        foreach (var e in events) { progress = progress.HandleEvent(e); }
+        foreach (var e in events)
+        {
+            progress = progress.HandleEvent(e);
+        }
         var enumerator = progress.Game.Players.GetEnumerator();
         enumerator.MoveNext().Should().BeTrue();
-        var player = enumerator.Current; player.Should().NotBeNull();
+        var player = enumerator.Current;
+        player.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
 
         // act

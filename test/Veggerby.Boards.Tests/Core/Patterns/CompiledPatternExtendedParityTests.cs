@@ -40,9 +40,13 @@ public class CompiledPatternExtendedParityTests
     public void GivenMultiDirectionPattern_WhenResolvingAlongSecondDirection_ThenCompiledMatchesLegacy()
     {
         // Star: center o with two spokes to x and y
-        var o = new Tile("o"); var x = new Tile("x"); var y = new Tile("y");
-        var dx = new Direction("ox"); var dy = new Direction("oy");
-        var r1 = new TileRelation(o, x, dx); var r2 = new TileRelation(o, y, dy);
+        var o = new Tile("o");
+        var x = new Tile("x");
+        var y = new Tile("y");
+        var dx = new Direction("ox");
+        var dy = new Direction("oy");
+        var r1 = new TileRelation(o, x, dx);
+        var r2 = new TileRelation(o, y, dy);
         var board = new Board("board-md-2", [r1, r2]);
         var player = new Player("p1");
         var piece = new Piece("piece-2", player, [new MultiDirectionPattern([dx, dy], isRepeatable: false)]);
@@ -62,15 +66,24 @@ public class CompiledPatternExtendedParityTests
     public void GivenRepeatablePattern_WhenResolvingLongestChain_ThenCompiledMatchesLegacy()
     {
         // a -> b -> c -> d linear repeatable
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c"); var d = new Tile("d");
-        var d1 = new Direction("ab"); var d2 = new Direction("bc"); var d3 = new Direction("cd");
-        var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2); var r3 = new TileRelation(c, d, d3);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d = new Tile("d");
+        var d1 = new Direction("ab");
+        var d2 = new Direction("bc");
+        var d3 = new Direction("cd");
+        var r1 = new TileRelation(a, b, d1);
+        var r2 = new TileRelation(b, c, d2);
+        var r3 = new TileRelation(c, d, d3);
         // Use single repeatable direction sequence (d1 reused logically); model by multi-direction single dir repeatable
         var board = new Board("board-md-3", [r1, r2, r3]);
         var player = new Player("p1");
         // We want a single direction; but linear uses distinct direction instances. Provide first direction only; since relations require exact direction match, we need unified direction reused.
         var dir = new Direction("step");
-        var r1u = new TileRelation(a, b, dir); var r2u = new TileRelation(b, c, dir); var r3u = new TileRelation(c, d, dir);
+        var r1u = new TileRelation(a, b, dir);
+        var r2u = new TileRelation(b, c, dir);
+        var r3u = new TileRelation(c, d, dir);
         var board2 = new Board("board-md-3u", [r1u, r2u, r3u]);
         var piece = new Piece("piece-3", player, [new MultiDirectionPattern([dir], isRepeatable: true)]);
         var game = new Game(board2, [player], [piece]);
@@ -85,8 +98,11 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenUnreachableFixedPattern_WhenResolving_ThenBothNull()
     {
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var d1 = new Direction("ab"); var d2 = new Direction("bc");
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d1 = new Direction("ab");
+        var d2 = new Direction("bc");
         // only second relation missing (b->c) so pattern cannot complete
         var r1 = new TileRelation(a, b, d1);
         var board = new Board("board-unreach-1", [r1]);
@@ -102,8 +118,10 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenNullPattern_WhenResolving_ThenBothNull()
     {
-        var a = new Tile("a"); var b = new Tile("b");
-        var d1 = new Direction("ab"); var r1 = new TileRelation(a, b, d1);
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var d1 = new Direction("ab");
+        var r1 = new TileRelation(a, b, d1);
         var board = new Board("board-null-1", [r1]);
         var player = new Player("p1");
         var piece = new Piece("piece-5", player, [new NullPattern()]);

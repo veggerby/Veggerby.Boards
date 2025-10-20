@@ -32,7 +32,10 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
     /// <summary>
     /// Gets the dice considered for clearing.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, MovePieceGameEvent @event)

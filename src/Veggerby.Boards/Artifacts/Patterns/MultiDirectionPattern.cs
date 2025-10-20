@@ -15,12 +15,18 @@ public class MultiDirectionPattern : IPattern
     /// <summary>
     /// Gets the available directions for the first (and subsequent) step(s).
     /// </summary>
-    public IEnumerable<Direction> Directions { get; }
+    public IEnumerable<Direction> Directions
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a value indicating whether the selected direction may be applied repeatedly.
     /// </summary>
-    public bool IsRepeatable { get; }
+    public bool IsRepeatable
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MultiDirectionPattern"/> class.
@@ -57,9 +63,12 @@ public class MultiDirectionPattern : IPattern
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((MultiDirectionPattern)obj);
     }
 

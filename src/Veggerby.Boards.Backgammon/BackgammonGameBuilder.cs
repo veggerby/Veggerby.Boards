@@ -159,9 +159,18 @@ public class BackgammonGameBuilder : GameBuilder
                             }
                             // manual filtering without LINQ allocations
                             var tmp = new System.Collections.Generic.List<Tile>(3);
-                            if (bar is not null) { tmp.Add(bar); }
-                            if (hw is not null) { tmp.Add(hw); }
-                            if (hb is not null) { tmp.Add(hb); }
+                            if (bar is not null)
+                            {
+                                tmp.Add(bar);
+                            }
+                            if (hw is not null)
+                            {
+                                tmp.Add(hw);
+                            }
+                            if (hb is not null)
+                            {
+                                tmp.Add(hb);
+                            }
                             return new TileExceptionGameEventCondition(tmp.ToArray());
                         })
                         .And(game =>

@@ -34,9 +34,9 @@ public class HandleEventBaseline
     {
         var builder = new ChessGameBuilder();
         _progress = builder.Compile();
-        _whitePawn = _progress.Game.GetPiece("white-pawn-2");
-        _from = _progress.Game.GetTile("e2");
-        _to = _progress.Game.GetTile("e4");
+        _whitePawn = _progress.Game.GetPiece("white-pawn-2") ?? throw new InvalidOperationException("HandleEventBaseline: white-pawn-2 missing");
+        _from = _progress.Game.GetTile("e2") ?? throw new InvalidOperationException("HandleEventBaseline: tile e2 missing");
+        _to = _progress.Game.GetTile("e4") ?? throw new InvalidOperationException("HandleEventBaseline: tile e4 missing");
         _path = new ResolveTilePathPatternVisitor(_progress.Game.Board, _from, _to).ResultPath!;
     }
 

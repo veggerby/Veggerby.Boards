@@ -88,9 +88,9 @@ public class TraceObserverBatchOverheadBenchmark
             FeatureFlags.EnableObserverBatching = true;
             _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2);
-            var from = _baseline.Game.GetTile(ChessIds.Tiles.E2);
-            var to = _baseline.Game.GetTile(ChessIds.Tiles.E4);
+            var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("TraceObserverBatch: pawn2 missing");
+            var from = _baseline.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("TraceObserverBatch: tile e2 missing");
+            var to = _baseline.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("TraceObserverBatch: tile e4 missing");
             var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
             _event = new MovePieceGameEvent(piece, path);
         }

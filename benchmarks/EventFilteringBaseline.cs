@@ -37,11 +37,11 @@ public class EventFilteringBaseline
         _chess = new ChessGameBuilder().Compile();
         _backgammon = new BackgammonGameBuilder().Compile();
 
-        var from = _chess.Game.GetTile(E2);
-        var to = _chess.Game.GetTile(E4);
-        _whitePawn = _chess.Game.GetPiece(WhitePawn2);
+        var from = _chess.Game.GetTile(E2) ?? throw new InvalidOperationException("Chess benchmark: from tile e2 missing");
+        var to = _chess.Game.GetTile(E4) ?? throw new InvalidOperationException("Chess benchmark: to tile e4 missing");
+        _whitePawn = _chess.Game.GetPiece(WhitePawn2) ?? throw new InvalidOperationException("Chess benchmark: white pawn2 missing");
         _pawnPath = new ResolveTilePathPatternVisitor(_chess.Game.Board, from, to).ResultPath!;
-        _die1 = _backgammon.Game.GetArtifact<Dice>("dice-1");
+        _die1 = _backgammon.Game.GetArtifact<Dice>("dice-1") ?? throw new InvalidOperationException("Backgammon benchmark: dice-1 missing");
     }
 
     [Benchmark(Description = "Handle Move (Chess)")]

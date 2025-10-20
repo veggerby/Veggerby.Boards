@@ -27,8 +27,8 @@ public class DeckBuildingConditionsBenchmark
         var builder = new DeckBuildingGameBuilder();
         builder.WithCard("c1");
         _progress = builder.Compile();
-        var deck = _progress.Game.GetArtifact<Deck>("p1-deck");
-        var p1 = _progress.Game.GetPlayer("P1");
+        var deck = _progress.Game.GetArtifact<Deck>("p1-deck") ?? throw new InvalidOperationException("DeckBuildingConditions: deck p1-deck missing");
+        var p1 = _progress.Game.GetPlayer("P1") ?? throw new InvalidOperationException("DeckBuildingConditions: player P1 missing");
 
         // Deck state with supply containing one card
         var piles = new Dictionary<string, IList<Card>>{
@@ -47,8 +47,8 @@ public class DeckBuildingConditionsBenchmark
         var builderAlt = new DeckBuildingGameBuilder().WithEndTrigger(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 1));
         builderAlt.WithCard("c2");
         _progressAltEnd = builderAlt.Compile();
-        var deck2 = _progressAltEnd.Game.GetArtifact<Deck>("p1-deck");
-        var p1b = _progressAltEnd.Game.GetPlayer("P1");
+        var deck2 = _progressAltEnd.Game.GetArtifact<Deck>("p1-deck") ?? throw new InvalidOperationException("DeckBuildingConditions: deck2 p1-deck missing");
+        var p1b = _progressAltEnd.Game.GetPlayer("P1") ?? throw new InvalidOperationException("DeckBuildingConditions: player P1 missing (alt end)");
         var piles2 = new Dictionary<string, IList<Card>>{
             { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },

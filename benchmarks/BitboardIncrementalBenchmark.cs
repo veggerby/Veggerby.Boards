@@ -45,14 +45,14 @@ public class BitboardIncrementalBenchmark
             Internal.FeatureFlags.EnableBitboardIncremental = origInc;
         }
 
-        var fromFull = _rebuild.Game.GetTile(ChessIds.Tiles.E2);
-        var toFull = _rebuild.Game.GetTile(ChessIds.Tiles.E4);
-        _pawnFull = _rebuild.Game.GetPiece(ChessIds.Pieces.WhitePawn5);
+        var fromFull = _rebuild.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("BitboardIncremental: from tile e2 missing (full)");
+        var toFull = _rebuild.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("BitboardIncremental: to tile e4 missing (full)");
+        _pawnFull = _rebuild.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("BitboardIncremental: pawn5 missing (full)");
         var visitorFull = new ResolveTilePathPatternVisitor(_rebuild.Game.Board, fromFull, toFull);
-        _pathFull = visitorFull.ResultPath;
+        _pathFull = visitorFull.ResultPath!;
         if (_pathFull is null)
         {
-            var mid = _rebuild.Game.GetTile(ChessIds.Tiles.E3);
+            var mid = _rebuild.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("BitboardIncremental benchmark: mid tile e3 missing (full)");
             var rel1 = _rebuild.Game.Board.GetTileRelation(fromFull, mid);
             var rel2 = _rebuild.Game.Board.GetTileRelation(mid, toFull);
             if (rel1 is not null && rel2 is not null)
@@ -62,14 +62,14 @@ public class BitboardIncrementalBenchmark
             }
         }
 
-        var fromInc = _incremental.Game.GetTile(ChessIds.Tiles.E2);
-        var toInc = _incremental.Game.GetTile(ChessIds.Tiles.E4);
-        _pawnInc = _incremental.Game.GetPiece(ChessIds.Pieces.WhitePawn5);
+        var fromInc = _incremental.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("BitboardIncremental: from tile e2 missing (incremental)");
+        var toInc = _incremental.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("BitboardIncremental: to tile e4 missing (incremental)");
+        _pawnInc = _incremental.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("BitboardIncremental: pawn5 missing (incremental)");
         var visitorInc = new ResolveTilePathPatternVisitor(_incremental.Game.Board, fromInc, toInc);
-        _pathInc = visitorInc.ResultPath;
+        _pathInc = visitorInc.ResultPath!;
         if (_pathInc is null)
         {
-            var mid2 = _incremental.Game.GetTile(ChessIds.Tiles.E3);
+            var mid2 = _incremental.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("BitboardIncremental benchmark: mid tile e3 missing (incremental)");
             var rel1b = _incremental.Game.Board.GetTileRelation(fromInc, mid2);
             var rel2b = _incremental.Game.Board.GetTileRelation(mid2, toInc);
             if (rel1b is not null && rel2b is not null)

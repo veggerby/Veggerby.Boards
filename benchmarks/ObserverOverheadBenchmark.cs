@@ -67,9 +67,9 @@ public class ObserverOverheadBenchmark
         var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
         _batched = builder3.Compile();
 
-        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2);
-        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2);
-        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4);
+        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("ObserverOverhead: pawn2 missing");
+        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2) ?? throw new InvalidOperationException("ObserverOverhead: tile e2 missing");
+        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4) ?? throw new InvalidOperationException("ObserverOverhead: tile e4 missing");
         var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
         _event = new MovePieceGameEvent(piece, path);
     }

@@ -18,6 +18,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="id">Unique tile identifier.</param>
     /// <returns>The same definition instance for fluent chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(TileId))]
     public TileDefinition WithId(string id)
     {
         if (string.IsNullOrEmpty(id))

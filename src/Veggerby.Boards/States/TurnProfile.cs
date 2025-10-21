@@ -44,10 +44,10 @@ internal sealed class TurnProfile
     public static TurnProfile Default { get; } = new TurnProfile(new[] { TurnSegment.Start, TurnSegment.Main, TurnSegment.End });
 
     /// <summary>
-    /// Returns the next segment after the supplied <paramref name="current"/>, or <c>null</c> if it is the final segment.
+    /// Returns the next segment following <paramref name="current"/> or <c>null</c> when <paramref name="current"/> is terminal.
     /// </summary>
     /// <param name="current">Current segment.</param>
-    /// <returns>Next segment or <c>null</c>.</returns>
+    /// <returns>Next segment or <c>null</c> if the provided segment is the last segment.</returns>
     public TurnSegment? Next(TurnSegment current)
     {
         if (!_segmentOrderIndex.TryGetValue(current, out var index))

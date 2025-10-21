@@ -27,8 +27,7 @@ public class PublicApiNullabilityTests
             // Explicitly modeled absence cases
             typeof(ConditionResponse).FullName + ".Reason",
             typeof(EventResultStruct).FullName + ".Message",
-            // Simulation trace (optional diagnostic)
-            "Veggerby.Boards.Simulation.PlayoutResult.Trace"
+            // Simulation trace removed from whitelist after normalization to non-null
         };
         var offenders = new List<string>();
 

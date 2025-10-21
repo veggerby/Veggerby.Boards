@@ -11,8 +11,8 @@ namespace Veggerby.Boards.Simulation;
 /// <param name="Final">Final progress after playout termination (may equal initial).</param>
 /// <param name="AppliedEvents">Number of successfully applied events.</param>
 /// <param name="TerminalReason">Reason playout terminated.</param>
-/// <param name="Trace">Optional captured intermediate states (includes initial + final when enabled).</param>
-public sealed record PlayoutResult(GameProgress Initial, GameProgress Final, int AppliedEvents, PlayoutTerminalReason TerminalReason, IReadOnlyList<GameState>? Trace)
+/// <param name="Trace">Captured intermediate states including initial and final when trace capture is enabled; empty when disabled (never null).</param>
+public sealed record PlayoutResult(GameProgress Initial, GameProgress Final, int AppliedEvents, PlayoutTerminalReason TerminalReason, IReadOnlyList<GameState> Trace)
 {
     /// <summary>True if at least one event applied.</summary>
     public bool Progressed => AppliedEvents > 0;

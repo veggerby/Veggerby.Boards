@@ -38,6 +38,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="from">Source tile id.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="from"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(FromTileId))]
     public TileRelationDefinition FromTile(string from)
     {
         if (string.IsNullOrEmpty(from))
@@ -55,6 +56,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="to">Destination tile id.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(ToTileId))]
     public TileRelationDefinition ToTile(string to)
     {
         if (string.IsNullOrEmpty(to))
@@ -72,6 +74,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="direction">Directional identifier.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="direction"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(DirectionId))]
     public TileRelationDefinition InDirection(string direction)
     {
         if (string.IsNullOrEmpty(direction))

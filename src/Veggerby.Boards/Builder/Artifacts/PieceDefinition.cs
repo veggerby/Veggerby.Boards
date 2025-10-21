@@ -19,6 +19,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Sets the piece identifier.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PieceId))]
     public PieceDefinition WithId(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -33,6 +34,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Assigns an owner player identifier to the piece.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PlayerId))]
     public PieceDefinition WithOwner(string id)
     {
         if (string.IsNullOrEmpty(id))

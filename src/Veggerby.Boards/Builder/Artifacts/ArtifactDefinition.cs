@@ -25,6 +25,7 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="id">Unique artifact identifier.</param>
     /// <returns>The same definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(ArtifactId))]
     public ArtifactDefinition WithId(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -41,6 +42,7 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// </summary>
     /// <typeparam name="T">Concrete artifact type.</typeparam>
     /// <returns>The same definition for chaining.</returns>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(Factory))]
     public ArtifactDefinition OfType<T>() where T : Artifact, new()
     {
         Factory = id => new T();
@@ -54,6 +56,7 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="factory">Factory function producing the artifact instance.</param>
     /// <returns>The same definition for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="factory"/> is null.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(Factory))]
     public ArtifactDefinition WithFactory<T>(Func<string, T> factory) where T : Artifact
     {
         Factory = factory ?? throw new ArgumentNullException(nameof(factory));

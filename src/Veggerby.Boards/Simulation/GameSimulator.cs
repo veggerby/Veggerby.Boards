@@ -165,8 +165,8 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
 
         var ob = observer ?? NullObserver.Instance;
 
-        List<GameState>? trace = _options.CaptureTrace ? new List<GameState>() : null;
-        if (trace is not null)
+        var trace = _options.CaptureTrace ? new List<GameState>() : new List<GameState>(capacity: 0);
+        if (_options.CaptureTrace)
         {
             trace.Add(progress.State);
         }
@@ -202,7 +202,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
                     applied++;
                     current = new GameProgress(current.Engine, result.State, current.Events.Concat([evt]));
 
-                    if (trace is not null)
+                    if (_options.CaptureTrace)
                     {
                         trace.Add(current.State);
                     }

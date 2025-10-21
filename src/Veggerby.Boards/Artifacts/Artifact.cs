@@ -22,10 +22,7 @@ public abstract class Artifact : IEquatable<Artifact>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     protected Artifact(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Invalid Artifact Id", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         Id = id;
     }

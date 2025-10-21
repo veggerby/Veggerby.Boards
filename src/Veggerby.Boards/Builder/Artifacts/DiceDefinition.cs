@@ -19,10 +19,7 @@ public class DiceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <returns>The same definition for chaining.</returns>
     public DiceDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         DiceId = id;
         return this;

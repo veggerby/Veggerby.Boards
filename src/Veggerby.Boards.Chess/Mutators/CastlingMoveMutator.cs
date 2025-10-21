@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -15,9 +16,10 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
-        ArgumentNullException.ThrowIfNull(engine);
-        ArgumentNullException.ThrowIfNull(gameState);
-        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(gameState, nameof(gameState));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         var extras = gameState.GetExtras<ChessStateExtras>();
         if (extras is null)
         {

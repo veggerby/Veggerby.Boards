@@ -21,10 +21,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(TileId))]
     public TileDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         TileId = id;
         return this;
@@ -38,10 +35,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     public TileRelationDefinition WithRelationTo(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         var relation = new TileRelationDefinition(Builder, this)
             .FromTile(this.TileId)
@@ -59,10 +53,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     public TileRelationDefinition WithRelationFrom(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         var relation = new TileRelationDefinition(Builder, this)
             .FromTile(id)

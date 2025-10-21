@@ -28,10 +28,7 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(ArtifactId))]
     public ArtifactDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         ArtifactId = id;
         return this;
@@ -59,7 +56,8 @@ public class ArtifactDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(Factory))]
     public ArtifactDefinition WithFactory<T>(Func<string, T> factory) where T : Artifact
     {
-        Factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        ArgumentNullException.ThrowIfNull(factory, nameof(factory));
+        Factory = factory;
         return this;
     }
 }

@@ -59,10 +59,7 @@ public class Direction : IEquatable<Direction>
     /// <exception cref="ArgumentException">Thrown if <paramref name="id"/> is null or empty.</exception>
     public Direction(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Invalid Direction Id", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         Id = id;
     }

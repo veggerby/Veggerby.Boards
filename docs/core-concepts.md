@@ -56,15 +56,18 @@ Two categories govern error signaling:
 2. State machine / lifecycle transitions (turn sequencing, builder id resolution, artifact creation) throw when invariants are violated (unknown id, unknown turn segment). Silent `null` would mask corruption and threaten deterministic replay.
 
 Guidelines:
+
 - Optional capabilities: prefer `Try*` pattern (`bool TryResolveX(out Y result)`). If returning `null`, ensure XML docs clarify semantics.
 - Invariant breaches: throw `InvalidOperationException` or domain-specific exception early.
 - Never convert invariant failures into defensive `null`.
 
 Examples:
+
 - `TurnProfile.Next` throws on unknown segment (invariant breach).
 - Builder ID lookups use dictionary access + explicit exception on miss.
 
 Planned Migration:
+
 - Migrate remaining nullable-returning resolution methods toward `Try*` forms for clarity without altering deterministic behavior.
 
 ## Extension Surface

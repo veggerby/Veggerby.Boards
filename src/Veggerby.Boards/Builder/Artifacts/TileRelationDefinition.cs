@@ -41,10 +41,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(FromTileId))]
     public TileRelationDefinition FromTile(string from)
     {
-        if (string.IsNullOrEmpty(from))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(from));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(from, nameof(from));
 
         FromTileId = from;
         return this;
@@ -59,10 +56,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(ToTileId))]
     public TileRelationDefinition ToTile(string to)
     {
-        if (string.IsNullOrEmpty(to))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(to));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(to, nameof(to));
 
         ToTileId = to;
         return this;
@@ -77,10 +71,7 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(DirectionId))]
     public TileRelationDefinition InDirection(string direction)
     {
-        if (string.IsNullOrEmpty(direction))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(direction));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(direction, nameof(direction));
 
         DirectionId = direction;
         return this;

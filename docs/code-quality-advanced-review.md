@@ -9,7 +9,6 @@ Deeper analysis of non-optimal patterns in how components (builder, progress cha
 
 ## High-Impact Candidates
 
-
 ### 2. Event Chain Growth Using `progress.Events.Concat([evt])`
 
 Occurrences in `GameProgress` and `GameSimulator`.
@@ -46,9 +45,6 @@ Opportunity:
 - Cache compiled direction arrays if identical sequences encountered multiple times.
 Impact: Reduces repeated allocations in large pattern sets.
 Effort: M (requires equality + caching keyed by sequence hash).
-
-
-
 
 ### 9. Normalize Helper Adoption
 
@@ -153,7 +149,6 @@ Effort: M.
 
 Already covered by path resolution min search; ensure all similar `OrderBy(...).First()` cascades replaced (two visitors flagged).
 Status: Merge with #6.
-
 
 ## Current Focus Sequence
 

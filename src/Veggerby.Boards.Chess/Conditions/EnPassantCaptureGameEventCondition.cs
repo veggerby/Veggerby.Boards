@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -20,9 +21,10 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
     /// <returns>Valid if en-passant target matches diagonal pawn move; otherwise Ignore.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
-        ArgumentNullException.ThrowIfNull(engine);
-        ArgumentNullException.ThrowIfNull(state);
-        ArgumentNullException.ThrowIfNull(moveEvent);
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(moveEvent, nameof(moveEvent));
+
         var @event = moveEvent;
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>(); // retained for victim lookup later
         if (!ChessPiece.IsPawn(state, @event.Piece.Id))

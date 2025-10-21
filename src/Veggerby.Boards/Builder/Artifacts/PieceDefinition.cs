@@ -22,10 +22,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PieceId))]
     public PieceDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         PieceId = id;
         return this;
@@ -37,10 +34,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PlayerId))]
     public PieceDefinition WithOwner(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         PlayerId = id;
         return this;
@@ -51,10 +45,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// </summary>
     public PieceDefinition OnTile(string tileId)
     {
-        if (string.IsNullOrEmpty(tileId))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(tileId));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
 
         Builder.AddPieceOnTile(PieceId, tileId);
         return this;
@@ -65,10 +56,7 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// </summary>
     public PieceDirectionPatternDefinition HasDirection(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         var direction = new PieceDirectionPatternDefinition(Builder, this).WithDirection(id);
         Builder.Add(direction);

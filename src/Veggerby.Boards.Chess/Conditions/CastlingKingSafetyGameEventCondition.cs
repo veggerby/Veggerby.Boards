@@ -30,9 +30,10 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        ArgumentNullException.ThrowIfNull(engine);
-        ArgumentNullException.ThrowIfNull(state);
-        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
         if (!ChessPiece.IsKing(state, @event.Piece.Id))
         {

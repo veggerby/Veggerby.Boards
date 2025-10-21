@@ -35,7 +35,7 @@ public class Board : Artifact, IEquatable<Board>
     /// <exception cref="ArgumentException">Thrown when <paramref name="tileRelations"/> is empty.</exception>
     public Board(string id, IEnumerable<TileRelation> tileRelations) : base(id)
     {
-        ArgumentNullException.ThrowIfNull(tileRelations);
+        ArgumentNullException.ThrowIfNull(tileRelations, nameof(tileRelations));
 
         if (!tileRelations.Any())
         {
@@ -53,10 +53,7 @@ public class Board : Artifact, IEquatable<Board>
     /// <returns>The tile or null if not found.</returns>
     public Tile? GetTile(string tileId)
     {
-        if (string.IsNullOrEmpty(tileId))
-        {
-            throw new ArgumentException("Invalid Tile Id", nameof(tileId));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
 
         return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId));
     }
@@ -66,9 +63,9 @@ public class Board : Artifact, IEquatable<Board>
     /// </summary>
     public TileRelation? GetTileRelation(Tile from, Direction direction)
     {
-        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(from, nameof(from));
 
-        ArgumentNullException.ThrowIfNull(direction);
+        ArgumentNullException.ThrowIfNull(direction, nameof(direction));
 
         return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
     }
@@ -78,9 +75,9 @@ public class Board : Artifact, IEquatable<Board>
     /// </summary>
     public TileRelation? GetTileRelation(Tile from, Tile to)
     {
-        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(from, nameof(from));
 
-        ArgumentNullException.ThrowIfNull(to);
+        ArgumentNullException.ThrowIfNull(to, nameof(to));
 
         return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));
     }

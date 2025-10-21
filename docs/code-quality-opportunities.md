@@ -66,7 +66,6 @@ Opportunities:
 Status: Candidate (needs profiling).
 Effort: L.
 
-
 ## 7. Path & Movement Resolution Null Handling
 
 Current pattern: nullable path returns + `TryResolvePath` added.
@@ -75,9 +74,6 @@ Opportunity:
 - Audit call sites still using nullable methods directly; migrate to Try pattern for flow clarity; deprecate nullable returns later.
 Status: Active (incremental adoption).
 Effort: S.
-
-
-
 
 ## 11. Simulation Trace Handling
 
@@ -177,8 +173,6 @@ Opportunity:
 - Add test scanning exported types for unintended overrides.
 Status: Candidate.
 Effort: S.
-
-
 
 ## 24. Domain-Specific Exceptions
 

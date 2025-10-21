@@ -45,6 +45,7 @@ public class InvalidGameEventException : Exception
         {
             return $"Invalid game event {eventName}";
         }
+
         return $"Invalid game event {eventName}: {reason}";
     }
 

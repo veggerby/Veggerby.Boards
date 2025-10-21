@@ -21,10 +21,7 @@ public class PlayerDefinition(GameBuilder builder) : DefinitionBase(builder)
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PlayerId))]
     public PlayerDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         PlayerId = id;
         return this;

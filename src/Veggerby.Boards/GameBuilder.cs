@@ -126,7 +126,8 @@ public abstract class GameBuilder
     /// <returns>Fluent player definition.</returns>
     protected PlayerDefinition AddPlayer(string playerId)
     {
-        playerId = Normalize.Text(playerId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
+
         var player = new PlayerDefinition(this).WithId(playerId);
         _playerDefinitions.Add(player);
         _playerDefinitionsById[player.PlayerId] = player;
@@ -144,11 +145,7 @@ public abstract class GameBuilder
     /// </remarks>
     protected void WithActivePlayer(string playerId, bool isActive)
     {
-        playerId = Normalize.Text(playerId);
-        if (string.IsNullOrWhiteSpace(playerId))
-        {
-            throw new ArgumentException("Player id must be supplied", nameof(playerId));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
 
         // Defer validation (existence, uniqueness) until compile to allow out-of-order declarations.
         _activePlayerAssignments.Add((playerId, isActive));
@@ -161,6 +158,8 @@ public abstract class GameBuilder
     /// <returns>Player definition.</returns>
     protected PlayerDefinition WithPlayer(string playerId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
+
         if (!_playerDefinitionsById.TryGetValue(playerId, out var def))
         {
             throw new InvalidOperationException($"Unknown player definition '{playerId}'.");
@@ -176,7 +175,8 @@ public abstract class GameBuilder
     /// <returns>Tile definition.</returns>
     protected TileDefinition AddTile(string tileId)
     {
-        tileId = Normalize.Text(tileId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
         var tile = new TileDefinition(this).WithId(tileId);
         _tileDefinitions.Add(tile);
         _tileDefinitionsById[tile.TileId] = tile;
@@ -191,6 +191,8 @@ public abstract class GameBuilder
     /// <returns>Tile definition.</returns>
     protected TileDefinition WithTile(string tileId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
         if (!_tileDefinitionsById.TryGetValue(tileId, out var def))
         {
             throw new InvalidOperationException($"Unknown tile definition '{tileId}'.");
@@ -206,7 +208,8 @@ public abstract class GameBuilder
     /// <returns>Direction definition.</returns>
     protected DirectionDefinition AddDirection(string directionId)
     {
-        directionId = Normalize.Text(directionId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(directionId, nameof(directionId));
+
         var direction = new DirectionDefinition(this).WithId(directionId);
         _directionDefinitions.Add(direction);
         _directionDefinitionsById[direction.DirectionId] = direction;
@@ -221,7 +224,8 @@ public abstract class GameBuilder
     /// <returns>Dice definition.</returns>
     protected DiceDefinition AddDice(string diceId)
     {
-        diceId = Normalize.Text(diceId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
         var dice = new DiceDefinition(this).WithId(diceId);
         _diceDefinitions.Add(dice);
         _diceDefinitionsById[dice.DiceId] = dice;
@@ -236,6 +240,8 @@ public abstract class GameBuilder
     /// <returns>Dice definition.</returns>
     protected DiceDefinition WithDice(string diceId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
         if (!_diceDefinitionsById.TryGetValue(diceId, out var def))
         {
             throw new InvalidOperationException($"Unknown dice definition '{diceId}'.");
@@ -251,7 +257,8 @@ public abstract class GameBuilder
     /// <returns>Piece definition.</returns>
     protected PieceDefinition AddPiece(string pieceId)
     {
-        pieceId = Normalize.Text(pieceId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+
         var piece = new PieceDefinition(this).WithId(pieceId);
         _pieceDefinitions.Add(piece);
         _pieceDefinitionsById[piece.PieceId] = piece;
@@ -266,6 +273,8 @@ public abstract class GameBuilder
     /// <returns>Piece definition.</returns>
     protected PieceDefinition WithPiece(string pieceId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+
         if (!_pieceDefinitionsById.TryGetValue(pieceId, out var def))
         {
             throw new InvalidOperationException($"Unknown piece definition '{pieceId}'.");
@@ -281,7 +290,8 @@ public abstract class GameBuilder
     /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition AddArtifact(string artifactId)
     {
-        artifactId = Normalize.Text(artifactId);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(artifactId, nameof(artifactId));
+
         var artifact = new ArtifactDefinition(this).WithId(artifactId);
         _artifactDefinitions.Add(artifact);
         _artifactDefinitionsById[artifact.ArtifactId] = artifact;
@@ -296,6 +306,8 @@ public abstract class GameBuilder
     /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition WithArtifact(string artifactId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(artifactId, nameof(artifactId));
+
         if (!_artifactDefinitionsById.TryGetValue(artifactId, out var def))
         {
             throw new InvalidOperationException($"Unknown artifact definition '{artifactId}'.");
@@ -320,14 +332,18 @@ public abstract class GameBuilder
 
     internal void AddDiceState(string diceId, int? value)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
         _diceState.Add(diceId, value);
     }
 
     internal void AddPieceOnTile(string pieceId, string tileId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
         _piecePositions.Add(pieceId, tileId);
     }
-
     /// <summary>
     /// Adds a game phase definition which can attach rules, conditions and event handlers.
     /// </summary>
@@ -335,7 +351,8 @@ public abstract class GameBuilder
     /// <returns>Phase definition fluent object.</returns>
     protected IGamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
     {
-        label = Normalize.Text(label);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(label, nameof(label));
+
         var gamePhase = new GamePhaseDefinition(this, label);
         _gamePhaseDefinitions.Add(gamePhase);
 
@@ -627,7 +644,7 @@ public abstract class GameBuilder
     /// <param name="extras">Instance (must be reference type).</param>
     protected void WithState<T>(T extras) where T : class
     {
-        ArgumentNullException.ThrowIfNull(extras);
+        ArgumentNullException.ThrowIfNull(extras, nameof(extras));
 
         // TODO: Revisit Extras state/artifact design (naming + potential consolidation). Consider exposing a more explicit
         // registration API to distinguish engine-level capabilities from per-game auxiliary state. (Tracked from user note)

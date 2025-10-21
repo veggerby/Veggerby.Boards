@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -30,9 +31,10 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
-        ArgumentNullException.ThrowIfNull(engine);
-        ArgumentNullException.ThrowIfNull(state);
-        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         // Resolve role via metadata (no string heuristics)
         if (@event.Piece is null || !ChessPiece.IsKing(state, @event.Piece.Id))
         {

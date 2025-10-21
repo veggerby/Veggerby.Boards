@@ -200,7 +200,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
                 if (result.Applied)
                 {
                     applied++;
-                    current = new GameProgress(current.Engine, result.State, current.Events.Concat([evt]));
+                    current = new GameProgress(current.Engine, result.State, current.Events.Append(evt));
 
                     if (_options.CaptureTrace)
                     {
@@ -351,6 +351,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
             {
                 return snapshot;
             }
+
             remaining -= take;
         }
 

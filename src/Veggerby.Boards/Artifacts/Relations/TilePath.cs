@@ -9,33 +9,40 @@ namespace Veggerby.Boards.Artifacts.Relations;
 /// </summary>
 public class TilePath
 {
+    private readonly TileRelation[] _relations; // dense array for fast iteration
+    private readonly Tile[] _tiles; // cached tiles (from + each relation.To)
+    private readonly Direction[] _directions; // cached directions sequence
+    private readonly int _distance; // precomputed distance sum
+
     /// <summary>
     /// Gets the ordered relations comprising the path.
     /// </summary>
-    public IEnumerable<TileRelation> Relations
-    {
-        get;
-    }
+    public IReadOnlyList<TileRelation> Relations => _relations;
+
     /// <summary>
     /// Gets all tiles on the path including start and end.
     /// </summary>
-    public IEnumerable<Tile> Tiles => [Relations.First().From, .. Relations.Select(x => x.To)];
+    public IReadOnlyList<Tile> Tiles => _tiles;
+
     /// <summary>
     /// Gets the sequence of directions traversed.
     /// </summary>
-    public IEnumerable<Direction> Directions => [.. Relations.Select(x => x.Direction)];
+    public IReadOnlyList<Direction> Directions => _directions;
+
     /// <summary>
     /// Gets the origin tile.
     /// </summary>
-    public Tile From => Relations.First().From;
+    public Tile From => _relations[0].From;
+
     /// <summary>
     /// Gets the destination tile.
     /// </summary>
-    public Tile To => Relations.Last().To;
+    public Tile To => _relations[_relations.Length - 1].To;
+
     /// <summary>
     /// Gets the total distance (sum of relation distances).
     /// </summary>
-    public int Distance => Relations.Sum(x => x.Distance);
+    public int Distance => _distance;
 
     /// <summary>
     /// Initializes a new path from a set of connected relations.
@@ -44,26 +51,63 @@ public class TilePath
     /// <exception cref="ArgumentException">Thrown when relations are null, empty, contain null elements, or not connected.</exception>
     public TilePath(IEnumerable<TileRelation> relations)
     {
-        if (relations is null || !relations.Any() || relations.Any(x => x is null))
+        if (relations is null)
         {
             throw new ArgumentException("Invalid relations", nameof(relations));
         }
 
-        Relations = relations.ToList().AsReadOnly();
-
-        if (Relations.Count() > 1)
+        // Materialize once into list for validation then array for storage.
+        var list = relations as IList<TileRelation> ?? relations.ToList();
+        if (list.Count == 0)
         {
-            var first = Relations.First();
+            throw new ArgumentException("Invalid relations", nameof(relations));
+        }
 
-            var chainedTo = Relations
-                .Skip(1)
-                .Aggregate<TileRelation, Tile?>(first.To, (to, relation) => to is not null && relation.From.Equals(to) ? relation.To : null);
-
-            if (chainedTo is null)
+        // Validate (no nulls)
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] is null)
             {
-                throw new ArgumentException("Relations are not a connected", nameof(relations));
+                throw new ArgumentException("Invalid relations", nameof(relations));
             }
         }
+
+        // Connectivity validation
+        if (list.Count > 1)
+        {
+            var prevTo = list[0].To;
+            for (int i = 1; i < list.Count; i++)
+            {
+                if (!list[i].From.Equals(prevTo))
+                {
+                    throw new ArgumentException("Relations are not a connected", nameof(relations));
+                }
+
+                prevTo = list[i].To;
+            }
+        }
+
+        _relations = list is List<TileRelation> tl ? tl.ToArray() : list.ToArray();
+
+        // Cache tiles
+        _tiles = new Tile[_relations.Length + 1];
+        _tiles[0] = _relations[0].From;
+        for (int i = 0; i < _relations.Length; i++)
+        {
+            _tiles[i + 1] = _relations[i].To;
+        }
+
+        // Cache directions & distance
+        _directions = new Direction[_relations.Length];
+        var dist = 0;
+        for (int i = 0; i < _relations.Length; i++)
+        {
+            var r = _relations[i];
+            _directions[i] = r.Direction;
+            dist += r.Distance;
+        }
+
+        _distance = dist;
     }
 
     /// <summary>
@@ -71,7 +115,23 @@ public class TilePath
     /// </summary>
     public TilePath Add(TileRelation relation)
     {
-        return new TilePath(Relations.Append(relation));
+        if (relation is null)
+        {
+            throw new ArgumentNullException(nameof(relation));
+        }
+
+        // Validate connectivity with last relation To tile.
+        var lastTo = _relations[_relations.Length - 1].To;
+        if (!relation.From.Equals(lastTo))
+        {
+            throw new ArgumentException("Relation does not connect to path", nameof(relation));
+        }
+
+        // Fast append path: build new array (allocation proportional to length; acceptable given path construction is not inner-loop hot).
+        var newRelations = new TileRelation[_relations.Length + 1];
+        Array.Copy(_relations, newRelations, _relations.Length);
+        newRelations[_relations.Length] = relation;
+        return new TilePath(newRelations);
     }
 
     /// <summary>
@@ -79,13 +139,26 @@ public class TilePath
     /// </summary>
     public static TilePath Create(TilePath? path, TileRelation relation)
     {
-        return path is not null ? path.Add(relation) : new TilePath([relation]);
+        return path is not null ? path.Add(relation) : new TilePath(new[] { relation });
     }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        var path = string.Join(" ", Relations.Select(x => $"{x.Direction} {x.To}"));
-        return $"Path: {From} {path}";
+        // Build descriptive string without LINQ for consistency.
+        if (_relations.Length == 0)
+        {
+            return "Path: (empty)";
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.Append("Path: ").Append(From);
+        for (int i = 0; i < _relations.Length; i++)
+        {
+            var r = _relations[i];
+            sb.Append(' ').Append(r.Direction).Append(' ').Append(r.To);
+        }
+
+        return sb.ToString();
     }
 }

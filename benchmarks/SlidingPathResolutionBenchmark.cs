@@ -351,7 +351,7 @@ public class SlidingPathResolutionBenchmark
             // DecisionPlan mandatory (GameEngine enforces non-null); compile minimal plan for benchmark phase root.
             var plan = DecisionPlan.Compile(phaseRoot);
             var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-            return new GameProgress(engine, state, Enumerable.Empty<Veggerby.Boards.Flows.Events.IGameEvent>());
+            return new GameProgress(engine, state, Veggerby.Boards.Flows.Events.EventChain.Empty);
         }
 
         _progressEmpty = Build(new HashSet<Tile>());

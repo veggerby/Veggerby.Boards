@@ -6,6 +6,9 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <WarningsNotAsErrors>$(WarningsNotAsErrors)</WarningsNotAsErrors>
+    <!-- Enable XML docs for public API coverage enforcement tests -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(MSBuildProjectName).xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

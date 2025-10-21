@@ -35,3 +35,4 @@ Track: Mean, p95, Alloc B/op, Gen0 collections (where relevant), hit ratios (fas
 * No LINQ in hot loops.
 * Avoid per-call allocations (reuse or stack allocate where safe).
 * Add a semantics charter before introducing new acceleration layers.
+* Path resolution/access: `TilePath` caches relations, tiles, directions, and total distance (no LINQ in accessors) to eliminate transient allocations during rule/path evaluation.

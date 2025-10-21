@@ -17,7 +17,7 @@ namespace Veggerby.Boards.Tests.Core;
 public class PublicApiNullabilityTests
 {
     [Fact]
-    public void PublicSurface_Should_Not_Expose_Nullable_Collections_Or_Strings()
+    public void PublicSurface_Should_Not_Expose_Nullable_Collections_Or_Strings_Or_Mutable_Collections()
     {
         // arrange
         var asm = typeof(Game).Assembly;
@@ -64,10 +64,20 @@ public class PublicApiNullabilityTests
                 {
                     offenders.Add(id + " (nullable enumerable)");
                 }
+
+                // Ban exposing mutable collections even if non-null (List<>, Dictionary<,>)
+                if (p.PropertyType.IsGenericType)
+                {
+                    var gen = p.PropertyType.GetGenericTypeDefinition();
+                    if (gen == typeof(List<>) || gen == typeof(Dictionary<,>))
+                    {
+                        offenders.Add(id + " (mutable collection)");
+                    }
+                }
             }
         }
 
         // assert
-        offenders.Should().BeEmpty("no public string?/IEnumerable<>? should be exposed in API:\n" + string.Join("\n", offenders));
+        offenders.Should().BeEmpty("no public nullable strings/enumerables or mutable List<>/Dictionary<,> should be exposed in API:\n" + string.Join("\n", offenders));
     }
 }

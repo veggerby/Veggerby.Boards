@@ -9,9 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 
 - Deck-building: Optional supply depletion alternate end trigger via `WithEndTrigger(new DeckBuildingEndTriggerOptions(...))` enabling threshold and/or key pile emptiness to permit `EndGameEvent`.
- - Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
- - Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).
- - Tests: Structural sharing test ensuring only target pile content changes on `GainFromSupplyEvent`; supply stats decrement tests (no increment unless crossing to zero).
+- Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
+- Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).
+- Tests: Structural sharing test ensuring only target pile content changes on `GainFromSupplyEvent`; supply stats decrement tests (no increment unless crossing to zero).
 
 > Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
 
@@ -159,8 +159,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Changed
 
 - Acceleration context selection now enables bitboards for boards up to 128 tiles (previously ≤64). Fast path for ≤64 unchanged.
- - Deck-building: `GainFromSupplyStateMutator` optimized (selective cloning) to allocate only a new list for the target pile instead of cloning every pile prior to `DeckState` freezing, reducing intermediate allocations while preserving immutability guarantees.
- - Deck-building: `EndGameEventCondition` now fast-paths supply depletion threshold checks via `DeckSupplyStats` (falls back to legacy scan if stats missing for backward compatibility).
+- Deck-building: `GainFromSupplyStateMutator` optimized (selective cloning) to allocate only a new list for the target pile instead of cloning every pile prior to `DeckState` freezing, reducing intermediate allocations while preserving immutability guarantees.
+- Deck-building: `EndGameEventCondition` now fast-paths supply depletion threshold checks via `DeckSupplyStats` (falls back to legacy scan if stats missing for backward compatibility).
 - Sliding attack generator now defensively skips precomputation on degenerate single-direction boards >64 tiles to avoid pathological allocation growth (no functional regression – rays offer no additional branching on such topologies).
 - `BitboardSnapshot` incremental update path extended to handle 128-bit occupancy when active.
 
@@ -190,7 +190,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Added defensive cycle detection + per-ray caps in sliding attack generation and neutralization guard for large single-direction boards (stability improvements for synthetic parity tests).
 - Added benchmarks, parity packs, and cleanup checklists for regression safety.
 - Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).
-  - Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
+- Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
+- DecisionPlan group gate early pruning implemented (skip entire identical-condition groups when gate fails) reducing redundant condition evaluations and observer noise.
+- Movement path performance: `TilePath` refactored to cache relations, tiles, directions, and distance (removed LINQ from hot accessors).
+- Benchmarks assertion hygiene: converted non-critical setup artifact presence checks from exceptions to `Debug.Assert` to reduce noise without affecting release semantics.
 
 ## [0.1.0] – Initial
 

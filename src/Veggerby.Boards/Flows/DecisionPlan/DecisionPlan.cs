@@ -83,9 +83,11 @@ public sealed class DecisionPlan
     {
         ArgumentNullException.ThrowIfNull(root);
 
-        var entries = new List<DecisionPlanEntry>();
-        var kinds = new List<EventKind>();
-        var exclusivity = new List<string>();
+        // Pre-size lists using heuristic: assume leaf phases <= total phases
+        var phaseCount = CountPhases(root);
+        var entries = new List<DecisionPlanEntry>(phaseCount);
+        var kinds = new List<EventKind>(phaseCount);
+        var exclusivity = new List<string>(phaseCount);
         Traverse(root, entries, kinds, exclusivity);
 
         // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
@@ -160,6 +162,28 @@ public sealed class DecisionPlan
             }
 
             exclusivity.Add(explicitGroup ?? inferred ?? string.Empty);
+        }
+    }
+
+    private static int CountPhases(GamePhase root)
+    {
+        var count = 0;
+        TraverseCount(root, ref count);
+        return count;
+    }
+
+    private static void TraverseCount(GamePhase phase, ref int count)
+    {
+        if (phase is CompositeGamePhase composite)
+        {
+            foreach (var child in composite.ChildPhases)
+            {
+                TraverseCount(child, ref count);
+            }
+        }
+        else
+        {
+            count++;
         }
     }
 

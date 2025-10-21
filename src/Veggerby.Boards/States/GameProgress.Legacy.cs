@@ -50,7 +50,7 @@ public partial class GameProgress
                 }
 
                 seed.Engine.Capabilities?.AccelerationContext?.OnStateTransition(seed.State, newStateLocal, e);
-                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Concat(new[] { e }));
+                return new GameProgress(seed.Engine, newStateLocal, seed.Events.Append(e));
             }
             else if (ruleCheckLocal.Result == ConditionResult.Invalid)
             {

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts;
@@ -45,38 +47,30 @@ public class BitboardIncrementalBenchmark
             Internal.FeatureFlags.EnableBitboardIncremental = origInc;
         }
 
-        var fromFull = _rebuild.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("BitboardIncremental: from tile e2 missing (full)");
-        var toFull = _rebuild.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("BitboardIncremental: to tile e4 missing (full)");
-        _pawnFull = _rebuild.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("BitboardIncremental: pawn5 missing (full)");
+        var fromFull = _rebuild.Game.GetTile(ChessIds.Tiles.E2);
+        Debug.Assert(fromFull is not null, "Benchmark setup artifact missing: e2 tile (full)");
+        var toFull = _rebuild.Game.GetTile(ChessIds.Tiles.E4);
+        Debug.Assert(toFull is not null, "Benchmark setup artifact missing: e4 tile (full)");
+        _pawnFull = _rebuild.Game.GetPiece(ChessIds.Pieces.WhitePawn5)!;
+        Debug.Assert(_pawnFull is not null, "Benchmark setup artifact missing: white pawn5 (full)");
         var visitorFull = new ResolveTilePathPatternVisitor(_rebuild.Game.Board, fromFull, toFull);
         _pathFull = visitorFull.ResultPath!;
         if (_pathFull is null)
         {
-            var mid = _rebuild.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("BitboardIncremental benchmark: mid tile e3 missing (full)");
-            var rel1 = _rebuild.Game.Board.GetTileRelation(fromFull, mid);
-            var rel2 = _rebuild.Game.Board.GetTileRelation(mid, toFull);
-            if (rel1 is not null && rel2 is not null)
-            {
-                var partial = TilePath.Create(null, rel1);
-                _pathFull = TilePath.Create(partial, rel2);
-            }
+            _pathFull = TwoStepPathOrNull(_rebuild.Game, fromFull!, toFull!, ChessIds.Tiles.E3)!;
         }
 
-        var fromInc = _incremental.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("BitboardIncremental: from tile e2 missing (incremental)");
-        var toInc = _incremental.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("BitboardIncremental: to tile e4 missing (incremental)");
-        _pawnInc = _incremental.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("BitboardIncremental: pawn5 missing (incremental)");
+        var fromInc = _incremental.Game.GetTile(ChessIds.Tiles.E2);
+        Debug.Assert(fromInc is not null, "Benchmark setup artifact missing: e2 tile (incremental)");
+        var toInc = _incremental.Game.GetTile(ChessIds.Tiles.E4);
+        Debug.Assert(toInc is not null, "Benchmark setup artifact missing: e4 tile (incremental)");
+        _pawnInc = _incremental.Game.GetPiece(ChessIds.Pieces.WhitePawn5)!;
+        Debug.Assert(_pawnInc is not null, "Benchmark setup artifact missing: white pawn5 (incremental)");
         var visitorInc = new ResolveTilePathPatternVisitor(_incremental.Game.Board, fromInc, toInc);
         _pathInc = visitorInc.ResultPath!;
         if (_pathInc is null)
         {
-            var mid2 = _incremental.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("BitboardIncremental benchmark: mid tile e3 missing (incremental)");
-            var rel1b = _incremental.Game.Board.GetTileRelation(fromInc, mid2);
-            var rel2b = _incremental.Game.Board.GetTileRelation(mid2, toInc);
-            if (rel1b is not null && rel2b is not null)
-            {
-                var partial2 = TilePath.Create(null, rel1b);
-                _pathInc = TilePath.Create(partial2, rel2b);
-            }
+            _pathInc = TwoStepPathOrNull(_incremental.Game, fromInc!, toInc!, ChessIds.Tiles.E3)!;
         }
     }
 
@@ -90,5 +84,28 @@ public class BitboardIncrementalBenchmark
     public GameProgress MovePawn_Incremental()
     {
         return _pathInc is null ? _incremental : _incremental.HandleEvent(new MovePieceGameEvent(_pawnInc, _pathInc));
+    }
+
+    /// <summary>
+    /// Attempts to build a two-step path using an intermediate tile id. Returns null when relations are not connected.
+    /// Benchmark-only helper (internal construction simplification).
+    /// </summary>
+    private static TilePath? TwoStepPathOrNull(Game game, Tile from, Tile to, string midTileId)
+    {
+        var mid = game.GetTile(midTileId);
+        if (mid is null)
+        {
+            return null;
+        }
+
+        var r1 = game.Board.GetTileRelation(from, mid);
+        var r2 = game.Board.GetTileRelation(mid, to);
+        if (r1 is null || r2 is null)
+        {
+            return null;
+        }
+
+        var first = TilePath.Create(null, r1);
+        return TilePath.Create(first, r2);
     }
 }

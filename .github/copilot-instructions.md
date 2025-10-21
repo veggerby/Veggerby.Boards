@@ -46,11 +46,63 @@ Docs (`/docs`): conceptual explanations and extension guidance. Update when intr
 * Expression-bodied members only when strictly clearer.
 * Favor explicit loops in perf‑sensitive paths over LINQ.
 * Tests always segmented with `// arrange`, `// act`, `// assert` comments.
+* Whole-file compliance: when editing any existing file, ensure the entire file (not just touched lines) complies with these standards and formatting/whitespace conventions before finishing the change.
 
 ## Formatting Preferences
 * Always insert a blank line between methods, properties, and major logical sections.
 * Avoid consecutive code lines without separation of concern.
 * Maintain at least one blank line before return statements, after variable declarations, and before region or comment blocks.
+* Indentation is 4 spaces—never tabs; continuation lines align to semantic block starts (no column art / manual alignment padding).
+* Using directives: `using System;` first, then a single blank line, then remaining usings grouped logically (no blank lines inside a logical group).
+* Avoid multiple consecutive blank lines; a single blank line is the unit of vertical separation. Remove trailing blank lines at end of files.
+* Opening braces for types, methods, properties, and other blocks are placed on a new line (Allman style). Closing braces are followed by a blank line when another member follows. Example:
+    ```csharp
+    public void Foo()
+    {
+            // logic
+    }
+
+    public int Bar { get; }
+    ```
+* Inside methods, group: guards, setup, core loop, post-processing, each separated by one blank line. Do not interleave unrelated statements without spacing.
+* Local variable declaration block separated from subsequent logic by one blank line (see `PatternCompiler.Compile` for layout of declarations then loops).
+* Prefer early-return guard clauses each followed by a blank line to visually isolate invariant enforcement.
+* Do not vertically align assignment operators or parameters—keep a simple single space style for clarity and diff minimalism.
+* Example (abridged from `PatternCompiler.cs` – showing spacing patterns):
+  ```csharp
+  public static CompiledPatternTable Compile(Game game)
+  {
+      var table = new CompiledPatternTable();
+      var directionSequenceCache = new Dictionary<string, Direction[]>();
+
+      foreach (var piece in game.Artifacts.OfType<Piece>())
+      {
+          var patternCount = piece.Patterns is ICollection<IPattern> coll ? coll.Count : piece.Patterns.Count();
+          var compiled = new List<CompiledPattern>(patternCount);
+
+          foreach (var pattern in piece.Patterns)
+          {
+              // switch body separated by blank lines between cases when logically distinct
+              switch (pattern)
+              {
+                  case FixedPattern fixedPattern:
+                      // ...
+                      break;
+
+                  case DirectionPattern singleDir:
+                      // ...
+                      break;
+              }
+          }
+
+          table.Add(new CompiledPiecePatterns(piece.Id, compiled));
+      }
+
+      return table;
+  }
+  ```
+* Larger builders (see `GameBuilder.cs`) follow: field declarations → constructor(s) (each separated by one blank line) → public mutator methods (one blank line between each) → compile/build method at end with clearly spaced sections (artifact assembly, validation, return) each separated by single blank lines.
+* When adding new code, mirror these vertical whitespace conventions precisely to maintain readability and consistent diff footprint.
 
 ## Engine Semantics & Invariants
 
@@ -105,6 +157,7 @@ public void GivenValidMove_WhenHandled_ThenPieceMoves()
 * Public APIs require XML docs (summary + key invariants in `<remarks>` if non-trivial).
 * Update `/docs` when introducing: new event kinds, rule composition helpers, movement pattern visitors, or extension seams.
 * Keep examples minimal and deterministic.
+* When implementing any change, ensure related documentation artifacts are updated: CHANGELOG.md (for user-visible changes), README.md (if usage or high-level concepts shift), /docs conceptual pages (for new or modified concepts), plans/roadmap files (if scope or sequencing changes), and inline XML docs (for all new public APIs or altered semantics). Remove completed items from transient (e.g. code-quality) review/opportunities docs rather than marking them as done to prevent drift.
 
 ## Dependency Policy
 

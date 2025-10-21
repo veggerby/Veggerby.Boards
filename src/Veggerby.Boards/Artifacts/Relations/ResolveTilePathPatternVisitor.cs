@@ -20,6 +20,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     {
         get;
     }
+
     /// <summary>
     /// Gets the origin tile.
     /// </summary>
@@ -27,6 +28,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     {
         get;
     }
+
     /// <summary>
     /// Gets the destination tile.
     /// </summary>
@@ -34,6 +36,7 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
     {
         get;
     }
+
     /// <summary>
     /// Gets the resolved path, if any.
     /// </summary>
@@ -80,7 +83,23 @@ public class ResolveTilePathPatternVisitor : IPatternVisitor
             }
         }
 
-        ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
+        if (paths.Count == 0)
+        {
+            ResultPath = null;
+        }
+        else
+        {
+            var best = paths[0];
+            for (var i = 1; i < paths.Count; i++)
+            {
+                var candidate = paths[i];
+                if (candidate.Distance < best.Distance)
+                {
+                    best = candidate;
+                }
+            }
+            ResultPath = best;
+        }
     }
 
     /// <summary>

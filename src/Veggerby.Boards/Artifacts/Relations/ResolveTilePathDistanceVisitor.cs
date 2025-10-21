@@ -103,7 +103,25 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
             }
         }
 
-        ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
+        if (paths.Count == 0)
+        {
+            ResultPath = null;
+        }
+        else
+        {
+            // Linear min search avoids full sort allocation
+            var best = paths[0];
+            for (var i = 1; i < paths.Count; i++)
+            {
+                var candidate = paths[i];
+                if (candidate.Distance < best.Distance)
+                {
+                    best = candidate;
+                }
+            }
+
+            ResultPath = best;
+        }
     }
 
     /// <inheritdoc />

@@ -206,6 +206,7 @@ public class SlidingFastPathMicroBenchmark
         var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
         var plan = DecisionPlan.Compile(phaseRoot);
         var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-        return new GameProgress(engine, state, Enumerable.Empty<Veggerby.Boards.Flows.Events.IGameEvent>());
+        // Benchmarks start with empty immutable event chain.
+        return new GameProgress(engine, state, Veggerby.Boards.Flows.Events.EventChain.Empty);
     }
 }

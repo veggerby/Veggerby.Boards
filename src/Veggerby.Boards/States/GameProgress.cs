@@ -24,7 +24,7 @@ public partial class GameProgress
     /// <param name="engine">The game engine hosting rules and phase graph.</param>
     /// <param name="state">The current game state.</param>
     /// <param name="events">The historical events (optional).</param>
-    internal GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events)
+    internal GameProgress(GameEngine engine, GameState state, Veggerby.Boards.Flows.Events.EventChain? events)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
@@ -32,7 +32,7 @@ public partial class GameProgress
 
         Engine = engine;
         State = state;
-        Events = [.. (events ?? Enumerable.Empty<IGameEvent>())];
+        Events = events ?? Veggerby.Boards.Flows.Events.EventChain.Empty;
         Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
         // Acceleration snapshots now encapsulated inside EngineCapabilities.AccelerationContext
     }
@@ -64,7 +64,7 @@ public partial class GameProgress
     /// <summary>
     /// Gets the event history up to this progress state.
     /// </summary>
-    public IEnumerable<IGameEvent> Events
+    public Veggerby.Boards.Flows.Events.EventChain Events
     {
         get;
     }
@@ -114,6 +114,7 @@ public partial class GameProgress
             if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
                 // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
+                // Early pruning: if gate condition invalid (or event kind filtered), entire group is skipped with batched observer notifications.
                 foreach (var group in Engine.DecisionPlan.Groups)
                 {
                     var gateEntry = Engine.DecisionPlan.Entries[group.StartIndex];
@@ -128,6 +129,7 @@ public partial class GameProgress
                                 var skipEntry = Engine.DecisionPlan.Entries[idx];
                                 Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, idx);
                             }
+
                             continue; // skip group
                         }
                     }
@@ -141,6 +143,7 @@ public partial class GameProgress
                             var skipEntry = Engine.DecisionPlan.Entries[idx];
                             Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.GroupGateFailed, progress.State, idx);
                         }
+
                         continue; // skip entire group
                     }
 
@@ -195,7 +198,7 @@ public partial class GameProgress
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
 
-                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                            progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
                             if (masksEnabled)
                             {
@@ -267,7 +270,7 @@ public partial class GameProgress
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
 
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                        progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
                         if (masksEnabled)
                         {
@@ -346,6 +349,7 @@ public partial class GameProgress
             {
                 return EventResult.Accepted(after.State);
             }
+
             return EventResult.Rejected(before, EventRejectionReason.NotApplicable, "No rule produced a state change.");
         }
         catch (InvalidGameEventException ex)
@@ -364,6 +368,7 @@ public partial class GameProgress
             {
                 reason = EventRejectionReason.InvalidOwnership;
             }
+
             return EventResult.Rejected(before, reason, ex.Message);
         }
         catch (Exception ex)

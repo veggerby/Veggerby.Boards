@@ -23,6 +23,7 @@ internal sealed class TurnProfile
     {
         _orderedSegments = ordered.ToArray();
         _segmentOrderIndex = new Dictionary<TurnSegment, int>(_orderedSegments.Length);
+
         for (var i = 0; i < _orderedSegments.Length; i++)
         {
             var seg = _orderedSegments[i];
@@ -30,8 +31,10 @@ internal sealed class TurnProfile
             {
                 throw new ArgumentException($"Duplicate segment '{seg}' in turn profile.");
             }
+
             _segmentOrderIndex.Add(seg, i);
         }
+
         if (_orderedSegments.Length == 0)
         {
             throw new ArgumentException("Turn profile must contain at least one segment.");
@@ -52,13 +55,15 @@ internal sealed class TurnProfile
     {
         if (!_segmentOrderIndex.TryGetValue(current, out var index))
         {
-            return null; // unknown segment: treat as terminal (defensive – should not occur)
+            throw new InvalidOperationException($"Unknown segment '{current}' not present in profile.");
         }
+
         var nextIndex = index + 1;
         if (nextIndex >= _orderedSegments.Length)
         {
             return null;
         }
+
         return _orderedSegments[nextIndex];
     }
 
@@ -73,6 +78,7 @@ internal sealed class TurnProfile
         {
             return true; // defensive: unknown treated as terminal
         }
+
         return index == _orderedSegments.Length - 1;
     }
 }

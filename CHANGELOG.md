@@ -187,6 +187,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Maintenance
 
 - Fully removed legacy traversal code.
+- Refactored extras state wrapper from generic `ExtrasState<T>` + reflection construction to non-generic `ExtrasState` eliminating `Activator.CreateInstance` and property reflection during retrieval.
+- Eliminated LINQ from builder hot paths (`CreateTileRelation`, `CreatePiece`, `CreatePattern`) reducing allocations and repeated enumerations during game compile.
 - Added defensive cycle detection + per-ray caps in sliding attack generation and neutralization guard for large single-direction boards (stability improvements for synthetic parity tests).
 - Added benchmarks, parity packs, and cleanup checklists for regression safety.
 - Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).

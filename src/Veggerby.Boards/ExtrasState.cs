@@ -7,22 +7,49 @@ using Veggerby.Boards.States;
 namespace Veggerby.Boards;
 
 /// <summary>
-/// Generic wrapper turning an arbitrary extras record into an <see cref="IArtifactState"/> so it can live inside <see cref="GameState"/>.
+/// Non-generic extras wrapper turning an arbitrary auxiliary record/class into an <see cref="IArtifactState"/> so it can live inside <see cref="GameState"/>.
 /// </summary>
-/// <typeparam name="T">Extras type.</typeparam>
-internal sealed class ExtrasState<T>(Artifact artifact, T value) : IArtifactState
+/// <remarks>
+/// Replaces previous generic <c>ExtrasState&lt;T&gt;</c> implementation to avoid reflection during initial game compilation and extras retrieval.
+/// </remarks>
+internal sealed class ExtrasState : IArtifactState
 {
-    public Artifact Artifact { get; } = artifact;
+    public Artifact Artifact
+    {
+        get;
+    }
 
-    public T Value { get; } = value;
+    public object Value
+    {
+        get;
+    }
+
+    public Type ExtrasType
+    {
+        get;
+    }
+
+    public ExtrasState(Artifact artifact, object value, Type extrasType)
+    {
+        ArgumentNullException.ThrowIfNull(artifact, nameof(artifact));
+        ArgumentNullException.ThrowIfNull(value, nameof(value));
+        ArgumentNullException.ThrowIfNull(extrasType, nameof(extrasType));
+
+        Artifact = artifact;
+        Value = value;
+        ExtrasType = extrasType;
+    }
 
     public override bool Equals(object? obj)
     {
-        return obj is ExtrasState<T> other && Artifact.Equals(other.Artifact) && EqualityComparer<T>.Default.Equals(Value, other.Value);
+        return obj is ExtrasState other
+            && Artifact.Equals(other.Artifact)
+            && ExtrasType.Equals(other.ExtrasType)
+            && EqualityComparer<object>.Default.Equals(Value, other.Value);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Artifact, Value);
+        return HashCode.Combine(Artifact, ExtrasType, Value);
     }
 }

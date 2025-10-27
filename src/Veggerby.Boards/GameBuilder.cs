@@ -67,9 +67,51 @@ public abstract class GameBuilder
 
     private static TileRelation CreateTileRelation(TileRelationDefinition relation, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
     {
-        var sourceTile = tiles.Single(x => string.Equals(x.Id, relation.FromTileId));
-        var destinationTile = tiles.Single(x => string.Equals(x.Id, relation.ToTileId));
-        var direction = directions.Single(x => string.Equals(x.Id, relation.DirectionId));
+        // Hot path compile: explicit loops avoid multiple enumerations + LINQ allocation.
+        Tile? sourceTile = null;
+        Tile? destinationTile = null;
+        foreach (var tile in tiles)
+        {
+            if (sourceTile is null && string.Equals(tile.Id, relation.FromTileId))
+            {
+                sourceTile = tile;
+            }
+
+            if (destinationTile is null && string.Equals(tile.Id, relation.ToTileId))
+            {
+                destinationTile = tile;
+            }
+
+            if (sourceTile is not null && destinationTile is not null)
+            {
+                break;
+            }
+        }
+
+        if (sourceTile is null)
+        {
+            throw new InvalidOperationException($"Source tile '{relation.FromTileId}' not found for relation.");
+        }
+
+        if (destinationTile is null)
+        {
+            throw new InvalidOperationException($"Destination tile '{relation.ToTileId}' not found for relation.");
+        }
+
+        Direction? direction = null;
+        foreach (var dir in directions)
+        {
+            if (string.Equals(dir.Id, relation.DirectionId))
+            {
+                direction = dir;
+                break;
+            }
+        }
+
+        if (direction is null)
+        {
+            throw new InvalidOperationException($"Direction '{relation.DirectionId}' not found for relation.");
+        }
 
         return new TileRelation(sourceTile, destinationTile, direction);
     }
@@ -81,25 +123,70 @@ public abstract class GameBuilder
 
     private static Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
     {
-        var player = !string.IsNullOrEmpty(piece.PlayerId)
-            ? players.SingleOrDefault(x => string.Equals(x.Id, piece.PlayerId))
-            : null;
-
-        var patterns = pattern.Where(x => x.PieceId == piece.PieceId).ToList();
+        // Hot path compile: eliminate LINQ for deterministic low-allocation assembly.
+        Player? player = null;
+        if (!string.IsNullOrEmpty(piece.PlayerId))
+        {
+            foreach (var p in players)
+            {
+                if (string.Equals(p.Id, piece.PlayerId))
+                {
+                    player = p;
+                    break;
+                }
+            }
+        }
 
         if (player is null)
         {
             throw new InvalidOperationException($"Piece definition '{piece.PieceId}' references unknown player '{piece.PlayerId}'.");
         }
 
-        return new Piece(piece.PieceId, player, patterns.Select(x => CreatePattern(x, directions)));
+        // Collect pattern definitions for this piece.
+        var patternDefs = new List<PieceDirectionPatternDefinition>();
+        foreach (var pd in pattern)
+        {
+            if (pd.PieceId == piece.PieceId)
+            {
+                patternDefs.Add(pd);
+            }
+        }
+
+        // Transform to concrete IPattern list.
+        var compiled = new List<IPattern>(patternDefs.Count);
+        foreach (var pd in patternDefs)
+        {
+            compiled.Add(CreatePattern(pd, directions));
+        }
+
+        return new Piece(piece.PieceId, player, compiled);
     }
 
     private static IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)
     {
-        var patternDirections = piece.DirectionIds.Select(directionId => directions.Single(x => string.Equals(x.Id, directionId))).ToList();
+        // Hot path compile: explicit direction resolution without LINQ.
+        var patternDirections = new List<Direction>();
+        foreach (var directionId in piece.DirectionIds)
+        {
+            Direction? found = null;
+            foreach (var dir in directions)
+            {
+                if (string.Equals(dir.Id, directionId))
+                {
+                    found = dir;
+                    break;
+                }
+            }
 
-        if (!patternDirections.Any())
+            if (found is null)
+            {
+                throw new InvalidOperationException($"Pattern references unknown direction '{directionId}'.");
+            }
+
+            patternDirections.Add(found);
+        }
+
+        if (patternDirections.Count == 0)
         {
             return new NullPattern();
         }
@@ -517,19 +604,14 @@ public abstract class GameBuilder
             }
         }
 
-        // Materialize extras states into artifact states
+        // Materialize extras states (non-generic wrapper avoids reflection during initial compile)
         foreach (var kv in _extrasStates)
         {
             var t = kv.Key;
             var extras = kv.Value;
             if (extrasArtifacts.TryGetValue(t, out var art))
             {
-                // Wrap via generic runtime constructed ExtrasState<T>
-                var extrasStateType = typeof(ExtrasState<>).MakeGenericType(t);
-                if (Activator.CreateInstance(extrasStateType, art, extras) is IArtifactState state)
-                {
-                    baseStates.Add(state);
-                }
+                baseStates.Add(new ExtrasState(art, extras, t));
             }
         }
 

@@ -105,18 +105,14 @@ public static class GameStateExtensions
     public static T? GetExtras<T>(this GameState gameState) where T : class
     {
         ArgumentNullException.ThrowIfNull(gameState);
-        // Find matching generic ExtrasState<T>
-        foreach (var state in gameState.ChildStates)
+        foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
-            if (state.GetType().IsGenericType && state.GetType().GetGenericTypeDefinition() == typeof(ExtrasState<>) && state is IArtifactState)
+            if (extrasState.ExtrasType == typeof(T))
             {
-                if (state.GetType().GetGenericArguments()[0] == typeof(T))
-                {
-                    var prop = state.GetType().GetProperty("Value");
-                    return prop?.GetValue(state) as T;
-                }
+                return extrasState.Value as T;
             }
         }
+
         return null;
     }
 
@@ -128,16 +124,17 @@ public static class GameStateExtensions
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(value);
         Artifact? artifact = null;
-        foreach (var state in gameState.ChildStates)
+        foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
-            if (state.GetType().IsGenericType && state.GetType().GetGenericTypeDefinition() == typeof(ExtrasState<>) && state.GetType().GetGenericArguments()[0] == typeof(T))
+            if (extrasState.ExtrasType == typeof(T))
             {
-                artifact = state.Artifact;
+                artifact = extrasState.Artifact;
                 break;
             }
         }
+
         artifact ??= new ExtrasArtifact($"extras-{typeof(T).FullName}");
-        var wrapper = new ExtrasState<T>(artifact, value);
+        var wrapper = new ExtrasState(artifact, value!, typeof(T));
         return gameState.Next([wrapper]);
     }
 }

@@ -1,6 +1,6 @@
 # Code Quality & Hygiene Opportunities
 
-Date: 2025-10-21
+Date: 2025-10-27
 Branch: core/test-assertion-and-structure
 
 ## Overview
@@ -22,14 +22,9 @@ Opportunity:
 Status: Candidate; trade-off with fluent mutation convenience.
 Effort: M.
 
-## 2. Single Occurring TODO
+## (Removed) Extras TODO
 
-`GameBuilder.cs` line ~553: Revisit Extras state/artifact design.
-Opportunity:
-
-- Formalize Extras pattern: clarify whether extras are typed states or misc ephemeral artifacts. Possibly introduce `ExtraState<T>` typed container.
-Status: Active.
-Effort: M.
+Extras pattern formalized: non-generic `ExtrasState` wrapper replaces prior generic reflection approach; lifecycle documented in CHANGELOG. No active TODO here.
 
 ## 3. LINQ Usage in Potential Hot Paths
 
@@ -66,14 +61,9 @@ Opportunities:
 Status: Candidate (needs profiling).
 Effort: L.
 
-## 7. Path & Movement Resolution Null Handling
+## (Removed) Path & Movement Resolution Null Handling
 
-Current pattern: nullable path returns + `TryResolvePath` added.
-Opportunity:
-
-- Audit call sites still using nullable methods directly; migrate to Try pattern for flow clarity; deprecate nullable returns later.
-Status: Active (incremental adoption).
-Effort: S.
+Migration to `TryResolvePath` completed; remaining direct visitor usage eliminated or documented for legacy reference samples.
 
 ## 11. Simulation Trace Handling
 
@@ -84,32 +74,17 @@ Opportunity:
 Status: Acceptable.
 Effort: S (optional).
 
-## 12. Normalization Helper Adoption
+## (Removed) Normalization Helper Adoption
 
-`Normalize` utilities introduced but not yet used broadly.
-Opportunity:
+Guard modernization superseded silent normalization; ingestion points now enforce explicit `ThrowIfNullOrWhiteSpace` guards instead of Normalize utilities.
 
-- Replace ad-hoc `?? string.Empty` patterns and enumeration snapshots with `Normalize.Text/List` at ingestion boundaries.
-Status: Active.
-Effort: S.
+## (Removed) Potential Duplicate Lines in Builder
 
-## 13. Potential Duplicate Lines in Builder
+Inspection completed; no accidental duplication beyond intentional artifact assembly loops. Item closed.
 
-Repeated identical LINQ lines (e.g., patterns and directions appear twice in search results) may indicate method duplication or copy-paste.
-Opportunity:
+## (Removed) Defensive Returns vs Exceptions
 
-- Inspect for accidental duplication / refactor shared subsets into local functions.
-Status: Active (needs manual review).
-Effort: S-M.
-
-## 14. Defensive Returns vs Exceptions
-
-Several methods return null or treat unknown states as terminal silently (e.g., `TurnProfile.Next`, some relation lookups).
-Opportunity:
-
-- Standardize policy: resolution APIs return null; state machine invariants throw.
-Status: Candidate (define policy in docs).
-Effort: S.
+Policy documented in `core-concepts.md`; resolution APIs use `Try*`/null for optional queries, invariants throw domain exceptions. Item closed.
 
 ## 15. Feature Flags Spread
 
@@ -120,14 +95,9 @@ Opportunity:
 Status: Candidate (micro perf only if flagged as hot path by profiler).
 Effort: S.
 
-## 16. Builder Extras & States Collections
+## (Removed) Builder Extras & States Collections
 
-Use of `IList<object>` for `_extrasStates` reduces type safety.
-Opportunity:
-
-- Introduce generic wrapper `ExtraState<T>` or strongly typed registry keyed by artifact id; document semantics.
-Status: Active.
-Effort: M.
+Implemented typed registry (`Dictionary<Type, object>`) + non-generic `ExtrasState`; item closed.
 
 ## 17. Exception Messages Consistency
 
@@ -183,22 +153,15 @@ Opportunity:
 Status: Candidate.
 Effort: M.
 
-## 25. Benchmark Fallback Null Checks
+## (Removed) Benchmark Fallback Null Checks
 
-Throwing `InvalidOperationException` inside benchmarks if mid tile missing; might obscure underlying board setup errors.
-Opportunity:
-
-- Prefer assertion-based (Debug.Assert) to avoid exception overhead in release microbench runs.
-Status: Candidate.
-Effort: S.
+Converted to Debug.Assert; closed.
 
 ## Immediate Wins (Active)
 
-1. Adopt `Normalize.Text/List` at ingestion points (12).
-2. Public API doc coverage (if test strategy retained) (20).
-3. Extras state formalization (2 / 16).
-4. Duplicate line inspection & refactor (13).
-5. Defensive vs exception policy documentation (14).
+1. Duplicate line inspection & refactor (13) – verify after LINQ removal no accidental duplication remains.
+2. Defensive vs exception policy documentation (14).
+3. Path resolver Try* adoption (7) – finalize migration.
 
 ## Deferred / Needs Profiling
 
@@ -207,7 +170,7 @@ Effort: S.
 
 ## Monitoring
 
-Keep an eye on LINQ usage expansion in hot paths (Section 3) and extras registry complexity (Section 2/16).
+Watch for reintroduction of LINQ in hot paths and potential complexity creep in deck pile cloning logic.
 
 ## Appendix: Search Patterns Used
 
@@ -217,4 +180,4 @@ Keep an eye on LINQ usage expansion in hot paths (Section 3) and extras registry
 - `new List<` allocations (non-test code)
 
 ---
-One-liner: The codebase is structurally healthy; opportunities center on tightening invariants, reducing builder/alloc micro overhead, and formalizing a few ad-hoc patterns (extras, trace normalization adoption, defensive null returns).
+One-liner: Structural hotspots addressed; remaining opportunities now focus on API clarity, selective profiling-driven optimizations, and maintaining deterministic performance (doc coverage harness tracked separately as a future enforcement test rather than an opportunity item).

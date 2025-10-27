@@ -63,12 +63,9 @@ Guidelines:
 
 Examples:
 
-- `TurnProfile.Next` throws on unknown segment (invariant breach).
-- Builder ID lookups use dictionary access + explicit exception on miss.
-
-Planned Migration:
-
-- Migrate remaining nullable-returning resolution methods toward `Try*` forms for clarity without altering deterministic behavior.
+* `TurnProfile.Next` throws on unknown segment (invariant breach).
+* Builder ID lookups use dictionary access + explicit exception on miss.
+* Path resolution now prefers `TryResolvePath` with `out TilePath?` rather than nullable returns; legacy visitor samples retained only in README examples.
 
 ## Extension Surface
 

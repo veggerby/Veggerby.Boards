@@ -36,3 +36,7 @@ Track: Mean, p95, Alloc B/op, Gen0 collections (where relevant), hit ratios (fas
 * Avoid per-call allocations (reuse or stack allocate where safe).
 * Add a semantics charter before introducing new acceleration layers.
 * Path resolution/access: `TilePath` caches relations, tiles, directions, and total distance (no LINQ in accessors) to eliminate transient allocations during rule/path evaluation.
+* Builder hot path: artifact assembly uses explicit loops instead of chained LINQ projections to cut transient arrays/lists (single-pass population into `allArtifacts`).
+* Extras retrieval: replaced reflective generic `ExtrasState<T>` with a non-generic wrapper and typed registry to eliminate reflection & generic instantiation overhead in hashing and state diffing.
+* Canonical hashing: serializer now includes cycle detection (reference-equality set) + depth cap (32) and artifact/type fast-path tags to prevent stack overflows and expensive reflection walks. These safeguards are deterministic (same graph → same emitted tag sequence) and have negligible overhead (< O(n) visited set lookups) compared to previous catastrophic recursion.
+* Fast-path parity: any acceleration (compiled patterns, sliding rays) must not alter blocker/capture semantics; benchmarks coupled with parity tests guard regressions.

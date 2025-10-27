@@ -1,6 +1,6 @@
 # Advanced Flow & Data Structure Review
 
-Date: 2025-10-21
+Date: 2025-10-27
 Branch: core/test-assertion-and-structure
 
 ## Purpose
@@ -9,7 +9,7 @@ Deeper analysis of non-optimal patterns in how components (builder, progress cha
 
 ## High-Impact Candidates
 
-### 2. Event Chain Growth Using `progress.Events.Concat([evt])`
+### 2. Event Chain Growth Using `progress.Events.Concat([evt])` (Deferred)
 
 Occurrences in `GameProgress` and `GameSimulator`.
 Issue: Each concat creates a new enumerable wrapper; eventual enumeration pays per-link overhead.
@@ -20,7 +20,7 @@ Opportunity:
 Impact: Reduced allocation and enumeration overhead for long histories.
 Effort: M-L (needs design to preserve immutability semantics). Risk: must ensure deterministic snapshot semantics.
 
-### 3. Composite Policy Enumeration in `GameSimulator`
+### 3. Composite Policy Enumeration in `GameSimulator` (Pending Profiling)
 
 Materializes sequences with nested enumerator logic.
 Issue: Complexity + potential multiple enumerations.
@@ -30,33 +30,19 @@ Opportunity:
 Impact: Minor allocation reduction & clearer intent.
 Effort: S.
 
-### 4. Decision Plan Early Pruning (Residual)
+### Removed Completed Items
 
-Capacity hints have been added (entries, kinds, exclusivity) eliminating dynamic growth concern. Remaining potential: evaluate early pruning of empty rule groups to skip temporary list fill. Retain only if profiling shows material impact.
+The following prior review items have been delivered and are removed from active tracking:
 
-Status: Candidate (profiling pending). Effort: S.
+- DecisionPlan early pruning of identical-condition groups (implemented).
+- Pattern direction array caching baseline (compiler now caches identical direction sequences).
+- Normalize helper adoption (builder & retrieval helpers enforce explicit guards; normalization no longer silently applied).
+- Benchmark assertion hygiene (fallback exceptions replaced with Debug.Assert where appropriate).
+- TilePath caching / LINQ removal (accessors allocation-free).
+- Generic extras reflection removal (non-generic `ExtrasState` wrapper in place).
+- Builder hot-path LINQ elimination for relation, piece, and pattern creation.
 
-### 5. Pattern Compilation ToArray Calls
-
-`PatternCompiler`: converting pattern directions to arrays repeatedly.
-Issue: Each compiled pattern duplicates direction arrays.
-Opportunity:
-
-- Cache compiled direction arrays if identical sequences encountered multiple times.
-Impact: Reduces repeated allocations in large pattern sets.
-Effort: M (requires equality + caching keyed by sequence hash).
-
-### 9. Normalize Helper Adoption
-
-`Normalize.Text/List` unused; still manual `?? string.Empty` scattered.
-Issue: Slight duplication; risk of inconsistent patterns later.
-Opportunity:
-
-- Standardize ingestion points (builder inputs, external API boundaries).
-Impact: Consistency & future adaptation ease.
-Effort: S.
-
-### 10. Bitboard Layout Ordering via LINQ Sort
+### 10. Bitboard Layout Ordering via LINQ Sort (Candidate)
 
 `BoardBitboardLayout` orders tiles using `OrderBy` for deterministic indexing.
 Issue: Allocations + O(n log n).
@@ -66,7 +52,7 @@ Opportunity:
 Impact: Perf improvement for large boards.
 Effort: M (depends on ID structure).
 
-### 11. Sliding Attack Generator Building Rays
+### 11. Sliding Attack Generator Building Rays (Candidate)
 
 `list.ToArray()` per ray.
 Issue: Potential repeated dynamic resizing.
@@ -76,7 +62,7 @@ Opportunity:
 Impact: Micro perf improvement across many rays.
 Effort: M (careful with readability).
 
-### 12. ConditionResponse Reason Aggregation
+### 12. ConditionResponse Reason Aggregation (Watch)
 
 `string.Join` with LINQ each invalid branch.
 Issue: Allocation of array/iterator each time.
@@ -86,17 +72,11 @@ Opportunity:
 Impact: Possibly negligible; monitor with profiling.
 Effort: S (defer until evidence).
 
-### 13. Extras States Design (`_extrasStates`)
+### (Removed) Extras States Design
 
-Generic `IList<object>`.
-Issue: Type safety + ambiguous lifecycle (TODO exists).
-Opportunity:
+Replaced by non-generic typed `ExtrasState` with explicit `ExtrasType` metadata; reflection construction eliminated. No further action until profiling indicates lookup hotspot warranting dictionary caching.
 
-- Introduce typed registry: `Dictionary<string, object>` or generic `ExtraState<T>` wrappers; document usage scenarios (diagnostics vs gameplay).
-Impact: Clarity & safer future extension.
-Effort: M.
-
-### 14. Immutable Progress Event Storage
+### 14. Immutable Progress Event Storage (Research)
 
 Current approach recomputes concatenations.
 Opportunity:
@@ -105,17 +85,11 @@ Opportunity:
 Impact: Reduced overhead for long histories (e.g., simulations with thousands of events).
 Effort: L.
 
-### 15. Defensive Null Checks in Benchmarks Fallback Paths
+### (Removed) Benchmark Fallback Null Checks
 
-`InvalidOperationException` when mid tile missing (setup issue).
-Issue: Exception overhead in microbench; might skew measurement.
-Opportunity:
+Migrated to Debug.Asserts; item closed.
 
-- Replace with `Debug.Assert` + direct retrieval (assuming test harness always sets up board correctly).
-Impact: Cleaner benchmark timing.
-Effort: S.
-
-### 16. CompositeGameEventConditionDefinition Single Child Shortcut
+### 16. CompositeGameEventConditionDefinition Single Child Shortcut (Micro)
 
 Calls `_childDefinitions.Single()`; still builds then returns default when null.
 Issue: Type safety fine; performance minor.
@@ -125,7 +99,7 @@ Opportunity:
 Impact: Micro improvement.
 Effort: S.
 
-### 17. Repeated `.Any()` Checks
+### 17. Repeated `.Any()` Checks (Micro)
 
 E.g., builder `_activePlayerAssignments.Any()` then later enumerate.
 Issue: Double enumeration for non-list sources.
@@ -135,28 +109,22 @@ Opportunity:
 Impact: Micro improvement.
 Effort: S.
 
-### 18. Path Tile Access via LINQ
+### (Removed) Path Tile Access via LINQ
 
-`TilePath.Tiles => [Relations.First().From, .. Relations.Select(x => x.To)]`
-Issue: Allocates enumerator per property access; might appear in loops.
-Opportunity:
-
-- Provide `Span<Tile>` or `ReadOnlyMemory<Tile>` generation once; or expose enumerator struct avoiding allocations.
-Impact: Perf improvement in tight loops.
-Effort: M.
+Resolved via cached arrays in `TilePath`; no further optimization needed presently.
 
 ### 19. Ordering for Min Distance With Sorting
 
 Already covered by path resolution min search; ensure all similar `OrderBy(...).First()` cascades replaced (two visitors flagged).
 Status: Merge with #6.
 
-## Current Focus Sequence
+## Current Focus Sequence (Updated)
 
-1. Pattern direction array caching (avoid duplicate allocations when identical sequences repeat).
-2. DecisionPlan early pruning (profiling gated).
-3. Normalize helper broad adoption.
-4. Benchmark fallback asserts conversion.
-5. Path tile access optimization (span/enumerator) after profiling.
+1. Bitboard incremental graduation & profiling (post soak).
+2. DeckBuilding pile cloning optimization (profiling pending).
+3. Simulation composite policy enumeration micro-alloc review.
+4. Public API doc coverage harness (baseline test added, to be enforced later).
+5. (Completed) Path resolver Try* pattern adoption (documentation updated; removed from active focus).
 
 ## Risk & Determinism Considerations
 
@@ -170,7 +138,7 @@ All proposed changes must preserve ordering assumptions used for deterministic r
 
 ## Summary
 
-Most high-impact build/resolution optimizations applied; focus shifts to pattern direction caching and selective pruning guided by profiling.
+Prior high-impact optimization tasks are complete. Remaining items target incremental profiling-informed refinement (bitboard incremental path, deck pile cloning) and API clarity (Try* adoption). Determinism and immutability remain intact.
 
 ---
-One-liner: Replace sorting and linear scans with specialized constant-time structures and eliminate chained enumerables to sharpen performance while maintaining deterministic order.
+One-liner: Most structural hotspots closed; next refinements will be profiling-driven (bitboards, deck piles) and API clarity (Try* path resolution) while preserving deterministic order.

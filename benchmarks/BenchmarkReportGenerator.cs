@@ -82,9 +82,52 @@ public static class BenchmarkReportGenerator
         foreach (var summary in materialized)
         {
             builder.AddHeading(MarkdownBuilder.HeadingLevel.Level3, summary.Title);
+
+            // Compact metrics table (subset of columns) for quick scanning
+            var compactHeaders = new List<string> { "Method", "Mean", "Error", "StdDev", "Ratio", "Gen0", "Gen1", "Allocated" };
+            var meanIndex = FindColumnIndex(summary, "Mean");
+            var errorIndex = FindColumnIndex(summary, "Error");
+            var stdDevIndex = FindColumnIndex(summary, "StdDev");
+            var ratioIndex = FindColumnIndex(summary, "Ratio");
+            var gen0Index = FindColumnIndex(summary, "Gen0");
+            var gen1Index = FindColumnIndex(summary, "Gen1");
+            var allocIndex = FindColumnIndex(summary, "Allocated");
+
+            var methodIndex = FindColumnIndex(summary, "Method");
+
+            var compactRows = new List<IList<string>>();
+            foreach (var raw in summary.Table.FullContent)
+            {
+                var row = raw.ToList();
+                // Skip separator or empty rows (BenchmarkDotNet sometimes inserts blank group rows)
+                if (row.Count == 0 || methodIndex < 0 || string.IsNullOrWhiteSpace(row[methodIndex]))
+                {
+                    continue;
+                }
+
+                compactRows.Add(new List<string>
+                {
+                    SafeGet(row, methodIndex),
+                    SafeGet(row, meanIndex),
+                    SafeGet(row, errorIndex),
+                    SafeGet(row, stdDevIndex),
+                    SafeGet(row, ratioIndex),
+                    SafeGet(row, gen0Index),
+                    SafeGet(row, gen1Index),
+                    SafeGet(row, allocIndex)
+                });
+            }
+
+            builder.AddTable(compactHeaders, compactRows);
+
+            // Collapsible full raw table
+            builder.AddParagraph("<details><summary>Full BenchmarkDotNet table</summary>");
+
             var headers = summary.Table.Columns.Select(c => c.Header).ToList();
             var rows = summary.Table.FullContent.Select(r => r.ToList()).ToList();
             builder.AddTable(headers, rows);
+
+            builder.AddParagraph("</details>");
         }
 
         builder.AddHeading(MarkdownBuilder.HeadingLevel.Level2, "Artifacts");
@@ -109,6 +152,32 @@ public static class BenchmarkReportGenerator
         }
 
         return path;
+    }
+
+    private static int FindColumnIndex(Summary summary, string header)
+    {
+        var idx = -1;
+        var columns = summary.Table.Columns.ToList();
+        for (var i = 0; i < columns.Count; i++)
+        {
+            if (string.Equals(columns[i].Header, header, StringComparison.OrdinalIgnoreCase))
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        return idx;
+    }
+
+    private static string SafeGet(IReadOnlyList<string> row, int index)
+    {
+        if (index < 0 || index >= row.Count)
+        {
+            return string.Empty;
+        }
+
+        return row[index];
     }
 }
 

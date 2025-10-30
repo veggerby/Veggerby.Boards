@@ -48,6 +48,77 @@ Track: Mean, p95, Alloc B/op, Gen0 collections (where relevant), hit ratios (fas
 | BitboardLayoutOrderingBenchmark | Compares legacy LINQ OrderBy vs current insertion sort ordering for bitboard tile layout across board sizes (8..64). |
 | SlidingAttackGeneratorCapacityBenchmark | Evaluates heuristic ray buffer pre-allocation vs baseline dynamic growth for large ring and 8x8 grid topologies. |
 
+## Automated Report Generation
+
+Benchmark execution & reporting:
+
+* Script (`scripts/run-all-benchmarks.sh`): convenience wrapper that builds and runs all benchmarks (optionally filtered). It only produces BenchmarkDotNet artifact outputs.
+* Harness (`benchmarks/Program.cs`): invoked directly with `--generate-report` (and optional `--report-out`) to build the consolidated markdown performance report.
+
+Script capabilities (execution only):
+
+* Dynamic discovery (no maintenance when adding new benchmark classes).
+* Filtering and job configuration via environment variables: `BENCH_FILTER`, `BENCH_JOB`.
+* (No reuse/report generation parameters; BENCH_REUSE and BENCH_OUT removed.)
+
+Harness features:
+
+* Emits distilled summary + glossary + raw tables using the internal `MarkdownBuilder`.
+* Custom destination via `--report-out <pathOrDirectory>` (directory auto-appends `benchmark-results.md`).
+* Integrates cleanly with BenchmarkDotNet’s standard `--filter` semantics.
+
+The canonical published file remains [`benchmark-results.md`](benchmark-results.md) under `docs` unless overridden.
+
+### Usage
+
+Run full suite (Release configuration):
+
+```bash
+./scripts/run-all-benchmarks.sh
+```
+
+Short job variant (faster iteration):
+
+```bash
+BENCH_JOB="--job short" ./scripts/run-all-benchmarks.sh
+```
+
+Filter to a single benchmark:
+
+```bash
+BENCH_FILTER="*SlidingAttackGeneratorCapacityBenchmark*" ./scripts/run-all-benchmarks.sh
+
+Generate consolidated markdown (harness invocation):
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --generate-report --report-out ./perf-out
+```
+
+Harness-based generation (direct .NET run):
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --filter '*BitboardIncrementalBenchmark*' --generate-report --report-out ./perf-out
+```
+
+Filter to a single benchmark and write to a custom file (using short aliases):
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --filter '*BitboardIncrementalBenchmark*' -g -o ./benchmarks/docs/bitboard-incremental.md
+```
+
+Or default docs path:
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --generate-report
+
+Aliases:
+
+- `-g` equals `--generate-report`
+- `-o` equals `--report-out`
+```
+
+The generated report (harness only) is intended for publication with NuGet packages as a transparency artifact (performance characteristics & allocation profiles). Include the latest run when preparing release notes.
+
 ### Pending Measurements
 
 * Sliding attack ray allocation optimization (buffer + visited boolean array) requires benchmark delta capture against prior baseline to validate allocation reduction (expect drop in Gen0 and B/op). Integrate into existing SlidingAttackGeneratorCapacityBenchmark with feature flag or version toggle for A/B.

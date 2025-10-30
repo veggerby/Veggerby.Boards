@@ -79,6 +79,46 @@ dotnet build
 dotnet test
 ```
 
+### Benchmarks
+
+Run all performance benchmarks (dynamic discovery). The script no longer generates the consolidated markdown report—use the harness for that.
+
+```bash
+./scripts/run-all-benchmarks.sh
+```
+
+Faster short job iteration:
+
+```bash
+BENCH_JOB="--job short" ./scripts/run-all-benchmarks.sh
+```
+
+Filter to a specific benchmark:
+
+```bash
+BENCH_FILTER="*SlidingAttackGeneratorCapacityBenchmark*" ./scripts/run-all-benchmarks.sh
+
+Generate consolidated markdown report (harness):
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --generate-report --report-out ./perf-out
+```
+
+Filter a specific benchmark (quote patterns to prevent shell glob expansion):
+
+```bash
+dotnet run -c Release --project benchmarks/Veggerby.Boards.Benchmarks.csproj -- --filter '*BitboardIncrementalBenchmark*' --generate-report -o ./benchmarks/docs/bitboard-incremental.md
+```
+
+Short flag aliases (harness):
+
+- `-g` for `--generate-report`
+- `-o` for `--report-out`
+
+If `--report-out` / `-o` is omitted the harness writes to `docs/benchmark-results.md`.
+
+The generated report is published alongside NuGet packages to document current latency & allocation profiles.
+
 ## Contributing
 
 Guidelines in `CONTRIBUTING.md` (focus on immutability, deterministic state, small mutators, full test coverage for new rule branches).

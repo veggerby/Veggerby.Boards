@@ -23,7 +23,7 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
 
         if (!dice.Any())
         {
-            throw new ArgumentException("At least one dice must be added to condition", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDiceRequired, nameof(dice));
         }
 
         Dice = dice;

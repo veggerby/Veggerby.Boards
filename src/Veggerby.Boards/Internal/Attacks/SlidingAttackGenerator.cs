@@ -37,15 +37,18 @@ internal sealed class SlidingAttackGenerator : IAttackRays
             return new SlidingAttackGenerator(shape, Array.Empty<short[]>());
         }
         var rays = new short[slots][];
+        // Single reusable visited marker array per origin tile to avoid HashSet allocations
+        var visited = new bool[shape.TileCount];
+        // Shared buffer sized by tile count (upper bound ray length). Will slice copy per ray.
+        var buffer = new short[shape.TileCount];
         for (int t = 0; t < shape.TileCount; t++)
         {
+            Array.Fill(visited, false); // reset markers for this origin
             for (int d = 0; d < shape.DirectionCount; d++)
             {
-                var list = new List<short>(8);
                 var current = t;
-                // Track visited to avoid infinite loops on cyclic relations (e.g., wrap-around boards)
-                int safety = shape.TileCount; // upper bound: cannot traverse more distinct tiles than exist
-                var visited = new HashSet<int>();
+                int count = 0;
+                int safety = shape.TileCount;
                 while (safety-- > 0)
                 {
                     var neighborIdx = shape.Neighbors[current * shape.DirectionCount + d];
@@ -53,21 +56,34 @@ internal sealed class SlidingAttackGenerator : IAttackRays
                     {
                         break;
                     }
-                    if (!visited.Add(neighborIdx))
+                    if (visited[neighborIdx])
                     {
                         // cycle encountered; stop extending this ray
                         break;
                     }
-                    list.Add(neighborIdx);
-                    // Hard per-ray cap: cannot legitimately exceed total tiles. Additionally guard with 4096 absolute limit
-                    // to avoid pathological growth in unforeseen cyclic topologies (defensive programming – determinism over completeness).
-                    if (list.Count >= shape.TileCount || list.Count >= 4096)
+                    visited[neighborIdx] = true;
+                    buffer[count++] = (short)neighborIdx;
+                    if (count >= shape.TileCount || count >= 4096)
                     {
                         break;
                     }
                     current = neighborIdx;
                 }
-                rays[t * shape.DirectionCount + d] = list.ToArray();
+                if (count == 0)
+                {
+                    rays[t * shape.DirectionCount + d] = Array.Empty<short>();
+                }
+                else
+                {
+                    var ray = new short[count];
+                    Array.Copy(buffer, ray, count);
+                    rays[t * shape.DirectionCount + d] = ray;
+                }
+                // Reset visited markers for indices used in this ray only to reduce Fill cost
+                for (int i = 0; i < count; i++)
+                {
+                    visited[buffer[i]] = false;
+                }
             }
         }
         return new SlidingAttackGenerator(shape, rays);

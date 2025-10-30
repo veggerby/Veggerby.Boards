@@ -28,16 +28,36 @@ public sealed class CleanupToDiscardStateMutator : IStateMutator<CleanupToDiscar
         var discardId = DeckBuildingGameBuilder.Piles.Discard;
         if (!ds.Piles.ContainsKey(handId) || !ds.Piles.ContainsKey(inPlayId) || !ds.Piles.ContainsKey(discardId))
         {
-            throw new BoardException("Required piles missing");
+            throw new BoardException(ExceptionMessages.RequiredPilesMissing);
         }
-        var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        // Optimized selective cloning: only Hand, InPlay, and Discard piles need mutation.
+        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
+        // Prepare mutable working copies for the three mutated piles; other piles reused.
+        var originalHand = ds.Piles[handId];
+        var originalInPlay = ds.Piles[inPlayId];
+        var originalDiscard = ds.Piles[discardId];
+        var hand = originalHand.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalHand);
+        var inPlay = originalInPlay.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalInPlay);
+        var discard = originalDiscard.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDiscard);
         foreach (var kv in ds.Piles)
         {
-            piles[kv.Key] = new List<Card>(kv.Value);
+            if (kv.Key.Equals(handId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = hand;
+            }
+            else if (kv.Key.Equals(inPlayId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = inPlay;
+            }
+            else if (kv.Key.Equals(discardId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = discard;
+            }
+            else
+            {
+                piles[kv.Key] = (IList<Card>)kv.Value; // reuse existing read-only list
+            }
         }
-        var hand = piles[handId];
-        var inPlay = piles[inPlayId];
-        var discard = piles[discardId];
         if (hand.Count == 0 && inPlay.Count == 0)
         {
             return state; // no-op
@@ -52,7 +72,7 @@ public sealed class CleanupToDiscardStateMutator : IStateMutator<CleanupToDiscar
         }
         hand.Clear();
         inPlay.Clear();
-        var next = new DeckState(ds.Artifact, piles, new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
+        var next = new DeckState(ds.Artifact, piles, ds.Supply is null ? null : new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
         return state.Next([next]);
     }
 }

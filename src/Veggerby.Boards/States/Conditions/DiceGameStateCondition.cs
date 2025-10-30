@@ -52,12 +52,12 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
 
         if (!dice.Any())
         {
-            throw new ArgumentException("Dice list cannot be empty", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.DiceListEmpty, nameof(dice));
         }
 
         if (dice.Any(x => x is null))
         {
-            throw new ArgumentException("All dice must be non null", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.DiceListContainsNull, nameof(dice));
         }
 
         Dice = dice.Distinct().ToList().AsReadOnly();

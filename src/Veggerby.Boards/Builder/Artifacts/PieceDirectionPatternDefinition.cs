@@ -53,12 +53,12 @@ public class PieceDirectionPatternDefinition(GameBuilder builder, PieceDefinitio
 
         if (!directions.Any())
         {
-            throw new ArgumentException("Must provide at least one direction", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDirectionRequired, nameof(directions));
         }
 
         if (directions.Any(x => string.IsNullOrWhiteSpace(x)))
         {
-            throw new ArgumentException("All directions must be non-null and non-empty", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.DirectionsInvalid, nameof(directions));
         }
 
         DirectionIds = [.. (DirectionIds ?? Enumerable.Empty<string>()), .. directions];

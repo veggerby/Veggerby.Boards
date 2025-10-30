@@ -39,7 +39,7 @@ public class ArtifactStateChange
 
         if (from is not null && to is not null && !from.Artifact.Equals(to.Artifact))
         {
-            throw new ArgumentException("To and From need to reference the same artifact", nameof(to));
+            throw new ArgumentException(ExceptionMessages.ArtifactStateChangeMismatch, nameof(to));
         }
 
         From = from;

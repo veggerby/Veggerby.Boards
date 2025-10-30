@@ -30,7 +30,7 @@ public class RollDiceGameEvent<T> : IGameEvent
 
         if (!states.Any())
         {
-            throw new ArgumentException("Must provide at least one new state", nameof(states));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDiceStateRequired, nameof(states));
         }
 
         NewDiceStates = states.ToList().AsReadOnly();

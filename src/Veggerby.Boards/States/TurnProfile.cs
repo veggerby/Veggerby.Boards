@@ -29,7 +29,7 @@ internal sealed class TurnProfile
             var seg = _orderedSegments[i];
             if (_segmentOrderIndex.ContainsKey(seg))
             {
-                throw new ArgumentException($"Duplicate segment '{seg}' in turn profile.");
+                throw new ArgumentException(ExceptionMessages.DuplicateTurnProfileSegment);
             }
 
             _segmentOrderIndex.Add(seg, i);
@@ -37,7 +37,7 @@ internal sealed class TurnProfile
 
         if (_orderedSegments.Length == 0)
         {
-            throw new ArgumentException("Turn profile must contain at least one segment.");
+            throw new ArgumentException(ExceptionMessages.TurnProfileEmpty);
         }
     }
 

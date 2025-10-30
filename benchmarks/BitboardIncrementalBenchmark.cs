@@ -57,7 +57,7 @@ public class BitboardIncrementalBenchmark
         _pathFull = visitorFull.ResultPath!;
         if (_pathFull is null)
         {
-            _pathFull = TwoStepPathOrNull(_rebuild.Game, fromFull!, toFull!, ChessIds.Tiles.E3)!;
+            _pathFull = Internal.PathHelpers.TwoStepPathOrNull(_rebuild.Game, fromFull!, toFull!, ChessIds.Tiles.E3)!;
         }
 
         var fromInc = _incremental.Game.GetTile(ChessIds.Tiles.E2);
@@ -70,7 +70,7 @@ public class BitboardIncrementalBenchmark
         _pathInc = visitorInc.ResultPath!;
         if (_pathInc is null)
         {
-            _pathInc = TwoStepPathOrNull(_incremental.Game, fromInc!, toInc!, ChessIds.Tiles.E3)!;
+            _pathInc = Internal.PathHelpers.TwoStepPathOrNull(_incremental.Game, fromInc!, toInc!, ChessIds.Tiles.E3)!;
         }
     }
 
@@ -90,22 +90,5 @@ public class BitboardIncrementalBenchmark
     /// Attempts to build a two-step path using an intermediate tile id. Returns null when relations are not connected.
     /// Benchmark-only helper (internal construction simplification).
     /// </summary>
-    private static TilePath? TwoStepPathOrNull(Game game, Tile from, Tile to, string midTileId)
-    {
-        var mid = game.GetTile(midTileId);
-        if (mid is null)
-        {
-            return null;
-        }
-
-        var r1 = game.Board.GetTileRelation(from, mid);
-        var r2 = game.Board.GetTileRelation(mid, to);
-        if (r1 is null || r2 is null)
-        {
-            return null;
-        }
-
-        var first = TilePath.Create(null, r1);
-        return TilePath.Create(first, r2);
-    }
+    // Helper removed – now uses Internal.PathHelpers.TwoStepPathOrNull.
 }

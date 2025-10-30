@@ -22,7 +22,7 @@ public class CompositeStateMutator<T> : IStateMutator<T> where T : IGameEvent
 
         if (!childMutators.Any())
         {
-            throw new ArgumentException("Must provide at least one child mutator", nameof(childMutators));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneChildRequired, nameof(childMutators));
         }
 
         ChildMutators = childMutators;
@@ -39,6 +39,12 @@ public class CompositeStateMutator<T> : IStateMutator<T> where T : IGameEvent
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, T @event)
     {
-        return ChildMutators.Aggregate(gameState, (seed, mutator) => mutator.MutateState(engine, seed, @event));
+        var current = gameState;
+        foreach (var mutator in ChildMutators)
+        {
+            current = mutator.MutateState(engine, current, @event);
+        }
+
+        return current;
     }
 }

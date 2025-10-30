@@ -67,6 +67,7 @@ public static class SequentialSimulator
         }
 
         var stopPredicate = stop ?? ((_, _, _) => false);
+        var turnSequencingEnabled = FeatureFlags.EnableTurnSequencing; // cache to avoid repeated static property access in loop
         var initialState = progress.State;
         var current = progress;
         var depth = 0;
@@ -112,7 +113,7 @@ public static class SequentialSimulator
 
             applied++;
             current = next;
-            if (FeatureFlags.EnableTurnSequencing)
+            if (turnSequencingEnabled)
             {
                 if (nextEvent is TurnPassEvent)
                 {

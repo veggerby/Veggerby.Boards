@@ -20,7 +20,7 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
     {
         if (_ruleDefinitions.Any())
         {
-            throw new ArgumentException("Can only set composite mode when no rules are added");
+            throw new ArgumentException(ExceptionMessages.CompositeModeSetAfterRules);
         }
 
         _eventRuleCompositeMode = mode;

@@ -44,7 +44,7 @@ internal sealed class CompiledPattern
     {
         if (steps is null || steps.Length == 0)
         {
-            throw new ArgumentException("Empty fixed steps", nameof(steps));
+            throw new ArgumentException(ExceptionMessages.EmptyFixedSteps, nameof(steps));
         }
 
         return new CompiledPattern(CompiledPatternKind.Fixed, steps, false);
@@ -60,7 +60,7 @@ internal sealed class CompiledPattern
     {
         if (directions is null || directions.Length == 0)
         {
-            throw new ArgumentException("Empty multi-ray directions", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.EmptyMultiRayDirections, nameof(directions));
         }
 
         return new CompiledPattern(CompiledPatternKind.MultiRay, directions, repeatable);

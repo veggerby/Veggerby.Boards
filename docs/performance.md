@@ -40,3 +40,16 @@ Track: Mean, p95, Alloc B/op, Gen0 collections (where relevant), hit ratios (fas
 * Extras retrieval: replaced reflective generic `ExtrasState<T>` with a non-generic wrapper and typed registry to eliminate reflection & generic instantiation overhead in hashing and state diffing.
 * Canonical hashing: serializer now includes cycle detection (reference-equality set) + depth cap (32) and artifact/type fast-path tags to prevent stack overflows and expensive reflection walks. These safeguards are deterministic (same graph → same emitted tag sequence) and have negligible overhead (< O(n) visited set lookups) compared to previous catastrophic recursion.
 * Fast-path parity: any acceleration (compiled patterns, sliding rays) must not alter blocker/capture semantics; benchmarks coupled with parity tests guard regressions.
+
+## Recent Benchmark Additions
+
+| Benchmark | Focus |
+|-----------|-------|
+| BitboardLayoutOrderingBenchmark | Compares legacy LINQ OrderBy vs current insertion sort ordering for bitboard tile layout across board sizes (8..64). |
+| SlidingAttackGeneratorCapacityBenchmark | Evaluates heuristic ray buffer pre-allocation vs baseline dynamic growth for large ring and 8x8 grid topologies. |
+
+### Pending Measurements
+
+* Sliding attack ray allocation optimization (buffer + visited boolean array) requires benchmark delta capture against prior baseline to validate allocation reduction (expect drop in Gen0 and B/op). Integrate into existing SlidingAttackGeneratorCapacityBenchmark with feature flag or version toggle for A/B.
+
+These scaffolds provide empirical data to justify or reject further micro-optimizations (e.g., stackalloc rays, span-based emission) and verify current strategies remain allocation‑efficient at scale.

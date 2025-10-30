@@ -106,7 +106,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
             _policies = policies?.ToArray() ?? throw new ArgumentNullException(nameof(policies));
             if (_policies.Length == 0)
             {
-                throw new ArgumentException("At least one policy required", nameof(policies));
+                throw new ArgumentException(ExceptionMessages.AtLeastOnePolicyRequired, nameof(policies));
             }
         }
 
@@ -114,27 +114,73 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options
         {
             foreach (var p in _policies)
             {
-                var seq = p.GetCandidateEvents(progress) ?? Enumerable.Empty<IGameEvent>();
-                // materialize minimal look-ahead to determine emptiness without double enumeration
+                var seq = p.GetCandidateEvents(progress);
+                if (seq is null)
+                {
+                    continue;
+                }
+
+                // Fast path: arrays (already materialized) or collections we can inspect cheaply.
                 if (seq is IGameEvent[] arr)
                 {
                     if (arr.Length > 0)
                     {
-                        return arr;
+                        return arr; // zero allocation path
+                    }
+                    continue;
+                }
+
+                if (seq is ICollection<IGameEvent> coll)
+                {
+                    if (coll.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    // If already an exact-sized list we can just return it (avoid re-enumeration).
+                    if (coll is List<IGameEvent> listRef)
+                    {
+                        return listRef;
+                    }
+
+                    // Otherwise, stream without full materialization (may only consume a prefix in caller).
+                    return StreamCollection(coll);
+                }
+
+                // Generic enumerable: perform single element look-ahead without allocating whole list.
+                var e = seq.GetEnumerator();
+                if (!e.MoveNext())
+                {
+                    e.Dispose();
+                    continue; // empty – advance to next policy
+                }
+
+                return YieldFirstAndRest(e);
+
+                // Local iterator that yields already advanced first element followed by remaining items.
+                static IEnumerable<IGameEvent> YieldFirstAndRest(IEnumerator<IGameEvent> enumerator)
+                {
+                    // enumerator positioned at first element
+                    yield return enumerator.Current;
+                    try
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            yield return enumerator.Current;
+                        }
+                    }
+                    finally
+                    {
+                        enumerator.Dispose();
                     }
                 }
-                else
+
+                // Stream a collection without forcing enumeration into a new list (unless consumer iterates all).
+                static IEnumerable<IGameEvent> StreamCollection(ICollection<IGameEvent> collection)
                 {
-                    using var e = seq.GetEnumerator();
-                    if (e.MoveNext())
+                    foreach (var item in collection)
                     {
-                        // build list including first
-                        var list = new List<IGameEvent> { e.Current };
-                        while (e.MoveNext())
-                        {
-                            list.Add(e.Current);
-                        }
-                        return list;
+                        yield return item;
                     }
                 }
             }

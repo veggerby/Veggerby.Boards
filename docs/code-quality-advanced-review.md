@@ -1,6 +1,6 @@
 # Advanced Flow & Data Structure Review
 
-Date: 2025-10-27
+Date: 2025-10-27 (pruned 2025-10-31)
 Branch: core/test-assertion-and-structure
 
 ## Purpose
@@ -9,7 +9,7 @@ Deeper analysis of non-optimal patterns in how components (builder, progress cha
 
 ## High-Impact Candidates
 
-### 1. Sliding Attack Generator Building Rays (Candidate)
+### 1. Sliding Attack Generator Building Rays (Partial Mitigation)
 
 `list.ToArray()` per ray.
 Issue: Potential repeated dynamic resizing.
@@ -71,7 +71,7 @@ Status: Merge with #6.
 ## Current Focus Sequence (Updated)
 
 1. DeckBuilding pile cloning struct abstraction (profiling pending) – selective cloning delivered.
-2. Public API doc coverage harness (enforced via test, now maintenance mode).
+2. Public API doc coverage harness (maintenance mode).
 3. Sliding attack generator micro-alloc improvements (profiling scaffold added).
 
 ## Risk & Determinism Considerations

@@ -19,6 +19,11 @@ public class ParallelSimulatorTests
     public async Task GivenSimulationDisabled_WhenRunManyAsync_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = false;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -34,6 +39,11 @@ public class ParallelSimulatorTests
     public async Task GivenTwoPlayouts_WhenPoliciesDeterministic_ThenTerminalStateHashesStable()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -53,6 +63,11 @@ public class ParallelSimulatorTests
     public async Task GivenCancellationRequested_MidExecution_PartialResultsReturned()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -71,6 +86,11 @@ public class ParallelSimulatorTests
     public async Task GivenDetailedRunMany_WhenExecuted_ThenMetricsPresent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -89,6 +109,11 @@ public class ParallelSimulatorTests
     public async Task GivenPartialCancellation_WhenUsingPartialAPI_ThenReturnsSubsetAndFlag()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -108,6 +133,11 @@ public class ParallelSimulatorTests
     public async Task GivenMultipleDeterministicPlayouts_WhenComparingDetailedAndBasic_ThenStateHashesEquivalent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

@@ -16,6 +16,11 @@ public class GameEngineTests
         public void Should_initialize_gameengine()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder().Compile();
             var game = builder.Game;
             var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
@@ -33,6 +38,11 @@ public class GameEngineTests
         public void Should_throw_with_null_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gamePhaseRoot = GamePhase.New(1, "test", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null);
 
             // act
@@ -47,6 +57,11 @@ public class GameEngineTests
         public void Should_throw_with_null_condition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder().Compile();
             var game = builder.Game;
 

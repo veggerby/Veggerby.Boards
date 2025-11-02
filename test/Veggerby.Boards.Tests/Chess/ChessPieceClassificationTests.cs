@@ -15,6 +15,11 @@ public class ChessPieceClassificationTests
     public void GivenStandardChessGame_WhenBuilt_AllPieceIdsResolveRoleAndColor()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var state = progress.State;
         var roles = state.GetExtras<ChessPieceRolesExtras>();

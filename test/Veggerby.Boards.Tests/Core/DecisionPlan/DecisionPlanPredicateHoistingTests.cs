@@ -16,6 +16,11 @@ public class DecisionPlanPredicateHoistingTests
     public void GivenNullGameStateCondition_WhenCompilingDecisionPlan_ThenEntryFlaggedAlwaysValid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var root = GamePhase.NewParent(100, "root", new NullGameStateCondition());
         var leafAlways = GamePhase.New(1, "always", new NullGameStateCondition(), GameEventRule<IGameEvent>.Null, root);
         var leafOther = GamePhase.New(2, "other", new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, root);

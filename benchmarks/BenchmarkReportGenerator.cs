@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BenchmarkDotNet.Reports;
 using System.Text;
+
+using BenchmarkDotNet.Reports;
 
 namespace Veggerby.Boards.Benchmarks;
 

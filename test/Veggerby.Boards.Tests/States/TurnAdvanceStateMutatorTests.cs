@@ -30,6 +30,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenNonFinalSegment_WhenEndTurnSegmentEvent_ThenAdvancesSegment()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Start);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start);
@@ -50,6 +55,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenFinalSegment_WhenEndTurnSegmentEvent_ThenIncrementsTurnAndRotatesActivePlayer()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
@@ -72,6 +82,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenSegmentMismatch_WhenEndTurnSegmentEvent_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Main);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start); // mismatch
@@ -90,6 +105,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenDisabledFeatureFlag_WhenEndTurnSegmentEvent_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
@@ -112,6 +132,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenNoActivePlayerProjection_WhenFinalSegment_ThenOnlyTurnStateAdvances()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var p1 = new Player("p1");
         var turnArtifact = new TurnArtifact("turn");
         var builder = new TestTurnGameBuilder(p1);

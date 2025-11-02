@@ -10,7 +10,11 @@ public class AnyDirectionTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new AnyDirection();
 
             // assert
@@ -24,6 +28,11 @@ public class AnyDirectionTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new AnyDirection();
 
             // act
@@ -37,6 +46,11 @@ public class AnyDirectionTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new AnyDirection();
 
             // act
@@ -50,6 +64,11 @@ public class AnyDirectionTests
         public void Should_equal_same_type_same_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction1 = new AnyDirection();
             var direction2 = new AnyDirection();
 
@@ -64,6 +83,11 @@ public class AnyDirectionTests
         public void Should_equal_another_direction()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction1 = new AnyDirection();
             var direction2 = new Direction("dir");
 
@@ -78,6 +102,11 @@ public class AnyDirectionTests
         public void Should_not_equal_other_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new AnyDirection();
 
             // act
@@ -94,6 +123,11 @@ public class AnyDirectionTests
         public void Should_return_expected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new AnyDirection();
 
             // act

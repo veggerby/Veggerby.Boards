@@ -12,6 +12,11 @@ public class NullStateMutatorTests
         public void Should_return_same_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;

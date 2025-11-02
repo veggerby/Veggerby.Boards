@@ -20,6 +20,11 @@ public class PublicApiNullabilityTests
     public void PublicSurface_Should_Not_Expose_Nullable_Collections_Or_Strings_Or_Mutable_Collections()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var asm = typeof(Game).Assembly;
         var ctx = new NullabilityInfoContext();
         var whitelist = new HashSet<string>

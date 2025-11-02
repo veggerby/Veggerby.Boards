@@ -20,6 +20,11 @@ public class SequentialSimulatorTests
     public void GivenSimulationDisabled_WhenRun_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = false;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -35,6 +40,11 @@ public class SequentialSimulatorTests
     public void GivenSimplePolicy_WhenRunWithDeterministicSeed_ThenDeterministicTerminalHash()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         builder.WithSeed(1234);
@@ -69,6 +79,11 @@ public class SequentialSimulatorTests
     public void GivenStopPredicate_WhenSatisfied_ThenStopsEarly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

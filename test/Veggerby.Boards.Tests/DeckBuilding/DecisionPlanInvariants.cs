@@ -72,6 +72,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_Contains_DrawRule_In_ActionPhase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
 
         // act
@@ -85,6 +90,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_Contains_GainRule_In_BuyPhase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
 
         // act
@@ -98,6 +108,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_Contains_TrashRule_In_ActionPhase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
 
         // act
@@ -111,6 +126,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_Contains_CleanupRule_In_CleanupPhase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
 
         // act
@@ -124,6 +144,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_Contains_TurnAdvance_In_AllSegments()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
 
@@ -144,6 +169,11 @@ public class DecisionPlanInvariants
     public void DecisionPlan_EndGameEvent_Comes_After_ComputeScoresEvent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
         var flattened = Flatten(progress.Engine.DecisionPlan)
             .Select((x, idx) => new { x.PhaseLabel, x.EventType, Index = idx })

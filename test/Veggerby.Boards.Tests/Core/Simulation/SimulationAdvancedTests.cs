@@ -26,6 +26,12 @@ public class SimulationAdvancedTests
     [Fact]
     public void GivenSequentialSimulator_WithMoveIntentPolicy_ThenTerminatesNoMoves()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         // Policy attempts to move piece from t1->t2; however relation added is t2 -> t1 (reverse) so FirstOrDefault from current
@@ -53,6 +59,12 @@ public class SimulationAdvancedTests
     [Fact]
     public async Task GivenParallelDetailedSimulator_WhenMoveIntentPolicy_ThenNoProgressMetrics()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>
@@ -87,6 +99,12 @@ public class SimulationAdvancedTests
     [Fact]
     public async Task GivenParallelSimulator_WithDeterministicMoveIntentPolicy_ThenIdenticalFinalHashes()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>

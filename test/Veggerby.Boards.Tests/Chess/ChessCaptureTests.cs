@@ -15,6 +15,11 @@ public class ChessCaptureTests
     public void GivenClearedFile_WhenQueenMovesOntoBlackPawn_ThenPawnCapturedAndQueenOccupiesTile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessCaptureScenarioBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen);
         queen.Should().NotBeNull();

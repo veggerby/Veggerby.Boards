@@ -9,6 +9,11 @@ public class PathResolverParityTests
     public void GivenRookMove_WhenResolvedThroughPathResolver_ThenGeometricPathReturned()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var rook = progress.Game.GetPiece("white-rook-1");
@@ -35,6 +40,11 @@ public class PathResolverParityTests
     public void GivenKnightMove_WhenResolvedThroughPathResolver_ThenPathMatchesCompiled()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var knight = progress.Game.GetPiece("white-knight-1");

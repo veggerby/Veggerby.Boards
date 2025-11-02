@@ -8,6 +8,11 @@ public class DeckBuildingScaffoldTests
     public void GivenScaffold_WhenCompiled_ThenGameIsConstructed()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new DeckBuildingGameBuilder();
         builder.WithSeed(123UL);
 

@@ -12,6 +12,11 @@ public class CardsModuleTests
     public void CreateDeck_ThenDraw_MovesCardsToHand()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         builder.WithSeed(123UL);
         var progress = builder.Compile();
@@ -35,6 +40,11 @@ public class CardsModuleTests
     public void Shuffle_WithSeed_IsDeterministic()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder1 = new CardsGameBuilder();
         builder1.WithSeed(42UL);
         var p1 = builder1.Compile();
@@ -70,6 +80,11 @@ public class CardsModuleTests
     public void Draw_TooMany_ThrowsInvalidEvent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var state = progress.HandleEvent(builder.CreateInitialDeckEvent()).State;

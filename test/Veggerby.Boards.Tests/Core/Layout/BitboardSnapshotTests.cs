@@ -36,6 +36,11 @@ public class BitboardSnapshotTests
     public void GivenSmallBoard_WhenBuild_ThenMasksSetForOwners()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -68,6 +73,11 @@ public class BitboardSnapshotTests
     public void GivenSegmentedFlagOn_WhenBuildSmallBoard_ThenSegmentedMatchesLegacy64()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var prev = FeatureFlags.EnableSegmentedBitboards;
         FeatureFlags.EnableSegmentedBitboards = true;
         try
@@ -94,6 +104,11 @@ public class BitboardSnapshotTests
     public void GivenExpectedFromMismatch_WhenUpdateForMove_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -125,6 +140,11 @@ public class BitboardSnapshotTests
     public void GivenValidMove64_WhenUpdateForMove_ThenBitsUpdatedForOwner()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -182,6 +202,11 @@ public class BitboardSnapshotTests
     public void Given128BoardMoveAcrossSegments_WhenUpdateForMove_ThenHighLowUpdated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new Synthetic128BoardBuilder(128).Compile();
         var game = progress.Game;
         var state = progress.State;

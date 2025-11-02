@@ -10,6 +10,11 @@ public class BoardShapeTopologyTests
     public void GivenOrthogonalAndDiagonalDirections_WhenBuildingShape_ThenTopologyIsOrthogonalAndDiagonal()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var a1 = new Tile("a1");
         var b1 = new Tile("b1");
         var a2 = new Tile("a2");
@@ -33,6 +38,11 @@ public class BoardShapeTopologyTests
     public void GivenOnlyOrthogonalDirections_WhenBuildingShape_ThenTopologyIsOrthogonal()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var a1 = new Tile("oa1");
         var b1 = new Tile("ob1");
         var a2 = new Tile("oa2");
@@ -53,6 +63,11 @@ public class BoardShapeTopologyTests
     public void GivenArbitraryDirections_WhenBuildingShape_ThenTopologyIsArbitrary()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("x1");
         var b = new Tile("x2");
         var curve = new Direction("curve");

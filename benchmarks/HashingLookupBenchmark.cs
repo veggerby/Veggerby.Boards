@@ -73,11 +73,13 @@ public class HashingLookupBenchmark
     public int EnumeratePieceStates()
     {
         int count = 0;
+
         foreach (var ps in _state.GetStates<PieceState>())
         {
             if (ps.Artifact.Owner.Id == "white")
                 count++;
         }
+
         return count;
     }
 
@@ -85,12 +87,14 @@ public class HashingLookupBenchmark
     public int LookupPiecesById()
     {
         int hits = 0;
+
         foreach (var piece in _whitePieces)
         {
             var resolved = _game.GetPiece(piece.Id);
             if (resolved is not null)
                 hits++;
         }
+
         return hits;
     }
 
@@ -98,12 +102,14 @@ public class HashingLookupBenchmark
     public int ResolveTilesSequentially()
     {
         int hits = 0;
+
         foreach (var tile in _tiles)
         {
             var resolved = _game.GetTile(tile.Id);
             if (resolved is not null)
                 hits++;
         }
+
         return hits;
     }
 }

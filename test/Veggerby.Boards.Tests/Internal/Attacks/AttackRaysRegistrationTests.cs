@@ -9,6 +9,11 @@ public class AttackRaysRegistrationTests
     public void GivenBitboardsEnabled_WhenBuildingGame_ThenAttackRaysRegistered()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
@@ -23,6 +28,11 @@ public class AttackRaysRegistrationTests
     public void GivenBitboardsDisabled_WhenBuildingGame_ThenAttackRaysStillRegistered()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 

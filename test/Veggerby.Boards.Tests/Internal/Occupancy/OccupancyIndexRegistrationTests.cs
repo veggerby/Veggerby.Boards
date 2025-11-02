@@ -22,7 +22,12 @@ public class OccupancyIndexRegistrationTests
     [Fact]
     public void GivenBitboardsEnabled_WhenBuildingGame_ThenBitboardOccupancyIndexRegistered()
     {
-        // arrange / act
+        // arrange
+
+        // act
+
+        // assert
+
         var (_, occ) = Build(bitboards: true);
 
         // assert
@@ -32,7 +37,12 @@ public class OccupancyIndexRegistrationTests
     [Fact]
     public void GivenBitboardsDisabled_WhenBuildingGame_ThenNaiveOccupancyIndexRegistered()
     {
-        // arrange / act
+        // arrange
+
+        // act
+
+        // assert
+
         var (_, occ) = Build(bitboards: false);
 
         // assert
@@ -42,6 +52,12 @@ public class OccupancyIndexRegistrationTests
     [Fact]
     public void GivenBitboardsEnabled_WhenQueryingOccupancyIndex_ThenIsEmptyMatchesState()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (progress, occ) = Build(bitboards: true);
         var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();
@@ -50,6 +66,12 @@ public class OccupancyIndexRegistrationTests
     [Fact]
     public void GivenNaiveOccupancyIndex_WhenQueryingOccupancy_ThenIsEmptyMatchesState()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (progress, occ) = Build(bitboards: false);
         var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();

@@ -89,6 +89,11 @@ public class DecisionPlanDiagnosticTests
     public void DeckBuildingCore_Expected_EventTypes_Appear_InPlan()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
         var flattened = Flatten(plan).ToList();

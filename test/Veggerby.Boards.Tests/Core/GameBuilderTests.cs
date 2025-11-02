@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
@@ -14,6 +14,11 @@ public class GameBuilderTests
         public void Should_build_game()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
 
             // act
@@ -57,6 +62,11 @@ public class GameBuilderTests
         public void Should_not_build_game_twice()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
             var engine = builder.Compile();
 
@@ -74,6 +84,11 @@ public class GameBuilderTests
         public void Should_initialize_game_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
 
             // act

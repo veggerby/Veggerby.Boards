@@ -13,6 +13,12 @@ public class DeckBuildingGainFromSupplyTests
     [Fact]
     public void GivenSupply_WhenGainToDiscard_ThenCardAppendedAndSupplyDecremented()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -56,6 +62,12 @@ public class DeckBuildingGainFromSupplyTests
     [Fact]
     public void GivenInsufficientSupply_WhenGain_ThenRejected()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

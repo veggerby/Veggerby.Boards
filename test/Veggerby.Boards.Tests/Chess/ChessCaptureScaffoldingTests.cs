@@ -15,7 +15,12 @@ public class ChessCaptureScaffoldingTests
     [Fact]
     public void GivenOpponentPieceInLine_WhenQueenMovesOntoIt_ThenCaptureOccurs()
     {
-        // arrange (direct capture position: queen e1, pawn e7)
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessCaptureScenarioBuilder().Compile();
         var whiteQueen = progress.Game.GetPiece(WhiteQueen);
         whiteQueen.Should().NotBeNull();

@@ -72,6 +72,11 @@ public class RandomizedCompiledPatternParityTests
     public void GivenRandomQueries_WhenResolved_ThenCompiledMatchesLegacy()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var game = BuildGame();
         var pieces = game.Artifacts.OfType<Piece>().Where(p => p.Owner.Id == "white").ToArray(); // only white-owned pieces
         var tiles = game.Board.Tiles.ToArray();

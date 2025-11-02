@@ -25,6 +25,11 @@ public class ObserverBatchingTests
     public void GivenSingleMove_WhenBatchedEnabled_ThenOrderingMatchesUnbatched()
     {
         // arrange
+
+        // act
+
+        // assert
+
         Boards.Internal.FeatureFlags.EnableObserverBatching = false;
         var rec1 = new RecordingObserver();
         var unbatched = new ChessGameBuilder().WithObserver(rec1).Compile();

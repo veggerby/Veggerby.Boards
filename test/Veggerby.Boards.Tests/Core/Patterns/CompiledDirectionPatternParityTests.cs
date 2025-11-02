@@ -36,7 +36,12 @@ public class CompiledDirectionPatternParityTests
     [Fact]
     public void GivenRepeatableDirectionPattern_WhenResolvingLongestChain_ThenCompiledMatchesLegacy()
     {
-        // a -> b -> c (repeatable same direction)
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -57,6 +62,12 @@ public class CompiledDirectionPatternParityTests
     [Fact]
     public void GivenNonRepeatableDirectionPattern_WhenResolvingBeyondFirstStep_ThenBothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -76,6 +87,12 @@ public class CompiledDirectionPatternParityTests
     [Fact]
     public void GivenNonRepeatableDirectionPattern_WhenResolvingSingleStep_ThenCompiledMatchesLegacy()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var dir = new Direction("step");

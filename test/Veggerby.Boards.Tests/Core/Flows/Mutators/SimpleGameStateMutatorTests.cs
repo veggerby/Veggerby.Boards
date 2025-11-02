@@ -18,6 +18,9 @@ public class SimpleGameStateMutatorTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 
             // assert
@@ -30,6 +33,9 @@ public class SimpleGameStateMutatorTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new SimpleGameStateMutator<NullGameEvent>(null!);
 
             // assert
@@ -43,6 +49,11 @@ public class SimpleGameStateMutatorTests
         public void Should_mutate_simple_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -73,6 +84,11 @@ public class SimpleGameStateMutatorTests
         public void Should_return_original_when_null_artifactstate()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;

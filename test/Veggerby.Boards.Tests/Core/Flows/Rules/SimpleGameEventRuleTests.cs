@@ -20,7 +20,11 @@ public class SimpleGameEventRuleTests
         public void Should_initialize()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
 
             // assert
@@ -31,7 +35,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_with_null_condition()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => SimpleGameEventRule<NullGameEvent>.New((IGameEventCondition<NullGameEvent>)null!);
 
             // assert
@@ -45,6 +53,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_valid_check_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var rule = GameEventRule<NullGameEvent>.Null;
             ;
@@ -60,6 +73,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_ignore_check_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Ignore("just because")));
 
@@ -75,6 +93,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_with_null_event_on_explicit_interface()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -89,6 +112,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -106,6 +134,11 @@ public class SimpleGameEventRuleTests
         public void Should_update_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -134,6 +167,11 @@ public class SimpleGameEventRuleTests
         public void Should_not_mutate_state_when_rule_result_is_ignore()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -163,6 +201,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_if_handle_event_called_with_invalid_rule_result()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -191,6 +234,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_if_handle_null_event()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -213,6 +261,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_same_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = GameState.New(Array.Empty<IArtifactState>());
             var rule = SimpleGameEventRule<NullGameEvent>.New(new SimpleGameEventCondition<NullGameEvent>((eng, s, e) => ConditionResponse.Valid));
             var engine = new TestGameBuilder().Compile();
@@ -228,6 +281,11 @@ public class SimpleGameEventRuleTests
         public void Should_throw_with_null_event_on_explicit_interface()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var engine = new TestGameBuilder().Compile();
@@ -243,6 +301,11 @@ public class SimpleGameEventRuleTests
         public void Should_return_ignore_check_state_with_different_event_type_on_explicit_interface()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = GameState.New(Array.Empty<IArtifactState>());
             IGameEventRule rule = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, s, e) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var engine = new TestGameBuilder().Compile();

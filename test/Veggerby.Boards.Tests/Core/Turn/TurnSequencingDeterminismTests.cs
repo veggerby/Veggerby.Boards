@@ -13,6 +13,11 @@ public class TurnSequencingDeterminismTests
     public void GivenScriptedSequence_WhenRunTwice_ThenFinalTurnStateDeterministic()
     {
         // arrange
+
+        // act
+
+        // assert
+
         Boards.Internal.FeatureFlags.EnableTurnSequencing = true; // explicit
         var builder1 = new ChessGameBuilder();
         var progress1 = builder1.Compile();
@@ -52,6 +57,11 @@ public class TurnSequencingDeterminismTests
     public void GivenReplayAfterPass_WhenApplied_ThenPassStreakResets()
     {
         // arrange
+
+        // act
+
+        // assert
+
         Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

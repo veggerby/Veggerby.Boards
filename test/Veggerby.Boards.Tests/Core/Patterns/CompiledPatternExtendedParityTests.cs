@@ -39,7 +39,12 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenMultiDirectionPattern_WhenResolvingAlongSecondDirection_ThenCompiledMatchesLegacy()
     {
-        // Star: center o with two spokes to x and y
+        // arrange
+
+        // act
+
+        // assert
+
         var o = new Tile("o");
         var x = new Tile("x");
         var y = new Tile("y");
@@ -65,7 +70,12 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenRepeatablePattern_WhenResolvingLongestChain_ThenCompiledMatchesLegacy()
     {
-        // a -> b -> c -> d linear repeatable
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -98,6 +108,12 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenUnreachableFixedPattern_WhenResolving_ThenBothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -118,6 +134,12 @@ public class CompiledPatternExtendedParityTests
     [Fact]
     public void GivenNullPattern_WhenResolving_ThenBothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var d1 = new Direction("ab");

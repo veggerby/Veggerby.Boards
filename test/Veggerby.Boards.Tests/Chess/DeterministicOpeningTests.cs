@@ -18,6 +18,11 @@ public class DeterministicOpeningTests
     public void GivenStandardChessGame_WhenApplyingDeterministicOpening_ThenPiecesReachExpectedSquares()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var initialState = progress.State;

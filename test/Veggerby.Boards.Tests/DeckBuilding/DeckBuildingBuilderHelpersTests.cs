@@ -8,6 +8,11 @@ public class DeckBuildingBuilderHelpersTests
     public void WithCards_RegistersAllAndCompiles()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("a", "b", "c");
 

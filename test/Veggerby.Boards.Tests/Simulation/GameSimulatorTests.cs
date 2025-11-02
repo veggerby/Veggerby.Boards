@@ -84,6 +84,11 @@ public class GameSimulatorTests
     public void GivenNoOpPolicy_WhenPlayout_ThenTerminatesWithNoMoves()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new NoOpGameBuilder();
         var progress = builder.Compile();
         var policy = new DelegatePlayoutPolicy(_ => Enumerable.Empty<IGameEvent>()); // no candidates => immediate terminal
@@ -102,6 +107,11 @@ public class GameSimulatorTests
     public void GivenSingleApplicableEvent_WhenPlayoutWithMaxEvents1_ThenStopsAtLimit()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
@@ -121,6 +131,11 @@ public class GameSimulatorTests
     public async Task GivenParallelPlayouts_WhenExecuted_ThenAggregatesCounts()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new NoOpGameBuilder();
         var progress = builder.Compile();
         var policy = new DelegatePlayoutPolicy(_ => Enumerable.Empty<IGameEvent>());
@@ -138,6 +153,11 @@ public class GameSimulatorTests
     public async Task GivenCancellation_WhenPlayoutManyAsync_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new NoOpGameBuilder();
         var progress = builder.Compile();
         var policy = new DelegatePlayoutPolicy(_ => Enumerable.Empty<IGameEvent>());
@@ -156,6 +176,11 @@ public class GameSimulatorTests
     public void GivenContinuousEventAndTimeLimit_WhenPlayout_ThenTerminatesByTime()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
@@ -173,7 +198,12 @@ public class GameSimulatorTests
     [Fact]
     public void GivenMixedLengths_WhenPlayoutManyAsync_ThenHistogramAndMetricsComputed()
     {
-        // arrange: one builder with single toggle, one no-op to create diversity
+        // arrange
+
+        // act
+
+        // assert
+
         var builderApply = new SingleApplyBuilder();
         var builderNoOp = new NoOpGameBuilder();
         var progressApply = builderApply.Compile();
@@ -231,6 +261,11 @@ public class GameSimulatorTests
     public void GivenObserver_WhenPlayout_ThenReceivesCallbacks()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
@@ -253,6 +288,11 @@ public class GameSimulatorTests
     public void GivenSingleStepAllPiecesPolicy_WhenEnumerated_ThenReturnsDeterministicMoves()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var policy = PolicyHelpers.SingleStepAllPieces();
@@ -275,6 +315,11 @@ public class GameSimulatorTests
     public void GivenVarianceThreshold_WhenSequentialPlayouts_ThenStopsEarly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();
@@ -293,7 +338,12 @@ public class GameSimulatorTests
     [Fact]
     public void GivenProgressedCountThreshold_WhenSequentialPlayouts_ThenStopsAfterEnoughProgressed()
     {
-        // arrange: mix deterministic progressed (toggle) and no-op
+        // arrange
+
+        // act
+
+        // assert
+
         var builderApply = new SingleApplyBuilder();
         var builderNoOp = new NoOpGameBuilder();
         var progressApply = builderApply.Compile();
@@ -321,6 +371,11 @@ public class GameSimulatorTests
     public async Task GivenVarianceThreshold_WhenParallelPlayouts_ThenStopsEarly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new SingleApplyBuilder();
         var progress = builder.Compile();
         var evt = new SingleApplyBuilder.ToggleEvent();

@@ -60,6 +60,11 @@ public class CanonicalStateSerializerTests
     public void GivenIdenticalLogicalStates_WhenHashesComputedTwice_ThenHashesAreEqual()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? firstHash;
         ulong? secondHash;
         using (new FeatureFlagScope(hashing: true))
@@ -82,6 +87,11 @@ public class CanonicalStateSerializerTests
     public void GivenDifferentInsertionOrder_WhenHashesComputed_ThenHashesAreEqual()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? orderedHash;
         ulong? shuffledHash;
         using (new FeatureFlagScope(hashing: true))
@@ -107,6 +117,11 @@ public class CanonicalStateSerializerTests
     public void GivenSinglePropertyChange_WhenHashesComputed_ThenHashDiffers()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? baseHash;
         ulong? changedHash;
         using (new FeatureFlagScope(hashing: true))
@@ -129,6 +144,11 @@ public class CanonicalStateSerializerTests
     public void GivenHashingDisabled_WhenStateCreated_ThenHashIsNull()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? hash;
         using (new FeatureFlagScope(hashing: false))
         {

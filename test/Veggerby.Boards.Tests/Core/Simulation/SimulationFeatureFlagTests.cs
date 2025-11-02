@@ -26,6 +26,11 @@ public class SimulationFeatureFlagTests
     public void GivenSequentialSimulator_WhenFlagDisabled_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = false;
         var progress = BuildProgress();
 
@@ -41,6 +46,11 @@ public class SimulationFeatureFlagTests
     public void GivenSequentialSimulator_WhenFlagEnabled_ThenRuns()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 
@@ -56,6 +66,11 @@ public class SimulationFeatureFlagTests
     public async Task GivenParallelSimulator_WhenFlagDisabled_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = false;
         var progress = BuildProgress();
 
@@ -71,6 +86,11 @@ public class SimulationFeatureFlagTests
     public async Task GivenParallelSimulator_WhenFlagEnabled_ThenRuns()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 

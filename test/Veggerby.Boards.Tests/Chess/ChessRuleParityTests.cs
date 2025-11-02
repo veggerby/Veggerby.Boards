@@ -22,6 +22,11 @@ public class ChessRuleParityTests
     public void GivenStandardSetup_WhenWhitePawnAdvancesOne_ThenPieceRelocates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var pawn = engine.Game.GetPiece(ChessIds.Pieces.WhitePawn5).EnsureNotNull(); // e2 pawn index 5
         var from = engine.Game.GetTile(ChessIds.Tiles.E2).EnsureNotNull();
@@ -37,7 +42,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenStandardSetup_WhenWhitePawnAttemptsDoubleWithBlock_ThenMoveRejected()
     {
-        // arrange: move e2 pawn to e3 first, then attempt double step (now blocked path logic should reject)
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var pawn = engine.Game.GetPiece(ChessIds.Pieces.WhitePawn5).EnsureNotNull(); // e2
         var e3 = engine.Game.GetTile(ChessIds.Tiles.E3).EnsureNotNull();
@@ -57,7 +67,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenStandardSetup_WhenWhiteKnightMovesLShape_ThenRelocates()
     {
-        // arrange: g1 knight -> f3
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var knight = engine.Game.GetPiece(ChessIds.Pieces.WhiteKnight2).EnsureNotNull(); // g1
         var from = engine.Game.GetTile(ChessIds.Tiles.G1).EnsureNotNull();
@@ -71,7 +86,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenStandardSetup_WhenWhiteBishopDiagonalBlockedByPawn_ThenIgnored()
     {
-        // arrange: c1 bishop tries to go to g5 blocked by own pawn at d2
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var bishop = engine.Game.GetPiece(ChessIds.Pieces.WhiteBishop1).EnsureNotNull(); // c1
         var from = engine.Game.GetTile(ChessIds.Tiles.C1).EnsureNotNull();
@@ -84,7 +104,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenStandardSetup_WhenWhiteRookPathBlocked_ThenIgnored()
     {
-        // arrange: a1 rook tries to go to a4 blocked by pawn at a2
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var rook = engine.Game.GetPiece(ChessIds.Pieces.WhiteRook1).EnsureNotNull();
         var from = engine.Game.GetTile(ChessIds.Tiles.A1).EnsureNotNull();
@@ -96,7 +121,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenClearedPath_WhenWhiteQueenMovesComposite_ThenRelocates()
     {
-        // arrange: free path by moving blocking pawns (d2 and e2) then queen d1 -> h5 (diagonal). We'll move e2 pawn forward to e3 and d2 pawn to d3, then queen path becomes clear to h5 via e2 (now empty), f3, g4.
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var pawnD2 = engine.Game.GetPiece(ChessIds.Pieces.WhitePawn4).EnsureNotNull(); // d2
         var pawnE2 = engine.Game.GetPiece(ChessIds.Pieces.WhitePawn5).EnsureNotNull(); // e2
@@ -125,7 +155,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenStandardSetup_WhenWhiteKingSingleStep_ThenRelocates()
     {
-        // arrange: prepare by moving e2 pawn to free e2->e3, then king e1->e2
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var pawnE2 = engine.Game.GetPiece(ChessIds.Pieces.WhitePawn5).EnsureNotNull();
         var e3 = engine.Game.GetTile(ChessIds.Tiles.E3).EnsureNotNull();
@@ -145,7 +180,12 @@ public class ChessRuleParityTests
     [Fact]
     public void GivenClearedKingsidePath_WhenWhiteAttemptsCastleKingSide_ThenRookAndKingRelocated()
     {
-        // arrange: clear f1 & g1 (move knight g1->f3, bishop f1->e2 after freeing e2)
+        // arrange
+
+        // act
+
+        // assert
+
         var (engine, progress) = BuildStandard();
         var knightG1 = engine.Game.GetPiece(ChessIds.Pieces.WhiteKnight2).EnsureNotNull();
         var bishopF1 = engine.Game.GetPiece(ChessIds.Pieces.WhiteBishop2).EnsureNotNull();

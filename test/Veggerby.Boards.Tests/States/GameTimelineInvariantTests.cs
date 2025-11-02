@@ -49,6 +49,11 @@ public class GameTimelineInvariantTests
     public void GivenTimeline_WhenUndoRedoSequenceApplied_ThenStateReferenceRestored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(hashing: true, compiledPatterns: true, slidingFastPath: false);
         var progress = new ChessGameBuilder().Compile();
         var initialState = progress.State;
@@ -85,6 +90,11 @@ public class GameTimelineInvariantTests
     public void GivenMultipleUndoRedoCycles_WhenRepeated_ThenHashesAndReferencesStable()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(hashing: true, compiledPatterns: true, slidingFastPath: false);
         var progress = new ChessGameBuilder().Compile();
         var moves = new List<GameProgress>();
@@ -151,6 +161,11 @@ public class GameTimelineInvariantTests
     public void GivenUndoWithoutPast_WhenUndo_ThenTimelineUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var timeline = GameTimeline.Create(progress.State);
@@ -166,6 +181,11 @@ public class GameTimelineInvariantTests
     public void GivenRedoWithoutFuture_WhenRedo_ThenTimelineUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var timeline = GameTimeline.Create(progress.State);

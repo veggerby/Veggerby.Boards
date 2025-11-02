@@ -78,6 +78,11 @@ public class BitboardIncrementalRandomizedParityTests
     public void GivenDeterministicRandomMoveSequence_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var baseline = new ChessGameBuilder().Compile();
         GameProgress incremental;
         using (new FlagScope(true))

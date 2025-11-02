@@ -15,6 +15,11 @@ public class ChessCapturedStateTests
     public void GivenCapture_WhenExecuted_ThenCapturedPieceHasCapturedStateAndIsNotOnTile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessCaptureScenarioBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen);
         queen.Should().NotBeNull();

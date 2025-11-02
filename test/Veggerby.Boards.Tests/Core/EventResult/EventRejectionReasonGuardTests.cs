@@ -15,6 +15,11 @@ public class EventRejectionReasonGuardTests
     public void GivenEventRejectionReasonEnum_WhenEnumerated_ThenAllKnownValuesAccountedFor()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var values = Enum.GetValues(typeof(EventRejectionReason)).Cast<EventRejectionReason>().ToArray();
 
         // act

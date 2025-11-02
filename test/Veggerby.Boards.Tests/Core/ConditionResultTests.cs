@@ -1,4 +1,4 @@
-﻿namespace Veggerby.Boards.Tests.Core;
+namespace Veggerby.Boards.Tests.Core;
 
 public class ConditionResultTests
 {
@@ -31,6 +31,9 @@ public class ConditionResultTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = ConditionResponse.Success("it worked!");
 
             // assert
@@ -45,6 +48,9 @@ public class ConditionResultTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = ConditionResponse.Fail("it did not work!");
 
             // assert
@@ -59,6 +65,9 @@ public class ConditionResultTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = ConditionResponse.Ignore("meh!");
 
             // assert
@@ -71,6 +80,11 @@ public class ConditionResultTests
         public void Should_create_fails_state_composite()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state1 = ConditionResponse.Fail("fail");
             var state2 = ConditionResponse.Success("success");
             var state3 = ConditionResponse.Ignore("ignore");
@@ -112,6 +126,11 @@ public class ConditionResultTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = ConditionResponse.Success("success");
 
             // act
@@ -125,6 +144,11 @@ public class ConditionResultTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = ConditionResponse.Success("success");
 
             // act
@@ -138,6 +162,11 @@ public class ConditionResultTests
         public void Should_equal_same_result_different_reason()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state1 = ConditionResponse.Success("success");
             var state2 = ConditionResponse.Success("more success");
 
@@ -152,6 +181,11 @@ public class ConditionResultTests
         public void Should_not_equal_different_result()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state1 = ConditionResponse.Success("success");
             var state2 = ConditionResponse.Fail("more success");
 
@@ -166,6 +200,11 @@ public class ConditionResultTests
         public void Should_not_equal_different_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var state = ConditionResponse.Success("success");
 
             // act

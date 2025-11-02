@@ -17,6 +17,11 @@ public class ChessTurnAlternationTests
     public void GivenWhiteMoves_WhenWhiteAttemptsSecondConsecutiveMove_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var pawn = progress.Game.GetPiece(WhitePawn5).EnsureNotNull();
         var beforeBlackPawn = progress.Game.GetPiece(BlackPawn5).EnsureNotNull();
@@ -37,7 +42,12 @@ public class ChessTurnAlternationTests
     [Fact]
     public void GivenEnPassantTargetSet_WhenOpponentDoesNotCaptureImmediately_ThenCaptureLaterIgnored()
     {
-        // arrange (white pawn e2, black pawn d4 ready; optional aux black pawn ensures reply)
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new EnPassantScenarioBuilder(includeAuxiliaryBlackPawn: true).Compile();
         var whitePawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
         var blackPawn = progress.Game.GetPiece("black-pawn-test").EnsureNotNull();

@@ -13,6 +13,12 @@ public class DeckBuildingSupplyStatsTests
     [Fact]
     public void GivenSupplyAboveZero_WhenGain_NotCrossingZero_ThenEmptyPilesUnchanged()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -54,6 +60,12 @@ public class DeckBuildingSupplyStatsTests
     [Fact]
     public void GivenSupplyAtOne_WhenGain_CrossesZero_ThenEmptyPilesIncrements()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

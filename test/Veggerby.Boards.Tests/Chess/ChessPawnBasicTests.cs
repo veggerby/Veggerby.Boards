@@ -12,6 +12,11 @@ public class ChessPawnBasicTests
     public void GivenInitialPosition_WhenWhitePawnMovesOne_ThenPawnAdvances()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // act
         progress = progress.Move(WhitePawn5, "e3");
@@ -24,6 +29,11 @@ public class ChessPawnBasicTests
     public void GivenInitialPosition_WhenWhitePawnAttemptsToMoveOntoOwnPiece_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // act (attempt queen onto occupied e2)
         var queen = progress.Game.GetPiece(WhiteQueen).EnsureNotNull();

@@ -48,6 +48,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_TwoStep_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("f1-", 3, "d");
         var board = new Board("b-f1", rels);
         var player = new Player("p");
@@ -63,6 +69,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_Unreachable_LastStepMissing_BothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("f2-", 2, "d"); // only one relation but pattern needs two
         var board = new Board("b-f2", rels);
         var player = new Player("p");
@@ -77,6 +89,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_Repeatable_LongChain_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dpr-", 5, "step");
         var board = new Board("b-dpr", rels);
         var player = new Player("p");
@@ -92,6 +110,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_NonRepeatable_SecondStepNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dpn-", 3, "step");
         var board = new Board("b-dpn", rels);
         var player = new Player("p");
@@ -106,6 +130,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_SingleRepeatable_DistanceParity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mdr-", 4, "step");
         var board = new Board("b-mdr", rels);
         var player = new Player("p");
@@ -121,7 +151,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_TwoBranches_ShortestSelected()
     {
-        // topology: a->b->c->d and a->e (shortcut). multi-direction repeatable chooses shortest a->e vs a->d
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -147,6 +182,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void AnyPattern_IgnoredByCompiler_LegacyProducesPathCompiledNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("any-", 2, "d");
         var board = new Board("b-any", rels);
         var player = new Player("p");
@@ -161,6 +202,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void NullPattern_IgnoredByCompiler_BothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("null-", 2, "d");
         var board = new Board("b-null", rels);
         var player = new Player("p");
@@ -175,6 +222,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_WithAdjacencyCache_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("fca-", 3, "d");
         var board = new Board("b-fca", rels);
         var player = new Player("p");
@@ -193,6 +246,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_WithBoardShapeFastPath_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("fshape-", 3, "d");
         var board = new Board("b-fshape", rels);
         var player = new Player("p");
@@ -211,6 +270,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_WithCache_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dcache-", 4, "d");
         var board = new Board("b-dcache", rels);
         var player = new Player("p");
@@ -229,6 +294,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_WithCache_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -255,6 +326,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_FastPathAndCache_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dall-", 5, "d");
         var board = new Board("b-dall", rels);
         var player = new Player("p");
@@ -273,6 +350,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_FastPath_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mfshape-", 4, "d");
         var board = new Board("b-mfshape", rels);
         var player = new Player("p");
@@ -291,6 +374,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_CacheVsNoCache_DistancesEqual()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("fcv-", 3, "d");
         var board = new Board("b-fcv", rels);
         var player = new Player("p");
@@ -313,6 +402,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_ShortestSelection_ConsistencyWithCache()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -344,6 +439,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_CacheDoesNotChangeReachability()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dre-", 3, "d");
         var board = new Board("b-dre", rels);
         var player = new Player("p");
@@ -364,6 +465,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_CacheDoesNotChangeShortestChoice()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -388,6 +495,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void FixedPattern_FastPathDoesNotAlterResult()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("ffp-", 3, "d");
         var board = new Board("b-ffp", rels);
         var player = new Player("p");
@@ -410,6 +523,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void DirectionPattern_FastPathDoesNotAlterResult()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("dfp-", 4, "d");
         var board = new Board("b-dfp", rels);
         var player = new Player("p");
@@ -432,6 +551,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MultiDirection_FastPathDoesNotAlterShortest()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -459,6 +584,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MixedPatterns_FirstMatchingDeterminesPath()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mix-", 3, "d");
         var altDir = new Direction("alt");
         var extra = new TileRelation(tiles[0], new Tile("z"), altDir);
@@ -476,6 +607,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MixedPatterns_AnyPatternFirst_Ignored_SecondProvidesPath()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mix2-", 3, "d");
         var board = new Board("b-mix2", rels);
         var player = new Player("p");
@@ -491,6 +628,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MixedPatterns_NullPatternFirst_Ignored()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mix3-", 3, "d");
         var board = new Board("b-mix3", rels);
         var player = new Player("p");
@@ -506,6 +649,12 @@ public class CompiledPatternComprehensiveParityTests
     [Fact]
     public void MixedPatterns_DirectionThenRepeatableRay_TargetViaRay()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var (tiles, dirs, rels) = Line("mix4-", 4, "d");
         var board = new Board("b-mix4", rels);
         var player = new Player("p");

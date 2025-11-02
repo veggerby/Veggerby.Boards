@@ -13,6 +13,11 @@ public class ArtifactStateChangeTests
         public void Should_initial_state_change()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = new Piece("piece", null!, null!);
             var from = new Tile("tile-from");
             var to = new Tile("tile-to");
@@ -33,6 +38,9 @@ public class ArtifactStateChangeTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new ArtifactStateChange(null!, null!);
 
             // assert
@@ -43,6 +51,11 @@ public class ArtifactStateChangeTests
         public void Should_throw_with_different_artifacts()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = new Piece("piece1", null!, null!);
             var piece2 = new Piece("piece2", null!, null!);
             var from = new Tile("tile-from");

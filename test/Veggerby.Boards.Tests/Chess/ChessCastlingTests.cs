@@ -16,6 +16,11 @@ public class ChessCastlingTests
     public void GivenClearedKingsidePath_WhenWhiteCastlesKingSide_ThenKingAndRookRelocatedAndRightsRevoked()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Clear path squares f1 and g1 (king e1 -> g1) by vacating g1 (knight) and f1 (bishop) and ensuring bishop destination e2 is free.
         // 1. Advance pawn e2 -> e4 (double step frees e2)
@@ -43,7 +48,12 @@ public class ChessCastlingTests
     [Fact]
     public void GivenBlockedQueensidePath_WhenWhiteAttemptsQueenSideCastle_ThenIgnored()
     {
-        // arrange (initial pieces block: bishop c1, queen d1, knight b1)
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State;
         // act & assert (malformed castling attempt should raise invalid event exception due to path blockage)

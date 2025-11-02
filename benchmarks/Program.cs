@@ -1,6 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System;
+using System.IO;
+using System.Linq;
+
 using BenchmarkDotNet.Running;
 using Veggerby.Boards.Benchmarks;
 
@@ -37,3 +41,5 @@ if (generateReport && summariesList is { Count: > 0 })
     BenchmarkReportGenerator.Generate(summariesList, reportPath);
     Console.WriteLine($"[benchmark-report] Generated {Path.GetFullPath(reportPath)}");
 }
+
+

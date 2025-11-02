@@ -13,6 +13,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -32,6 +37,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_all_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -52,6 +62,11 @@ public class ConditionExtensionsTests
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -77,6 +92,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_or()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -96,6 +116,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_any_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -116,6 +141,11 @@ public class ConditionExtensionsTests
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);

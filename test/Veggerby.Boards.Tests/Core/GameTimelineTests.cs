@@ -24,6 +24,11 @@ public class GameTimelineTests
     public void Create_Should_Set_Present_And_Empty_PastFuture()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var s0 = NewState(0);
 
         // act
@@ -39,6 +44,11 @@ public class GameTimelineTests
     public void Push_Should_Move_Present_To_Past()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var s0 = NewState(0);
         var s1 = NewState(1);
 
@@ -55,6 +65,11 @@ public class GameTimelineTests
     public void Undo_Should_Move_Present_To_Future()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var s0 = NewState(0);
         var s1 = NewState(1);
         var tl = GameTimeline.Create(s0).Push(s1);
@@ -72,6 +87,11 @@ public class GameTimelineTests
     public void Redo_Should_Move_From_Future_To_Present()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var s0 = NewState(0);
         var s1 = NewState(1);
         var tl = GameTimeline.Create(s0).Push(s1).Undo();
@@ -89,6 +109,11 @@ public class GameTimelineTests
     public void Push_After_Undo_Should_Clear_Future()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var s0 = NewState(0);
         var s1 = NewState(1);
         var s2 = NewState(2);

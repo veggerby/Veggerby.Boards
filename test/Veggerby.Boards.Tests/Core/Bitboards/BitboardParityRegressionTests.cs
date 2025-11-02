@@ -74,6 +74,11 @@ public class BitboardParityRegressionTests
     public void GivenSequenceOfMoves_WhenBitboardsEnabled_ThenMasksMatchNaiveEnumeration()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // bitboards ON
         var progress = new ChessGameBuilder().Compile();
 

@@ -28,6 +28,11 @@ public class FastPathMetricsFastPathHitTests
     public void GivenSliderAndBitboardsEnabled_WhenResolving_ThenFastPathHitIncrements()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path enabled by default
         var builder = new SimpleRookBoard();

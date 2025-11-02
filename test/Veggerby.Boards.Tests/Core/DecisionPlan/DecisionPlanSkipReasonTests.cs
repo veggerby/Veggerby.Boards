@@ -109,6 +109,11 @@ public class DecisionPlanSkipReasonTests
     public void WhenHandlingMove_GroupGateFailed_SkipReason_IsCaptured()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (progress, observer, piece, path) = Build();
         var move = new MovePieceGameEvent(piece, path);
 

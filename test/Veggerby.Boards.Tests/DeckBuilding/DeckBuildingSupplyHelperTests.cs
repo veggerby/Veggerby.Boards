@@ -13,6 +13,12 @@ public class DeckBuildingSupplyHelperTests
     [Fact]
     public void BuildSupply_WhenUsedWithCreateDeck_ThenGainFromSupplyDecrements()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

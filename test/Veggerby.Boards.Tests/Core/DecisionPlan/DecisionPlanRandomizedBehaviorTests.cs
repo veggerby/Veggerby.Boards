@@ -17,6 +17,11 @@ public class DecisionPlanRandomizedBehaviorTests
     public void GivenRandomShortSequence_WhenApplied_ThenInvariantsHold()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var rnd = new TestDeterministicRng(12345);
 

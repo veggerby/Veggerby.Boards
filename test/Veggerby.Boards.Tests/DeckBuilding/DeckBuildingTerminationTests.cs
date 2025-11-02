@@ -22,6 +22,11 @@ public class DeckBuildingTerminationTests
     public void GivenScoresComputedAndMaxTurnsReached_WhenEndGameEvent_ThenGameEndedStateAdded()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame();
         progress.Should().NotBeNull();
@@ -52,6 +57,11 @@ public class DeckBuildingTerminationTests
     public void GivenNoScores_WhenEndGameEvent_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame();
         progress.Should().NotBeNull();

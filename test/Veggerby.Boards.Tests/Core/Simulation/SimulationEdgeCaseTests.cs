@@ -27,6 +27,12 @@ public class SimulationEdgeCaseTests
     [Fact]
     public async Task GivenParallelSimulator_WhenPlayoutCountZero_ThenThrows()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         var act = async () => await ParallelSimulator.RunManyAsync(progress, 0, _ => (_ => new TurnPassEvent()));
@@ -37,6 +43,12 @@ public class SimulationEdgeCaseTests
     [Fact]
     public async Task GivenParallelPartialSimulator_WhenCancelledEarly_ThenReturnsPartial()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         using var cts = new CancellationTokenSource();
@@ -50,6 +62,12 @@ public class SimulationEdgeCaseTests
     [Fact]
     public async Task GivenParallelSimulator_WhenRunTwiceWithSamePolicy_ThenDeterministicMultiset()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Simple policy: always pass turn until first null (maxDepth will terminate)
@@ -64,6 +82,12 @@ public class SimulationEdgeCaseTests
     [Fact]
     public void GivenSequentialSimulator_WhenPolicyProducesNoProgress_ThenTerminalReasonPolicyReturnedNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Pass event in current minimal phase yields no state change; simulator treats non-progress as terminal PolicyReturnedNull.

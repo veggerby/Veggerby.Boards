@@ -12,7 +12,12 @@ public class ChessEnPassantTests
     [Fact]
     public void GivenWhiteDoubleStep_WhenBlackCapturesEnPassant_ThenWhitePawnCapturedAndTargetCleared()
     {
-        // arrange (minimal scenario: white pawn e2, black pawn d4)
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new Tests.Chess.Support.EnPassantScenarioBuilder().Compile();
         var extras0 = progress.State.GetExtras<ChessStateExtras>();
         extras0.Should().NotBeNull();
@@ -40,7 +45,12 @@ public class ChessEnPassantTests
     [Fact]
     public void GivenWhiteDoubleStep_WhenBlackMakesOtherMove_ThenEnPassantTargetCleared()
     {
-        // arrange (include auxiliary pawn so black has alternative move) white pawn e2, black pawn d4, black aux h7
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new Tests.Chess.Support.EnPassantScenarioBuilder(includeAuxiliaryBlackPawn: true).Compile();
         // white double step sets target
         progress = progress.Move("white-pawn-test", E4);
@@ -62,6 +72,11 @@ public class ChessEnPassantTests
     public void GivenInitialPosition_WhenWhitePawnDoubleSteps_ThenEnPassantTargetSet()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
         extrasBefore.Should().NotBeNull();
@@ -108,6 +123,11 @@ public class ChessEnPassantTests
     public void GivenDoubleStep_WhenIntermediateMoveOccurs_ThenEnPassantTargetClearedAndCaptureInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // white: e2->e4
         progress = progress.Move(WhitePawn5, E4);

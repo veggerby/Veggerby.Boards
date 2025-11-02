@@ -52,6 +52,12 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenStartSegment_WhenActionPhaseEventSubmitted_ThenIgnored()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
@@ -75,6 +81,12 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenMainSegment_WhenCleanupEventSubmitted_ThenIgnored()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
@@ -99,6 +111,12 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenMainSegment_WhenActionEventSubmitted_ThenProcessed()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();
@@ -126,6 +144,12 @@ public class DeckBuildingTurnSegmentGatingTests
     [Fact]
     public void GivenEndSegment_WhenGainEventSubmitted_ThenIgnored()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var build = BuildGame();

@@ -45,6 +45,11 @@ public class DecisionPlanEventFilteringPhaseTests
     public void GivenPhaseEvent_WhenFilteringEnabled_ThenOnlyPhaseRuleEvaluated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingConditionPhase<MovePieceGameEvent>();
         var rollCond = new RecordingConditionPhase<RollDiceGameEvent<int>>();
         var phaseCond = new RecordingConditionPhase<TestPhaseControlEvent>();
@@ -64,6 +69,11 @@ public class DecisionPlanEventFilteringPhaseTests
     public void GivenMoveEvent_WhenFilteringEnabled_ThenPhaseRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingConditionPhase<MovePieceGameEvent>();
         var rollCond = new RecordingConditionPhase<RollDiceGameEvent<int>>();
         var phaseCond = new RecordingConditionPhase<TestPhaseControlEvent>();

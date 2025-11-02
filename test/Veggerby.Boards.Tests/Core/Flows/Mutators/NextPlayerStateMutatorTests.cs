@@ -15,6 +15,11 @@ public class NextPlayerStateMutatorTests
     public void GivenSingleActivePlayer_WhenMutated_ThenAdvancesToNextPlayer()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder().Compile();
         var p1 = progress.Game.Players.First();
         var p2 = progress.Game.Players.Skip(1).First();
@@ -43,6 +48,11 @@ public class NextPlayerStateMutatorTests
     public void GivenNoActivePlayer_WhenConditionInvalid_ThenStateUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder().Compile();
         var p1 = progress.Game.Players.First();
         var p2 = progress.Game.Players.Skip(1).First();

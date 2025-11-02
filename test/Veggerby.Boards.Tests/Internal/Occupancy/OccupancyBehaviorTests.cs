@@ -12,6 +12,11 @@ public class OccupancyBehaviorTests
     public void GivenMove_WhenHandled_ThenOccupancyReflectsVacatedAndNewTile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var flags = new Infrastructure.FeatureFlagScope(bitboards: false); // use naive occupancy for deterministic ground truth
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

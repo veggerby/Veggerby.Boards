@@ -32,6 +32,11 @@ public class CompiledPatternParityTests
     public void GivenFixedPattern_WhenResolving_ThenCompiledMatchesLegacy()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");
@@ -62,6 +67,11 @@ public class CompiledPatternParityTests
     public void GivenBoardShapeFastPathToggled_WhenResolvingFixedPattern_ThenPathsRemainIdentical()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");

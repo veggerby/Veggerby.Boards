@@ -13,6 +13,12 @@ public class DeckBuildingTrashFromHandTests
     [Fact]
     public void GivenCardsInHand_WhenTrash_ThenRemoved()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -48,6 +54,12 @@ public class DeckBuildingTrashFromHandTests
     [Fact]
     public void GivenCardNotInHand_WhenTrash_ThenRejected()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

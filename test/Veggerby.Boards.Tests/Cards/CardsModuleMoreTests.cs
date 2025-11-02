@@ -12,6 +12,11 @@ public class CardsModuleMoreTests
     public void Draw_Zero_IsNoOp()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var afterCreate = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -34,6 +39,11 @@ public class CardsModuleMoreTests
     public void Move_ByCount_MovesTopNPreservingOrder()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -55,6 +65,11 @@ public class CardsModuleMoreTests
     public void Move_ExplicitCards_FromSourceOnly_PreservesProvidedOrder()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -80,6 +95,11 @@ public class CardsModuleMoreTests
     public void Discard_FromMultiplePiles_AppendsInOrder()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -105,6 +125,11 @@ public class CardsModuleMoreTests
     public void Shuffle_UnknownPile_IsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -122,6 +147,11 @@ public class CardsModuleMoreTests
     public void Discard_EmptyList_IsNoOp()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());

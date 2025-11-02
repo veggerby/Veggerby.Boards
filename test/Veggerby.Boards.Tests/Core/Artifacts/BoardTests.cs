@@ -16,6 +16,11 @@ public class BoardTests
         public void Should_initialize_properties()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var tile1 = new Tile("tile1");
             var tile2 = new Tile("tile2");
             var relation = new TileRelation(tile1, tile2, Direction.Right);
@@ -35,6 +40,9 @@ public class BoardTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new Board("board", null!);
 
             // assert
@@ -47,6 +55,9 @@ public class BoardTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new Board("board", Enumerable.Empty<TileRelation>());
 
             // assert
@@ -60,6 +71,11 @@ public class BoardTests
         public void Should_return_correct_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
 
             // act
@@ -73,6 +89,11 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
 
             // act
@@ -104,6 +125,11 @@ public class BoardTests
         public void Should_return_correct_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var from = board.GetTile("tile-1").EnsureNotNull();
 
@@ -120,6 +146,11 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var from = board.GetTile("tile-1").EnsureNotNull();
 
@@ -155,6 +186,11 @@ public class BoardTests
         public void Should_return_correct_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var from = board.GetTile("tile-1").EnsureNotNull();
             var to = board.GetTile("tile-2").EnsureNotNull();
@@ -172,6 +208,11 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var from = board.GetTile("tile-1").EnsureNotNull();
             // select a tile that exists but has no direct relation from 'tile-1'

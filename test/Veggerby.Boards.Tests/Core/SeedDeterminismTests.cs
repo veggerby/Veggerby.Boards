@@ -8,6 +8,11 @@ public class SeedDeterminismTests
     public void GivenSameSeed_WhenBuildingGame_ThenRandomSourceSeedMatches()
     {
         // arrange
+
+        // act
+
+        // assert
+
         const ulong seed = 424242UL;
         var builder1 = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);
         var builder2 = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);

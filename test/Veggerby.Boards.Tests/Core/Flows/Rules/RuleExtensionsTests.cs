@@ -15,6 +15,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -33,6 +38,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_all_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -52,6 +62,11 @@ public class RuleExtensionsTests
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -76,6 +91,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_or()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -94,6 +114,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_any_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -113,6 +138,11 @@ public class RuleExtensionsTests
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;

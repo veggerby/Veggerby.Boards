@@ -37,7 +37,12 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenKnightLShape_WhenResolving_ThenCompiledMatchesLegacy()
     {
-        // Board shaped minimal to support an L: a -> b (east), then b -> n1 (north), n1 -> n2 (north)
+        // arrange
+
+        // act
+
+        // assert
+
         var north = new Direction(Constants.Directions.North);
         var east = new Direction(Constants.Directions.East);
         var a = new Tile("a");
@@ -63,6 +68,12 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenRookLikeSlider_WhenResolvingLongestChain_ThenCompiledMatchesLegacy()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var north = new Direction(Constants.Directions.North);
         var a = new Tile("a");
         var b = new Tile("b");
@@ -84,6 +95,12 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenMultiDirectionDiagonal_WhenResolving_ThenCompiledMatchesLegacy()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var ne = new Direction("ne");
         var a = new Tile("a");
         var b = new Tile("b");
@@ -103,6 +120,12 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenQueenMultiRay_WhenResolvingDirectionBranch_ThenCompiledMatchesLegacy()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var north = new Direction(Constants.Directions.North);
         var east = new Direction(Constants.Directions.East);
         var a = new Tile("a");
@@ -127,6 +150,12 @@ public class CompiledChessPatternParityTests
     [Fact]
     public void GivenPawnSingleStepNonRepeatable_WhenResolvingBeyondFirstStep_BothNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var north = new Direction(Constants.Directions.North);
         var a = new Tile("a");
         var b = new Tile("b");

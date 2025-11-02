@@ -8,6 +8,11 @@ public class BoardShapeParityTests
     public void GivenChessBoard_WhenBuildingBoardShape_ThenNeighborsMatchRelations()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var engine = progress.Engine;

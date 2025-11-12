@@ -2,6 +2,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Chess;
@@ -446,8 +447,48 @@ public sealed class ChessNomenclature : IGameNomenclature
 
     private bool IsCheckmateAfter(Game game, States.GameState state, MovePieceGameEvent moveEvent)
     {
-        // Placeholder: full legality not yet implemented; cannot determine mate reliably.
-        // Will be replaced once legal move generation exists.
-        return false;
+        if (game is null || state is null || moveEvent?.Piece?.Owner is null || moveEvent.Path?.To is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            // Simulate the move to get the resulting state
+            var destination = moveEvent.Path.To;
+            var movedPiece = moveEvent.Piece;
+            
+            // Create a simplified post-move state
+            var updatedStates = state.GetStates<States.PieceState>()
+                .Where(ps => ps.Artifact != movedPiece && ps.CurrentTile != destination)
+                .Select(ps => (States.IArtifactState)ps)
+                .ToList();
+
+            updatedStates.Add(new States.PieceState(movedPiece, destination));
+            
+            // Switch active player for the resulting state
+            var currentActivePlayer = movedPiece.Owner;
+            var players = game.Players.ToList();
+            var opponentPlayer = players.FirstOrDefault(p => p.Id != currentActivePlayer?.Id);
+            
+            if (opponentPlayer != null)
+            {
+                // Update active player states
+                foreach (var player in players)
+                {
+                    updatedStates.Add(new States.ActivePlayerState(player, player.Id == opponentPlayer.Id));
+                }
+            }
+            
+            var postState = States.GameState.New(updatedStates);
+            
+            // Use the endgame detector to check for checkmate
+            var detector = new ChessEndgameDetector(game);
+            return detector.IsCheckmate(postState);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

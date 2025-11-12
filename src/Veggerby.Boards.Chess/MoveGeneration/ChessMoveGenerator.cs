@@ -57,7 +57,7 @@ public sealed class ChessMoveGenerator
 
         foreach (var pieceState in pieceStates)
         {
-            if (pieceState.Artifact.Owner != activePlayer)
+            if (pieceState.Artifact.Owner?.Id != activePlayer.Id)
             {
                 continue;
             }
@@ -538,13 +538,13 @@ public sealed class ChessMoveGenerator
 
     private bool IsOccupiedByFriendly(GameState state, Tile tile, Player player)
     {
-        return state.GetPiecesOnTile(tile, player).Any();
+        return state.GetPiecesOnTile(tile).Any(p => p.Owner?.Id == player.Id);
     }
 
     private bool IsOccupiedByOpponent(GameState state, Tile tile, Player player)
     {
         var pieces = state.GetPiecesOnTile(tile);
-        return pieces.Any(p => p.Owner != player);
+        return pieces.Any(p => p.Owner?.Id != player.Id);
     }
 
     private Tile? GetRelatedTile(Tile from, string direction)

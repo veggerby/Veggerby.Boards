@@ -20,7 +20,8 @@ public class ChessStartingPositionMoveGenerationTests
         var moves = generator.Generate(state);
 
         // assert
-        moves.Count.Should().Be(20); // 16 pawn moves (8x2) + 4 knight moves (2x2)
+        // Expected: 16 pawn moves (8 pawns × 2 moves each) + 4 knight moves (2 knights × 2 moves each) = 20
+        moves.Count.Should().Be(20, "Starting position should have exactly 20 legal moves");
     }
 
     [Fact]

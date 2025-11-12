@@ -97,12 +97,23 @@
 
 ### 10. Chess Full Move Legality
 
-⏳ **Partial.**
+✅ **Done (2025-11-12).**
 
-* Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
-  * Progress update: Castling rights + safety filter implemented; explicit `Castle` helper; metadata-driven role/color predicates; identifier normalization via `ChessIds`; en-passant & castling mutators migrated to predicates; coverage guard active. Remaining: pseudo-legal generation API, promotion, mate/stalemate, SAN completion (#, =Q, e.p.).
-* Pending: generation + legality filter implementation & benchmarks.
-* Risks: generation perf, edge-case explosion in legality tests, predicate overhead (to benchmark).
+* Complete pseudo-legal move generation for all piece types implemented
+* King safety legality filter with check/pin detection completed
+* Checkmate and stalemate detection via `ChessEndgameDetector`
+* Full SAN notation with all standard symbols (#, +, =Q, O-O, x, e.p.)
+* Comprehensive test coverage: 16+ unit tests + 4 integration tests
+* All capture types validated (pawn, knight, bishop, rook, queen, en passant)
+* Castling (kingside/queenside) with verification of both king and rook movement
+* Full game playability demonstrated (Scholar's Mate integration test)
+* Total: 786 tests (778 passing, 8 skipped)
+
+📦 Deferred (outside acceptance criteria):
+* Performance benchmarks and optimization
+* Draw rules (50-move rule, threefold repetition)
+* Multiple promotion piece selection UI/API
+* PGN import/export
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-10-10
+last_updated: 2025-11-12
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -45,9 +45,9 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
    Implement group/liberty resolver, capture, suicide, ko.
    Impact: Establishes reusable graph/region evaluation strategies.
 
-1. **Chess Pseudo-Legal + Legality Completion (Workstream 10)**
-   Generation API, promotion, mate/stalemate, final SAN details.
-   Impact: Canonical complex movement + legality reference implementation.
+1. **✅ Chess Pseudo-Legal + Legality Completion (Workstream 10) – DONE (2025-11-12)**
+   Generation API, king safety filtering, promotion, mate/stalemate detection, complete SAN notation all delivered.
+   Impact: Canonical complex movement + legality reference implementation completed.
 
 1. **Cards Module Documentation & Extensions**
    Cards module delivered (deterministic piles, shuffle, draw/move/discard). Docs page authored under `/docs/cards`. Next: add peek/reveal/gain/reshuffle events.

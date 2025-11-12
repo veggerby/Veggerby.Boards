@@ -36,9 +36,9 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
             return gameState;
         }
 
-        // Tentatively place the stone
+        // Tentatively place the stone for scanning purposes
         var newPieceState = new PieceState(@event.Stone, @event.Target);
-        var stateWithNewStone = gameState.Next([newPieceState]);
+        var tentativeState = gameState.Next([newPieceState]);
 
         var scanner = new GroupScanner(engine.Game);
         var capturedStones = new List<Piece>();
@@ -50,7 +50,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
 
         foreach (var adjTile in adjacentTiles)
         {
-            var adjPiece = stateWithNewStone.GetStates<PieceState>()
+            var adjPiece = tentativeState.GetStates<PieceState>()
                 .FirstOrDefault(ps => ps.CurrentTile.Id == adjTile.Id);
 
             if (adjPiece != null && adjPiece.Artifact.Owner?.Id != placedStoneOwner?.Id)
@@ -59,7 +59,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
                 var groupKey = adjPiece.Artifact.Id;
                 if (!processedGroups.Contains(groupKey))
                 {
-                    var groupInfo = scanner.ScanGroup(stateWithNewStone, (Piece)adjPiece.Artifact);
+                    var groupInfo = scanner.ScanGroup(tentativeState, (Piece)adjPiece.Artifact);
                     processedGroups.Add(groupKey);
 
                     // Mark all stones in group as processed
@@ -77,14 +77,13 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
             }
         }
 
-        // Apply captures by creating captured piece states
-        var capturedStates = capturedStones.Select(stone => new CapturedPieceState(stone)).ToList();
-        var stateWithCaptures = capturedStates.Count > 0
-            ? stateWithNewStone.Next(capturedStates)
-            : stateWithNewStone;
+        // Create final state with placement + captures in one transition
+        var allStateChanges = new List<IArtifactState> { newPieceState };
+        allStateChanges.AddRange(capturedStones.Select(stone => new CapturedPieceState(stone)));
+        var finalState = gameState.Next(allStateChanges);
 
         // Check suicide rule: if own group has zero liberties, reject (unless we captured stones)
-        var ownGroup = scanner.ScanGroup(stateWithCaptures, @event.Stone);
+        var ownGroup = scanner.ScanGroup(finalState, @event.Stone);
         if (ownGroup.Liberties == 0 && capturedStones.Count == 0)
         {
             // Suicide move without capture is illegal
@@ -111,7 +110,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
             ConsecutivePasses = 0
         };
 
-        return stateWithCaptures.ReplaceExtras(updatedExtras);
+        return finalState.ReplaceExtras(updatedExtras);
     }
 
     /// <summary>

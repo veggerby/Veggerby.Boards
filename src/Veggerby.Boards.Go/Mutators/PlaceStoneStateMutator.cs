@@ -44,7 +44,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
         var capturedStones = new List<Piece>();
 
         // Find and capture opponent groups with zero liberties
-        var adjacentTiles = GetAdjacentTiles(engine.Game, @event.Target);
+        var adjacentTiles = GetAdjacentTiles(engine.Game, @event.Target).ToList();
         var placedStoneOwner = @event.Stone.Owner;
         var processedGroups = new HashSet<string>();
 

@@ -71,7 +71,7 @@ public sealed class GoGameBuilder(int size = 19) : GameBuilder
         WithState(new GoStateExtras(null, 0, _size));
 
         AddGamePhase("play")
-            .If<InitialGameStateCondition>()
+            .If<NullGameStateCondition>()
             .Then()
                 .All()
                 .ForEvent<PlaceStoneGameEvent>()

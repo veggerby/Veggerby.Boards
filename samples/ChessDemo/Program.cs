@@ -49,18 +49,19 @@ foreach (var san in immortalGame)
             break;
         }
 
-        // Apply the move using SAN notation
-        var newProgress = progress.Move(san);
+        // Find and execute the move matching the SAN notation
+        var matchingMove = FindMoveFromSan(san, legalMoves, progress.Game);
         
-        if (newProgress == progress)
+        if (matchingMove == null)
         {
-            Console.WriteLine($"\nERROR: Move '{san}' failed to update game state");
+            Console.WriteLine($"\nERROR: Could not find legal move for SAN '{san}'");
             Console.WriteLine($"Position before move:");
             ChessBoardRenderer.Write(progress.Game, progress.State, Console.Out);
+            Console.WriteLine($"\nAvailable legal moves: {legalMoves.Count}");
             break;
         }
 
-        progress = newProgress;
+        progress = progress.Move(matchingMove.Piece.Id, matchingMove.To.Id);
 
         // Display move
         var moveText = isWhiteMove ? $"{moveNumber}. {san}" : $"{moveNumber}... {san}";
@@ -140,28 +141,103 @@ Console.WriteLine("  ✓ Checkmate detection");
 Console.WriteLine("  ✓ Full SAN notation parsing");
 Console.WriteLine("\nChess implementation is complete and fully playable!");
 
-static TilePath? ResolvePath(
-    Game game, 
-    Piece piece, 
-    Tile from,
-    Tile to)
+static PseudoMove? FindMoveFromSan(string san, IReadOnlyCollection<PseudoMove> legalMoves, Game game)
 {
-    ArgumentNullException.ThrowIfNull(game);
-    ArgumentNullException.ThrowIfNull(piece);
-    ArgumentNullException.ThrowIfNull(from);
-    ArgumentNullException.ThrowIfNull(to);
-
-    foreach (var pattern in piece.Patterns)
+    // Strip check/checkmate symbols
+    san = san.TrimEnd('+', '#');
+    
+    // Handle castling
+    if (san == "O-O" || san == "O-O-O")
     {
-        var visitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
-        pattern.Accept(visitor);
-        if (visitor.ResultPath is not null)
+        return legalMoves.FirstOrDefault(m => 
+            m.Kind == PseudoMoveKind.Castle && 
+            (san == "O-O" ? m.To.Id.EndsWith("g1") || m.To.Id.EndsWith("g8") 
+                          : m.To.Id.EndsWith("c1") || m.To.Id.EndsWith("c8")));
+    }
+    
+    // Parse SAN notation
+    bool isCapture = san.Contains('x');
+    string cleanSan = san.Replace("x", "");
+    
+    // Check for promotion
+    Role? promotionRole = null;
+    if (cleanSan.Contains('=') || (cleanSan.Length > 2 && char.IsUpper(cleanSan[^1])))
+    {
+        char promoPiece = cleanSan.Contains('=') ? cleanSan[^1] : cleanSan[^1];
+        string promoRoleStr = promoPiece switch
         {
-            return visitor.ResultPath;
+            'Q' => "queen",
+            'R' => "rook",
+            'B' => "bishop",
+            'N' => "knight",
+            _ => null
+        };
+        if (promoRoleStr != null)
+        {
+            promotionRole = game.Roles.FirstOrDefault(r => r.Id == promoRoleStr);
+        }
+        cleanSan = cleanSan.Contains('=') ? cleanSan[..^2] : cleanSan[..^1];
+    }
+    
+    // Determine piece type
+    string roleId = "pawn";
+    int startIndex = 0;
+    if (char.IsUpper(cleanSan[0]))
+    {
+        roleId = cleanSan[0] switch
+        {
+            'K' => "king",
+            'Q' => "queen",
+            'R' => "rook",
+            'B' => "bishop",
+            'N' => "knight",
+            _ => "pawn"
+        };
+        startIndex = 1;
+    }
+    
+    // Extract destination square (last 2 characters)
+    string destSquare = cleanSan[^2..];
+    string? disambig = cleanSan.Length > startIndex + 2 ? cleanSan.Substring(startIndex, cleanSan.Length - startIndex - 2) : null;
+    
+    // Find matching moves
+    var candidates = legalMoves.Where(m => 
+        m.Piece.Identity.Role.Id == roleId &&
+        m.To.Id == $"tile-{destSquare}" &&
+        m.IsCapture == isCapture).ToList();
+    
+    if (candidates.Count == 0)
+    {
+        return null;
+    }
+    
+    if (candidates.Count == 1)
+    {
+        return candidates[0];
+    }
+    
+    // Apply disambiguation
+    if (disambig != null)
+    {
+        if (disambig.Length == 1)
+        {
+            if (char.IsDigit(disambig[0]))
+            {
+                // Rank disambiguation
+                candidates = candidates.Where(m => m.From.Id.EndsWith(disambig)).ToList();
+            }
+            else
+            {
+                // File disambiguation
+                candidates = candidates.Where(m => m.From.Id.Contains($"-{disambig}")).ToList();
+            }
+        }
+        else
+        {
+            // Full square disambiguation
+            candidates = candidates.Where(m => m.From.Id == $"tile-{disambig}").ToList();
         }
     }
-
-    // Fallback: direct relation (single step) if available
-    var rel = game.Board.TileRelations.FirstOrDefault(r => r.From == from && r.To == to);
-    return rel is not null ? new TilePath([rel]) : null;
+    
+    return candidates.FirstOrDefault();
 }

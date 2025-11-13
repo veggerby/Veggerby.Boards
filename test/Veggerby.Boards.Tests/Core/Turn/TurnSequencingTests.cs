@@ -22,13 +22,21 @@ public class TurnSequencingCoreTests
     {
         private readonly Action _reset = reset;
 
-        public void Dispose() { _reset(); }
+        public void Dispose()
+        {
+            _reset();
+        }
     }
 
     [Fact]
     public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -57,6 +65,11 @@ public class TurnSequencingCoreTests
     public void GivenStartSegment_WhenEnded_ThenSegmentAdvancesToMain()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -79,6 +92,11 @@ public class TurnSequencingCoreTests
     public void GivenMainSegment_WhenEnded_ThenSegmentAdvancesToEnd()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -105,6 +123,11 @@ public class TurnSequencingCoreTests
     public void GivenEndSegment_WhenEnded_ThenTurnNumberIncrementsAndResetsToStart()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -127,6 +150,11 @@ public class TurnSequencingCoreTests
     public void GivenEndSegment_WhenEnded_ThenActivePlayerRotates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -157,6 +185,11 @@ public class TurnSequencingCoreTests
     public void GivenMismatchedSegment_WhenEnded_ThenInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -179,6 +212,11 @@ public class TurnSequencingCoreTests
     public void GivenAnySegment_WhenTurnPassEventApplied_ThenTurnAdvancesAndActivePlayerRotates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -206,6 +244,11 @@ public class TurnSequencingCoreTests
     public void GivenMainSegment_WhenTurnCommitEventApplied_ThenSegmentTransitionsToEnd()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -228,6 +271,11 @@ public class TurnSequencingCoreTests
     public void GivenStartSegment_WhenTurnCommitEventApplied_ThenStateUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -247,6 +295,11 @@ public class TurnSequencingCoreTests
     public void GivenSequencingEnabled_WhenAlternatingEndTurnSegments_ThenActivePlayerAlternates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -278,6 +331,12 @@ public class TurnSequencingCoreTests
     [Fact]
     public void GivenTwoPasses_WhenSequencingEnabled_ThenPassStreakIsTwo()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -292,6 +351,12 @@ public class TurnSequencingCoreTests
     [Fact]
     public void GivenReplayEvent_WhenSequencingEnabled_ThenTurnAdvancesWithoutActiveRotationAndStreakResets()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableFlag();
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

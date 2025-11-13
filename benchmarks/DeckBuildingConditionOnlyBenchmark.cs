@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Cards;
@@ -31,8 +29,8 @@ public class DeckBuildingConditionOnlyBenchmark
         builder.WithCard("c1");
         var progress = builder.Compile();
         _engine = progress.Engine;
-        var deck = progress.Game.GetArtifact<Deck>("p1-deck");
-        var p1 = progress.Game.GetPlayer("P1");
+        var deck = progress.Game.GetArtifact<Deck>("p1-deck") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: deck p1-deck missing");
+        var p1 = progress.Game.GetPlayer("P1") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: player P1 missing");
 
         var piles = new Dictionary<string, IList<Card>>{
             { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },

@@ -1,0 +1,5 @@
+# Banned symbols for the solution
+# Format: <symbol id><tab><justification>
+# Ban direct usage of xUnit Assert methods in favor of AwesomeAssertions Should() fluent API.
+T:Xunit.Assert;Use AwesomeAssertions Should() fluent assertions instead of xUnit Assert.*
+M:Xunit.Assert.*;Use AwesomeAssertions Should() fluent assertions instead of xUnit Assert.*

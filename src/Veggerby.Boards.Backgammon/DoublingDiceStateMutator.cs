@@ -26,28 +26,38 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
     /// <summary>
     /// Gets the doubling dice artifact.
     /// </summary>
-    public Dice DoublingDice { get; }
+    public Dice DoublingDice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Require active turn sequencing flag for multi-turn gating; if disabled behave as original single first doubling semantics.
         var turnState = state.GetStates<TurnState>().FirstOrDefault();
 
         // Active player now derived via centralized projection helper; inactive is the other player in two-player Backgammon
-        Player activePlayer = null;
+        Player? activePlayer = null;
         if (state.TryGetActivePlayer(out var ap))
         {
             activePlayer = ap;
         }
 
-        Player inactivePlayer = null;
+        Player? inactivePlayer = null;
         if (activePlayer is not null)
         {
             // find the other player (Backgammon is strictly two-player in this module)
             foreach (var p in engine.Game.Players)
             {
-                if (!p.Equals(activePlayer)) { inactivePlayer = p; break; }
+                if (!p.Equals(activePlayer))
+                {
+                    inactivePlayer = p;
+                    break;
+                }
             }
         }
 
@@ -81,6 +91,10 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
             var generatorRedouble = new DoublingDiceValueGenerator();
             var nextValue = generatorRedouble.GetValue(specialized);
             var newOwner = inactivePlayer ?? specialized.CurrentPlayer; // ownership transfers to opponent
+            if (newOwner is null)
+            {
+                return state; // cannot assign ownership
+            }
             var upgraded = new DoublingDiceState(DoublingDice, nextValue, newOwner, turnState.TurnNumber);
             return state.Next([upgraded]);
         }
@@ -94,9 +108,10 @@ public class DoublingDiceStateMutator : IStateMutator<RollDiceGameEvent<int>>
 
         var generator = new DoublingDiceValueGenerator();
         var value = generator.GetValue(baseState);
-        var firstOwner = inactivePlayer; // inactive player receives ownership
+        var firstOwner = inactivePlayer ?? activePlayer; // fallback: assign someone if opponent missing
         var lastTurn = turnState?.TurnNumber ?? 0;
-        var first = new DoublingDiceState(DoublingDice, value, firstOwner, lastTurn);
+        var firstOwnerNonNull = firstOwner ?? throw new InvalidOperationException("Unable to determine doubling dice owner.");
+        var first = new DoublingDiceState(DoublingDice, value, firstOwnerNonNull, lastTurn);
         return state.Next([first]);
     }
 }

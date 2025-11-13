@@ -17,7 +17,10 @@ public sealed class SelectActivePlayerGameEvent : IGameEvent, IStateMutationGame
     /// <summary>
     /// Gets the identifier of the active player (white/black by Backgammon module convention).
     /// </summary>
-    public string ActivePlayerId { get; }
+    public string ActivePlayerId
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SelectActivePlayerGameEvent"/> class.

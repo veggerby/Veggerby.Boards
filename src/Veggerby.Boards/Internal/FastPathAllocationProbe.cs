@@ -29,7 +29,10 @@ internal readonly struct FastPathAllocationProbe
     private readonly long _ticksStart;
     private FastPathAllocationProbe(int g0, int g1, int g2, long ticks)
     {
-        _gen0Before = g0; _gen1Before = g1; _gen2Before = g2; _ticksStart = ticks;
+        _gen0Before = g0;
+        _gen1Before = g1;
+        _gen2Before = g2;
+        _ticksStart = ticks;
     }
 
     /// <summary>Begins a probe scope capturing initial GC collection counters.</summary>

@@ -74,6 +74,11 @@ public class BitboardParityRegressionTests
     public void GivenSequenceOfMoves_WhenBitboardsEnabled_ThenMasksMatchNaiveEnumeration()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // bitboards ON
         var progress = new ChessGameBuilder().Compile();
 
@@ -101,8 +106,13 @@ public class BitboardParityRegressionTests
             // per-player masks
             var whiteMask = ComputeNaivePlayerMask(progress, ChessIds.Players.White);
             var blackMask = ComputeNaivePlayerMask(progress, ChessIds.Players.Black);
-            var white = perPlayer.Single(p => p.Key.Id == ChessIds.Players.White).Value.Mask;
-            var black = perPlayer.Single(p => p.Key.Id == ChessIds.Players.Black).Value.Mask;
+            perPlayer.Should().NotBeNull();
+            var whiteEntry = perPlayer.Single(p => p.Key.Id == ChessIds.Players.White);
+            var blackEntry = perPlayer.Single(p => p.Key.Id == ChessIds.Players.Black);
+            whiteEntry.Value.Should().NotBeNull();
+            blackEntry.Value.Should().NotBeNull();
+            var white = whiteEntry.Value.Mask;
+            var black = blackEntry.Value.Mask;
             white.Should().Be(whiteMask, $"white mask diverged after step {i}");
             black.Should().Be(blackMask, $"black mask diverged after step {i}");
         }

@@ -1,6 +1,5 @@
 using System.Linq;
 
-using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
@@ -27,7 +26,8 @@ public sealed class GoNomenclature : IGameNomenclature
         {
             return string.Empty;
         }
-        var to = GetTileName(moveEvent.Path?.To);
+        var toTile = moveEvent.Path?.To;
+        var to = toTile is null ? string.Empty : GetTileName(toTile);
         return string.IsNullOrEmpty(to) ? string.Empty : to; // (x-y) style already produced by id stripping
     }
     /// <inheritdoc />

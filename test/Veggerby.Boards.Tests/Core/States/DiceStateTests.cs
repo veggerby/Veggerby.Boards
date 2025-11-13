@@ -12,8 +12,14 @@ public class DiceStateTests
         [Fact]
         public void Should_create_dice_state()
         {
+            // arrange
+
+            // act
+
             // assert
+
             var dice = new Dice("dice");
+            dice.Should().NotBeNull();
 
             // act
             var actual = new DiceState<int>(dice, 5);
@@ -26,10 +32,13 @@ public class DiceStateTests
         [Fact]
         public void Should_throw_when_null_dice()
         {
-            // assert
+            // arrange
 
             // act
-            var actual = () => new DiceState<int>(null, 5);
+
+            // assert
+
+            var actual = () => new DiceState<int>(null!, 5);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("artifact");
@@ -38,11 +47,16 @@ public class DiceStateTests
         [Fact]
         public void Should_throw_when_null_value()
         {
+            // arrange
+
+            // act
+
             // assert
+
             var dice = new Dice("dice");
 
             // act
-            var actual = () => new DiceState<string>(dice, null);
+            var actual = () => new DiceState<string>(dice, null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("currentValue");
@@ -55,6 +69,11 @@ public class DiceStateTests
         public void Should_equal_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new DiceState<int>(dice, 5);
 
@@ -69,6 +88,11 @@ public class DiceStateTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new DiceState<int>(dice, 5);
 
@@ -83,6 +107,11 @@ public class DiceStateTests
         public void Should_equal_other_dice_state_same_artifact_same_value()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state1 = new DiceState<int>(dice, 5);
             var state2 = new DiceState<int>(dice, 5);
@@ -98,6 +127,11 @@ public class DiceStateTests
         public void Should_equal_other_dice_state_same_artifact_different_value()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state1 = new DiceState<int>(dice, 5);
             var state2 = new DiceState<int>(dice, 3);
@@ -113,6 +147,11 @@ public class DiceStateTests
         public void Should_not_equal_different_artifacts()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice-1");
             var dice2 = new Dice("dice-2");
             var state1 = new DiceState<int>(dice1, 5);
@@ -129,8 +168,14 @@ public class DiceStateTests
         public void Should_not_equal_different_artifact_state_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
-            var piece = new Piece("piece", null, null);
+            var owner = new Player("p");
+            var piece = new Piece("piece", owner, Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
             var tile = new Tile("tile");
             var state1 = new DiceState<int>(dice, 5);
             var state2 = new PieceState(piece, tile);
@@ -146,6 +191,11 @@ public class DiceStateTests
         public void Should_not_equal_another_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new DiceState<int>(dice, 5);
 

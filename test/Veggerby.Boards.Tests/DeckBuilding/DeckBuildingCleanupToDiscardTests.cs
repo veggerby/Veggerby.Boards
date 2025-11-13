@@ -13,7 +13,13 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenCardsInHandAndInPlay_WhenCleanup_ThenAllMoveToDiscardAndSourcesCleared()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithSeed(123UL);
@@ -27,6 +33,7 @@ public class DeckBuildingCleanupToDiscardTests
         builder.WithCard(c4.Id);
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -36,7 +43,7 @@ public class DeckBuildingCleanupToDiscardTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card> { c3, c4 },
         };
         var supply = new Dictionary<string, int>();
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
@@ -47,8 +54,9 @@ public class DeckBuildingCleanupToDiscardTests
         progress = progress.HandleEvent(new CleanupToDiscardEvent(deck));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
-        ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainInOrder(new[] { c1, c2, c3, c4 });
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainInOrder(new[] { c1, c2, c3, c4 });
         ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(0);
         ds.Piles[DeckBuildingGameBuilder.Piles.InPlay].Count.Should().Be(0);
     }
@@ -56,11 +64,18 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenNoCardsInHandOrInPlay_WhenCleanup_ThenNoOp()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),
@@ -69,7 +84,7 @@ public class DeckBuildingCleanupToDiscardTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card> { },
         };
         var supply2 = new Dictionary<string, int>();
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply2));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply2));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
@@ -77,13 +92,14 @@ public class DeckBuildingCleanupToDiscardTests
         // advance Start -> Main -> End
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Main));  // Main -> End
-        var updated = progress.HandleEvent(new CleanupToDiscardEvent(deck));
+        var updated = progress.HandleEvent(new CleanupToDiscardEvent(deck!));
 
         // assert
         // No-op path must return the original state instance per engine invariants
         ReferenceEquals(updated.State, progress.State).Should().BeTrue();
-        var ds = updated.State.GetState<DeckState>(deck);
-        ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(0);
+        var ds = updated.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(0);
         ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(0);
         ds.Piles[DeckBuildingGameBuilder.Piles.InPlay].Count.Should().Be(0);
     }

@@ -23,16 +23,31 @@ public class TraceObserverBatchOverheadBenchmark
 {
     private sealed class CountingObserver : IEvaluationObserver
     {
-        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state) { }
-        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { }
-        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
-        public void OnEventIgnored(IGameEvent @event, GameState state) { }
-        public void OnStateHashed(GameState state, ulong hash) { }
-        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
+        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state)
+        {
+        }
+        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+        {
+        }
+        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+        {
+        }
+        public void OnEventIgnored(IGameEvent @event, GameState state)
+        {
+        }
+        public void OnStateHashed(GameState state, ulong hash)
+        {
+        }
+        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+        {
+        }
     }
 
     [Params(false, true)]
-    public bool SimulatedPlanMode { get; set; }
+    public bool SimulatedPlanMode
+    {
+        get; set;
+    }
 
     private GameProgress _baseline = null!;
     private GameProgress _observer = null!;
@@ -73,9 +88,9 @@ public class TraceObserverBatchOverheadBenchmark
             FeatureFlags.EnableObserverBatching = true;
             _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2);
-            var from = _baseline.Game.GetTile(ChessIds.Tiles.E2);
-            var to = _baseline.Game.GetTile(ChessIds.Tiles.E4);
+            var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("TraceObserverBatch: pawn2 missing");
+            var from = _baseline.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("TraceObserverBatch: tile e2 missing");
+            var to = _baseline.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("TraceObserverBatch: tile e4 missing");
             var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
             _event = new MovePieceGameEvent(piece, path);
         }

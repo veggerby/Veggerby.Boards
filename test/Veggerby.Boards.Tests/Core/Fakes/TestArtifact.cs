@@ -6,9 +6,9 @@ namespace Veggerby.Boards.Tests.Core.Fakes;
 
 public class TestArtifact(string id) : Artifact(id), IEquatable<TestArtifact>
 {
-    public bool Equals(TestArtifact other) => base.Equals(other);
+    public bool Equals(TestArtifact? other) => base.Equals(other);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as TestArtifact);
     }

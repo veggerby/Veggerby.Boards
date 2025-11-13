@@ -28,12 +28,25 @@ public class EventKindFilteringBenchmark
     private sealed class CountingObserver : IEvaluationObserver
     {
         public int RuleEvaluations;
-        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state) { }
-        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex) { RuleEvaluations++; }
-        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
-        public void OnEventIgnored(IGameEvent @event, GameState state) { }
-        public void OnStateHashed(GameState state, ulong hash) { }
-        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex) { }
+        public void OnPhaseEnter(Flows.Phases.GamePhase phase, GameState state)
+        {
+        }
+        public void OnRuleEvaluated(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
+        {
+            RuleEvaluations++;
+        }
+        public void OnRuleApplied(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+        {
+        }
+        public void OnEventIgnored(IGameEvent @event, GameState state)
+        {
+        }
+        public void OnStateHashed(GameState state, ulong hash)
+        {
+        }
+        public void OnRuleSkipped(Flows.Phases.GamePhase phase, Flows.Rules.IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
+        {
+        }
     }
 
     private CountingObserver _obsLegacy = null!;
@@ -53,9 +66,9 @@ public class EventKindFilteringBenchmark
         _filtering = new ChessGameBuilder().WithObserver(_obsFiltering).Compile();
         FeatureFlags.EnableDecisionPlanEventFiltering = false; // reset
 
-        var rook = _legacy.Game.GetPiece(ChessIds.Pieces.WhiteRook1);
-        var from = _legacy.Game.GetTile("a1");
-        var to = _legacy.Game.GetTile("b1");
+        var rook = _legacy.Game.GetPiece(ChessIds.Pieces.WhiteRook1) ?? throw new InvalidOperationException("EventKindFiltering: rook a1 missing");
+        var from = _legacy.Game.GetTile("a1") ?? throw new InvalidOperationException("EventKindFiltering: tile a1 missing");
+        var to = _legacy.Game.GetTile("b1") ?? throw new InvalidOperationException("EventKindFiltering: tile b1 missing");
         var forwardPath = new ResolveTilePathPatternVisitor(_legacy.Game.Board, from, to).ResultPath;
         if (forwardPath is null)
         {
@@ -71,8 +84,8 @@ public class EventKindFilteringBenchmark
         _moves = new MovePieceGameEvent[64];
         for (int i = 0; i < _moves.Length; i++)
         {
-            var path = (i % 2 == 0) ? forwardPath : backwardPath; // alternate e2->e3 then e3->e2
-            _moves[i] = new MovePieceGameEvent(rook, path);
+            var path = (i % 2 == 0) ? forwardPath : backwardPath;
+            _moves[i] = new MovePieceGameEvent(rook, path!);
         }
 
         _mixed50 = BuildMixed(32, 32);        // 32 moves + 32 state

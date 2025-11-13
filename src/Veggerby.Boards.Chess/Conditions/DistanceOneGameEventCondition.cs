@@ -1,3 +1,5 @@
+using System;
+
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
@@ -18,6 +20,10 @@ public sealed class DistanceOneGameEventCondition : IGameEventCondition<MovePiec
     /// <returns>ConditionResponse.Valid when distance is one, else Ignore.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(moveEvent, nameof(moveEvent));
+
         return moveEvent.Distance == 1
             ? ConditionResponse.Valid
             : ConditionResponse.Ignore("Distance not one");

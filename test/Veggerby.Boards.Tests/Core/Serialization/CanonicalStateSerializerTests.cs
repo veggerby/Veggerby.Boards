@@ -24,7 +24,7 @@ public class CanonicalStateSerializerTests
         int turnNumber,
         TurnSegment segment,
         int dummyValue,
-        IEnumerable<string> artifactInsertionOrder = null)
+    IEnumerable<string>? artifactInsertionOrder = null)
     {
         // Direct artifact construction (no builder required) – hashing only depends on Artifact.Id + state properties.
         var player = new Player("p1");
@@ -60,6 +60,11 @@ public class CanonicalStateSerializerTests
     public void GivenIdenticalLogicalStates_WhenHashesComputedTwice_ThenHashesAreEqual()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? firstHash;
         ulong? secondHash;
         using (new FeatureFlagScope(hashing: true))
@@ -82,6 +87,11 @@ public class CanonicalStateSerializerTests
     public void GivenDifferentInsertionOrder_WhenHashesComputed_ThenHashesAreEqual()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? orderedHash;
         ulong? shuffledHash;
         using (new FeatureFlagScope(hashing: true))
@@ -107,6 +117,11 @@ public class CanonicalStateSerializerTests
     public void GivenSinglePropertyChange_WhenHashesComputed_ThenHashDiffers()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? baseHash;
         ulong? changedHash;
         using (new FeatureFlagScope(hashing: true))
@@ -129,6 +144,11 @@ public class CanonicalStateSerializerTests
     public void GivenHashingDisabled_WhenStateCreated_ThenHashIsNull()
     {
         // arrange
+
+        // act
+
+        // assert
+
         ulong? hash;
         using (new FeatureFlagScope(hashing: false))
         {

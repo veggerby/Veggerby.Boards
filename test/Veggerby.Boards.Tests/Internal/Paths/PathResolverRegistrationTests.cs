@@ -8,18 +8,40 @@ public class PathResolverRegistrationTests
     [Fact]
     public void GivenCompiledPatternsEnabled_WhenBuildingGame_ThenPathResolverRegistered()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.NotNull(progress.Engine.Capabilities);
-        Assert.NotNull(progress.Engine.Capabilities.PathResolver);
+
+        // act
+        var capabilities = progress.Engine.Capabilities;
+
+        // assert
+        capabilities.Should().NotBeNull();
+        capabilities!.PathResolver.Should().NotBeNull();
     }
 
     [Fact]
     public void GivenCompiledPatternsDisabled_WhenBuildingGame_ThenFallbackPathResolverRegistered()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
-        Assert.NotNull(progress.Engine.Capabilities);
-        Assert.NotNull(progress.Engine.Capabilities.PathResolver); // simple visitor-based resolver
+
+        // act
+        var capabilities = progress.Engine.Capabilities; // simple visitor-based resolver
+
+        // assert
+        capabilities.Should().NotBeNull();
+        capabilities!.PathResolver.Should().NotBeNull();
     }
 }

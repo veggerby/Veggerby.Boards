@@ -11,6 +11,9 @@ public class PieceIsActivePlayerGameEventCondition : IGameEventCondition<MovePie
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         if (!state.TryGetActivePlayer(out var activePlayer))
         {
             return ConditionResponse.Ignore("No active player");

@@ -20,6 +20,11 @@ public class TraceCaptureTests
     public void When_Trace_Disabled_LastTrace_Is_Null()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (scope1, progress) = Build(trace: false, hashing: true);
         using var _ = scope1;
 
@@ -33,13 +38,23 @@ public class TraceCaptureTests
     public void When_Trace_Enabled_LastTrace_Populated_After_Move()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (scope2, progress) = Build(trace: true, hashing: true);
         using var __ = scope2;
         var from = progress.Game.GetTile("tile-1");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("tile-2");
+        to.Should().NotBeNull();
         var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var move = new MovePieceGameEvent(progress.Game.GetPiece("piece-1"), path);
+        var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
+        var move = new MovePieceGameEvent(piece!, path);
 
         // act
         progress = progress.HandleEvent(move);
@@ -56,13 +71,23 @@ public class TraceCaptureTests
     public void Trace_Contains_PhaseEnter_Then_RuleEvaluated_Before_RuleApplied()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (scope3, progress) = Build(trace: true, hashing: false);
         using var ___ = scope3;
         var from = progress.Game.GetTile("tile-1");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("tile-2");
+        to.Should().NotBeNull();
         var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(from) && r.To.Equals(to));
+        relation.Should().NotBeNull();
         var path = new TilePath([relation]);
-        var move = new MovePieceGameEvent(progress.Game.GetPiece("piece-1"), path);
+        var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
+        var move = new MovePieceGameEvent(piece!, path);
 
         // act
         progress = progress.HandleEvent(move);

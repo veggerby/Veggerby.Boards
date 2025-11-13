@@ -11,7 +11,10 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class CleanupToDiscardEvent : IGameEvent
 {
     /// <summary>The deck to clean up.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CleanupToDiscardEvent"/> class.

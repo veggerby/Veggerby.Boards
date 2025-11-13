@@ -13,7 +13,10 @@ public class CompositeArtifact<T> : Artifact, IEquatable<CompositeArtifact<T>>
     /// <summary>
     /// Gets the child artifacts.
     /// </summary>
-    public IEnumerable<T> ChildArtifacts { get; }
+    public IEnumerable<T> ChildArtifacts
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CompositeArtifact{T}"/> class.
@@ -31,10 +34,10 @@ public class CompositeArtifact<T> : Artifact, IEquatable<CompositeArtifact<T>>
     }
 
     /// <inheritdoc />
-    public bool Equals(CompositeArtifact<T> other) => base.Equals(other);
+    public bool Equals(CompositeArtifact<T>? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as CompositeArtifact<T>);
     }

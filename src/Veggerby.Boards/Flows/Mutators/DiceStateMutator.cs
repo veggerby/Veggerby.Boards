@@ -1,4 +1,6 @@
-﻿using Veggerby.Boards.Flows.Events;
+﻿using System;
+
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Flows.Mutators;
@@ -11,6 +13,9 @@ public class DiceStateMutator<T> : IStateMutator<RollDiceGameEvent<T>>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, RollDiceGameEvent<T> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         return gameState.Next(@event.NewDiceStates);
     }
 }

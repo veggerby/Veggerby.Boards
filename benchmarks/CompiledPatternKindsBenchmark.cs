@@ -83,7 +83,8 @@ public class CompiledPatternKindsBenchmark
                 p.Accept(visitor);
                 if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {
-                    count++; break;
+                    count++;
+                    break;
                 }
             }
         }

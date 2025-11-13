@@ -34,9 +34,9 @@ public class DebugParityOverheadBenchmark
         // Build parity-enabled
         _parity = new Chess.ChessGameBuilder().Compile();
 
-        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2);
-        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2);
-        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4);
+        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("Benchmark setup: white pawn not found");
+        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2) ?? throw new InvalidOperationException("Benchmark setup: from tile e2 not found");
+        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4) ?? throw new InvalidOperationException("Benchmark setup: to tile e4 not found");
         var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
         _event = new MovePieceGameEvent(piece, path);
     }

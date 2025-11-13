@@ -77,7 +77,7 @@ Pseudo-code snippet:
 ```csharp
 var options = engine.Game.TryGetArtifact<DeckBuildingEndTriggerOptions>();
 bool depletionSatisfied = false;
-if (options != null) {
+if (options is not null) {
     int emptyCount = 0;
     foreach (var kv in deckState.Supply) {
         if (kv.Value == 0) { emptyCount++; }
@@ -87,7 +87,7 @@ if (options != null) {
         foreach (var kp in options.KeyPiles) { if (!deckState.Supply.TryGetValue(kp, out var c) || c == 0) { depletionSatisfied = true; break; } }
     }
 }
-if (!depletionSatisfied && turn != null && turn.TurnNumber < MaxTurns) return Ignore(...);
+if (!depletionSatisfied && turn is not null && turn.TurnNumber < MaxTurns) return Ignore(...);
 return Valid;
 ```
 

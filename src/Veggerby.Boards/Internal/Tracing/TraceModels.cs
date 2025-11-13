@@ -17,11 +17,11 @@ namespace Veggerby.Boards.Internal.Tracing;
 internal sealed record TraceEntry(
     int Order,
     string Kind,
-    string? Phase,
-    string? Rule,
-    string? EventType,
-    string? ConditionResult,
-    string? ConditionReason,
+    string Phase,
+    string Rule,
+    string EventType,
+    string ConditionResult,
+    string ConditionReason,
     int? RuleIndex,
     ulong? StateHash,
     ulong? StateHash128Low,
@@ -82,37 +82,43 @@ internal sealed class TraceCaptureObserver(IEvaluationObserver inner, Evaluation
 
     public void OnPhaseEnter(GamePhase phase, GameState state)
     {
-        _trace.Add(new TraceEntry(++_order, "PhaseEnter", phase.Label, null, null, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "PhaseEnter", Normalize.Text(phase.Label), string.Empty, string.Empty, string.Empty, string.Empty, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnPhaseEnter(phase, state);
     }
 
     public void OnRuleEvaluated(GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
     {
-        _trace.Add(new TraceEntry(++_order, "RuleEvaluated", phase.Label, rule.GetType().Name, null, response.Result.ToString(), response.Reason, ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "RuleEvaluated", Normalize.Text(phase.Label), rule.GetType().Name, string.Empty, response.Result.ToString(), Normalize.Text(response.Reason), ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnRuleEvaluated(phase, rule, response, state, ruleIndex);
     }
 
     public void OnRuleApplied(GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
     {
-        _trace.Add(new TraceEntry(++_order, "RuleApplied", phase.Label, rule.GetType().Name, @event.GetType().Name, null, null, ruleIndex, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "RuleApplied", Normalize.Text(phase.Label), rule.GetType().Name, @event.GetType().Name, string.Empty, string.Empty, ruleIndex, afterState.Hash, afterState.Hash128?.Low, afterState.Hash128?.High));
         _inner.OnRuleApplied(phase, rule, @event, beforeState, afterState, ruleIndex);
     }
 
     public void OnEventIgnored(IGameEvent @event, GameState state)
     {
-        _trace.Add(new TraceEntry(++_order, "EventIgnored", null, null, @event.GetType().Name, null, null, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "EventIgnored", string.Empty, string.Empty, @event.GetType().Name, string.Empty, string.Empty, null, state.Hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnEventIgnored(@event, state);
     }
 
     public void OnStateHashed(GameState state, ulong hash)
     {
-        _trace.Add(new TraceEntry(++_order, "StateHashed", null, null, null, null, null, null, hash, state.Hash128?.Low, state.Hash128?.High));
+        _trace.Add(new TraceEntry(++_order, "StateHashed", string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, null, hash, state.Hash128?.Low, state.Hash128?.High));
         _inner.OnStateHashed(state, hash);
     }
 
     public void OnRuleSkipped(GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
     {
-        _trace.Add(new TraceEntry(++_order, "RuleSkipped", phase?.Label, rule?.GetType().Name, null, null, reason.ToString(), ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
-        _inner.OnRuleSkipped(phase, rule, reason, state, ruleIndex);
+        _trace.Add(new TraceEntry(++_order, "RuleSkipped", Normalize.Text(phase?.Label), rule?.GetType().Name ?? string.Empty, string.Empty, string.Empty, reason.ToString(), ruleIndex, state.Hash, state.Hash128?.Low, state.Hash128?.High));
+        // IEvaluationObserver contract currently requires non-null phase and rule. If either is null we only record the trace entry
+        // (for diagnostics) and suppress the downstream callback to avoid violating nullability. Engine sources should ideally never
+        // propagate null here; this guard preserves safety while retaining trace fidelity.
+        if (phase is not null && rule is not null)
+        {
+            _inner.OnRuleSkipped(phase, rule, reason, state, ruleIndex);
+        }
     }
 }

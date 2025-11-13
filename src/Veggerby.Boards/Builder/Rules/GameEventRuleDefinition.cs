@@ -8,8 +8,8 @@ namespace Veggerby.Boards.Builder.Rules;
 internal class GameEventRuleDefinition<T>(GameBuilder builder, IGameEventRuleDefinitions parent) : DefinitionBase(builder), IGameEventRuleDefinition, IGameEventRuleDefinition<T> where T : IGameEvent
 {
     private readonly IGameEventRuleDefinitions _parent = parent;
-    private CompositeGameEventConditionDefinition<T> _conditionDefinition;
-    private GameEventRuleStateMutatorDefinition<T> _mutatorsDefinition;
+    private CompositeGameEventConditionDefinition<T>? _conditionDefinition;
+    private GameEventRuleStateMutatorDefinition<T>? _mutatorsDefinition;
 
     IGameEventConditionDefinitionAndOr<T> IGameEventRuleDefinition<T>.If(GameEventConditionFactory<T> factory)
     {
@@ -26,8 +26,8 @@ internal class GameEventRuleDefinition<T>(GameBuilder builder, IGameEventRuleDef
     public IGameEventRule Build(Game game)
     {
         var condition = _conditionDefinition?.Build(game);
-        var onBefore = _mutatorsDefinition.BuildBefore(game);
-        var onAfter = _mutatorsDefinition.BuildAfter(game);
+        var onBefore = _mutatorsDefinition?.BuildBefore(game) ?? Flows.Mutators.NullStateMutator<T>.Instance;
+        var onAfter = _mutatorsDefinition?.BuildAfter(game) ?? Flows.Mutators.NullStateMutator<T>.Instance;
 
         return SimpleGameEventRule<T>.New(condition ?? new SimpleGameEventCondition<T>((engine, state, @event) => ConditionResponse.Valid), onBefore, onAfter);
     }

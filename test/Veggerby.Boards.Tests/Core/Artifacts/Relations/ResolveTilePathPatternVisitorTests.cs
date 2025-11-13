@@ -1,8 +1,11 @@
 using System;
 
+using Veggerby.Boards;
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.TestHelpers;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts.Relations;
 
@@ -14,9 +17,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_create()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-2");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-2").EnsureNotNull();
 
             // act
             var actual = new ResolveTilePathPatternVisitor(board, from, to);
@@ -33,12 +41,17 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_throw_null_board()
         {
             // arrange
-            var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-2");
 
             // act
-            var actual = () => new ResolveTilePathPatternVisitor(null, from, to);
+
+            // assert
+
+            var board = new TestBoard();
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-2").EnsureNotNull();
+
+            // act
+            var actual = () => new ResolveTilePathPatternVisitor((Board)null!, from, to);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("board");
@@ -48,11 +61,16 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_throw_null_from_tile()
         {
             // arrange
-            var board = new TestBoard();
-            var to = board.GetTile("tile-2");
 
             // act
-            var actual = () => new ResolveTilePathPatternVisitor(board, null, to);
+
+            // assert
+
+            var board = new TestBoard();
+            var to = board.GetTile("tile-2").EnsureNotNull();
+
+            // act
+            var actual = () => new ResolveTilePathPatternVisitor(board, (Tile)null!, to);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("from");
@@ -62,11 +80,16 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_throw_null_to_tile()
         {
             // arrange
-            var board = new TestBoard();
-            var from = board.GetTile("tile-1");
 
             // act
-            var actual = () => new ResolveTilePathPatternVisitor(board, from, null);
+
+            // assert
+
+            var board = new TestBoard();
+            var from = board.GetTile("tile-1").EnsureNotNull();
+
+            // act
+            var actual = () => new ResolveTilePathPatternVisitor(board, from, (Tile)null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("to");
@@ -76,8 +99,13 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_throw_from_and_to_identical()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var tile = board.GetTile("tile-1");
+            var tile = board.GetTile("tile-1").EnsureNotNull();
 
             // act
             var actual = () => new ResolveTilePathPatternVisitor(board, tile, tile);
@@ -93,9 +121,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_null_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetRequiredTile("tile-1");
+            var to = board.GetRequiredTile("tile-8");
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new NullPattern();
 
@@ -110,9 +143,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_direction_pattern_and_resolve()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetRequiredTile("tile-1");
+            var to = board.GetRequiredTile("tile-8");
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new DirectionPattern(Direction.Clockwise, true);
 
@@ -131,9 +169,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_direction_pattern_and_not_resolve_when_not_repeatable()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetRequiredTile("tile-1");
+            var to = board.GetRequiredTile("tile-8");
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new DirectionPattern(Direction.Clockwise, false);
 
@@ -148,9 +191,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_direction_pattern_and_not_resolve_when_wrong_direction()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new DirectionPattern(Direction.South, true);
 
@@ -165,9 +213,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_direction_pattern_and_not_resolve_when_cross_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-x");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-x").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new DirectionPattern(Direction.Clockwise, true);
 
@@ -182,9 +235,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_fixed_pattern_and_resolve()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-0");
-            var to = board.GetTile("tile-14"); // should be across 0-12, and clockwise 12-13 and 13-14
+            var from = board.GetTile("tile-0").EnsureNotNull();
+            var to = board.GetTile("tile-14").EnsureNotNull(); // should be across 0-12, and clockwise 12-13 and 13-14
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Clockwise]);
 
@@ -203,9 +261,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_fixed_pattern_and_not_resolve_if_too_short()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-0");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-0").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Clockwise]);
 
@@ -220,9 +283,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_fixed_pattern_and_not_resolve_if_direction_not_from_a_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-0");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-0").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new FixedPattern([Direction.Across, Direction.Clockwise, Direction.Across]);
 
@@ -237,9 +305,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_multi_direction_pattern_and_resolve()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
@@ -258,9 +331,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_multi_direction_pattern_and_resolve_shortest_path()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-4");
-            var to = board.GetTile("tile-0");
+            var from = board.GetTile("tile-4").EnsureNotNull();
+            var to = board.GetTile("tile-0").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
@@ -279,9 +357,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_multi_direction_pattern_and_not_resolve_when_not_repeatable()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], false);
 
@@ -296,9 +379,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_multi_direction_pattern_and_not_resolve_when_wrong_direction()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-8");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-8").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new MultiDirectionPattern([Direction.South, Direction.North], true);
 
@@ -313,9 +401,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_multi_direction_pattern_and_not_resolve_when_cross_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-x");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-x").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.Across], true);
 
@@ -330,9 +423,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_any_pattern_and_resolve_simple()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-3");
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-3").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new AnyPattern();
 
@@ -351,9 +449,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_any_pattern_and_resolve_multiple_solutions()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-3");
-            var to = board.GetTile("tile-9");
+            var from = board.GetTile("tile-3").EnsureNotNull();
+            var to = board.GetTile("tile-9").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new AnyPattern();
 
@@ -372,9 +475,14 @@ public class ResolveTilePathPatternVisitorTests
         public void Should_visit_any_pattern_not_find_result()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-3");
-            var to = board.GetTile("tile-x");
+            var from = board.GetTile("tile-3").EnsureNotNull();
+            var to = board.GetTile("tile-x").EnsureNotNull();
             var visitor = new ResolveTilePathPatternVisitor(board, from, to);
             var pattern = new AnyPattern();
 

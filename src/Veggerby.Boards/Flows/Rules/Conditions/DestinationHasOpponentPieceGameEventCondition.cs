@@ -17,6 +17,9 @@ public sealed class DestinationHasOpponentPieceGameEventCondition : IGameEventCo
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var anyOpponent = state.GetPiecesOnTile(@event.To).Any(ps => ps.Owner is not null && !ps.Owner.Equals(@event.Piece.Owner));
         return anyOpponent
             ? ConditionResponse.Valid

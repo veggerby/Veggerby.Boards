@@ -17,8 +17,13 @@ public class DecisionPlanRandomizedBehaviorTests
     public void GivenRandomShortSequence_WhenApplied_ThenInvariantsHold()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
-        var rnd = new System.Random(12345);
+        var rnd = new TestDeterministicRng(12345);
 
         // act
         for (var i = 0; i < 12; i++)
@@ -47,7 +52,12 @@ public class DecisionPlanRandomizedBehaviorTests
                     : new[] { "c6", "h6" };
                 foreach (var dest in knightMoves)
                 {
-                    try { progress = progress.Move(knightId, dest); break; } catch { /* ignore */ }
+                    try
+                    {
+                        progress = progress.Move(knightId, dest);
+                        break;
+                    }
+                    catch { /* ignore */ }
                 }
             }
         }

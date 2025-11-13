@@ -88,17 +88,22 @@ public static class BackgammonBoardRenderer
         {
             if (ps.CurrentTile.Equals(bar))
             {
-                if (ps.Artifact.Owner?.Id == "white") barWhite++; else if (ps.Artifact.Owner?.Id == "black") barBlack++;
+                if (ps.Artifact.Owner?.Id == "white")
+                    barWhite++;
+                else if (ps.Artifact.Owner?.Id == "black")
+                    barBlack++;
             }
 
             if (ps.CurrentTile.Equals(homeWhite))
             {
-                if (ps.Artifact.Owner?.Id == "white") homeW++;
+                if (ps.Artifact.Owner?.Id == "white")
+                    homeW++;
             }
 
             if (ps.CurrentTile.Equals(homeBlack))
             {
-                if (ps.Artifact.Owner?.Id == "black") homeB++;
+                if (ps.Artifact.Owner?.Id == "black")
+                    homeB++;
             }
         }
 

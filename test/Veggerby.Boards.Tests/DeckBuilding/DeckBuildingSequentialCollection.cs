@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 /// <summary>

@@ -2,23 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 public class DeckBuildingAlternateEndTriggerTests
 {
-    private static (GameProgress progress, Deck deck) BuildGame(DeckBuildingEndTriggerOptions options)
+    private static (GameProgress progress, Deck? deck) BuildGame(DeckBuildingEndTriggerOptions options)
     {
         var builder = new DeckBuildingGameBuilder();
-        if (options != null)
+        if (options is not null)
         {
             builder.WithEndTrigger(options);
         }
@@ -57,8 +53,15 @@ public class DeckBuildingAlternateEndTriggerTests
     public void GivenThresholdSatisfied_WhenEndGameEvent_ThenEnds()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 2));
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         var supply = new Dictionary<string, int> { { "estate", 0 }, { "duchy", 0 }, { "province", 5 } };
         progress = BootstrapWithSupply(progress, deck, supply);
 
@@ -73,8 +76,15 @@ public class DeckBuildingAlternateEndTriggerTests
     public void GivenThresholdNotSatisfied_WhenEndGameEvent_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 3));
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         var supply = new Dictionary<string, int> { { "estate", 0 }, { "duchy", 0 }, { "province", 5 } }; // only 2 empty < 3
         progress = BootstrapWithSupply(progress, deck, supply);
         var before = progress.State;
@@ -90,8 +100,15 @@ public class DeckBuildingAlternateEndTriggerTests
     public void GivenKeyPileEmpty_WhenEndGameEvent_ThenEnds()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame(new DeckBuildingEndTriggerOptions(keyPileCardIds: new[] { "province" }));
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         var supply = new Dictionary<string, int> { { "estate", 5 }, { "duchy", 5 }, { "province", 0 } };
         progress = BootstrapWithSupply(progress, deck, supply);
 
@@ -106,8 +123,15 @@ public class DeckBuildingAlternateEndTriggerTests
     public void GivenKeyPileNotEmpty_WhenEndGameEvent_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame(new DeckBuildingEndTriggerOptions(keyPileCardIds: new[] { "province" }));
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         var supply = new Dictionary<string, int> { { "estate", 0 }, { "duchy", 0 }, { "province", 1 } }; // province not empty
         progress = BootstrapWithSupply(progress, deck, supply);
         var before = progress.State;
@@ -123,8 +147,15 @@ public class DeckBuildingAlternateEndTriggerTests
     public void GivenCombined_AnySatisfied_AllowsEnd()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, deck) = BuildGame(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 3, keyPileCardIds: new[] { "province" }));
+        progress.Should().NotBeNull();
+        deck.Should().NotBeNull();
         var supply = new Dictionary<string, int> { { "estate", 0 }, { "duchy", 0 }, { "province", 0 } }; // key pile empty & threshold satisfied
         progress = BootstrapWithSupply(progress, deck, supply);
 
@@ -139,16 +170,25 @@ public class DeckBuildingAlternateEndTriggerTests
     public void Determinism_SameSupplyConfig_YieldsSameOutcome()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var opts = new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 2, keyPileCardIds: new[] { "province" });
         var supply = new Dictionary<string, int> { { "estate", 0 }, { "duchy", 0 }, { "province", 5 } }; // threshold satisfied, key not
 
         var (p1, d1) = BuildGame(opts);
+        p1.Should().NotBeNull();
+        d1.Should().NotBeNull();
         p1 = BootstrapWithSupply(p1, d1, supply);
         var before1 = p1.State;
         p1 = p1.HandleEvent(new EndGameEvent());
 
         var (p2, d2) = BuildGame(opts);
+        p2.Should().NotBeNull();
+        d2.Should().NotBeNull();
         p2 = BootstrapWithSupply(p2, d2, supply);
         var before2 = p2.State;
         p2 = p2.HandleEvent(new EndGameEvent());
@@ -164,7 +204,12 @@ public class DeckBuildingAlternateEndTriggerTests
     [Fact]
     public void Options_Invalid_WhenNoThresholdAndNoKeys()
     {
+        // arrange
+
         // act
+
+        // assert
+
         var act = () => new DeckBuildingEndTriggerOptions(0, null);
 
         // assert
@@ -174,12 +219,24 @@ public class DeckBuildingAlternateEndTriggerTests
     [Fact]
     public void Options_Valid_WhenThresholdOnly()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         new DeckBuildingEndTriggerOptions(1, null).Should().NotBeNull();
     }
 
     [Fact]
     public void Options_Valid_WhenKeysOnly()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         new DeckBuildingEndTriggerOptions(0, new[] { "kp" }).Should().NotBeNull();
     }
 }

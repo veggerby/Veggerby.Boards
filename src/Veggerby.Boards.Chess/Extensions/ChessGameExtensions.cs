@@ -19,10 +19,20 @@ public static partial class GameExtensions
     /// <param name="kingSide">True for king-side, false for queen-side.</param>
     public static GameProgress Castle(this GameProgress progress, string color, bool kingSide)
     {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(color);
         var kingId = color + ChessIds.PieceSuffixes.King;
         var game = progress.Game;
         var king = game.GetPiece(kingId);
+        if (king is null)
+        {
+            return progress; // missing artifact
+        }
         var kingState = progress.State.GetState<PieceState>(king);
+        if (kingState?.CurrentTile is null)
+        {
+            return progress;
+        }
         var start = kingState.CurrentTile.Id;
         var expectedStart = color == ChessIds.Players.White ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
 
@@ -34,6 +44,10 @@ public static partial class GameExtensions
         var destination = color == ChessIds.Players.White
             ? (kingSide ? game.GetTile(ChessIds.Tiles.G1) : game.GetTile(ChessIds.Tiles.C1))
             : (kingSide ? game.GetTile(ChessIds.Tiles.G8) : game.GetTile(ChessIds.Tiles.C8));
+        if (destination is null)
+        {
+            return progress;
+        }
 
         // Build horizontal path relations (two steps toward rook)
         char fromFile = start[5];
@@ -48,7 +62,11 @@ public static partial class GameExtensions
         for (char f = (char)(fromFile + step); ; f = (char)(f + step))
         {
             var nextTile = game.GetTile($"tile-{f}{rank}");
-            relations.Add(new TileRelation(current, nextTile, direction));
+            if (nextTile is null)
+            {
+                return progress; // abort if topology incomplete
+            }
+            relations.Add(new TileRelation(current!, nextTile, direction));
             current = nextTile;
 
             if (f == toFile)

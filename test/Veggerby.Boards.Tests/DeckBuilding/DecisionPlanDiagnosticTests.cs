@@ -2,16 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -28,7 +24,8 @@ public class DecisionPlanDiagnosticTests
         {
             foreach (var evtType in ExtractEventTypes(entry.Rule))
             {
-                yield return (i, entry.Phase?.Label, evtType, entry.ConditionIsAlwaysValid);
+                var phaseLabel = entry.Phase?.Label ?? string.Empty;
+                yield return (i, phaseLabel, evtType, entry.ConditionIsAlwaysValid);
             }
             i++;
         }
@@ -52,7 +49,7 @@ public class DecisionPlanDiagnosticTests
             yield break;
         }
         var type = rule.GetType();
-        while (type != null && type != typeof(object))
+        while (type is not null && type != typeof(object))
         {
             if (type.IsGenericType)
             {
@@ -92,6 +89,11 @@ public class DecisionPlanDiagnosticTests
     public void DeckBuildingCore_Expected_EventTypes_Appear_InPlan()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
         var flattened = Flatten(plan).ToList();

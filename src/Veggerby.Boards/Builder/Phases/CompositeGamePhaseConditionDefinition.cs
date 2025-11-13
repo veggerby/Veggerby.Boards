@@ -17,14 +17,14 @@ internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenG
 
     internal CompositeGamePhaseConditionDefinition Add(GamePhaseConditionDefinitionBase conditionDefinition, CompositeMode? mode)
     {
-        if (mode is null && _childDefinitions.Any())
+        if (mode is null && _childDefinitions.Count > 0)
         {
-            throw new ArgumentException("Must provide mode for multiple conditions", nameof(mode));
+            throw new ArgumentException(ExceptionMessages.CompositeModeRequired, nameof(mode));
         }
 
         if (_conditionCompositeMode is not null && _conditionCompositeMode.Value != mode)
         {
-            throw new ArgumentException("Must be same composite mode", nameof(mode));
+            throw new ArgumentException(ExceptionMessages.CompositeModeMismatch, nameof(mode));
         }
 
         _conditionCompositeMode = mode;
@@ -34,18 +34,21 @@ internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenG
 
     internal override IGameStateCondition Build(Game game)
     {
-        if (!(_childDefinitions.Any()))
+        if (_childDefinitions.Count == 0)
         {
-            return null;
+            return new NullGameStateCondition();
+        }
+        if (_childDefinitions.Count == 1)
+        {
+            return _childDefinitions[0].Build(game) ?? new NullGameStateCondition();
         }
 
-        if (_childDefinitions.Count() == 1)
+        var conditions = new IGameStateCondition[_childDefinitions.Count];
+        for (int i = 0; i < _childDefinitions.Count; i++)
         {
-            return _childDefinitions.Single().Build(game);
+            conditions[i] = _childDefinitions[i].Build(game);
         }
-
-        var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-        return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+        return CompositeGameStateCondition.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.All), conditions);
     }
 
     IGamePhaseConditionDefinitionAnd IGamePhaseConditionDefinitionAnd.And(GameStateConditionFactory factory)

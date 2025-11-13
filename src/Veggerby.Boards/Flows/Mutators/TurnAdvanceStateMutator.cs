@@ -1,4 +1,3 @@
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
@@ -17,19 +16,23 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, EndTurnSegmentEvent @event)
     {
-        if (!Internal.FeatureFlags.EnableTurnSequencing)
+        var sequencingEnabled = Internal.FeatureFlags.EnableTurnSequencing;
+        if (!sequencingEnabled)
         {
             return gameState; // inert when sequencing disabled
         }
 
         // Locate existing TurnState (shadow mode injects exactly one)
-        TurnState currentTurnState = null;
+        TurnState? currentTurnState = null;
         foreach (var ts in gameState.GetStates<TurnState>())
         {
             currentTurnState = ts; // only one expected; take first
             break;
         }
-        if (currentTurnState is null) { return gameState; }
+        if (currentTurnState is null)
+        {
+            return gameState;
+        }
 
         var turnArtifact = currentTurnState.Artifact;
         if (currentTurnState.Segment != @event.Segment)

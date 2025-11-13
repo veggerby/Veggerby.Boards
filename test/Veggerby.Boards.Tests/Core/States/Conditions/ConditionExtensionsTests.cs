@@ -13,6 +13,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -22,14 +27,21 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions.Should().Equal([condition1, condition2]);
         }
 
         [Fact]
         public void Should_create_composition_with_type_all_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -40,14 +52,21 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2, condition3]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions.Should().Equal([condition1, condition2, condition3]);
         }
 
         [Fact]
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -58,9 +77,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameStateCondition)
-                .ChildConditions
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.ChildConditions
                 .OfType<CompositeGameStateCondition>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.Any);
         }
@@ -72,6 +92,11 @@ public class ConditionExtensionsTests
         public void Should_create_composition_with_type_or()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -81,14 +106,21 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions.Should().Equal([condition1, condition2]);
         }
 
         [Fact]
         public void Should_create_composition_with_type_any_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -99,14 +131,21 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition).ChildConditions.Should().Equal([condition1, condition2, condition3]);
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions.Should().Equal([condition1, condition2, condition3]);
         }
 
         [Fact]
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var condition1 = new InitialGameStateCondition();
             var condition2 = new DiceGameStateCondition<int>([dice], CompositeMode.All);
@@ -117,9 +156,10 @@ public class ConditionExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameStateCondition>();
-            (actual as CompositeGameStateCondition).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameStateCondition)
-                .ChildConditions
+            var composite = actual as CompositeGameStateCondition;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.ChildConditions
                 .OfType<CompositeGameStateCondition>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.All);
         }

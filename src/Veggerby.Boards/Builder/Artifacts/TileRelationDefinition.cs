@@ -15,19 +15,22 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <summary>
     /// Gets the origin tile identifier.
     /// </summary>
-    public string FromTileId { get; private set; }
+    public string FromTileId { get; private set; } = null!; // LIFECYCLE: set by FromTile() before Build()
     /// <summary>
     /// Gets the destination tile identifier.
     /// </summary>
-    public string ToTileId { get; private set; }
+    public string ToTileId { get; private set; } = null!; // LIFECYCLE: set by ToTile() before Build()
     /// <summary>
     /// Gets the directional identifier (e.g., N, NE) if supplied.
     /// </summary>
-    public string DirectionId { get; private set; }
+    public string DirectionId { get; private set; } = null!; // LIFECYCLE: set by InDirection() before Build()
     /// <summary>
     /// Gets the distance associated with the relation. Defaults to 0 when not set.
     /// </summary>
-    public int Distance { get; private set; }
+    public int Distance
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Sets the origin tile identifier.
@@ -35,12 +38,10 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="from">Source tile id.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="from"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(FromTileId))]
     public TileRelationDefinition FromTile(string from)
     {
-        if (string.IsNullOrEmpty(from))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(from));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(from, nameof(from));
 
         FromTileId = from;
         return this;
@@ -52,12 +53,10 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="to">Destination tile id.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(ToTileId))]
     public TileRelationDefinition ToTile(string to)
     {
-        if (string.IsNullOrEmpty(to))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(to));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(to, nameof(to));
 
         ToTileId = to;
         return this;
@@ -69,12 +68,10 @@ public class TileRelationDefinition(GameBuilder builder, TileDefinition tileDefi
     /// <param name="direction">Directional identifier.</param>
     /// <returns>The same relation definition for chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="direction"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(DirectionId))]
     public TileRelationDefinition InDirection(string direction)
     {
-        if (string.IsNullOrEmpty(direction))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(direction));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(direction, nameof(direction));
 
         DirectionId = direction;
         return this;

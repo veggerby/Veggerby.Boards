@@ -15,6 +15,9 @@ public class DiceValuesShouldBeDifferent : IGameEventCondition<RollDiceGameEvent
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         return @event.NewDiceStates.Select(x => x.CurrentValue).Distinct().Count() == @event.NewDiceStates.Count()
             ? ConditionResponse.Valid
             : ConditionResponse.Invalid;

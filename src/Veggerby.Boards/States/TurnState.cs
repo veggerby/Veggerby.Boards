@@ -41,20 +41,29 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// <summary>
     /// Gets the current 1-based turn number.
     /// </summary>
-    public int TurnNumber { get; }
+    public int TurnNumber
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the current segment inside the turn.
     /// </summary>
-    public TurnSegment Segment { get; }
+    public TurnSegment Segment
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the current consecutive pass streak count (reset when a non-pass advancement occurs, incremented by pass event). Used by games like Go for two-pass termination.
     /// </summary>
-    public int PassStreak { get; }
+    public int PassStreak
+    {
+        get;
+    }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as TurnState);
     }
@@ -70,7 +79,7 @@ public sealed class TurnState : ArtifactState<TurnArtifact>
     /// </summary>
     /// <param name="other">Other state.</param>
     /// <returns><c>true</c> if both reference the same artifact and have identical number + segment.</returns>
-    public bool Equals(TurnState other)
+    public bool Equals(TurnState? other)
     {
         if (other is null)
         {

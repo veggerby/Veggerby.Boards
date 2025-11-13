@@ -15,33 +15,49 @@ public sealed class TrashFromHandStateMutator : IStateMutator<TrashFromHandEvent
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, TrashFromHandEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var ds = state.GetState<DeckState>(@event.Deck);
         if (ds is null)
         {
             return state;
         }
+
         var handId = DeckBuildingGameBuilder.Piles.Hand;
         if (!ds.Piles.ContainsKey(handId))
         {
-            throw new BoardException("Hand pile missing");
+            throw new BoardException(ExceptionMessages.HandPileMissing);
         }
-        // clone piles
-        var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+
+        // Optimized cloning: only mutate Hand pile; other piles re-used via existing read-only collections (no reallocation).
+        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
-            piles[kv.Key] = new List<Card>(kv.Value);
-        }
-        var hand = piles[handId];
-        // remove each specified card by identity
-        foreach (var c in @event.Cards)
-        {
-            var idx = hand.IndexOf(c);
-            if (idx >= 0)
+            if (kv.Key.Equals(handId, StringComparison.Ordinal))
             {
-                hand.RemoveAt(idx);
+                // Create a mutable working list for hand modifications.
+                var handList = new List<Card>(kv.Value);
+                // remove each specified card by identity
+                foreach (var c in @event.Cards)
+                {
+                    var idx = handList.IndexOf(c);
+                    if (idx >= 0)
+                    {
+                        handList.RemoveAt(idx);
+                    }
+                }
+
+                piles[kv.Key] = handList;
+            }
+            else
+            {
+                // Reuse existing read-only list; constructor will wrap again but avoids intermediate copy here.
+                piles[kv.Key] = (IList<Card>)kv.Value; // underlying type is ReadOnlyCollection<Card> implementing IList<Card>
             }
         }
-        var next = new DeckState(ds.Artifact, piles, new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
+
+        var next = new DeckState(ds.Artifact, piles, ds.Supply is null ? null : new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
         return state.Next([next]);
     }
 }

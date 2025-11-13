@@ -1,13 +1,8 @@
 using System;
 using System.Linq;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Cards;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Cards;
 
@@ -17,6 +12,11 @@ public class CardsModuleTests
     public void CreateDeck_ThenDraw_MovesCardsToHand()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         builder.WithSeed(123UL);
         var progress = builder.Compile();
@@ -25,20 +25,26 @@ public class CardsModuleTests
         // act
         var afterCreate = progress.HandleEvent(create).State;
         var deck = create.Deck;
-        var drawEvt = new DrawCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 2);
+        deck.Should().NotBeNull();
+        var drawEvt = new DrawCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 2);
         var afterDraw = new GameProgress(progress.Engine, afterCreate, progress.Events).HandleEvent(drawEvt).State;
 
         // assert
-        var ds = afterDraw.GetState<DeckState>(deck);
+        var ds = afterDraw.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds.Piles[CardsGameBuilder.Piles.Hand].Count.Should().Be(2);
-        ds.Piles[CardsGameBuilder.Piles.Draw].Count.Should().Be(3);
+        ds!.Piles[CardsGameBuilder.Piles.Hand].Count.Should().Be(2);
+        ds!.Piles[CardsGameBuilder.Piles.Draw].Count.Should().Be(3);
     }
 
     [Fact]
     public void Shuffle_WithSeed_IsDeterministic()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder1 = new CardsGameBuilder();
         builder1.WithSeed(42UL);
         var p1 = builder1.Compile();
@@ -52,16 +58,21 @@ public class CardsModuleTests
         // act
         var s1 = p1.HandleEvent(create1).State;
         var s2 = p2.HandleEvent(create2).State;
-        var deck1 = create1.Deck; var deck2 = create2.Deck;
-        var shuffle = new ShuffleDeckEvent(deck1, CardsGameBuilder.Piles.Draw);
+        var deck1 = create1.Deck;
+        var deck2 = create2.Deck;
+        deck1.Should().NotBeNull();
+        deck2.Should().NotBeNull();
+        var shuffle = new ShuffleDeckEvent(deck1!, CardsGameBuilder.Piles.Draw);
         s1 = new GameProgress(p1.Engine, s1, p1.Events).HandleEvent(shuffle).State;
-        s2 = new GameProgress(p2.Engine, s2, p2.Events).HandleEvent(new ShuffleDeckEvent(deck2, CardsGameBuilder.Piles.Draw)).State;
+        s2 = new GameProgress(p2.Engine, s2, p2.Events).HandleEvent(new ShuffleDeckEvent(deck2!, CardsGameBuilder.Piles.Draw)).State;
 
         // assert
-        var d1 = s1.GetState<DeckState>(deck1);
-        var d2 = s2.GetState<DeckState>(deck2);
-        d1.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id)
-            .SequenceEqual(d2.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id))
+        var d1 = s1.GetState<DeckState>(deck1!);
+        var d2 = s2.GetState<DeckState>(deck2!);
+        d1.Should().NotBeNull();
+        d2.Should().NotBeNull();
+        d1!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id)
+            .SequenceEqual(d2!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id))
             .Should().BeTrue();
     }
 
@@ -69,13 +80,19 @@ public class CardsModuleTests
     public void Draw_TooMany_ThrowsInvalidEvent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var state = progress.HandleEvent(builder.CreateInitialDeckEvent()).State;
         var deck = builder.CreateInitialDeckEvent().Deck;
+        deck.Should().NotBeNull();
 
         // act
-        var act = () => new GameProgress(progress.Engine, state, progress.Events).HandleEvent(new DrawCardsEvent(deck, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 10));
+        var act = () => new GameProgress(progress.Engine, state, progress.Events).HandleEvent(new DrawCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 10));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

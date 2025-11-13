@@ -10,7 +10,7 @@ public class DiceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured dice identifier.
     /// </summary>
-    public string DiceId { get; private set; }
+    public string DiceId { get; private set; } = null!; // set via WithId before use
 
     /// <summary>
     /// Sets the dice identifier.
@@ -19,10 +19,7 @@ public class DiceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <returns>The same definition for chaining.</returns>
     public DiceDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         DiceId = id;
         return this;

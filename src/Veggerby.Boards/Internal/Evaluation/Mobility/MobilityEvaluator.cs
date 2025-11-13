@@ -23,11 +23,11 @@ namespace Veggerby.Boards.Internal.Evaluation.Mobility;
 internal sealed class MobilityEvaluator
 {
     private readonly BoardShape _shape;
-    private readonly BitboardLayout _layout; // may be null when bitboards disabled
+    private readonly BitboardLayout? _layout; // may be null when bitboards disabled
     private readonly IOccupancyIndex _occupancy;
     private readonly IAttackRays _rays;
 
-    private MobilityEvaluator(BoardShape shape, BitboardLayout layout, IOccupancyIndex occupancy, IAttackRays rays)
+    private MobilityEvaluator(BoardShape shape, BitboardLayout? layout, IOccupancyIndex occupancy, IAttackRays rays)
     {
         _shape = shape;
         _layout = layout;
@@ -35,29 +35,33 @@ internal sealed class MobilityEvaluator
         _rays = rays;
     }
 
-    public static MobilityEvaluator TryCreate(EngineCapabilities caps)
+    public static MobilityEvaluator? TryCreate(EngineCapabilities? caps)
     {
         if (caps?.AccelerationContext is BitboardAccelerationContext bbCtx && caps.AccelerationContext.Occupancy is not null)
         {
             // Reflect board shape field from BitboardAccelerationContext (private _shape).
-            BoardShape shape = null;
+            BoardShape? shape = null;
             var shapeField = typeof(BitboardAccelerationContext).GetField("_shape", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (shapeField != null)
+            if (shapeField is not null)
             {
                 shape = shapeField.GetValue(bbCtx) as BoardShape;
             }
+
             if (shape is null)
             {
                 return null;
             }
-            BitboardLayout layout = null;
+
+            BitboardLayout? layout = null;
             var layoutField = typeof(BitboardAccelerationContext).GetField("_bitboardLayout", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (layoutField != null)
+            if (layoutField is not null)
             {
                 layout = layoutField.GetValue(bbCtx) as BitboardLayout;
             }
+
             return new MobilityEvaluator(shape, layout, caps.AccelerationContext.Occupancy, caps.AccelerationContext.AttackRays);
         }
+
         return null;
     }
 
@@ -71,6 +75,7 @@ internal sealed class MobilityEvaluator
         {
             return Array.Empty<int>();
         }
+
         var counts = new int[_layout.PlayerCount];
         // Scratch to avoid double counting target tiles per piece (optional). Not needed for simple additive model, omit for now.
         foreach (var pieceState in state.GetStates<PieceState>())
@@ -80,23 +85,28 @@ internal sealed class MobilityEvaluator
             {
                 continue;
             }
+
             if (!_layout.TryGetPlayerIndex(piece.Owner, out var ownerIdx))
             {
                 continue;
             }
+
             var origin = pieceState.CurrentTile;
             if (origin is null)
             {
                 continue;
             }
+
             if (!_rays.TryGetRays(piece, origin, out var rays))
             {
                 continue; // non-sliders skipped for now
             }
+
             if (!_shape.TryGetTileIndex(origin, out var originIdx))
             {
                 continue;
             }
+
             var dirCount = _shape.DirectionCount;
             for (int d = 0; d < dirCount && d < rays.Length; d++)
             {
@@ -105,6 +115,7 @@ internal sealed class MobilityEvaluator
                 {
                     continue;
                 }
+
                 // Walk geometric ray until block or end.
                 var currentIdx = originIdx;
                 while (true)
@@ -114,6 +125,7 @@ internal sealed class MobilityEvaluator
                     {
                         break;
                     }
+
                     var nextTile = _shape.Tiles[nextIdx];
                     var occupied = !_occupancy.IsEmpty(nextTile);
                     if (occupied)
@@ -122,8 +134,10 @@ internal sealed class MobilityEvaluator
                         {
                             counts[ownerIdx]++; // capture target
                         }
+
                         break; // blocked beyond
                     }
+
                     counts[ownerIdx]++; // empty square
                     currentIdx = nextIdx;
                 }

@@ -14,6 +14,11 @@ public class CompositeArtifactTests
         public void Should_initialize_properties()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var tile1 = new Tile("tile1");
             var tile2 = new Tile("tile2");
             var children = new[] { tile1, tile2 };
@@ -32,7 +37,10 @@ public class CompositeArtifactTests
             // arrange
 
             // act
-            var actual = () => new CompositeArtifact<Tile>("combined", null);
+
+            // assert
+
+            var actual = () => new CompositeArtifact<Tile>("combined", null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("childArtifacts");
@@ -44,6 +52,9 @@ public class CompositeArtifactTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new CompositeArtifact<Tile>("combined", Enumerable.Empty<Tile>());
 
             // assert

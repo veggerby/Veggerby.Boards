@@ -12,7 +12,10 @@ public class PieceState : ArtifactState<Piece>
     /// <summary>
     /// Gets the tile on which the piece currently resides.
     /// </summary>
-    public Tile CurrentTile { get; }
+    public Tile CurrentTile
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PieceState"/> class.
@@ -27,7 +30,7 @@ public class PieceState : ArtifactState<Piece>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as PieceState);
     }
@@ -41,7 +44,7 @@ public class PieceState : ArtifactState<Piece>
     /// <summary>
     /// Typed equality comparison.
     /// </summary>
-    public bool Equals(PieceState other)
+    public bool Equals(PieceState? other)
     {
         if (other is null)
         {

@@ -12,6 +12,11 @@ public class PieceTests
         public void Should_initialize_properties()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("player");
 
             // act
@@ -26,10 +31,15 @@ public class PieceTests
         public void Should_initialize_properties_with_null_pattern_list()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("player");
 
             // act
-            var actual = new Piece("piece", player, null);
+            var actual = new Piece("piece", player, null!);
 
             // assert
             actual.Owner.Should().Be(player);

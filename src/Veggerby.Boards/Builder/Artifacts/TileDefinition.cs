@@ -10,7 +10,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured tile identifier.
     /// </summary>
-    public string TileId { get; private set; }
+    public string TileId { get; private set; } = null!; // LIFECYCLE: set by WithId() before Build()
 
     /// <summary>
     /// Sets the identifier for the tile.
@@ -18,12 +18,10 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="id">Unique tile identifier.</param>
     /// <returns>The same definition instance for fluent chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(TileId))]
     public TileDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         TileId = id;
         return this;
@@ -37,10 +35,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     public TileRelationDefinition WithRelationTo(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         var relation = new TileRelationDefinition(Builder, this)
             .FromTile(this.TileId)
@@ -58,10 +53,7 @@ public class TileDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     public TileRelationDefinition WithRelationFrom(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         var relation = new TileRelationDefinition(Builder, this)
             .FromTile(id)

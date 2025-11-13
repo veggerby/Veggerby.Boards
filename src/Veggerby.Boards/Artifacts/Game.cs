@@ -13,15 +13,24 @@ public class Game
     /// <summary>
     /// Gets the board.
     /// </summary>
-    public Board Board { get; }
+    public Board Board
+    {
+        get;
+    }
     /// <summary>
     /// Gets the players.
     /// </summary>
-    public IEnumerable<Player> Players { get; }
+    public IEnumerable<Player> Players
+    {
+        get;
+    }
     /// <summary>
     /// Gets all artifacts (including tiles, pieces, dice, etc.).
     /// </summary>
-    public IEnumerable<Artifact> Artifacts { get; }
+    public IEnumerable<Artifact> Artifacts
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Game"/> class.

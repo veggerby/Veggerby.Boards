@@ -53,7 +53,7 @@ public readonly struct Bitboard64(ulong mask) : IEquatable<Bitboard64>
     public bool Equals(Bitboard64 other) => Mask == other.Mask;
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => obj is Bitboard64 bb && Equals(bb);
+    public override bool Equals(object? obj) => obj is Bitboard64 bb && Equals(bb);
 
     /// <inheritdoc />
     public override int GetHashCode() => Mask.GetHashCode();

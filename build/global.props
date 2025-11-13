@@ -1,0 +1,42 @@
+<Project>
+
+    <PropertyGroup>
+        <BuildFolder>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</BuildFolder>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Use latest C# language features -->
+        <LangVersion>latest</LangVersion>
+        <!-- Enforce nullable reference types across libraries -->
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- FastBuild toggle: when FastBuild=true analyzers are skipped for quicker local iterations -->
+        <RunAnalyzersDuringBuild Condition="'$(FastBuild)' == 'true'">false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringCompilation Condition="'$(FastBuild)' == 'true'">false</RunAnalyzersDuringCompilation>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="$(BuildFolder)\BannedSymbols.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+
+        <!-- <PackageReference Include="StyleCop.Analyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference> -->
+
+    </ItemGroup>
+
+</Project>

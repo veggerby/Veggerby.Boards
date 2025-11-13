@@ -43,13 +43,19 @@ public class ConditionResponse
     /// <summary>
     /// Gets the result classification.
     /// </summary>
-    public ConditionResult Result { get; }
+    public ConditionResult Result
+    {
+        get;
+    }
     /// <summary>
     /// Gets the optional textual reason.
     /// </summary>
-    public string Reason { get; }
+    public string? Reason
+    {
+        get;
+    }
 
-    private ConditionResponse(ConditionResult result, string reason)
+    private ConditionResponse(ConditionResult result, string? reason)
     {
         Result = result;
         Reason = reason;
@@ -58,17 +64,20 @@ public class ConditionResponse
     /// <summary>
     /// Indicates equality based on <see cref="Result"/> only (reason is ignored).
     /// </summary>
-    public bool Equals(ConditionResponse other)
+    public bool Equals(ConditionResponse? other)
     {
         return other is not null && Result == other.Result;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((ConditionResponse)obj);
     }
 
@@ -86,7 +95,7 @@ public class ConditionResponse
     /// </summary>
     /// <param name="result">Result value.</param>
     /// <param name="reason">Optional reason.</param>
-    public static ConditionResponse New(ConditionResult result, string reason = null)
+    public static ConditionResponse New(ConditionResult result, string? reason = null)
     {
         return new ConditionResponse(result, reason);
     }

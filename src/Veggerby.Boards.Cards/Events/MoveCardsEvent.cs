@@ -11,15 +11,30 @@ namespace Veggerby.Boards.Cards;
 public sealed class MoveCardsEvent : IGameEvent
 {
     /// <summary>Gets the deck artifact.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
     /// <summary>Gets the source pile identifier.</summary>
-    public string FromPileId { get; }
+    public string FromPileId
+    {
+        get;
+    }
     /// <summary>Gets the destination pile identifier.</summary>
-    public string ToPileId { get; }
+    public string ToPileId
+    {
+        get;
+    }
     /// <summary>Gets the number of cards to move when moving by count; otherwise null.</summary>
-    public int? Count { get; }
+    public int? Count
+    {
+        get;
+    }
     /// <summary>Gets the explicit list of cards to move; otherwise null when moving by count.</summary>
-    public IReadOnlyList<Card> Cards { get; }
+    public IReadOnlyList<Card>? Cards
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MoveCardsEvent"/> class to move by count.
@@ -33,7 +48,8 @@ public sealed class MoveCardsEvent : IGameEvent
         Deck = deck ?? throw new ArgumentNullException(nameof(deck));
         FromPileId = fromPileId ?? throw new ArgumentNullException(nameof(fromPileId));
         ToPileId = toPileId ?? throw new ArgumentNullException(nameof(toPileId));
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
         Count = count;
         Cards = null;
     }

@@ -18,26 +18,42 @@ public class RandomizedCompiledPatternParityTests
 {
     private static Game BuildGame()
     {
-        var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
-        var ne = new Direction("ne"); var nw = new Direction("nw"); var se = new Direction("se"); var sw = new Direction("sw");
+        var north = new Direction(Constants.Directions.North);
+        var south = new Direction(Constants.Directions.South);
+        var east = new Direction(Constants.Directions.East);
+        var west = new Direction(Constants.Directions.West);
+        var ne = new Direction("ne");
+        var nw = new Direction("nw");
+        var se = new Direction("se");
+        var sw = new Direction("sw");
         var dirs = new[] { north, south, east, west, ne, nw, se, sw };
         var tiles = new List<Tile>();
         char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        for (int r = 1; r <= 8; r++) foreach (var f in files) tiles.Add(new Tile($"{f}{r}"));
+        for (int r = 1; r <= 8; r++)
+            foreach (var f in files)
+                tiles.Add(new Tile($"{f}{r}"));
         Tile T(char f, int r) => tiles[(r - 1) * 8 + (f - 'a')];
         var relations = new List<TileRelation>();
         foreach (var f in files)
         {
             for (int r = 1; r <= 8; r++)
             {
-                if (r < 8) relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
-                if (r > 1) relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
-                if (f < 'h') relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
-                if (f > 'a') relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
-                if (f < 'h' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
-                if (f > 'a' && r < 8) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
-                if (f < 'h' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
-                if (f > 'a' && r > 1) relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
+                if (r < 8)
+                    relations.Add(new TileRelation(T(f, r), T(f, r + 1), north));
+                if (r > 1)
+                    relations.Add(new TileRelation(T(f, r), T(f, r - 1), south));
+                if (f < 'h')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r), east));
+                if (f > 'a')
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r), west));
+                if (f < 'h' && r < 8)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r + 1), ne));
+                if (f > 'a' && r < 8)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r + 1), nw));
+                if (f < 'h' && r > 1)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f + 1), r - 1), se));
+                if (f > 'a' && r > 1)
+                    relations.Add(new TileRelation(T(f, r), T((char)(f - 1), r - 1), sw));
             }
         }
         var board = new Board("parity-board", relations);
@@ -56,10 +72,15 @@ public class RandomizedCompiledPatternParityTests
     public void GivenRandomQueries_WhenResolved_ThenCompiledMatchesLegacy()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var game = BuildGame();
         var pieces = game.Artifacts.OfType<Piece>().Where(p => p.Owner.Id == "white").ToArray(); // only white-owned pieces
         var tiles = game.Board.Tiles.ToArray();
-        var random = new System.Random(424242); // deterministic seed
+        var random = new TestDeterministicRng(424242); // deterministic seed (custom LCG)
         var table = PatternCompiler.Compile(game);
         var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
         var compiled = new CompiledPatternResolver(table, game.Board, null, shape);
@@ -72,7 +93,11 @@ public class RandomizedCompiledPatternParityTests
             var piece = pieces[random.Next(pieces.Length)];
             var from = tiles[random.Next(tiles.Length)];
             var to = tiles[random.Next(tiles.Length)];
-            if (from == to) { i--; continue; }
+            if (from == to)
+            {
+                i--;
+                continue;
+            }
 
             // legacy
             bool legacyHit = false;
@@ -80,7 +105,11 @@ public class RandomizedCompiledPatternParityTests
             foreach (var pattern in piece.Patterns)
             {
                 pattern.Accept(visitor);
-                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to)) { legacyHit = true; break; }
+                if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
+                {
+                    legacyHit = true;
+                    break;
+                }
             }
 
             // compiled
@@ -89,11 +118,14 @@ public class RandomizedCompiledPatternParityTests
             if (legacyHit != compiledHit)
             {
                 mismatches.Add($"Mismatch {piece.Id} {from}->{to} legacy={legacyHit} compiled={compiledHit}");
-                if (mismatches.Count > 10) { break; } // fail fast with sample of differences
+                if (mismatches.Count > 10)
+                {
+                    break;
+                } // fail fast with sample of differences
             }
         }
 
         // assert
-        Assert.True(mismatches.Count == 0, "Found mismatches:\n" + string.Join('\n', mismatches));
+        mismatches.Count.Should().Be(0, "Found mismatches:\n" + string.Join('\n', mismatches));
     }
 }

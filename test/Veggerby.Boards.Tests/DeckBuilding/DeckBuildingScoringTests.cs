@@ -1,21 +1,16 @@
 using System.Collections.Generic;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.Artifacts; // Player
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States; // GameProgress
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 public class DeckBuildingScoringTests
 {
-    private static (GameProgress progress, Deck p1Deck, Deck p2Deck, Player p1, Player p2) BuildGame()
+    private static (GameProgress progress, Deck? p1Deck, Deck? p2Deck, Player? p1, Player? p2) BuildGame()
     {
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("copper", "estate");
@@ -32,20 +27,36 @@ public class DeckBuildingScoringTests
     public void GivenDefinitionsAndCards_WhenComputeScores_ThenVictoryPointsAggregated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, p2Deck, p1, p2) = BuildGame();
+        progress.Should().NotBeNull();
+        p1Deck.Should().NotBeNull();
+        p2Deck.Should().NotBeNull();
+        p1.Should().NotBeNull();
+        p2.Should().NotBeNull();
         // Register definitions (estate=1 VP, copper=0)
         progress = progress.HandleEvent(new RegisterCardDefinitionEvent("estate", "Estate", new List<string> { "Victory" }, 2, 1));
         progress = progress.HandleEvent(new RegisterCardDefinitionEvent("copper", "Copper", new List<string> { "Treasure" }, 0, 0));
         // Initialize decks: P1 has 2 estates, P2 has 1 estate
-        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("estate"), progress.Game.GetArtifact<Card>("estate") } },
+        var estate1 = progress.Game.GetArtifact<Card>("estate");
+        var estate2 = progress.Game.GetArtifact<Card>("estate");
+        estate1.Should().NotBeNull();
+        estate2.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ estate1!, estate2! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
         }));
-        progress = progress.HandleEvent(new CreateDeckEvent(p2Deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("estate") } },
+        var estate3 = progress.Game.GetArtifact<Card>("estate");
+        estate3.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(p2Deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ estate3! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
@@ -71,11 +82,20 @@ public class DeckBuildingScoringTests
     public void GivenScoresAlreadyComputed_WhenComputeScoresAgain_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, _, _, _) = BuildGame();
+        progress.Should().NotBeNull();
+        p1Deck.Should().NotBeNull();
         progress = progress.HandleEvent(new RegisterCardDefinitionEvent("estate", "Estate", new List<string> { "Victory" }, 2, 1));
-        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("estate") } },
+        var estate = progress.Game.GetArtifact<Card>("estate");
+        estate.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ estate! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
@@ -97,17 +117,33 @@ public class DeckBuildingScoringTests
     public void GivenNoDefinitions_WhenComputeScores_ThenAllZero()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, p2Deck, p1, p2) = BuildGame();
+        progress.Should().NotBeNull();
+        p1Deck.Should().NotBeNull();
+        p2Deck.Should().NotBeNull();
+        p1.Should().NotBeNull();
+        p2.Should().NotBeNull();
         // Decks with cards that lack definitions (should count 0)
-        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("estate"), progress.Game.GetArtifact<Card>("copper") } },
+        var estate = progress.Game.GetArtifact<Card>("estate");
+        var copper = progress.Game.GetArtifact<Card>("copper");
+        estate.Should().NotBeNull();
+        copper.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(p1Deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ estate!, copper! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
         }));
-        progress = progress.HandleEvent(new CreateDeckEvent(p2Deck, new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ progress.Game.GetArtifact<Card>("copper") } },
+        var copper2 = progress.Game.GetArtifact<Card>("copper");
+        copper2.Should().NotBeNull();
+        progress = progress.HandleEvent(new CreateDeckEvent(p2Deck!, new Dictionary<string, IList<Card>>{
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>{ copper2! } },
             { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
             { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },

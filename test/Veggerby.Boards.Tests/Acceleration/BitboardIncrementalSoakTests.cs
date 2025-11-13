@@ -35,6 +35,11 @@ public class BitboardIncrementalSoakTests
     public void GivenExtendedMoveAndCaptureSequence_WhenIncrementalEnabled_ThenOccupancyMatchesBaseline()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var baseline = new ChessGameBuilder().Compile();
         GameProgress incremental;
         using (new FlagScope())

@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -15,6 +12,12 @@ public class DeckBuildingSupplyConfiguratorTests
     [Fact]
     public void BuildStartupEvents_Definitions_And_Supply_Applied_InInsertionOrder()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -26,18 +29,20 @@ public class DeckBuildingSupplyConfiguratorTests
         builder.WithCards("copper", "estate");
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // act
-        var events = builder.SupplyConfigurator.BuildStartupEvents(deck);
+        builder.SupplyConfigurator.Should().NotBeNull();
+        var events = builder.SupplyConfigurator!.BuildStartupEvents(deck!);
         foreach (var e in events)
         {
             progress = progress.HandleEvent(e);
         }
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
+        var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds.Supply["copper"].Should().Be(60);
+        ds!.Supply["copper"].Should().Be(60);
         ds.Supply["estate"].Should().Be(24);
     }
 
@@ -45,6 +50,11 @@ public class DeckBuildingSupplyConfiguratorTests
     public void AddDefinition_Duplicate_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cfg = new DeckBuildingSupplyConfigurator();
         cfg.AddDefinition("copper", "Copper", new[] { "Treasure" }, 0, 0);
 
@@ -59,6 +69,11 @@ public class DeckBuildingSupplyConfiguratorTests
     public void AddSupply_ForUndefinedDefinition_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cfg = new DeckBuildingSupplyConfigurator();
 
         // act
@@ -71,6 +86,12 @@ public class DeckBuildingSupplyConfiguratorTests
     [Fact]
     public void Integration_GainFromSupply_DecrementsAfterStartup()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -80,18 +101,24 @@ public class DeckBuildingSupplyConfiguratorTests
         builder.WithCards("copper");
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
-        var events = builder.SupplyConfigurator.BuildStartupEvents(deck);
-        foreach (var e in events) { progress = progress.HandleEvent(e); }
+        deck.Should().NotBeNull();
+        builder.SupplyConfigurator.Should().NotBeNull();
+        var events = builder.SupplyConfigurator!.BuildStartupEvents(deck!);
+        foreach (var e in events)
+        {
+            progress = progress.HandleEvent(e);
+        }
         var enumerator = progress.Game.Players.GetEnumerator();
-        Assert.True(enumerator.MoveNext());
+        enumerator.MoveNext().Should().BeTrue();
         var player = enumerator.Current;
+        player.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
 
         // act
-        progress = progress.HandleEvent(new GainFromSupplyEvent(player, deck, "copper", DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(player!, deck!, "copper", DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
+        var ds = progress.State.GetState<DeckState>(deck)!;
         ds.Supply["copper"].Should().Be(4);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(1);
     }

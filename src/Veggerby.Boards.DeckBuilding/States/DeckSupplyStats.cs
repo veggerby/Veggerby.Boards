@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Veggerby.Boards.DeckBuilding;
 
@@ -11,9 +10,15 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class DeckSupplyStats
 {
     /// <summary>Gets total distinct supply pile count.</summary>
-    public int TotalPiles { get; }
+    public int TotalPiles
+    {
+        get;
+    }
     /// <summary>Gets current empty supply pile count.</summary>
-    public int EmptyPiles { get; }
+    public int EmptyPiles
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance aggregating supply statistics.
@@ -22,8 +27,10 @@ public sealed class DeckSupplyStats
     /// <param name="emptyPiles">Number of entries whose count is &lt;= 0.</param>
     public DeckSupplyStats(int totalPiles, int emptyPiles)
     {
-        if (totalPiles < 0) throw new ArgumentOutOfRangeException(nameof(totalPiles));
-        if (emptyPiles < 0 || emptyPiles > totalPiles) throw new ArgumentOutOfRangeException(nameof(emptyPiles));
+        if (totalPiles < 0)
+            throw new ArgumentOutOfRangeException(nameof(totalPiles));
+        if (emptyPiles < 0 || emptyPiles > totalPiles)
+            throw new ArgumentOutOfRangeException(nameof(emptyPiles));
         TotalPiles = totalPiles;
         EmptyPiles = emptyPiles;
     }
@@ -31,11 +38,15 @@ public sealed class DeckSupplyStats
     /// <summary>Creates stats from a raw supply dictionary.</summary>
     public static DeckSupplyStats From(IDictionary<string, int> supply)
     {
-        if (supply is null || supply.Count == 0) return new DeckSupplyStats(0, 0);
+        if (supply is null || supply.Count == 0)
+            return new DeckSupplyStats(0, 0);
         var empty = 0;
         foreach (var kv in supply)
         {
-            if (kv.Value <= 0) { empty++; }
+            if (kv.Value <= 0)
+            {
+                empty++;
+            }
         }
         return new DeckSupplyStats(supply.Count, empty);
     }

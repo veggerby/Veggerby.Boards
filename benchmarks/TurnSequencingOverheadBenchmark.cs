@@ -48,15 +48,15 @@ public class TurnSequencingOverheadBenchmark
         }
 
         // Resolve identical logical move for both compiled instances (flag on/off) separately to avoid null path usage
-        var fromWith = _withSequencing.Game.GetTile(ChessIds.Tiles.E2);
-        var toWith = _withSequencing.Game.GetTile(ChessIds.Tiles.E4);
-        _pawnWith = _withSequencing.Game.GetPiece(ChessIds.Pieces.WhitePawn5); // white pawn on e2 in builder setup
+        var fromWith = _withSequencing.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("TurnSequencing benchmark: from tile e2 missing (with sequencing)");
+        var toWith = _withSequencing.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("TurnSequencing benchmark: to tile e4 missing (with sequencing)");
+        _pawnWith = _withSequencing.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("TurnSequencing benchmark: pawn5 missing (with sequencing)"); // white pawn on e2 in builder setup
         var pathWithVisitor = new ResolveTilePathPatternVisitor(_withSequencing.Game.Board, fromWith, toWith);
-        _pathWith = pathWithVisitor.ResultPath;
+        _pathWith = pathWithVisitor.ResultPath!;
         if (_pathWith is null)
         {
             // Fallback: construct simple two-step forward path (e2->e3->e4) if not resolved by patterns
-            var mid = _withSequencing.Game.GetTile(ChessIds.Tiles.E3);
+            var mid = _withSequencing.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("TurnSequencing benchmark: mid tile e3 missing (with sequencing)");
             var rel1 = _withSequencing.Game.Board.GetTileRelation(fromWith, mid);
             var rel2 = _withSequencing.Game.Board.GetTileRelation(mid, toWith);
             if (rel1 is not null && rel2 is not null)
@@ -66,14 +66,14 @@ public class TurnSequencingOverheadBenchmark
             }
         }
 
-        var fromWithout = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E2);
-        var toWithout = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E4);
-        _pawnWithout = _withoutSequencing.Game.GetPiece(ChessIds.Pieces.WhitePawn5);
+        var fromWithout = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("TurnSequencing benchmark: from tile e2 missing (without sequencing)");
+        var toWithout = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("TurnSequencing benchmark: to tile e4 missing (without sequencing)");
+        _pawnWithout = _withoutSequencing.Game.GetPiece(ChessIds.Pieces.WhitePawn5) ?? throw new InvalidOperationException("TurnSequencing benchmark: pawn5 missing (without sequencing)");
         var pathWithoutVisitor = new ResolveTilePathPatternVisitor(_withoutSequencing.Game.Board, fromWithout, toWithout);
-        _pathWithout = pathWithoutVisitor.ResultPath;
+        _pathWithout = pathWithoutVisitor.ResultPath!;
         if (_pathWithout is null)
         {
-            var mid2 = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E3);
+            var mid2 = _withoutSequencing.Game.GetTile(ChessIds.Tiles.E3) ?? throw new InvalidOperationException("TurnSequencing benchmark: mid tile e3 missing (without sequencing)");
             var rel1b = _withoutSequencing.Game.Board.GetTileRelation(fromWithout, mid2);
             var rel2b = _withoutSequencing.Game.Board.GetTileRelation(mid2, toWithout);
             if (rel1b is not null && rel2b is not null)

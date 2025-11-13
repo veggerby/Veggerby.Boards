@@ -24,12 +24,16 @@ internal enum EventKind : ulong
 /// <summary>
 /// Marker interface for non-movement, non-dice state mutation events.
 /// </summary>
-public interface IStateMutationGameEvent : IGameEvent { }
+public interface IStateMutationGameEvent : IGameEvent
+{
+}
 
 /// <summary>
 /// Marker interface for events that influence phase/control flow.
 /// </summary>
-public interface IPhaseControlGameEvent : IGameEvent { }
+public interface IPhaseControlGameEvent : IGameEvent
+{
+}
 
 /// <summary>
 /// Utility responsible for classifying events and rules into <see cref="EventKind"/> buckets (experimental).

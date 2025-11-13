@@ -13,12 +13,19 @@ public class DeckBuildingSupplyHelperTests
     [Fact]
     public void BuildSupply_WhenUsedWithCreateDeck_ThenGainFromSupplyDecrements()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         builder.WithCards("copper");
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card>(),
@@ -27,20 +34,20 @@ public class DeckBuildingSupplyHelperTests
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
         var supply = DeckBuildingTestHelpers.BuildSupply(("copper", 5));
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         var enumerator = progress.Game.Players.GetEnumerator();
-        Assert.True(enumerator.MoveNext());
+        enumerator.MoveNext().Should().BeTrue();
         var player = enumerator.Current;
-        // advance Start -> Main so GainFromSupplyEvent (gated on Main segment) will be processed
+        player.Should().NotBeNull();
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
-        progress = progress.HandleEvent(new GainFromSupplyEvent(player, deck, "copper", DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(player!, deck!, "copper", DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
+        var ds = progress.State.GetState<DeckState>(deck)!;
         ds.Supply["copper"].Should().Be(4);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(1);
     }

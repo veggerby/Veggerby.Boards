@@ -32,7 +32,10 @@ public class HasDiceValueGameEventCondition : IGameEventCondition<MovePieceGameE
     /// <summary>
     /// Gets the dice included in the check.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)

@@ -10,13 +10,25 @@ namespace Veggerby.Boards.Cards;
 public sealed class DrawCardsEvent : IGameEvent
 {
     /// <summary>Gets the deck artifact.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
     /// <summary>Gets the source pile identifier to draw from.</summary>
-    public string FromPileId { get; }
+    public string FromPileId
+    {
+        get;
+    }
     /// <summary>Gets the destination pile identifier to append drawn cards to.</summary>
-    public string ToPileId { get; }
+    public string ToPileId
+    {
+        get;
+    }
     /// <summary>Gets the number of cards to draw.</summary>
-    public int Count { get; }
+    public int Count
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DrawCardsEvent"/> class.
@@ -30,7 +42,8 @@ public sealed class DrawCardsEvent : IGameEvent
         Deck = deck ?? throw new ArgumentNullException(nameof(deck));
         FromPileId = fromPileId ?? throw new ArgumentNullException(nameof(fromPileId));
         ToPileId = toPileId ?? throw new ArgumentNullException(nameof(toPileId));
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
         Count = count;
     }
 }

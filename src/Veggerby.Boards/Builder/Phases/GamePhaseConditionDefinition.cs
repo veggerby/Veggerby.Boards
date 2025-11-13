@@ -15,7 +15,10 @@ internal class GamePhaseConditionDefinition : GamePhaseConditionDefinitionBase
         ConditionFactory = conditionFactory;
     }
 
-    public GameStateConditionFactory ConditionFactory { get; }
+    public GameStateConditionFactory ConditionFactory
+    {
+        get;
+    }
 
     internal override IGameStateCondition Build(Game game)
     {

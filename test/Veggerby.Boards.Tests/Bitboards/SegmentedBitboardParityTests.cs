@@ -1,12 +1,8 @@
 using System;
-using System.Linq;
 
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
-using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Bitboards;
 
@@ -25,6 +21,12 @@ public class SegmentedBitboardParityTests
     [Fact]
     public void GivenChessInitialPosition_WhenBuildingSnapshot_ThenSegmentedMatchesLegacy64()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableSegmentedFlag();
         var progress = new ChessGameBuilder().Compile();
         var game = progress.Game;
@@ -85,6 +87,12 @@ public class SegmentedBitboardParityTests
     [Fact]
     public void Given128TileBoard_WhenBuildingSnapshot_ThenSegmentedMatchesBitboard128()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = EnableSegmentedFlag();
         var progress = new Synthetic128BoardBuilder(128).Compile();
         var game = progress.Game;

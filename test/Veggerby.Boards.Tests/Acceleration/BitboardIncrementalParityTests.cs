@@ -1,7 +1,6 @@
 using System.Linq;
 
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Acceleration;
@@ -26,6 +25,11 @@ public class BitboardIncrementalParityTests
     public void GivenMoveSequence_WhenIncrementalEnabled_ThenOccupancyMatchesFullRebuild()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builderBase = new ChessGameBuilder();
         var baseline = builderBase.Compile();
         var builderInc = new ChessGameBuilder();

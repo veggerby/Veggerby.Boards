@@ -19,7 +19,7 @@ namespace Veggerby.Boards.Simulation;
 /// Randomness (dice rolls) must be driven by deterministic <see cref="GameState"/> random sources to achieve reproducibility.
 /// </remarks>
 /// <remarks>Initializes a new simulator.</remarks>
-public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options = null)
+public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions? options = null)
 {
     private readonly IPlayoutPolicy _policy = policy ?? throw new ArgumentNullException(nameof(policy));
     private readonly PlayoutOptions _options = options ?? new PlayoutOptions();
@@ -37,7 +37,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
         /// <param name="candidateCount">Number of candidate events produced this step.</param>
         /// <param name="applied">True if an event applied.</param>
         /// <param name="attempted">The event that was attempted (and applied) when <paramref name="applied"/> is true; otherwise the last attempted candidate or null when none.</param>
-        void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent attempted);
+        void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted);
 
         /// <summary>
         /// Invoked once a playout completes (terminal state reached or safety cap triggered).
@@ -49,9 +49,15 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     private sealed class NullObserver : IPlayoutObserver
     {
         public static readonly NullObserver Instance = new();
-        private NullObserver() { }
-        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent attempted) { }
-        public void OnCompleted(PlayoutResult result) { }
+        private NullObserver()
+        {
+        }
+        public void OnStep(GameProgress progress, int stepIndex, int candidateCount, bool applied, IGameEvent? attempted)
+        {
+        }
+        public void OnCompleted(PlayoutResult result)
+        {
+        }
     }
 
     /// <summary>
@@ -100,7 +106,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
             _policies = policies?.ToArray() ?? throw new ArgumentNullException(nameof(policies));
             if (_policies.Length == 0)
             {
-                throw new ArgumentException("At least one policy required", nameof(policies));
+                throw new ArgumentException(ExceptionMessages.AtLeastOnePolicyRequired, nameof(policies));
             }
         }
 
@@ -108,27 +114,73 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
         {
             foreach (var p in _policies)
             {
-                var seq = p.GetCandidateEvents(progress) ?? Enumerable.Empty<IGameEvent>();
-                // materialize minimal look-ahead to determine emptiness without double enumeration
+                var seq = p.GetCandidateEvents(progress);
+                if (seq is null)
+                {
+                    continue;
+                }
+
+                // Fast path: arrays (already materialized) or collections we can inspect cheaply.
                 if (seq is IGameEvent[] arr)
                 {
                     if (arr.Length > 0)
                     {
-                        return arr;
+                        return arr; // zero allocation path
+                    }
+                    continue;
+                }
+
+                if (seq is ICollection<IGameEvent> coll)
+                {
+                    if (coll.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    // If already an exact-sized list we can just return it (avoid re-enumeration).
+                    if (coll is List<IGameEvent> listRef)
+                    {
+                        return listRef;
+                    }
+
+                    // Otherwise, stream without full materialization (may only consume a prefix in caller).
+                    return StreamCollection(coll);
+                }
+
+                // Generic enumerable: perform single element look-ahead without allocating whole list.
+                var e = seq.GetEnumerator();
+                if (!e.MoveNext())
+                {
+                    e.Dispose();
+                    continue; // empty – advance to next policy
+                }
+
+                return YieldFirstAndRest(e);
+
+                // Local iterator that yields already advanced first element followed by remaining items.
+                static IEnumerable<IGameEvent> YieldFirstAndRest(IEnumerator<IGameEvent> enumerator)
+                {
+                    // enumerator positioned at first element
+                    yield return enumerator.Current;
+                    try
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            yield return enumerator.Current;
+                        }
+                    }
+                    finally
+                    {
+                        enumerator.Dispose();
                     }
                 }
-                else
+
+                // Stream a collection without forcing enumeration into a new list (unless consumer iterates all).
+                static IEnumerable<IGameEvent> StreamCollection(ICollection<IGameEvent> collection)
                 {
-                    using var e = seq.GetEnumerator();
-                    if (e.MoveNext())
+                    foreach (var item in collection)
                     {
-                        // build list including first
-                        var list = new List<IGameEvent> { e.Current };
-                        while (e.MoveNext())
-                        {
-                            list.Add(e.Current);
-                        }
-                        return list;
+                        yield return item;
                     }
                 }
             }
@@ -153,14 +205,14 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <param name="progress">Initial progress snapshot.</param>
     /// <param name="observer">Optional diagnostics observer (receives per-step and completion callbacks).</param>
     /// <returns>Playout result.</returns>
-    public PlayoutResult Playout(GameProgress progress, IPlayoutObserver observer = null)
+    public PlayoutResult Playout(GameProgress progress, IPlayoutObserver? observer = null)
     {
         ArgumentNullException.ThrowIfNull(progress);
 
         var ob = observer ?? NullObserver.Instance;
 
-        var trace = _options.CaptureTrace ? new List<GameState>() : null;
-        if (trace is not null)
+        var trace = _options.CaptureTrace ? new List<GameState>() : new List<GameState>(capacity: 0);
+        if (_options.CaptureTrace)
         {
             trace.Add(progress.State);
         }
@@ -182,7 +234,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
             var candidates = _policy.GetCandidateEvents(current) ?? Enumerable.Empty<IGameEvent>();
             var any = false;
             int candidateCount = 0;
-            IGameEvent attempted = null;
+            IGameEvent? attempted = null;
 
             foreach (var evt in candidates)
             {
@@ -194,9 +246,9 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
                 if (result.Applied)
                 {
                     applied++;
-                    current = new GameProgress(current.Engine, result.State, current.Events.Concat([evt]));
+                    current = new GameProgress(current.Engine, result.State, current.Events.Append(evt));
 
-                    if (trace is not null)
+                    if (_options.CaptureTrace)
                     {
                         trace.Add(current.State);
                     }
@@ -243,7 +295,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="simulatorFactory">Optional factory to create a derived simulator per worker (e.g., wrapping policy with thread-local state).</param>
     /// <returns>Aggregated batch result.</returns>
-    public async Task<PlayoutBatchResult> PlayoutManyAsync(GameProgress progress, int count, int? degreeOfParallelism = null, CancellationToken cancellationToken = default, Func<GameSimulator> simulatorFactory = null)
+    public async Task<PlayoutBatchResult> PlayoutManyAsync(GameProgress progress, int count, int? degreeOfParallelism = null, CancellationToken cancellationToken = default, Func<GameSimulator>? simulatorFactory = null)
     {
         if (count <= 0)
         {
@@ -345,6 +397,7 @@ public sealed class GameSimulator(IPlayoutPolicy policy, PlayoutOptions options 
             {
                 return snapshot;
             }
+
             remaining -= take;
         }
 

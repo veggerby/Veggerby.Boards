@@ -1,0 +1,14 @@
+<Project>
+
+  <Import Project="..\Directory.Build.props" Condition="Exists('..\Directory.Build.props')" />
+  <Import Project="$(BuildFolder)\nuget-package.props" />
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors)</WarningsNotAsErrors>
+    <!-- Enable XML docs for public API coverage enforcement tests -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(MSBuildProjectName).xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>

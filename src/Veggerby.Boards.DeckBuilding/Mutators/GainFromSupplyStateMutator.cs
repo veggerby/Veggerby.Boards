@@ -15,6 +15,9 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, GainFromSupplyEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var deckState = gameState.GetState<DeckState>(@event.Deck);
         if (deckState is null)
         {
@@ -39,22 +42,15 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
         {
             if (kv.Key.Equals(@event.TargetPileId, StringComparison.Ordinal))
             {
-                continue; // handled separately below
+                continue; // handle target separately
             }
-            // kv.Value is IReadOnlyList<Card>; if it's already a List<Card> we can reuse the reference.
-            if (kv.Value is List<Card> existingList)
-            {
-                newPiles[kv.Key] = existingList;
-            }
-            else
-            {
-                // Fallback: create a List wrapper referencing existing cards (artifacts immutable)
-                newPiles[kv.Key] = new List<Card>(kv.Value);
-            }
+
+            // Reuse existing read-only collection; DeckState constructor will materialize its own frozen copy.
+            newPiles[kv.Key] = (IList<Card>)kv.Value; // safe cast (ReadOnlyCollection<Card> implements IList<Card>)
         }
 
         // Resolve card artifact by id (condition already validated existence, but defensive guard retained).
-        var card = engine.Game.GetArtifact<Card>(@event.CardId) ?? throw new BoardException($"Card '{@event.CardId}' not found in game artifacts.");
+        var card = engine.Game.GetArtifact<Card>(@event.CardId) ?? throw new BoardException(ExceptionMessages.CardNotFound(@event.CardId));
 
         var targetCloned = new List<Card>(targetPileOriginal.Count + 1);
         // Copy existing references (no per-item cloning needed; Card artifacts are immutable).

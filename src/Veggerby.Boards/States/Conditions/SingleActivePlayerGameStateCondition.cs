@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Veggerby.Boards.States.Conditions;
+﻿namespace Veggerby.Boards.States.Conditions;
 
 /// <summary>
 /// Condition that is valid only when exactly one player is marked active.

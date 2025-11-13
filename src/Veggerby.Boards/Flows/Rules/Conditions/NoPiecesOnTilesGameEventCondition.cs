@@ -32,7 +32,10 @@ public class NoPiecesOnTilesGameEventCondition<T> : IGameEventCondition<T> where
     /// <summary>
     /// Gets monitored tiles.
     /// </summary>
-    public Tile[] Tiles { get; }
+    public Tile[] Tiles
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)

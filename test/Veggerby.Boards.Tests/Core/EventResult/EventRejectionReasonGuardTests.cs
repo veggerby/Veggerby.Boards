@@ -15,10 +15,14 @@ public class EventRejectionReasonGuardTests
     public void GivenEventRejectionReasonEnum_WhenEnumerated_ThenAllKnownValuesAccountedFor()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var values = Enum.GetValues(typeof(EventRejectionReason)).Cast<EventRejectionReason>().ToArray();
 
         // act
-        // Explicit list - update alongside enum.
         var expected = new[]
         {
             EventRejectionReason.None,
@@ -32,7 +36,7 @@ public class EventRejectionReasonGuardTests
         };
 
         // assert
-        Assert.Equal(expected.Length, values.Length);
-        Assert.True(expected.All(values.Contains), "Enum changed: update mapping test and related classifier logic.");
+        values.Length.Should().Be(expected.Length);
+        values.Should().Contain(expected);
     }
 }

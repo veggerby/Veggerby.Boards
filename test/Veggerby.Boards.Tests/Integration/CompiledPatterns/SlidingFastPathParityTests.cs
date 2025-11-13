@@ -30,10 +30,17 @@ public class SlidingFastPathParityTests
 
         protected override void Build()
         {
-            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
-            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
+            AddDirection(Constants.Directions.North);
+            AddDirection(Constants.Directions.South);
+            AddDirection(Constants.Directions.East);
+            AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast);
+            AddDirection(Constants.Directions.NorthWest);
+            AddDirection(Constants.Directions.SouthEast);
+            AddDirection(Constants.Directions.SouthWest);
 
-            AddPlayer("white"); AddPlayer("black");
+            AddPlayer("white");
+            AddPlayer("black");
 
             var files = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
             for (int rank = 1; rank <= 8; rank++)
@@ -50,14 +57,40 @@ public class SlidingFastPathParityTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var northRank = rank + 1; if (northRank <= 8) { WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North); }
-                    var southRank = rank - 1; if (southRank >= 1) { WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South); }
-                    if (file < 'h') { WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East); }
-                    if (file > 'a') { WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West); }
-                    if (file < 'h' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast); }
-                    if (file > 'a' && northRank <= 8) { WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest); }
-                    if (file < 'h' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast); }
-                    if (file > 'a' && southRank >= 1) { WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest); }
+                    var northRank = rank + 1;
+                    if (northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, northRank)).InDirection(Constants.Directions.North);
+                    }
+                    var southRank = rank - 1;
+                    if (southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId(file, southRank)).InDirection(Constants.Directions.South);
+                    }
+                    if (file < 'h')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), rank)).InDirection(Constants.Directions.East);
+                    }
+                    if (file > 'a')
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), rank)).InDirection(Constants.Directions.West);
+                    }
+                    if (file < 'h' && northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), northRank)).InDirection(Constants.Directions.NorthEast);
+                    }
+                    if (file > 'a' && northRank <= 8)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), northRank)).InDirection(Constants.Directions.NorthWest);
+                    }
+                    if (file < 'h' && southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file + 1), southRank)).InDirection(Constants.Directions.SouthEast);
+                    }
+                    if (file > 'a' && southRank >= 1)
+                    {
+                        WithTile(id).WithRelationTo(tileId((char)(file - 1), southRank)).InDirection(Constants.Directions.SouthWest);
+                    }
                 }
             }
 
@@ -90,14 +123,15 @@ public class SlidingFastPathParityTests
                         break;
                     case "immobile":
                         break; // no directions
-                    default: throw new System.InvalidOperationException("Unknown piece spec type");
+                    default:
+                        throw new System.InvalidOperationException("Unknown piece spec type");
                 }
                 pd.OnTile(spec.FromTile);
             }
         }
     }
 
-    private static TilePath ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
+    private static TilePath? ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
         using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
         // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
@@ -128,19 +162,25 @@ public class SlidingFastPathParityTests
         var fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
         if (reference is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(reference.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(reference.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var refSeq = reference.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(refSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(refSeq);
     }
 
     [Fact]
     public void GivenRook_EmptyHorizontalRay_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         AssertParity([rook], rook, ChessIds.Tiles.H4);
     }
@@ -148,6 +188,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_LongEmptyDiagonal_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         AssertParity([bishop], bishop, ChessIds.Tiles.G5);
     }
@@ -155,6 +201,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenQueen_VerticalEmptyRay_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
         AssertParity([queen], queen, ChessIds.Tiles.D8);
     }
@@ -162,6 +214,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_FriendlyBlockerMidRay_MoveBeyondBlocked()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
         AssertParity([rook, friendly], rook, ChessIds.Tiles.D8); // null
@@ -170,6 +228,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_FriendlyBlockerAtTarget_Invalid()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
         AssertParity([rook, friendly], rook, ChessIds.Tiles.D6); // null
@@ -178,6 +242,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_EnemyBlockerAsTarget_CapturePath()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
         AssertParity([rook, enemy], rook, ChessIds.Tiles.D6); // capture
@@ -186,6 +256,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_EnemyBlockerMidRay_TargetBeyondBlocked()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
         AssertParity([rook, enemy], rook, ChessIds.Tiles.D7);
@@ -195,6 +271,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_FriendlyThenEnemy_FirstBlockerPrevails()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D7, "black");
@@ -204,6 +286,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_ShortRayLengthOne_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         AssertParity([rook], rook, ChessIds.Tiles.D5);
     }
@@ -211,6 +299,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenImmobilePiece_NoPath()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var stone = new PieceSpec("stone", "immobile", ChessIds.Tiles.D4, "white");
         AssertParity([stone], stone, ChessIds.Tiles.D5);
     }
@@ -220,6 +314,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_AdjacentFriendlyBlocker_TargetInvalid()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D5, "white");
         AssertParity([rook, friendly], rook, ChessIds.Tiles.D5); // null
@@ -228,6 +328,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_AdjacentEnemy_Capture()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D5, "black");
         AssertParity([rook, enemy], rook, ChessIds.Tiles.D5); // capture single-step
@@ -236,6 +342,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_FriendlyBlockerMidRay_TargetBeyondBlocked()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
         AssertParity([bishop, friendly], bishop, ChessIds.Tiles.G5); // null beyond friendly
@@ -244,6 +356,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_FriendlyBlockerAtTarget_Invalid()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
         AssertParity([bishop, friendly], bishop, ChessIds.Tiles.E3); // null (occupied by friendly)
@@ -252,6 +370,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_EnemyBlockerAsTarget_Capture()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
         AssertParity([bishop, enemy], bishop, ChessIds.Tiles.E3); // capture
@@ -260,6 +384,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_EnemyBlockerMidRay_TargetBeyondBlocked()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
         AssertParity([bishop, enemy], bishop, ChessIds.Tiles.G5); // null beyond enemy blocker
@@ -268,6 +398,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_FriendlyThenEnemy_FirstBlockerPrevails()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.F4, "black");
@@ -277,6 +413,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenBishop_EnemyThenFriendly_FirstBlockerPrevails()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.F4, "white");
@@ -286,13 +428,19 @@ public class SlidingFastPathParityTests
     [Fact]
     public void GivenRook_ZeroLengthRequest_ReturnsNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         AssertParity([rook], rook, ChessIds.Tiles.D4); // from == to => null
     }
 
     // ---------------- Decorator Direct Parity (fast-path vs compiled only) ----------------
 
-    private static TilePath ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    private static TilePath? ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;
@@ -302,11 +450,14 @@ public class SlidingFastPathParityTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        try
+        {
+            return progress.ResolvePathCompiledFirst(piece, from, to);
+        }
         finally { FeatureFlags.EnableSlidingFastPath = prev; }
     }
 
-    private static TilePath ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
+    private static TilePath? ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var prev = FeatureFlags.EnableSlidingFastPath;
@@ -316,7 +467,10 @@ public class SlidingFastPathParityTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try { return progress.ResolvePathCompiledFirst(piece, from, to); }
+        try
+        {
+            return progress.ResolvePathCompiledFirst(piece, from, to);
+        }
         finally { FeatureFlags.EnableSlidingFastPath = prev; }
     }
 
@@ -326,19 +480,25 @@ public class SlidingFastPathParityTests
         var compiled = ResolveCompiledOnly(specs, moving, target);
         if (compiled is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(compiled.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(compiled.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var cmpSeq = compiled.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(cmpSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(cmpSeq);
     }
 
     [Fact]
     public void Decorator_Rook_LongHorizontal_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
         AssertDecoratorParity([rook], rook, ChessIds.Tiles.H4);
     }
@@ -346,6 +506,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void Decorator_Bishop_DiagonalCapture_Parity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
         var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
         AssertDecoratorParity([bishop, enemy], bishop, ChessIds.Tiles.E3);
@@ -354,6 +520,12 @@ public class SlidingFastPathParityTests
     [Fact]
     public void Decorator_Queen_BlockedBeyondFriendly_NullParity()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
         var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
         AssertDecoratorParity([queen, friendly], queen, ChessIds.Tiles.D8);

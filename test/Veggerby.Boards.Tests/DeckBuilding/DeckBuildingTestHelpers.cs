@@ -6,7 +6,7 @@ internal static class DeckBuildingTestHelpers
 {
     public static IDictionary<string, int> BuildSupply(params (string id, int count)[] items)
     {
-        var dict = new Dictionary<string, int>(System.StringComparer.Ordinal);
+        var dict = new Dictionary<string, int>(StringComparer.Ordinal);
         if (items is null)
         {
             return dict;

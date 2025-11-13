@@ -2,11 +2,6 @@ using System;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.Flows.Mutators;
-using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.Flows.Rules.Conditions.Turn;
-using Veggerby.Boards.States;
-using Veggerby.Boards.States.Conditions; // for NullGameStateCondition
 
 namespace Veggerby.Boards.DeckBuilding;
 
@@ -15,13 +10,16 @@ namespace Veggerby.Boards.DeckBuilding;
 /// </summary>
 public class DeckBuildingGameBuilder : GameBuilder
 {
-    private Deck _p1Deck;
-    private Deck _p2Deck;
+    private Deck? _p1Deck;
+    private Deck? _p2Deck;
 
-    private DeckBuildingEndTriggerOptions _endTriggerOptions; // optional end trigger config (instance)
+    private DeckBuildingEndTriggerOptions? _endTriggerOptions; // optional end trigger config (instance)
 
     /// <summary>Supply configurator instance (set via extension) enabling startup event generation. Public read-only for test consumption.</summary>
-    public DeckBuildingSupplyConfigurator SupplyConfigurator { get; internal set; }
+    public DeckBuildingSupplyConfigurator? SupplyConfigurator
+    {
+        get; internal set;
+    }
 
     /// <summary>Standard pile identifiers for player decks.</summary>
     public static class Piles
@@ -90,8 +88,8 @@ public class DeckBuildingGameBuilder : GameBuilder
         var pileIds = new[] { Piles.Draw, Piles.Discard, Piles.Hand, Piles.InPlay };
         _p1Deck = new Deck("p1-deck", pileIds);
         _p2Deck = new Deck("p2-deck", pileIds);
-        AddArtifact(_p1Deck.Id).WithFactory(_ => _p1Deck);
-        AddArtifact(_p2Deck.Id).WithFactory(_ => _p2Deck);
+        AddArtifact(_p1Deck.Id).WithFactory(_ => _p1Deck!);
+        AddArtifact(_p2Deck.Id).WithFactory(_ => _p2Deck!);
 
         // Minimal card definitions + concrete cards (supply will be set by callers via events later)
         // Project scope: keep builder lean; supply/state created through events in tests or higher-level builders.
@@ -145,5 +143,5 @@ public class DeckBuildingGameBuilder : GameBuilder
     /// <summary>
     /// Internal accessor used by <see cref="EndGameEventCondition"/> for evaluating custom trigger semantics.
     /// </summary>
-    internal DeckBuildingEndTriggerOptions GetEndTriggerOptions() => _endTriggerOptions;
+    internal DeckBuildingEndTriggerOptions? GetEndTriggerOptions() => _endTriggerOptions;
 }

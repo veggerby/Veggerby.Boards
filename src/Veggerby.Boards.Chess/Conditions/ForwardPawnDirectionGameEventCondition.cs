@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -16,6 +17,10 @@ public sealed class ForwardPawnDirectionGameEventCondition : IGameEventCondition
     /// </summary>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(moveEvent, nameof(moveEvent));
+
         if (!ChessPiece.IsPawn(state, moveEvent.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");

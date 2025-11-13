@@ -20,7 +20,6 @@ lcov.info
 [Rr]eleases/
 x64/
 x86/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -45,7 +44,7 @@ dlldata.c
 
 # DNX
 project.lock.json
-artifacts/
+#artifacts/
 buildlog
 nuget.exe
 
@@ -235,3 +234,4 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 BenchmarkDotNet.Artifacts/*
+src/Veggerby.Boards*/Veggerby.Boards*.xml

@@ -12,16 +12,28 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class GainFromSupplyEvent : IGameEvent
 {
     /// <summary>Gets the player gaining the card.</summary>
-    public Player Player { get; }
+    public Player Player
+    {
+        get;
+    }
 
     /// <summary>Gets the deck receiving the gained card.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
 
     /// <summary>Gets the identifier of the card to gain (Card artifact id).</summary>
-    public string CardId { get; }
+    public string CardId
+    {
+        get;
+    }
 
     /// <summary>Gets the target pile identifier within the deck (e.g., discard).</summary>
-    public string TargetPileId { get; }
+    public string TargetPileId
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GainFromSupplyEvent"/> class.

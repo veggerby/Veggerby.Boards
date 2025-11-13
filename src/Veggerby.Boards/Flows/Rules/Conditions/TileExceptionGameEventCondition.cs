@@ -33,11 +33,17 @@ public class TileExceptionGameEventCondition : IGameEventCondition<MovePieceGame
     /// <summary>
     /// Gets the forbidden tiles.
     /// </summary>
-    public Tile[] Tiles { get; }
+    public Tile[] Tiles
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         return Tiles.Contains(@event.To) ? ConditionResponse.Invalid : ConditionResponse.Valid;
     }
 }

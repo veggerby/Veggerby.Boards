@@ -26,6 +26,12 @@ public class SimulationAdvancedTests
     [Fact]
     public void GivenSequentialSimulator_WithMoveIntentPolicy_ThenTerminatesNoMoves()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         // Policy attempts to move piece from t1->t2; however relation added is t2 -> t1 (reverse) so FirstOrDefault from current
@@ -35,7 +41,9 @@ public class SimulationAdvancedTests
         var detailed = SequentialSimulator.RunDetailed(progress, state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
+            piece.Should().NotBeNull();
             var pieceState = state.GetState<PieceState>(piece);
+            pieceState.Should().NotBeNull();
             var rel = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
             if (rel is null)
             {
@@ -51,12 +59,20 @@ public class SimulationAdvancedTests
     [Fact]
     public async Task GivenParallelDetailedSimulator_WhenMoveIntentPolicy_ThenNoProgressMetrics()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
+            piece.Should().NotBeNull();
             var pieceState = state.GetState<PieceState>(piece);
+            pieceState.Should().NotBeNull();
             var rel = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
             if (rel is null)
             {
@@ -83,12 +99,20 @@ public class SimulationAdvancedTests
     [Fact]
     public async Task GivenParallelSimulator_WithDeterministicMoveIntentPolicy_ThenIdenticalFinalHashes()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>
         {
             var piece = progress.Game.GetArtifacts<Piece>().First();
+            piece.Should().NotBeNull();
             var pieceState = state.GetState<PieceState>(piece);
+            pieceState.Should().NotBeNull();
             var rel = progress.Game.Board.TileRelations.FirstOrDefault(r => r.From == pieceState.CurrentTile);
             if (rel is null)
             {

@@ -1,9 +1,6 @@
 using System.IO;
 
 using Veggerby.Boards.Backgammon;
-using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Backgammon;
 
@@ -13,6 +10,11 @@ public class BackgammonBoardRendererTests
     public void GivenInitialBackgammon_WhenWrite_ThenTopBottomAndSummaryPrinted()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new BackgammonGameBuilder().Compile();
         var game = progress.Game;
         var state = progress.State;

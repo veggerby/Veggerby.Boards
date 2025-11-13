@@ -18,7 +18,7 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
     /// <summary>Total applied events across all playouts.</summary>
     public int TotalApplied => Results.Sum(r => r.AppliedEvents);
 
-    private int[] _histogram;
+    private int[]? _histogram;
 
     /// <summary>
     /// Lazy-computed histogram where index = applied event count and value = number of playouts with that length.
@@ -31,7 +31,7 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
             {
                 if (Results.Count == 0)
                 {
-                    _histogram = System.Array.Empty<int>();
+                    _histogram = Array.Empty<int>();
                 }
                 else
                 {
@@ -91,7 +91,7 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
     }
 
     /// <summary>Population standard deviation (sqrt of variance).</summary>
-    public double StandardDeviation => System.Math.Sqrt(Variance);
+    public double StandardDeviation => Math.Sqrt(Variance);
 
     /// <summary>
     /// Returns the P-th percentile (0-100) of applied event counts using nearest-rank method.
@@ -103,11 +103,17 @@ public sealed record PlayoutBatchResult(IReadOnlyList<PlayoutResult> Results)
         {
             return 0;
         }
-        if (p <= 0) { return MinApplied; }
-        if (p >= 100) { return MaxApplied; }
+        if (p <= 0)
+        {
+            return MinApplied;
+        }
+        if (p >= 100)
+        {
+            return MaxApplied;
+        }
         var ordered = Results.Select(r => r.AppliedEvents).OrderBy(v => v).ToArray();
-        var rank = (int)System.Math.Ceiling((p / 100d) * ordered.Length);
-        var index = System.Math.Max(1, rank) - 1;
+        var rank = (int)Math.Ceiling((p / 100d) * ordered.Length);
+        var index = Math.Max(1, rank) - 1;
         return ordered[index];
     }
 }

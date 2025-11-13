@@ -15,7 +15,11 @@ public class RandomDiceValueGeneratorTests
         public void Should_initialize()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new RandomDiceValueGenerator(1, 6);
 
             // assert
@@ -27,7 +31,11 @@ public class RandomDiceValueGeneratorTests
         public void Should_initialize_with_min_max()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new RandomDiceValueGenerator(6, 1);
 
             // assert

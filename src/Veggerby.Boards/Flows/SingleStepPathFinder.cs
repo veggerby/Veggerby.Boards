@@ -42,15 +42,27 @@ public class SingleStepPathFinder
     /// <summary>
     /// Gets the condition evaluated for each single movement step.
     /// </summary>
-    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition { get; }
+    public IGameEventCondition<MovePieceGameEvent> StepMoveCondition
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the dice referenced for movement distance resolution.
     /// </summary>
-    public Dice[] Dice { get; }
-
-    private SingleStepPath GetSingleStep(GameEngine engine, PieceState pieceState, IPattern pattern, GameState state, DiceState<int> diceState, Tile to, SingleStepPath previousStep = null)
+    public Dice[] Dice
     {
+        get;
+    }
+
+    private SingleStepPath? GetSingleStep(GameEngine engine, PieceState pieceState, IPattern pattern, GameState state, DiceState<int> diceState, Tile to, SingleStepPath? previousStep = null)
+    {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(pieceState);
+        ArgumentNullException.ThrowIfNull(pattern);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(diceState);
+        ArgumentNullException.ThrowIfNull(to);
         var visitor = new ResolveTilePathDistanceVisitor(engine.Game.Board, pieceState.CurrentTile, to, diceState.CurrentValue, false);
         pattern.Accept(visitor);
 
@@ -74,8 +86,12 @@ public class SingleStepPathFinder
         return new SingleStepPath(newState, diceState, visitor.ResultPath, previousStep);
     }
 
-    private IEnumerable<SingleStepPath> FindSingleSteps(GameEngine engine, Piece piece, GameState state, Tile to, SingleStepPath previousStep)
+    private IEnumerable<SingleStepPath> FindSingleSteps(GameEngine engine, Piece piece, GameState state, Tile to, SingleStepPath? previousStep)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(to);
         var pieceState = state.GetState<PieceState>(piece);
 
         if (pieceState is null)
@@ -83,7 +99,7 @@ public class SingleStepPathFinder
             return Enumerable.Empty<SingleStepPath>();
         }
 
-        var diceStates = Dice.Select(x => state.GetState<DiceState<int>>(x)).Where(x => x is not null);
+        var diceStates = Dice.Select(x => state.GetState<DiceState<int>>(x)).Where(x => x is not null).Cast<DiceState<int>>();
 
         if (!diceStates.Any())
         {
@@ -93,11 +109,15 @@ public class SingleStepPathFinder
         return [.. piece
             .Patterns
             .SelectMany(pattern => diceStates.Select(diceState => GetSingleStep(engine, pieceState, pattern, state, diceState, to, previousStep)))
-            .Where(x => x is not null)];
+            .Where(x => x is not null)!];
     }
 
     private IEnumerable<SingleStepPath> ContinueStep(GameEngine engine, Piece piece, Tile to, SingleStepPath step)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(to);
+        ArgumentNullException.ThrowIfNull(step);
         return FindSingleSteps(engine, piece, step.NewState, to, step);
     }
 
@@ -112,9 +132,14 @@ public class SingleStepPathFinder
     /// <returns>All successful paths ending on <paramref name="to"/>.</returns>
     public IEnumerable<SingleStepPath> GetPaths(GameEngine engine, GameState state, Piece piece, Tile from, Tile to)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(piece);
+        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(to);
         var pieceState = state.GetState<PieceState>(piece);
 
-        if (!pieceState.CurrentTile.Equals(from))
+        if (pieceState is null || pieceState.CurrentTile is null || !pieceState.CurrentTile.Equals(from))
         {
             return Enumerable.Empty<SingleStepPath>();
         }

@@ -8,30 +8,62 @@ public class PathResolverParityTests
     [Fact]
     public void GivenRookMove_WhenResolvedThroughPathResolver_ThenGeometricPathReturned()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var rook = progress.Game.GetPiece("white-rook-1");
         var from = progress.Game.GetTile(ChessIds.Tiles.A1);
         var to = progress.Game.GetTile(ChessIds.Tiles.A4); // a1->a2->a3->a4 (geometric; occupancy not enforced at path layer)
-        Assert.NotNull(progress.Engine.Capabilities?.PathResolver);
-        var path = progress.Engine.Capabilities.PathResolver.Resolve(rook, from, to, progress.State);
-        Assert.NotNull(path);
-        Assert.Equal(to, path.To);
-        Assert.Equal(3, path.Distance);
+        var resolver = progress.Engine.Capabilities?.PathResolver;
+
+        // assert (setup)
+        rook.Should().NotBeNull();
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        resolver.Should().NotBeNull();
+
+        // act
+        var path = resolver!.Resolve(rook!, from!, to!, progress.State);
+
+        // assert
+        path.Should().NotBeNull();
+        path!.To.Should().Be(to);
+        path.Distance.Should().Be(3);
     }
 
     [Fact]
     public void GivenKnightMove_WhenResolvedThroughPathResolver_ThenPathMatchesCompiled()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var knight = progress.Game.GetPiece("white-knight-1");
         var from = progress.Game.GetTile(ChessIds.Tiles.B1);
         var to = progress.Game.GetTile(ChessIds.Tiles.C3);
-        Assert.NotNull(progress.Engine.Capabilities?.PathResolver);
-        var path = progress.Engine.Capabilities.PathResolver.Resolve(knight, from, to, progress.State);
-        Assert.NotNull(path);
-        Assert.Equal(to, path.To);
-        Assert.Equal(3, path.Distance); // compiled pattern expands knight L into 3 directional steps
+        var resolver = progress.Engine.Capabilities?.PathResolver;
+
+        // assert (setup)
+        knight.Should().NotBeNull();
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        resolver.Should().NotBeNull();
+
+        // act
+        var path = resolver!.Resolve(knight!, from!, to!, progress.State);
+
+        // assert
+        path.Should().NotBeNull();
+        path!.To.Should().Be(to);
+        path.Distance.Should().Be(3); // compiled pattern expands knight L into 3 directional steps
     }
 }

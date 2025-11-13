@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using Veggerby.Boards.States;
-
 namespace Veggerby.Boards.Chess;
 
 /// <summary>

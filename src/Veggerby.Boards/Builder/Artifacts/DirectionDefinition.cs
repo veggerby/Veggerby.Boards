@@ -10,7 +10,7 @@ public class DirectionDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured direction identifier.
     /// </summary>
-    public string DirectionId { get; private set; }
+    public string DirectionId { get; private set; } = null!; // set via WithId before use
 
     /// <summary>
     /// Sets the direction identifier.
@@ -18,10 +18,7 @@ public class DirectionDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="id">Unique direction id.</param>
     public DirectionDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         DirectionId = id;
         return this;

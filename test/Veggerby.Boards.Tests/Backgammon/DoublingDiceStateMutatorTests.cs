@@ -38,6 +38,11 @@ public class DoublingDiceStateMutatorTests
     public void GivenFirstDouble_WhenMutated_ThenSpecializedStateCreatedAndOwnershipAssignedToInactive()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, p1, p2, cube) = CreateBaseline();
         var mutator = new DoublingDiceStateMutator(cube);
         var evt = new RollDiceGameEvent<int>(new DiceState<int>(cube, 1));
@@ -57,6 +62,11 @@ public class DoublingDiceStateMutatorTests
     public void GivenAlreadyDoubledSameTurn_WhenMutated_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, p1, p2, cube) = CreateBaseline();
         var firstMutator = new DoublingDiceStateMutator(cube);
         var evt = new RollDiceGameEvent<int>(new DiceState<int>(cube, 1));
@@ -75,6 +85,11 @@ public class DoublingDiceStateMutatorTests
     public void GivenRedoubleNextTurnByOwner_WhenMutated_ThenValueIncreasesAndOwnershipTransfers()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, p1, p2, cube) = CreateBaseline();
         var evt = new RollDiceGameEvent<int>(new DiceState<int>(cube, 1));
         var mutator = new DoublingDiceStateMutator(cube);
@@ -104,6 +119,11 @@ public class DoublingDiceStateMutatorTests
     public void GivenRedoubleAttemptByNonOwner_WhenMutated_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, p1, p2, cube) = CreateBaseline();
         var evt = new RollDiceGameEvent<int>(new DiceState<int>(cube, 1));
         var mutator = new DoublingDiceStateMutator(cube);
@@ -128,6 +148,11 @@ public class DoublingDiceStateMutatorTests
     public void GivenMissingBaseDiceState_WhenFirstDouble_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var p1 = new Player("p1");
         var p2 = new Player("p2");
         var cube = new Dice("cube");

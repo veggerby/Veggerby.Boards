@@ -15,6 +15,9 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, DrawWithReshuffleEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         if (@event.Count == 0)
         {
             return state;
@@ -32,19 +35,36 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
 
         if (!ds.Piles.ContainsKey(drawId) || !ds.Piles.ContainsKey(discardId) || !ds.Piles.ContainsKey(handId))
         {
-            throw new BoardException("Required piles missing");
+            throw new BoardException(ExceptionMessages.RequiredPilesMissing);
         }
 
-        // Clone piles into mutable lists
-        var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        // Selective cloning: only draw, discard, hand piles require mutation.
+        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
+        var originalDraw = ds.Piles[drawId];
+        var originalDiscard = ds.Piles[discardId];
+        var originalHand = ds.Piles[handId];
+        var draw = originalDraw.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDraw);
+        var discard = originalDiscard.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDiscard);
+        var hand = originalHand.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalHand);
         foreach (var kv in ds.Piles)
         {
-            piles[kv.Key] = new List<Card>(kv.Value);
+            if (kv.Key.Equals(drawId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = draw;
+            }
+            else if (kv.Key.Equals(discardId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = discard;
+            }
+            else if (kv.Key.Equals(handId, StringComparison.Ordinal))
+            {
+                piles[kv.Key] = hand;
+            }
+            else
+            {
+                piles[kv.Key] = (IList<Card>)kv.Value; // reuse existing read-only list for untouched pile
+            }
         }
-
-        var draw = (List<Card>)piles[drawId];
-        var discard = (List<Card>)piles[discardId];
-        var hand = (List<Card>)piles[handId];
 
         // If draw is insufficient, shuffle discard deterministically and move onto draw
         var needed = @event.Count - draw.Count;
@@ -78,7 +98,7 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
         }
         draw.RemoveRange(0, toDraw);
 
-        var next = new DeckState(ds.Artifact, piles, new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
+        var next = new DeckState(ds.Artifact, piles, ds.Supply is null ? null : new Dictionary<string, int>(ds.Supply, StringComparer.Ordinal));
         return state.Next([next]);
     }
 }

@@ -14,12 +14,22 @@ public class TilePathTests
         public void Should_create_tilepath()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
+            tile2.Should().NotBeNull();
             var tile3 = board.GetTile("tile-3");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
-            var relation2to3 = board.GetTileRelation(tile2, Direction.Clockwise);
+            tile3.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
+            var relation2to3 = board.GetTileRelation(tile2!, Direction.Clockwise);
+            relation2to3.Should().NotBeNull();
 
             // act
             var actual = new TilePath([relation1to2, relation2to3]);
@@ -37,8 +47,12 @@ public class TilePathTests
         public void Should_throw_null_relations()
         {
             // arrange
+
             // act
-            var actual = () => new TilePath(null);
+
+            // assert
+
+            var actual = () => new TilePath(null!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("relations");
@@ -48,7 +62,11 @@ public class TilePathTests
         public void Should_throw_empty_relations()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new TilePath(Enumerable.Empty<TileRelation>());
 
             // assert
@@ -59,8 +77,12 @@ public class TilePathTests
         public void Should_throw_null_relation_in_list()
         {
             // arrange
+
             // act
-            var actual = () => new TilePath([null]);
+
+            // assert
+
+            var actual = () => new TilePath([null!]);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("relations");
@@ -70,13 +92,24 @@ public class TilePathTests
         public void Should_throw_relations_are_not_connected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
+            tile2.Should().NotBeNull();
             var tile3 = board.GetTile("tile-3");
+            tile3.Should().NotBeNull();
             var tile4 = board.GetTile("tile-4");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
-            var relation3to4 = board.GetTileRelation(tile3, Direction.Clockwise);
+            tile4.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
+            var relation3to4 = board.GetTileRelation(tile3!, Direction.Clockwise);
+            relation3to4.Should().NotBeNull();
 
             // act
             var actual = () => new TilePath([relation1to2, relation3to4]);
@@ -92,13 +125,23 @@ public class TilePathTests
         public void Should_return_expected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
+            tile2.Should().NotBeNull();
             var tile3 = board.GetTile("tile-3");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
-            var relation2to3 = board.GetTileRelation(tile2, Direction.Clockwise);
-            var path = new TilePath([relation1to2, relation2to3]);
+            tile3.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
+            var relation2to3 = board.GetTileRelation(tile2!, Direction.Clockwise);
+            relation2to3.Should().NotBeNull();
+            var path = new TilePath([relation1to2!, relation2to3!]);
 
             // act
             var actual = path.ToString();
@@ -115,15 +158,27 @@ public class TilePathTests
         public void Should_add_step_to_tilepath()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
+            tile2.Should().NotBeNull();
             var tile3 = board.GetTile("tile-3");
+            tile3.Should().NotBeNull();
             var tile4 = board.GetTile("tile-4");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
-            var relation2to3 = board.GetTileRelation(tile2, Direction.Clockwise);
-            var relation3to4 = board.GetTileRelation(tile3, Direction.Clockwise);
-            var path = new TilePath([relation1to2, relation2to3]);
+            tile4.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
+            var relation2to3 = board.GetTileRelation(tile2!, Direction.Clockwise);
+            relation2to3.Should().NotBeNull();
+            var relation3to4 = board.GetTileRelation(tile3!, Direction.Clockwise);
+            relation3to4.Should().NotBeNull();
+            var path = new TilePath([relation1to2!, relation2to3!]);
 
             // act
             var actual = path.Add(relation3to4);
@@ -144,10 +199,18 @@ public class TilePathTests
         public void Should_create_tilepath_from_nothing()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
+            tile2.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
 
             // act
             var actual = TilePath.Create(null, relation1to2);
@@ -165,13 +228,23 @@ public class TilePathTests
         public void Should_create_tilepath_from_existing()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = board.GetTile("tile-2");
+            tile2.Should().NotBeNull();
             var tile3 = board.GetTile("tile-3");
-            var relation1to2 = board.GetTileRelation(tile1, Direction.Clockwise);
-            var relation2to3 = board.GetTileRelation(tile2, Direction.Clockwise);
-            var path = new TilePath([relation1to2]);
+            tile3.Should().NotBeNull();
+            var relation1to2 = board.GetTileRelation(tile1!, Direction.Clockwise);
+            relation1to2.Should().NotBeNull();
+            var relation2to3 = board.GetTileRelation(tile2!, Direction.Clockwise);
+            relation2to3.Should().NotBeNull();
+            var path = new TilePath([relation1to2!]);
 
             // act
             var actual = TilePath.Create(path, relation2to3);

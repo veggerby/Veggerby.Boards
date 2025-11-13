@@ -12,7 +12,11 @@ namespace Veggerby.Boards.Benchmarks;
 [MemoryDiagnoser]
 public class SegmentedBitboardMicroBenchmark
 {
-    [Params(32, 64, 96, 128)] public int SetBits { get; set; }
+    [Params(32, 64, 96, 128)]
+    public int SetBits
+    {
+        get; set;
+    }
 
     private SegmentedBitboard _seg64;
     private SegmentedBitboard _seg128;
@@ -27,11 +31,18 @@ public class SegmentedBitboardMicroBenchmark
         var rnd = new System.Random(12345);
         _indices = Enumerable.Range(0, SetBits).Select(_ => rnd.Next(0, 128)).Distinct().ToArray();
         // Build 64-bit baseline mask for indices <64
-        ulong low = 0UL; ulong high = 0UL;
+        ulong low = 0UL;
+        ulong high = 0UL;
         foreach (var i in _indices)
         {
-            if (i < 64) { low |= 1UL << i; }
-            else { high |= 1UL << (i - 64); }
+            if (i < 64)
+            {
+                low |= 1UL << i;
+            }
+            else
+            {
+                high |= 1UL << (i - 64);
+            }
         }
         _u64 = low;
         _bb128 = new Bitboard128(low, high);
@@ -45,7 +56,10 @@ public class SegmentedBitboardMicroBenchmark
         int hits = 0;
         foreach (var i in _indices)
         {
-            if (i < 64 && ((_u64 >> i) & 1UL) != 0) { hits++; }
+            if (i < 64 && ((_u64 >> i) & 1UL) != 0)
+            {
+                hits++;
+            }
         }
         return hits;
     }
@@ -56,7 +70,10 @@ public class SegmentedBitboardMicroBenchmark
         int hits = 0;
         foreach (var i in _indices)
         {
-            if (_seg128.Test(i)) { hits++; }
+            if (_seg128.Test(i))
+            {
+                hits++;
+            }
         }
         return hits;
     }
@@ -69,11 +86,17 @@ public class SegmentedBitboardMicroBenchmark
         {
             if (i < 64)
             {
-                if (((_bb128.Low >> i) & 1UL) != 0) { hits++; }
+                if (((_bb128.Low >> i) & 1UL) != 0)
+                {
+                    hits++;
+                }
             }
             else
             {
-                if (((_bb128.High >> (i - 64)) & 1UL) != 0) { hits++; }
+                if (((_bb128.High >> (i - 64)) & 1UL) != 0)
+                {
+                    hits++;
+                }
             }
         }
         return hits;

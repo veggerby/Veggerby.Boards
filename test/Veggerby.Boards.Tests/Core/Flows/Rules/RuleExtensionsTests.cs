@@ -15,6 +15,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -23,14 +28,21 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2]);
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.Rules.Should().Equal([rule1, rule2]);
         }
 
         [Fact]
         public void Should_create_composition_with_type_all_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -40,14 +52,21 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2, rule3]);
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.Rules.Should().Equal([rule1, rule2, rule3]);
         }
 
         [Fact]
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -57,9 +76,10 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.All);
-            (actual as CompositeGameEventRule)
-                .Rules
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.All);
+            composite.Rules
                 .OfType<CompositeGameEventRule>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.Any);
         }
@@ -71,6 +91,11 @@ public class RuleExtensionsTests
         public void Should_create_composition_with_type_or()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
 
@@ -79,14 +104,21 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2]);
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.Rules.Should().Equal([rule1, rule2]);
         }
 
         [Fact]
         public void Should_create_composition_with_type_any_when_chained()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -96,14 +128,21 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameEventRule).Rules.Should().Equal([rule1, rule2, rule3]);
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.Rules.Should().Equal([rule1, rule2, rule3]);
         }
 
         [Fact]
         public void Should_not_chain_composition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = SimpleGameEventRule<MovePieceGameEvent>.New(new SimpleGameEventCondition<MovePieceGameEvent>((eng, state, @event) => ConditionResponse.Valid), null, new MovePieceStateMutator());
             var rule2 = SimpleGameEventRule<RollDiceGameEvent<int>>.New(new SimpleGameEventCondition<RollDiceGameEvent<int>>((eng, state, @event) => ConditionResponse.Valid), null, new DiceStateMutator<int>());
             var rule3 = GameEventRule<IGameEvent>.Null;
@@ -113,9 +152,10 @@ public class RuleExtensionsTests
 
             // assert
             actual.Should().BeOfType<CompositeGameEventRule>();
-            (actual as CompositeGameEventRule).CompositeMode.Should().Be(CompositeMode.Any);
-            (actual as CompositeGameEventRule)
-                .Rules
+            var composite = actual as CompositeGameEventRule;
+            composite.Should().NotBeNull();
+            composite!.CompositeMode.Should().Be(CompositeMode.Any);
+            composite.Rules
                 .OfType<CompositeGameEventRule>()
                 .Should().OnlyContain(x => x.CompositeMode == CompositeMode.All);
         }

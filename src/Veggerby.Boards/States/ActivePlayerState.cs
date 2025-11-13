@@ -15,7 +15,7 @@ public class ActivePlayerState(Player player, bool isActive) : ArtifactState<Pla
     public bool IsActive { get; } = isActive;
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as ActivePlayerState);
     }
@@ -31,7 +31,7 @@ public class ActivePlayerState(Player player, bool isActive) : ArtifactState<Pla
     /// </summary>
     /// <param name="other">Other state.</param>
     /// <returns><c>true</c> if both reference the same player and have identical activity; otherwise false.</returns>
-    public bool Equals(ActivePlayerState other)
+    public bool Equals(ActivePlayerState? other)
     {
         if (other is null)
         {

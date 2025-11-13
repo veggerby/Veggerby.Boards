@@ -12,6 +12,11 @@ public class PatternVisitorTests
         public void Should_visit_any_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new AnyPattern();
             var visitor = new SimplePatternVisitor();
 
@@ -27,6 +32,11 @@ public class PatternVisitorTests
         public void Should_visit_direction_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new DirectionPattern(Direction.Clockwise);
             var visitor = new SimplePatternVisitor();
 
@@ -42,6 +52,11 @@ public class PatternVisitorTests
         public void Should_visit_fixed_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new FixedPattern([Direction.Clockwise, Direction.North, Direction.Up]);
             var visitor = new SimplePatternVisitor();
 
@@ -57,6 +72,11 @@ public class PatternVisitorTests
         public void Should_visit_multidirection_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new MultiDirectionPattern([Direction.Clockwise, Direction.North, Direction.Up]);
             var visitor = new SimplePatternVisitor();
 
@@ -72,6 +92,11 @@ public class PatternVisitorTests
         public void Should_visit_null_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new NullPattern();
             var visitor = new SimplePatternVisitor();
 

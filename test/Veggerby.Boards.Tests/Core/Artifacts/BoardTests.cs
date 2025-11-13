@@ -4,6 +4,7 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.TestHelpers;
 
 namespace Veggerby.Boards.Tests.Core.Artifacts;
 
@@ -15,6 +16,11 @@ public class BoardTests
         public void Should_initialize_properties()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var tile1 = new Tile("tile1");
             var tile2 = new Tile("tile2");
             var relation = new TileRelation(tile1, tile2, Direction.Right);
@@ -34,7 +40,10 @@ public class BoardTests
             // arrange
 
             // act
-            var actual = () => new Board("board", null);
+
+            // assert
+
+            var actual = () => new Board("board", null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("tileRelations");
@@ -46,6 +55,9 @@ public class BoardTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new Board("board", Enumerable.Empty<TileRelation>());
 
             // assert
@@ -59,10 +71,15 @@ public class BoardTests
         public void Should_return_correct_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
 
             // act
-            var actual = board.GetTile("tile-1");
+            var actual = board.GetTile("tile-1").EnsureNotNull();
 
             // assert
             actual.Id.Should().Be("tile-1");
@@ -72,6 +89,11 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
 
             // act
@@ -84,13 +106,13 @@ public class BoardTests
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void Should_throw_with_null_or_empty(string id)
+        public void Should_throw_with_null_or_empty(string? id)
         {
             // arrange
             var board = new TestBoard();
 
             // act + assert
-            var actual = () => board.GetTile(id);
+            var actual = () => board.GetTile(id!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("tileId");
@@ -103,14 +125,20 @@ public class BoardTests
         public void Should_return_correct_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
+            var from = board.GetTile("tile-1").EnsureNotNull();
 
             // act
             var actual = board.GetTileRelation(from, Direction.Clockwise);
 
             // assert
-            actual.From.Should().Be(from);
+            actual.Should().NotBeNull();
+            actual!.From.Should().Be(from);
             actual.Direction.Should().Be(Direction.Clockwise);
         }
 
@@ -118,8 +146,13 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile_relation()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
-            var from = board.GetTile("tile-1");
+            var from = board.GetTile("tile-1").EnsureNotNull();
 
             // act
             var actual = board.GetTileRelation(from, Direction.North);
@@ -132,15 +165,15 @@ public class BoardTests
         [InlineData("tile-1", null, "direction")]
         [InlineData(null, "clockwise", "from")]
         [InlineData(null, null, "from")]
-        public void Should_throw_with_null_or_empty(string fromId, string directionId, string expected)
+        public void Should_throw_with_null_or_empty(string? fromId, string? directionId, string expected)
         {
             // arrange
             var board = new TestBoard();
-            var from = fromId is not null ? board.GetTile(fromId) : null;
+            var from = fromId is not null ? board.GetTile(fromId).EnsureNotNull() : null;
             var direction = directionId is not null ? new Direction(directionId) : null;
 
             // act + assert
-            var actual = () => board.GetTileRelation(from, direction);
+            var actual = () => board.GetTileRelation(from!, direction!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName(expected);
@@ -153,15 +186,21 @@ public class BoardTests
         public void Should_return_correct_tile_relation()
         {
             // arrange
-            var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-2");
 
             // act
-            var actual = board.GetTileRelation(from, to);
 
             // assert
-            actual.From.Should().Be(from);
+
+            var board = new TestBoard();
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            var to = board.GetTile("tile-2").EnsureNotNull();
+
+            // act
+            var actual = board.GetTileRelation(from, to!);
+
+            // assert
+            actual.Should().NotBeNull();
+            actual!.From.Should().Be(from);
             actual.To.Should().Be(to);
         }
 
@@ -169,12 +208,20 @@ public class BoardTests
         public void Should_return_null_for_non_existing_tile_relation()
         {
             // arrange
-            var board = new TestBoard();
-            var from = board.GetTile("tile-1");
-            var to = board.GetTile("tile-10");
 
             // act
-            var actual = board.GetTileRelation(from, to);
+
+            // assert
+
+            var board = new TestBoard();
+            var from = board.GetTile("tile-1").EnsureNotNull();
+            // select a tile that exists but has no direct relation from 'tile-1'
+            // Relations defined in TestBoard only include clockwise (i -> (i+1)%16), across, and specific up/left links.
+            // There is no relation from tile-1 to tile-3, so this pair should yield null.
+            var to = board.GetTile("tile-3").EnsureNotNull();
+
+            // act
+            var actual = board.GetTileRelation(from, to!);
 
             // assert
             actual.Should().BeNull();
@@ -184,15 +231,15 @@ public class BoardTests
         [InlineData("tile-1", null, "to")]
         [InlineData(null, "tile-1", "from")]
         [InlineData(null, null, "from")]
-        public void Should_throw_with_null_or_empty(string fromId, string toId, string expected)
+        public void Should_throw_with_null_or_empty(string? fromId, string? toId, string expected)
         {
             // arrange
             var board = new TestBoard();
-            var from = fromId is not null ? board.GetTile(fromId) : null;
-            var to = toId is not null ? board.GetTile(toId) : null;
+            var from = fromId is not null ? board.GetTile(fromId).EnsureNotNull() : null;
+            var to = toId is not null ? board.GetTile(toId).EnsureNotNull() : null;
 
             // act + assert
-            var actual = () => board.GetTileRelation(from, to);
+            var actual = () => board.GetTileRelation(from!, to!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName(expected);

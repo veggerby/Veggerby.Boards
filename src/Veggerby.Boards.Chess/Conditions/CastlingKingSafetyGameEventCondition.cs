@@ -30,21 +30,39 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPiece.IsKing(state, @event.Piece.Id)) { return ConditionResponse.Ignore("Not a king"); }
+        if (!ChessPiece.IsKing(state, @event.Piece.Id))
+        {
+            return ConditionResponse.Ignore("Not a king");
+        }
         var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
         var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
-        if (@event.From?.Id != startId) { return ConditionResponse.Ignore("Not from initial square"); }
-        if (@event.To is null) { return ConditionResponse.Ignore("Missing destination"); }
+        if (@event.From?.Id != startId)
+        {
+            return ConditionResponse.Ignore("Not from initial square");
+        }
+        if (@event.To is null)
+        {
+            return ConditionResponse.Ignore("Missing destination");
+        }
         var destId = @event.To.Id;
         bool kingSide = destId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
         bool queenSide = destId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
-        if (!kingSide && !queenSide) { return ConditionResponse.Ignore("Not a castling target"); }
+        if (!kingSide && !queenSide)
+        {
+            return ConditionResponse.Ignore("Not a castling target");
+        }
 
         // define the three squares to validate
         var middle = kingSide ? (isWhite ? ChessIds.Tiles.F1 : ChessIds.Tiles.F8) : (isWhite ? ChessIds.Tiles.D1 : ChessIds.Tiles.D8);
         var targets = new string[3];
-        targets[0] = startId; targets[1] = middle; targets[2] = destId;
+        targets[0] = startId;
+        targets[1] = middle;
+        targets[2] = destId;
 
         // quick lookup without HashSet: just linear scan of small fixed array
         bool IsTarget(string id) => id == targets[0] || id == targets[1] || id == targets[2];
@@ -53,10 +71,16 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         var opponent = isWhite ? ChessIds.Players.Black : ChessIds.Players.White;
         foreach (var ps in state.GetStates<PieceState>())
         {
-            if (ps.Artifact.Owner?.Id != opponent) { continue; }
+            if (ps.Artifact.Owner?.Id != opponent)
+            {
+                continue;
+            }
             var id = ps.Artifact.Id;
             // Skip pieces whose role can't be resolved or isn't a sliding attacker/knight/pawn etc; rely on predicate helpers for clarity where possible.
-            if (ChessPiece.IsKing(state, id)) { continue; }
+            if (ChessPiece.IsKing(state, id))
+            {
+                continue;
+            }
             var (file, rank) = Parse(ps.CurrentTile.Id);
             // Determine role via predicates (avoid direct map usage for consistency with new style). Order common/cheap checks first.
             bool isPawn = ChessPiece.IsPawn(state, id);
@@ -70,33 +94,52 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
             {
                 int dir = opponent == ChessIds.Players.White ? 1 : -1;
                 var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
-                if (pawnHit is not null) { return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack"); }
+                if (pawnHit is not null)
+                {
+                    return ConditionResponse.Fail($"Castling path square {pawnHit} is under attack");
+                }
             }
             else if (isKnight)
             {
                 foreach (var (df, dr) in KnightOffsets)
                 {
-                    var f = (char)(file + df); var r = rank + dr;
-                    if (!IsOnBoard(f, r)) { continue; }
+                    var f = (char)(file + df);
+                    var r = rank + dr;
+                    if (!IsOnBoard(f, r))
+                    {
+                        continue;
+                    }
                     var tid = $"tile-{f}{r}";
-                    if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
+                    if (IsTarget(tid))
+                    {
+                        return ConditionResponse.Fail($"Castling path square {tid} is under attack");
+                    }
                 }
             }
             else if (isBishop)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
-                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
+                if (hit is not null)
+                {
+                    return ConditionResponse.Fail($"Castling path square {hit} is under attack");
+                }
             }
             else if (isRook)
             {
                 var hit = ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
-                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
+                if (hit is not null)
+                {
+                    return ConditionResponse.Fail($"Castling path square {hit} is under attack");
+                }
             }
             else if (isQueen)
             {
                 var hit = ScanSliding(engine, state, file, rank, DiagDirections, IsTarget);
                 hit ??= ScanSliding(engine, state, file, rank, OrthoDirections, IsTarget);
-                if (hit is not null) { return ConditionResponse.Fail($"Castling path square {hit} is under attack"); }
+                if (hit is not null)
+                {
+                    return ConditionResponse.Fail($"Castling path square {hit} is under attack");
+                }
             }
             else if (isOppKing)
             {
@@ -104,11 +147,21 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
                 {
                     for (int dr = -1; dr <= 1; dr++)
                     {
-                        if (df == 0 && dr == 0) { continue; }
-                        var f = (char)(file + df); var r2 = rank + dr;
-                        if (!IsOnBoard(f, r2)) { continue; }
+                        if (df == 0 && dr == 0)
+                        {
+                            continue;
+                        }
+                        var f = (char)(file + df);
+                        var r2 = rank + dr;
+                        if (!IsOnBoard(f, r2))
+                        {
+                            continue;
+                        }
                         var tid = $"tile-{f}{r2}";
-                        if (IsTarget(tid)) { return ConditionResponse.Fail($"Castling path square {tid} is under attack"); }
+                        if (IsTarget(tid))
+                        {
+                            return ConditionResponse.Fail($"Castling path square {tid} is under attack");
+                        }
                     }
                 }
             }
@@ -117,27 +170,45 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         return ConditionResponse.Valid;
 
         // local helpers
-        string CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
+        string? CheckPawnAttack(char pawnFile, int pawnRank, char attackFile, int attackRank)
         {
-            if (!IsOnBoard(attackFile, attackRank)) { return null; }
+            if (!IsOnBoard(attackFile, attackRank))
+            {
+                return null;
+            }
             var tid = $"tile-{attackFile}{attackRank}";
             return IsTarget(tid) ? tid : null;
         }
     }
 
-    private static string ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
+    private static string? ScanSliding(GameEngine engine, GameState state, char file, int rank, (int df, int dr)[] directions, Func<string, bool> isTarget)
     {
         foreach (var (df, dr) in directions)
         {
-            var f = file; var r = rank;
+            var f = file;
+            var r = rank;
             while (true)
             {
-                f = (char)(f + df); r += dr;
-                if (!IsOnBoard(f, r)) { break; }
+                f = (char)(f + df);
+                r += dr;
+                if (!IsOnBoard(f, r))
+                {
+                    break;
+                }
                 var tid = $"tile-{f}{r}";
-                if (isTarget(tid)) { return tid; }
+                if (isTarget(tid))
+                {
+                    return tid;
+                }
                 var tile = engine.Game.GetTile(tid);
-                if (state.GetPiecesOnTile(tile).Any()) { break; }
+                if (tile is null)
+                {
+                    break;
+                }
+                if (state.GetPiecesOnTile(tile).Any())
+                {
+                    break;
+                }
             }
         }
         return null;

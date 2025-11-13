@@ -16,12 +16,18 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
     /// <summary>
     /// Gets the child conditions.
     /// </summary>
-    public IEnumerable<IGameEventCondition<T>> ChildConditions { get; }
+    public IEnumerable<IGameEventCondition<T>> ChildConditions
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the composite mode.
     /// </summary>
-    public CompositeMode CompositeMode { get; }
+    public CompositeMode CompositeMode
+    {
+        get;
+    }
 
     private CompositeGameEventCondition(IEnumerable<IGameEventCondition<T>> childConditions, CompositeMode compositeMode)
     {

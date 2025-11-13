@@ -13,6 +13,12 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenEmptyDraw_WithDiscard_WhenDraw2_ReshufflesAndDraws()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -25,6 +31,7 @@ public class DeckBuildingDrawWithReshuffleTests
         builder.WithCard(c3.Id);
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -33,7 +40,7 @@ public class DeckBuildingDrawWithReshuffleTests
             [DeckBuildingGameBuilder.Piles.Hand] = new List<Card>(),
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles));
         progress.ShouldHaveSingleTurnState();
         // ensure deck state created in Start segment
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
@@ -45,8 +52,9 @@ public class DeckBuildingDrawWithReshuffleTests
         progress = progress.HandleEvent(new DrawWithReshuffleEvent(deck, 2));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
-        ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(2);
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(2);
         ds.Piles[DeckBuildingGameBuilder.Piles.Draw].Count.Should().Be(1);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Count.Should().Be(0);
     }
@@ -54,6 +62,12 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenInsufficientTotal_WhenDraw_ThenRejected()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -61,6 +75,7 @@ public class DeckBuildingDrawWithReshuffleTests
         builder.WithCard(c1.Id);
         var progress = builder.Compile();
         var deck = progress.Game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
         var piles = new Dictionary<string, IList<Card>>
         {
             [DeckBuildingGameBuilder.Piles.Draw] = new List<Card> { c1 },
@@ -68,14 +83,14 @@ public class DeckBuildingDrawWithReshuffleTests
             [DeckBuildingGameBuilder.Piles.Hand] = new List<Card>(),
             [DeckBuildingGameBuilder.Piles.InPlay] = new List<Card>(),
         };
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         // advance Start -> Main for action segment
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start));
-        var act = () => progress.HandleEvent(new DrawWithReshuffleEvent(deck, 2));
+        var act = () => progress.HandleEvent(new DrawWithReshuffleEvent(deck!, 2));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

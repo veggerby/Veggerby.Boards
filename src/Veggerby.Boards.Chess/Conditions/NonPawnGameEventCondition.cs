@@ -1,3 +1,5 @@
+using System;
+
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
@@ -13,6 +15,10 @@ public sealed class NonPawnGameEventCondition : IGameEventCondition<MovePieceGam
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
         if (ChessPiece.IsPawn(state, @event.Piece.Id))
         {

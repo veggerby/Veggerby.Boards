@@ -19,17 +19,34 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
 {
     private sealed class CountingObserver : IEvaluationObserver
     {
-        public int Evaluated { get; private set; }
-        public int SkippedFiltered { get; private set; }
-        public int SkippedOther { get; private set; }
-        public void OnPhaseEnter(Boards.Flows.Phases.GamePhase phase, GameState state) { }
+        public int Evaluated
+        {
+            get; private set;
+        }
+        public int SkippedFiltered
+        {
+            get; private set;
+        }
+        public int SkippedOther
+        {
+            get; private set;
+        }
+        public void OnPhaseEnter(Boards.Flows.Phases.GamePhase phase, GameState state)
+        {
+        }
         public void OnRuleEvaluated(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, ConditionResponse response, GameState state, int ruleIndex)
         {
             Evaluated++;
         }
-        public void OnRuleApplied(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex) { }
-        public void OnEventIgnored(IGameEvent @event, GameState state) { }
-        public void OnStateHashed(GameState state, ulong hash) { }
+        public void OnRuleApplied(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, IGameEvent @event, GameState beforeState, GameState afterState, int ruleIndex)
+        {
+        }
+        public void OnEventIgnored(IGameEvent @event, GameState state)
+        {
+        }
+        public void OnStateHashed(GameState state, ulong hash)
+        {
+        }
         public void OnRuleSkipped(Boards.Flows.Phases.GamePhase phase, IGameEventRule rule, RuleSkipReason reason, GameState state, int ruleIndex)
         {
             if (reason == RuleSkipReason.EventKindFiltered)
@@ -65,6 +82,11 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
     public void GivenMoveEvent_FilteringDoesNotIncreaseEvaluations()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildMoveLast(precedingGroups: 4, filtering: false); // groups before move: roll/state/control/dummy
         var (enabledProgress, enabledObs) = BuildMoveLast(precedingGroups: 4, filtering: true);
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();
@@ -89,6 +111,11 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
     public void GivenRollEvent_FilteringDoesNotIncreaseEvaluations()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildRollLast(precedingGroups: 5, filtering: false); // move/state/control/dummy/move2 before roll
         var (enabledProgress, enabledObs) = BuildRollLast(precedingGroups: 5, filtering: true);
         var diceStates = enabledProgress.Game.GetArtifacts<Dice>().Select(d => new DiceState<int>(d, 1)).ToArray();
@@ -108,6 +135,11 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
     public void GivenSingleMatchingRule_FilteringYieldsNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildMoveLast(precedingGroups: 0, filtering: false);
         var (enabledProgress, enabledObs) = BuildMoveLast(precedingGroups: 0, filtering: true);
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();

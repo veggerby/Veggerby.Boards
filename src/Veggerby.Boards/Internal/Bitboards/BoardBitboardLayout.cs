@@ -21,10 +21,45 @@ internal sealed class BoardBitboardLayout
     public BoardBitboardLayout(Board board)
     {
         ArgumentNullException.ThrowIfNull(board);
-        var tiles = board.Tiles.OrderBy(t => t.Id, StringComparer.Ordinal).ToArray();
+        // Collect tiles into a temporary list (<=64) then ensure deterministic ordinal ordering.
+        // Avoid LINQ OrderBy allocation; for small N an insertion sort is cheaper and allocation-free.
+        var temp = new List<Tile>(capacity: 64);
+        foreach (var t in board.Tiles)
+        {
+            temp.Add(t);
+        }
+
+        // Check if already sorted by Id to skip sort.
+        var alreadySorted = true;
+        for (int i = 1; i < temp.Count; i++)
+        {
+            if (string.CompareOrdinal(temp[i - 1].Id, temp[i].Id) > 0)
+            {
+                alreadySorted = false;
+                break;
+            }
+        }
+
+        if (!alreadySorted)
+        {
+            // Insertion sort (n <= 64) minimal overhead.
+            for (int i = 1; i < temp.Count; i++)
+            {
+                var current = temp[i];
+                var j = i - 1;
+                while (j >= 0 && string.CompareOrdinal(temp[j].Id, current.Id) > 0)
+                {
+                    temp[j + 1] = temp[j];
+                    j--;
+                }
+                temp[j + 1] = current;
+            }
+        }
+
+        var tiles = temp.ToArray();
         if (tiles.Length > 64)
         {
-            throw new ArgumentException("Bitboard layout only supports boards with <=64 tiles.");
+            throw new ArgumentException(ExceptionMessages.BoardTooLargeForBitboard);
         }
         _tileToIndex = new Dictionary<Tile, int>(tiles.Length);
         _indexToTile = new Tile[tiles.Length];

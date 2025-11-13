@@ -1,12 +1,5 @@
-using System;
-using System.IO;
-
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
-using Veggerby.Boards.States;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.Core.Layout;
 
@@ -43,6 +36,11 @@ public class BitboardSnapshotTests
     public void GivenSmallBoard_WhenBuild_ThenMasksSetForOwners()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -54,8 +52,12 @@ public class BitboardSnapshotTests
 
         // assert
         // global bits for tiles t1 and t3 should be set (use shape indices)
-        shape.TryGetTileIndex(game.GetTile("t1"), out var i1).Should().BeTrue();
-        shape.TryGetTileIndex(game.GetTile("t3"), out var i3).Should().BeTrue();
+        var t1 = game.GetTile("t1");
+        t1.Should().NotBeNull();
+        var t3 = game.GetTile("t3");
+        t3.Should().NotBeNull();
+        shape.TryGetTileIndex(t1!, out var i1).Should().BeTrue();
+        shape.TryGetTileIndex(t3!, out var i3).Should().BeTrue();
         (snapshot.GlobalOccupancy & (1UL << i1)).Should().NotBe(0UL);
         (snapshot.GlobalOccupancy & (1UL << i3)).Should().NotBe(0UL);
         // per player
@@ -71,6 +73,11 @@ public class BitboardSnapshotTests
     public void GivenSegmentedFlagOn_WhenBuildSmallBoard_ThenSegmentedMatchesLegacy64()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var prev = FeatureFlags.EnableSegmentedBitboards;
         FeatureFlags.EnableSegmentedBitboards = true;
         try
@@ -97,6 +104,11 @@ public class BitboardSnapshotTests
     public void GivenExpectedFromMismatch_WhenUpdateForMove_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -106,26 +118,33 @@ public class BitboardSnapshotTests
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
         var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
         ulong beforeGlobal = snapshot.GlobalOccupancy;
 
         // act
         // use an incorrect expected-from index (not matching current and non-negative triggers check)
-        var wrongFrom = (short)(pieceMap.GetTileIndex(pcW) + 1);
-        var updated = snapshot.UpdateForMove(pcW, fromTileIndex: wrongFrom, toTileIndex: 5, pieceMap: pieceMap, shape: shape);
+        var pcWIndex = pieceMap.GetTileIndex(pcW!);
+        var wrongFrom = (short)(pcWIndex + 1);
+        var updated = snapshot.UpdateForMove(pcW!, fromTileIndex: wrongFrom, toTileIndex: 5, pieceMap: pieceMap, shape: shape);
 
         // assert
         updated.GlobalOccupancy.Should().Be(beforeGlobal);
 
         // also: when pieceMap is null, snapshot should be returned unchanged (reference equality ok)
         // passing correct index but null pieceMap keeps original instance
-        var noChange = snapshot.UpdateForMove(pcW, fromTileIndex: pieceMap.GetTileIndex(pcW), toTileIndex: 5, pieceMap: null!, shape: shape);
-        object.ReferenceEquals(noChange, snapshot).Should().BeTrue();
+        var noChange = snapshot.UpdateForMove(pcW!, fromTileIndex: pcWIndex, toTileIndex: 5, pieceMap: null!, shape: shape);
+        ReferenceEquals(noChange, snapshot).Should().BeTrue();
     }
 
     [Fact]
     public void GivenValidMove64_WhenUpdateForMove_ThenBitsUpdatedForOwner()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticBoardBuilder(8).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -135,12 +154,17 @@ public class BitboardSnapshotTests
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
         var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
 
-        shape.TryGetTileIndex(game.GetTile("t1"), out var fromIdx).Should().BeTrue();
-        shape.TryGetTileIndex(game.GetTile("t5"), out var toIdx).Should().BeTrue();
+        var t1m = game.GetTile("t1");
+        t1m.Should().NotBeNull();
+        var t5m = game.GetTile("t5");
+        t5m.Should().NotBeNull();
+        shape.TryGetTileIndex(t1m!, out var fromIdx).Should().BeTrue();
+        shape.TryGetTileIndex(t5m!, out var toIdx).Should().BeTrue();
 
         // act
-        var moved = snapshot.UpdateForMove(pcW, fromTileIndex: (short)fromIdx, toTileIndex: (short)toIdx, pieceMap: pieceMap, shape: shape);
+        var moved = snapshot.UpdateForMove(pcW!, fromTileIndex: (short)fromIdx, toTileIndex: (short)toIdx, pieceMap: pieceMap, shape: shape);
 
         // assert
         // global
@@ -178,6 +202,11 @@ public class BitboardSnapshotTests
     public void Given128BoardMoveAcrossSegments_WhenUpdateForMove_ThenHighLowUpdated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new Synthetic128BoardBuilder(128).Compile();
         var game = progress.Game;
         var state = progress.State;
@@ -187,12 +216,17 @@ public class BitboardSnapshotTests
         var pieceMap = PieceMapSnapshot.Build(pieceLayout, state, shape);
         var snapshot = BitboardSnapshot.Build(layout, state, shape);
         var pcW = game.GetPiece("pcW");
+        pcW.Should().NotBeNull();
 
-        shape.TryGetTileIndex(game.GetTile("t70"), out var fromIdx).Should().BeTrue();
-        shape.TryGetTileIndex(game.GetTile("t5"), out var toIdx).Should().BeTrue();
+        var t70 = game.GetTile("t70");
+        t70.Should().NotBeNull();
+        var t5 = game.GetTile("t5");
+        t5.Should().NotBeNull();
+        shape.TryGetTileIndex(t70!, out var fromIdx).Should().BeTrue();
+        shape.TryGetTileIndex(t5!, out var toIdx).Should().BeTrue();
 
         // act
-        var moved = snapshot.UpdateForMove(pcW, fromTileIndex: (short)fromIdx, toTileIndex: (short)toIdx, pieceMap: pieceMap, shape: shape);
+        var moved = snapshot.UpdateForMove(pcW!, fromTileIndex: (short)fromIdx, toTileIndex: (short)toIdx, pieceMap: pieceMap, shape: shape);
 
         // assert
         moved.GlobalOccupancy128.HasValue.Should().BeTrue();

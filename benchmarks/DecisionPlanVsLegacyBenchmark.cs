@@ -43,9 +43,9 @@ public class DecisionPlanVsLegacyBenchmark
 
     private static GameProgress ApplyMove(GameProgress gp, PlannedMove mv)
     {
-        var piece = gp.Game.GetPiece(mv.PieceId);
-        var from = gp.Game.GetTile(mv.From);
-        var to = gp.Game.GetTile(mv.To);
+        var piece = gp.Game.GetPiece(mv.PieceId) ?? throw new InvalidOperationException($"Piece {mv.PieceId} missing");
+        var from = gp.Game.GetTile(mv.From) ?? throw new InvalidOperationException($"From tile {mv.From} missing");
+        var to = gp.Game.GetTile(mv.To) ?? throw new InvalidOperationException($"To tile {mv.To} missing");
         var pathVisitor = new ResolveTilePathPatternVisitor(gp.Game.Board, from, to);
         var path = pathVisitor.ResultPath!;
         return gp.HandleEvent(new MovePieceGameEvent(piece, path));

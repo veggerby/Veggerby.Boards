@@ -15,32 +15,50 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <summary>
     /// Gets the board on which resolution occurs.
     /// </summary>
-    public Board Board { get; }
+    public Board Board
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the origin tile.
     /// </summary>
-    public Tile From { get; }
+    public Tile From
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the destination tile.
     /// </summary>
-    public Tile To { get; }
+    public Tile To
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the target distance that a resolved path must satisfy.
     /// </summary>
-    public int Distance { get; }
+    public int Distance
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a value indicating whether paths shorter than <see cref="Distance"/> may be accepted when the target tile is reached early.
     /// </summary>
-    public bool AllowOvershootDistance { get; }
+    public bool AllowOvershootDistance
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the resulting path (or null if none matched).
     /// </summary>
-    public TilePath ResultPath { get; private set; }
+    public TilePath? ResultPath
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResolveTilePathDistanceVisitor"/> class.
@@ -74,6 +92,7 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
     /// <inheritdoc />
     public void Visit(MultiDirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var paths = new List<TilePath>();
         foreach (var direction in pattern.Directions)
         {
@@ -84,20 +103,40 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
             }
         }
 
-        ResultPath = paths.Any() ? paths.OrderBy(x => x.Distance).First() : null;
+        if (paths.Count == 0)
+        {
+            ResultPath = null;
+        }
+        else
+        {
+            // Linear min search avoids full sort allocation
+            var best = paths[0];
+            for (var i = 1; i < paths.Count; i++)
+            {
+                var candidate = paths[i];
+                if (candidate.Distance < best.Distance)
+                {
+                    best = candidate;
+                }
+            }
+
+            ResultPath = best;
+        }
     }
 
     /// <inheritdoc />
     public void Visit(NullPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = null;
     }
 
     /// <inheritdoc />
     public void Visit(FixedPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         var from = From;
-        TilePath path = null;
+        TilePath? path = null;
         foreach (var direction in pattern.Pattern)
         {
             var relation = Board.GetTileRelation(from, direction);
@@ -112,25 +151,34 @@ public class ResolveTilePathDistanceVisitor : IPatternVisitor
         }
 
         // path will always have a value because there will always be at least ONE direction in FixedPattern
-        ResultPath = path.Distance == Distance ? path : null;
+        if (path is not null && path.Distance == Distance)
+        {
+            ResultPath = path;
+        }
+        else
+        {
+            ResultPath = null;
+        }
     }
 
     /// <inheritdoc />
     public void Visit(DirectionPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ResultPath = GetPathFromDirection(pattern.Direction, pattern.IsRepeatable);
     }
 
     /// <inheritdoc />
     public void Visit(AnyPattern pattern)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         throw new NotImplementedException();
     }
 
-    private TilePath GetPathFromDirection(Direction direction, bool isRepeatable)
+    private TilePath? GetPathFromDirection(Direction direction, bool isRepeatable)
     {
         var from = From;
-        TilePath path = null;
+        TilePath? path = null;
         while (path is null || isRepeatable) // we have not yet taken a step or it is repeatable
         {
             var relation = Board.GetTileRelation(from, direction);

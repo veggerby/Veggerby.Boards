@@ -11,6 +11,9 @@ public sealed class RegisterCardDefinitionStateMutator : IStateMutator<RegisterC
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, RegisterCardDefinitionEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Build definition artifact (id stable with card id) and wrap in state.
         // @event.Types is IReadOnlyList<string>; CardDefinition expects IList<string> so wrap in List.
         var definition = new CardDefinition(@event.CardId, @event.Name, new System.Collections.Generic.List<string>(@event.Types), @event.Cost, @event.VictoryPoints);

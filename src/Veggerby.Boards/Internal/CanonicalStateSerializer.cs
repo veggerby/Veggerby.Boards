@@ -1,10 +1,13 @@
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using Veggerby.Boards.Artifacts;
 
 namespace Veggerby.Boards.Internal;
 
@@ -33,9 +36,22 @@ internal static class CanonicalStateSerializer
 
     public static void WriteObject(object instance, ref IncrementalHashWriter writer)
     {
+        // Root call initializes visited set with reference equality to break cycles deterministically.
+        var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        WriteObjectInternal(instance, ref writer, visited, 0);
+    }
+
+    private static void WriteObjectInternal(object instance, ref IncrementalHashWriter writer, HashSet<object> visited, int depth)
+    {
         if (instance is null)
         {
             writer.WriteByte(0); // null marker
+            return;
+        }
+
+        if (depth > 32) // defensive depth cap (graph should be shallow)
+        {
+            writer.WriteByte(0xDD); // depth overflow tag
             return;
         }
 
@@ -45,6 +61,33 @@ internal static class CanonicalStateSerializer
         if (TryWritePrimitive(instance, type, ref writer))
         {
             return;
+        }
+
+        // Artifact identity fast-path (emit id only)
+        if (instance is Artifact artifact)
+        {
+            writer.WriteByte(0xAD); // artifact tag
+            writer.WriteUtf8(artifact.Id);
+            return;
+        }
+
+        // Type metadata fast-path: serialize as name only to avoid reflective property getters (e.g., DeclaringMethod) throwing.
+        if (instance is Type typeInstance)
+        {
+            writer.WriteByte(0xA1); // type tag
+            writer.WriteUtf8(typeInstance.FullName ?? typeInstance.Name);
+            return;
+        }
+
+        // Cycle detection (only for non-primitives / non-artifacts)
+        if (!type.IsValueType)
+        {
+            if (!visited.Add(instance))
+            {
+                writer.WriteByte(0xCE); // cycle tag
+                writer.WriteUtf8(type.FullName ?? type.Name);
+                return;
+            }
         }
 
         if (type.IsEnum)
@@ -59,7 +102,6 @@ internal static class CanonicalStateSerializer
         {
             writer.WriteByte(0xF0); // collection tag
             int count = 0;
-            // Pre-count (small collections expected); could optimize with ICollection detection
             foreach (var _ in enumerable)
             {
                 count++;
@@ -67,7 +109,7 @@ internal static class CanonicalStateSerializer
             writer.WriteVarUInt((uint)count);
             foreach (var item in enumerable)
             {
-                WriteObject(item!, ref writer);
+                WriteObjectInternal(item!, ref writer, visited, depth + 1);
             }
             return;
         }
@@ -84,7 +126,7 @@ internal static class CanonicalStateSerializer
         {
             writer.WriteUtf8(p.Name);
             var value = p.GetValue(instance);
-            WriteObject(value!, ref writer);
+            WriteObjectInternal(value!, ref writer, visited, depth + 1);
         }
     }
 
@@ -182,23 +224,21 @@ internal static class CanonicalStateSerializer
 /// </summary>
 internal ref struct IncrementalHashWriter(ulong seed)
 {
-    private ulong _hash = seed; // FNV-1a 64-bit state
-
-    public readonly ulong Hash => _hash;
+    public ulong Hash { get; private set; } = seed;
 
     public void Write(ReadOnlySpan<byte> data)
     {
         foreach (var b in data)
         {
-            _hash ^= b;
-            _hash *= 1099511628211UL; // FNV prime
+            Hash ^= b;
+            Hash *= 1099511628211UL; // FNV prime
         }
     }
 
     public void WriteByte(byte b)
     {
-        _hash ^= b;
-        _hash *= 1099511628211UL;
+        Hash ^= b;
+        Hash *= 1099511628211UL;
     }
 
     public void WriteLittleEndian(ulong value)
@@ -250,5 +290,27 @@ internal ref struct IncrementalHashWriter(ulong seed)
             value >>= 7;
         }
         WriteByte((byte)value);
+    }
+}
+
+/// <summary>
+/// Reference equality comparer to track visited objects for cycle detection without invoking potentially overridden equality semantics.
+/// </summary>
+internal sealed class ReferenceEqualityComparer : IEqualityComparer<object>
+{
+    public static readonly ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
+
+    private ReferenceEqualityComparer()
+    {
+    }
+
+    public new bool Equals(object? x, object? y)
+    {
+        return ReferenceEquals(x, y);
+    }
+
+    public int GetHashCode(object obj)
+    {
+        return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
     }
 }

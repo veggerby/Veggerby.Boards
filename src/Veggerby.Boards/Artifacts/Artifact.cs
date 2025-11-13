@@ -10,7 +10,10 @@ public abstract class Artifact : IEquatable<Artifact>
     /// <summary>
     /// Gets the artifact identifier (unique within its game context).
     /// </summary>
-    public string Id { get; }
+    public string Id
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Artifact"/> class.
@@ -19,16 +22,13 @@ public abstract class Artifact : IEquatable<Artifact>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
     protected Artifact(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Invalid Artifact Id", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         Id = id;
     }
 
     /// <inheritdoc />
-    public bool Equals(Artifact other)
+    public bool Equals(Artifact? other)
     {
         return other is not null
             && GetType().Equals(other.GetType())
@@ -36,11 +36,14 @@ public abstract class Artifact : IEquatable<Artifact>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((Artifact)obj);
     }
 

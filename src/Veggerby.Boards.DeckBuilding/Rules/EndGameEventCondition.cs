@@ -25,6 +25,9 @@ public sealed class EndGameEventCondition : IGameEventCondition<EndGameEvent>
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, EndGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Already ended
         if (state.GetStates<GameEndedState>().Any())
         {
@@ -37,14 +40,14 @@ public sealed class EndGameEventCondition : IGameEventCondition<EndGameEvent>
         }
         // Evaluate custom supply depletion trigger if builder configured options.
         var options = state.GetExtras<DeckBuildingEndTriggerOptions>();
-        if (options != null)
+        if (options is not null)
         {
             bool thresholdSatisfied = false;
             bool keyPileSatisfied = false;
 
             // Gather both player deck states (if present) and unify supply dictionaries (distinct card ids).
             IEnumerable<DeckState> deckStates = state.GetStates<DeckState>();
-            if (deckStates != null)
+            if (deckStates is not null)
             {
                 // Build a merged view of supply counts (last write wins but they should be consistent across decks for shared supply ids in current model).
                 var merged = deckStates.SelectMany(d => d.Supply).GroupBy(kv => kv.Key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First().Value, StringComparer.Ordinal);
@@ -95,7 +98,7 @@ public sealed class EndGameEventCondition : IGameEventCondition<EndGameEvent>
 
         // Fallback: require turn threshold.
         var turn = state.GetStates<TurnState>().FirstOrDefault();
-        if (turn != null && turn.TurnNumber < MaxTurns)
+        if (turn is not null && turn.TurnNumber < MaxTurns)
         {
             return ConditionResponse.Ignore("Max turns not reached");
         }

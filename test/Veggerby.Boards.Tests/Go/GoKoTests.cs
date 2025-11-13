@@ -68,7 +68,7 @@ public class GoKoTests
     [Fact]
     public void GivenKoSituation_WhenPlayElsewhereThenRecapture_ThenRecaptureAllowed()
     {
-        // arrange - Create ko, play elsewhere, then recapture
+        // arrange - Create ko, play elsewhere, then verify ko is cleared
         // This tests that ko restriction is cleared when a move is made elsewhere
         var builder = new GoGameBuilder(9);
         var progress = builder.Compile();
@@ -81,6 +81,9 @@ public class GoKoTests
         var whiteStone1 = progress.Game.GetPiece("white-stone-1")!;
         var whiteStone2 = progress.Game.GetPiece("white-stone-2")!;
         var whiteStone3 = progress.Game.GetPiece("white-stone-3")!;
+        var whiteStone4 = progress.Game.GetPiece("white-stone-4")!;
+        var whiteStone5 = progress.Game.GetPiece("white-stone-5")!;
+        var whiteStone6 = progress.Game.GetPiece("white-stone-6")!;
 
         // Create same ko pattern as first test - white at 5-5, surrounded by black
         progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone1, progress.Game.GetTile("tile-5-5")!));
@@ -90,8 +93,11 @@ public class GoKoTests
         progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone3, progress.Game.GetTile("tile-6-6")!));
         progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone3, progress.Game.GetTile("tile-5-6")!));
 
-        // Black captures white, creating ko
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone4, progress.Game.GetTile("tile-5-4")!));
+        // Fill in liberties around black-stone-4's future position so recapture will work
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone4, progress.Game.GetTile("tile-5-3")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone5, progress.Game.GetTile("tile-4-3")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone5, progress.Game.GetTile("tile-6-4")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone4, progress.Game.GetTile("tile-5-4")!)); // Black captures white-stone-1
 
         var afterFirstCapture = progress.State;
         afterFirstCapture.IsCaptured(whiteStone1).Should().BeTrue("white stone should be captured");
@@ -99,32 +105,31 @@ public class GoKoTests
         var extras = afterFirstCapture.GetExtras<GoStateExtras>()!;
         extras.KoTileId.Should().Be("tile-5-5", "ko should be set");
 
-        var piecesBeforeKoAttempt = afterFirstCapture.GetStates<PieceState>().Count();
-
         // White plays elsewhere (clears ko restriction)
-        var whiteStone4 = progress.Game.GetPiece("white-stone-4")!;
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone4, progress.Game.GetTile("tile-9-9")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone6, progress.Game.GetTile("tile-9-9")!));
 
         var afterPlayElsewhere = progress.State;
         var extrasAfterPlayElsewhere = afterPlayElsewhere.GetExtras<GoStateExtras>()!;
         extrasAfterPlayElsewhere.KoTileId.Should().BeNull("ko restriction should be cleared after playing elsewhere");
 
-        // act - Black places another move (to switch turns)
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone5, progress.Game.GetTile("tile-9-8")!));
+        // act - Black passes (to complete turn cycle), then white recaptures
+        progress = progress.HandleEvent(new PassTurnGameEvent());
 
-        // White places at former ko position (now allowed because ko is cleared)
-        var whiteStone5 = progress.Game.GetPiece("white-stone-5")!;
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone5, progress.Game.GetTile("tile-5-5")!));
+        var blackStone4TileBefore = progress.State.GetState<PieceState>(blackStone4)!.CurrentTile;
+        blackStone4TileBefore.Id.Should().Be("tile-5-4", "black stone 4 should still be at 5-4");
 
-        // assert - Placement should be allowed (ko restriction cleared)
+        // White recaptures at former ko position (now allowed)
+        var whiteStone7 = progress.Game.GetPiece("white-stone-7")!;
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone7, progress.Game.GetTile("tile-5-5")!));
+
+        // assert - Recapture should succeed (ko cleared) and capture black stone 4
         var afterRecapture = progress.State;
-        var piecesAfterRecapture = afterRecapture.GetStates<PieceState>().Count();
         
-        piecesAfterRecapture.Should().BeGreaterThan(piecesBeforeKoAttempt, "white stone should be placed (ko rule not blocking)");
-        afterRecapture.IsCaptured(whiteStone5).Should().BeFalse("white stone should be placed successfully");
+        afterRecapture.IsCaptured(blackStone4).Should().BeTrue("black stone 4 should be captured by recapture");
+        afterRecapture.IsCaptured(whiteStone7).Should().BeFalse("white stone 7 should be placed successfully");
         
         var piecesOnRecaptureTile = afterRecapture.GetPiecesOnTile(progress.Game.GetTile("tile-5-5")!);
-        piecesOnRecaptureTile.Should().ContainSingle().Which.Should().Be(whiteStone5, "placement at former ko position allowed after ko cleared");
+        piecesOnRecaptureTile.Should().ContainSingle().Which.Should().Be(whiteStone7, "white stone 7 at former ko position after recapture");
     }
 
     [Fact]

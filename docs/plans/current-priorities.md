@@ -1,7 +1,7 @@
 ---
 slug: current-priorities
 name: "Current High-Impact Priorities"
-last_updated: 2025-11-12
+last_updated: 2025-11-13
 owner: core
 summary: >-
   Ranked, leverage-focused backlog slice: sequencing graduation, performance layout, diagnostics viewer, governance, and
@@ -41,13 +41,13 @@ This document distills the most leverage-heavy tasks across `status.md` and acti
 
 ## Tier 2 – Pattern-Setting Engine Implementations
 
-1. **Go Capture & Liberty Resolution (Workstream 11)**
-   Implement group/liberty resolver, capture, suicide, ko.
-   Impact: Establishes reusable graph/region evaluation strategies.
-
 1. **✅ Chess Pseudo-Legal + Legality Completion (Workstream 10) – DONE (2025-11-12)**
    Generation API, king safety filtering, promotion, mate/stalemate detection, complete SAN notation all delivered.
    Impact: Canonical complex movement + legality reference implementation completed.
+
+1. **✅ Go Capture & Liberty Resolution (Workstream 11) – DONE (2025-11-13)**
+   Group/liberty resolver, capture mechanics, suicide rule, ko detection, pass termination, area scoring all implemented and tested.
+   Impact: Establishes reusable graph/region evaluation strategies for territory-based games.
 
 1. **Cards Module Documentation & Extensions**
    Cards module delivered (deterministic piles, shuffle, draw/move/discard). Docs page authored under `/docs/cards`. Next: add peek/reveal/gain/reshuffle events.

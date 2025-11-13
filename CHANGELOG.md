@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Completed
+
+- **Performance Data Layout & Hot Paths (Workstream 4) - COMPLETE**: Core acceleration infrastructure delivered with proven 4.66× performance gains and comprehensive validation.
+  - **Sliding Fast-Path**: Production-ready acceleration with **4.66× speedup** on empty board scenarios, graduated to stable and enabled by default (`EnableSlidingFastPath = true`).
+  - **Core Infrastructure**: BoardShape adjacency layout (O(1) neighbor lookups), PieceMap incremental snapshots, bitboard occupancy system (≤64 tiles), sliding attack generator with ray precomputation.
+  - **Bitboard128 Scaffolding**: Support for boards up to 128 tiles (global + per-player occupancy) with internal two-segment structure.
+  - **Comprehensive Testing**: Parity V2 test suite covering blockers, captures, multi-block scenarios, immobile pieces, zero-length paths. 27 benchmark classes validating performance across empty/blocked/capture/off-ray scenarios.
+  - **Allocation Validation**: Allocation probe benchmarks confirming allocation-free fast-path hits in performance-critical scenarios.
+  - **Layered Architecture**: Base layer (compiled patterns fallback), acceleration layer (bitboards + sliding fast-path), optimization layer (experimental per-piece masks), scale layer (Bitboard128 scaffolding).
+  - **Feature Flags**: `EnableSlidingFastPath` and `EnableCompiledPatterns` graduated to default ON. Experimental flags (`EnableBitboards`, `EnableBitboardIncremental`, `EnablePerPieceMasks`) remain OFF pending further optimization cycles.
+  - **All Acceptance Criteria Met**: Sliding fast-path parity validated, PieceMap & bitboard occupancy integrated, allocation-free fast-path confirmed.
+  - Workstream status updated to "done" in documentation. Remaining experimental optimizations identified as future enhancement opportunities.
+
 ### Added
 
 - **Go Game Module (Workstream 11) - COMPLETE**: Go is now fully playable with complete capture mechanics, ko rule, game termination, and area scoring.

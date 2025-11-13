@@ -3,8 +3,8 @@ slug: workstreams
 name: "Workstreams Overview"
 last_updated: 2025-11-13
 status_index:
-  done: [1,2,3,10,11,17,18]
-  partial: [4,5,6,7,8,9]
+  done: [1,2,3,4,10,11,17,18]
+  partial: [5,6,7,8,9]
   planned: [12,13,14,16]
 ---
 
@@ -15,7 +15,7 @@ status_index:
 | 1 | Rule Evaluation Engine Modernization | done | Unified decision plan, grouping, filtering, exclusivity masks, predicate hoisting. |
 | 2 | Deterministic RNG & History | done | Stable RNG abstraction, timeline zipper scaffolding, dual hashing placeholders. |
 | 3 | Movement & Pattern Compilation | closed | Compiled movement patterns + sliding fast-path (≤64 tiles). |
-| 4 | Performance Data Layout & Hot Paths | partial | Sliding fast-path, bitboards (incremental soak + 128-bit scaffolding), added BitboardSnapshot coverage, parity & benchmarks. |
+| 4 | Performance Data Layout & Hot Paths | done | Core acceleration infrastructure complete: sliding fast-path (4.66× speedup), bitboards, PieceMap, comprehensive parity & benchmarks. |
 | 5 | Concurrency & Simulation | partial | Deterministic playouts + metrics, parallel path flagged. |
 | 6 | Observability & Diagnostics | partial | EventResult taxonomy, grouping, kind filtering, trace prototype. |
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |

@@ -14,5 +14,8 @@ public interface IArtifactState
     /// <summary>
     /// Gets the artifact this state instance belongs to.
     /// </summary>
-    Artifact Artifact { get; }
+    Artifact Artifact
+    {
+        get;
+    }
 }

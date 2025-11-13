@@ -11,7 +11,12 @@ public class FeatureFlagScopeConcurrencyTests
     [Fact]
     public async Task GivenConcurrentScopes_WhenTogglingDifferentValues_ThenFinalFlagsRestored()
     {
-        // arrange (capture originals)
+        // arrange
+
+        // act
+
+        // assert
+
         var origCompiled = FeatureFlags.EnableCompiledPatterns;
         var origHashing = FeatureFlags.EnableStateHashing;
 

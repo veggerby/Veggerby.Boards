@@ -22,7 +22,7 @@ public class PieceDirectionPatternDefinition(GameBuilder builder, PieceDefinitio
     /// <summary>
     /// Gets the configured direction identifiers composing the pattern.
     /// </summary>
-    public IEnumerable<string> DirectionIds { get; private set; }
+    public IEnumerable<string> DirectionIds { get; private set; } = Enumerable.Empty<string>();
 
     /// <summary>
     /// Marks the pattern as repeatable.
@@ -49,16 +49,16 @@ public class PieceDirectionPatternDefinition(GameBuilder builder, PieceDefinitio
     /// <exception cref="ArgumentException">Thrown when no directions provided or any is null/empty.</exception>
     public PieceDirectionPatternDefinition WithDirection(params string[] directions)
     {
-        ArgumentNullException.ThrowIfNull(directions);
+        ArgumentNullException.ThrowIfNull(directions, nameof(directions));
 
         if (!directions.Any())
         {
-            throw new ArgumentException("Must provide at least one direction", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDirectionRequired, nameof(directions));
         }
 
-        if (directions.Any(x => string.IsNullOrEmpty(x)))
+        if (directions.Any(x => string.IsNullOrWhiteSpace(x)))
         {
-            throw new ArgumentException("All directions must be non-null and non-empty", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.DirectionsInvalid, nameof(directions));
         }
 
         DirectionIds = [.. (DirectionIds ?? Enumerable.Empty<string>()), .. directions];

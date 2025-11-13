@@ -28,29 +28,44 @@ public sealed class DecisionPlan
     /// <summary>
     /// Gets the ordered list of compiled entries (leaf phases) considered during evaluation.
     /// </summary>
-    public IReadOnlyList<DecisionPlanEntry> Entries { get; }
+    public IReadOnlyList<DecisionPlanEntry> Entries
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the optional list of compiled groups (when grouping feature enabled at compile time).
     /// Groups provide gate predicates evaluated once prior to scanning member entries.
     /// </summary>
-    internal IReadOnlyList<DecisionPlanGroup> Groups { get; }
+    internal IReadOnlyList<DecisionPlanGroup> Groups
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the supported event kinds per entry (index aligned with <see cref="Entries"/>). Internal experimental.
     /// </summary>
-    internal EventKind[] SupportedKinds { get; }
+    internal EventKind[] SupportedKinds
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the optional exclusivity group id per entry (index aligned with <see cref="Entries"/>). Null when no exclusivity declared.
     /// </summary>
-    internal string[] ExclusivityGroups { get; }
+    internal string[] ExclusivityGroups
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets an array mapping each entry index to the first index of its exclusivity group. When masks are enabled and an entry in a group succeeds,
     /// subsequent entries whose group root has been applied are skipped. Entries without a group have value -1.
     /// </summary>
-    internal int[] ExclusivityGroupRoots { get; }
+    internal int[] ExclusivityGroupRoots
+    {
+        get;
+    }
 
     private DecisionPlan(IEnumerable<DecisionPlanEntry> entries, IEnumerable<DecisionPlanGroup> groups, EventKind[] supportedKinds, string[] exclusivityGroups)
     {
@@ -68,9 +83,11 @@ public sealed class DecisionPlan
     {
         ArgumentNullException.ThrowIfNull(root);
 
-        var entries = new List<DecisionPlanEntry>();
-        var kinds = new List<EventKind>();
-        var exclusivity = new List<string>();
+        // Pre-size lists using heuristic: assume leaf phases <= total phases
+        var phaseCount = CountPhases(root);
+        var entries = new List<DecisionPlanEntry>(phaseCount);
+        var kinds = new List<EventKind>(phaseCount);
+        var exclusivity = new List<string>(phaseCount);
         Traverse(root, entries, kinds, exclusivity);
 
         // Build grouping metadata (contiguous identical condition references) regardless of runtime flag.
@@ -85,6 +102,7 @@ public sealed class DecisionPlan
         {
             return Array.Empty<int>();
         }
+
         var firstIndex = new Dictionary<string, int>();
         var roots = new int[exclusivity.Length];
         for (int i = 0; i < exclusivity.Length; i++)
@@ -95,13 +113,16 @@ public sealed class DecisionPlan
                 roots[i] = -1;
                 continue;
             }
+
             if (!firstIndex.TryGetValue(g, out var root))
             {
                 root = i;
                 firstIndex[g] = root;
             }
+
             roots[i] = root;
         }
+
         return roots;
     }
 
@@ -117,18 +138,12 @@ public sealed class DecisionPlan
         else
         {
             // Leaf phase
-            bool alwaysValid = false;
-            if (phase.Condition is States.Conditions.NullGameStateCondition nullCondition)
-            {
-                // Evaluate once with a minimal dummy state (NullGameStateCondition ignores the state argument anyway).
-                // We pass null intentionally; implementation does not dereference.
-                var result = nullCondition.Evaluate(null);
-                alwaysValid = ReferenceEquals(result, ConditionResponse.Valid);
-            }
+            bool alwaysValid = phase.Condition is States.Conditions.NullGameStateCondition ngc && ngc.Result;
             entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
             kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
             var explicitGroup = phase.ExclusivityGroup;
-            string inferred = null;
+            string? inferred = null;
+
             if (string.IsNullOrEmpty(explicitGroup))
             {
                 var condAttr = phase.Condition?.GetType().GetCustomAttribute<ExclusiveGroupAttribute>();
@@ -145,7 +160,30 @@ public sealed class DecisionPlan
                     }
                 }
             }
-            exclusivity.Add(explicitGroup ?? inferred);
+
+            exclusivity.Add(explicitGroup ?? inferred ?? string.Empty);
+        }
+    }
+
+    private static int CountPhases(GamePhase root)
+    {
+        var count = 0;
+        TraverseCount(root, ref count);
+        return count;
+    }
+
+    private static void TraverseCount(GamePhase phase, ref int count)
+    {
+        if (phase is CompositeGamePhase composite)
+        {
+            foreach (var child in composite.ChildPhases)
+            {
+                TraverseCount(child, ref count);
+            }
+        }
+        else
+        {
+            count++;
         }
     }
 
@@ -159,7 +197,7 @@ public sealed class DecisionPlan
     /// <param name="root">Root phase for traversal.</param>
     /// <param name="phaseNumber">Phase number to locate.</param>
     /// <returns>The matching <see cref="GamePhase"/> or null.</returns>
-    internal static GamePhase ResolvePhase(GamePhase root, int phaseNumber)
+    internal static GamePhase? ResolvePhase(GamePhase? root, int phaseNumber)
     {
         if (root is null)
         {
@@ -182,6 +220,7 @@ public sealed class DecisionPlan
                 }
             }
         }
+
         return null;
     }
 
@@ -204,6 +243,7 @@ public sealed class DecisionPlan
                 currentCondition = entries[i].Condition;
             }
         }
+
         // final group
         yield return new DecisionPlanGroup(start, entries.Count - start, currentConditionIsGate: true);
     }

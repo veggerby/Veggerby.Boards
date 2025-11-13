@@ -14,11 +14,17 @@ public abstract class ArtifactRelation<TFrom, TTo>
     /// <summary>
     /// Gets the origin artifact.
     /// </summary>
-    public TFrom From { get; }
+    public TFrom From
+    {
+        get;
+    }
     /// <summary>
     /// Gets the destination artifact.
     /// </summary>
-    public TTo To { get; }
+    public TTo To
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new relation instance.

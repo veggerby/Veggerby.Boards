@@ -3,15 +3,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-using AwesomeAssertions;
-
 using Veggerby.Boards.DeckBuilding;
-using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events; // IGameEvent
 using Veggerby.Boards.Flows.Rules;
-
-using Xunit;
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
@@ -61,7 +56,7 @@ public class DecisionPlanSignatureTests
             yield break;
         }
         var type = rule.GetType();
-        while (type != null && type != typeof(object))
+        while (type is not null && type != typeof(object))
         {
             if (type.IsGenericType)
             {
@@ -79,7 +74,13 @@ public class DecisionPlanSignatureTests
     [Fact]
     public void DecisionPlan_Matches_Locked_Baseline()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;
 
@@ -119,7 +120,11 @@ public class DecisionPlanSignatureTests
         {
             var e = i < expected.Length ? expected[i] : "<missing>";
             var a = i < actual.Length ? actual[i] : "<missing>";
-            if (!string.Equals(e, a, StringComparison.Ordinal)) { firstMismatch = i; break; }
+            if (!string.Equals(e, a, StringComparison.Ordinal))
+            {
+                firstMismatch = i;
+                break;
+            }
         }
         if (firstMismatch == -1)
         {

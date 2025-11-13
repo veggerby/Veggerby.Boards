@@ -17,6 +17,9 @@ public sealed class DestinationIsEmptyGameEventCondition : IGameEventCondition<M
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var any = state.GetPiecesOnTile(@event.To).Any();
         return any ? ConditionResponse.Ignore("Destination occupied") : ConditionResponse.Valid;
     }

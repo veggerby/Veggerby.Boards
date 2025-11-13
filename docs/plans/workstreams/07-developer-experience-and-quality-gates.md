@@ -31,6 +31,9 @@ open_followups:
 - Documentation restructured (core concepts, movement, determinism, performance)
 - Manual drift audit (no legacy doc references)
 - Centralized chess identifier constants (`ChessIds`) and predicate-based metadata classification eliminating string heuristics (reinforces style & determinism charter)
+- DecisionPlan group gate early pruning (single predicate evaluation per group + batched skip reasons)
+- `TilePath` caching (relations/tiles/directions/distance) removing LINQ from path accessors
+- Benchmark setup assertion hygiene (non-critical presence checks converted to `Debug.Assert`)
 
 ## Pending / Deferred
 

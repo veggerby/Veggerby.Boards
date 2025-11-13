@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
-using Veggerby.Boards.Cards.Mutators;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
@@ -14,7 +13,13 @@ public class DeckBuildingGainFromSupplyTests
     [Fact]
     public void GivenSupply_WhenGainToDiscard_ThenCardAppendedAndSupplyDecremented()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         // register test card artifacts before compile
@@ -23,7 +28,9 @@ public class DeckBuildingGainFromSupplyTests
         var progress = builder.Compile();
         var game = progress.Game;
         var p1 = game.GetPlayer("P1");
+        p1.Should().NotBeNull();
         var deck = game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         // initialize deck state with empty piles and supply
 
@@ -36,25 +43,32 @@ public class DeckBuildingGainFromSupplyTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 10 };
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         // transition Start -> Main -> keep Main for buy phase (gain handled in buy phase which uses Main segment gating)
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
-        progress = progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        progress = progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
-        var ds = progress.State.GetState<DeckState>(deck);
-        ds.Supply[c1.Id].Should().Be(9);
+        var ds = progress.State.GetState<DeckState>(deck!);
+        ds.Should().NotBeNull();
+        ds!.Supply[c1.Id].Should().Be(9);
         ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainSingle().Which.Should().Be(c1);
     }
 
     [Fact]
     public void GivenInsufficientSupply_WhenGain_ThenRejected()
     {
-        using var guard = Veggerby.Boards.Tests.Support.FeatureFlagGuard.ForceTurnSequencing(true);
+        // arrange
+
+        // act
+
+        // assert
+
+        using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
         var c1 = new Card("silver");
@@ -62,7 +76,9 @@ public class DeckBuildingGainFromSupplyTests
         var progress = builder.Compile();
         var game = progress.Game;
         var p1 = game.GetPlayer("P1");
+        p1.Should().NotBeNull();
         var deck = game.GetArtifact<Deck>("p1-deck");
+        deck.Should().NotBeNull();
 
         var piles = new Dictionary<string, IList<Card>>
         {
@@ -73,13 +89,13 @@ public class DeckBuildingGainFromSupplyTests
         };
         var supply = new Dictionary<string, int> { [c1.Id] = 0 };
 
-        progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
+        progress = progress.HandleEvent(new CreateDeckEvent(deck!, piles, supply));
         progress.ShouldHaveSingleTurnState();
         progress.State.GetState<DeckState>(deck).Should().NotBeNull();
 
         // act
         progress = progress.HandleEvent(new EndTurnSegmentEvent(TurnSegment.Start)); // Start -> Main
-        var act = () => progress.HandleEvent(new GainFromSupplyEvent(p1, deck, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
+        var act = () => progress.HandleEvent(new GainFromSupplyEvent(p1!, deck!, c1.Id, DeckBuildingGameBuilder.Piles.Discard));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

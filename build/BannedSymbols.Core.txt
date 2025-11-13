@@ -1,0 +1,13 @@
+# Banned symbols for the solution
+# Format: <symbol id>;<justification>
+M:System.Threading.Thread.Sleep;Blocking / timing nondeterminism; prefer deterministic sequencing or controlled test helpers
+T:System.Threading.Tasks.Task.Delay;Timing nondeterminism in engine; prefer deterministic turn / phase progression
+M:System.GC.Collect;Never force GC in engine code; impacts perf determinism
+M:System.Reflection.Assembly.LoadFrom;Avoid dynamic assembly loading for security and determinism
+M:System.Reflection.Assembly.LoadFile;Avoid dynamic assembly loading for security and determinism
+M:System.Reflection.MethodInfo.Invoke;Avoid reflective invocation in hot paths; prefer explicit dispatch for clarity & perf
+M:System.Linq.Enumerable.AsParallel;Parallel LINQ introduces nondeterminism and overhead; not allowed in core
+M:System.Linq.ParallelEnumerable.*;Parallel LINQ introduces nondeterminism and overhead; not allowed in core
+M:System.Threading.Tasks.Parallel.For;Parallel execution introduces ordering nondeterminism inside deterministic engine
+M:System.Threading.Tasks.Parallel.ForEach;Parallel execution introduces ordering nondeterminism inside deterministic engine
+M:System.Threading.Tasks.Task.Run;Disallow background task scheduling in deterministic core; use synchronous deterministic flows

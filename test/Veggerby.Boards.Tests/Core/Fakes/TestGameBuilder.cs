@@ -33,11 +33,11 @@ public class TestGameBuilder(bool useSimpleGamePhase = true) : GameBuilder
 
         AddPiece("piece-1").WithOwner("player-1").HasDirection("clockwise").CanRepeat().OnTile("tile-1");
         AddPiece("piece-2").WithOwner("player-2").HasDirection("counterclockwise").DoesNotRepeat().OnTile("tile-2");
-        AddPiece("piece-n").OnTile("tile-1");
-        AddPiece("piece-x")
+        AddPiece("piece-n").WithOwner("player-1").OnTile("tile-1");
+        AddPiece("piece-x").WithOwner("player-1")
             .HasDirection("clockwise").CanRepeat()
             .HasDirection("counterclockwise").CanRepeat();
-        AddPiece("piece-y")
+        AddPiece("piece-y").WithOwner("player-2")
             .HasDirection("clockwise").DoesNotRepeat()
             .HasDirection("counterclockwise").DoesNotRepeat();
 

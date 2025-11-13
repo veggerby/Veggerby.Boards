@@ -31,17 +31,28 @@ public abstract class GameBuilder
     /// <summary>
     /// Gets or sets the identifier of the board to create. Must be assigned during <see cref="Build"/>.
     /// </summary>
-    protected string BoardId { get; set; }
+    protected string? BoardId
+    {
+        get; set;
+    }
+
     private readonly IList<PlayerDefinition> _playerDefinitions = [];
+    private readonly Dictionary<string, PlayerDefinition> _playerDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<TileDefinition> _tileDefinitions = [];
+    private readonly Dictionary<string, TileDefinition> _tileDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<DirectionDefinition> _directionDefinitions = [];
+    private readonly Dictionary<string, DirectionDefinition> _directionDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<DiceDefinition> _diceDefinitions = [];
+    private readonly Dictionary<string, DiceDefinition> _diceDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<TileRelationDefinition> _tileRelationDefinitions = [];
     private readonly IList<PieceDefinition> _pieceDefinitions = [];
+    private readonly Dictionary<string, PieceDefinition> _pieceDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<PieceDirectionPatternDefinition> _pieceDirectionPatternDefinitions = [];
     private readonly IList<ArtifactDefinition> _artifactDefinitions = [];
+    private readonly Dictionary<string, ArtifactDefinition> _artifactDefinitionsById = new(StringComparer.Ordinal);
     private readonly IList<GamePhaseDefinition> _gamePhaseDefinitions = [];
-    private readonly IList<object> _extrasStates = new List<object>();
+    // Extras states now keyed by concrete type to enforce single instance per type.
+    private readonly Dictionary<Type, object> _extrasStates = new();
     private readonly IList<(string PlayerId, bool IsActive)> _activePlayerAssignments = new List<(string, bool)>();
 
     private Tile CreateTile(TileDefinition tile)
@@ -56,9 +67,52 @@ public abstract class GameBuilder
 
     private static TileRelation CreateTileRelation(TileRelationDefinition relation, IEnumerable<Tile> tiles, IEnumerable<Direction> directions)
     {
-        var sourceTile = tiles.Single(x => string.Equals(x.Id, relation.FromTileId));
-        var destinationTile = tiles.Single(x => string.Equals(x.Id, relation.ToTileId));
-        var direction = directions.Single(x => string.Equals(x.Id, relation.DirectionId));
+        // Hot path compile: explicit loops avoid multiple enumerations + LINQ allocation.
+        Tile? sourceTile = null;
+        Tile? destinationTile = null;
+        foreach (var tile in tiles)
+        {
+            if (sourceTile is null && string.Equals(tile.Id, relation.FromTileId))
+            {
+                sourceTile = tile;
+            }
+
+            if (destinationTile is null && string.Equals(tile.Id, relation.ToTileId))
+            {
+                destinationTile = tile;
+            }
+
+            if (sourceTile is not null && destinationTile is not null)
+            {
+                break;
+            }
+        }
+
+        if (sourceTile is null)
+        {
+            throw new InvalidOperationException($"Source tile '{relation.FromTileId}' not found for relation.");
+        }
+
+        if (destinationTile is null)
+        {
+            throw new InvalidOperationException($"Destination tile '{relation.ToTileId}' not found for relation.");
+        }
+
+        Direction? direction = null;
+        foreach (var dir in directions)
+        {
+            if (string.Equals(dir.Id, relation.DirectionId))
+            {
+                direction = dir;
+                break;
+            }
+        }
+
+        if (direction is null)
+        {
+            throw new InvalidOperationException($"Direction '{relation.DirectionId}' not found for relation.");
+        }
+
         return new TileRelation(sourceTile, destinationTile, direction);
     }
 
@@ -69,27 +123,77 @@ public abstract class GameBuilder
 
     private static Artifact CreatePiece(PieceDefinition piece, IEnumerable<PieceDirectionPatternDefinition> pattern, IEnumerable<Direction> directions, IEnumerable<Player> players)
     {
-        var player = !string.IsNullOrEmpty(piece.PlayerId)
-            ? players.SingleOrDefault(x => string.Equals(x.Id, piece.PlayerId))
-            : null;
+        // Hot path compile: eliminate LINQ for deterministic low-allocation assembly.
+        Player? player = null;
+        if (!string.IsNullOrEmpty(piece.PlayerId))
+        {
+            foreach (var p in players)
+            {
+                if (string.Equals(p.Id, piece.PlayerId))
+                {
+                    player = p;
+                    break;
+                }
+            }
+        }
 
-        var patterns = pattern.Where(x => x.PieceId == piece.PieceId).ToList();
+        if (player is null)
+        {
+            throw new InvalidOperationException($"Piece definition '{piece.PieceId}' references unknown player '{piece.PlayerId}'.");
+        }
 
-        return new Piece(piece.PieceId, player, patterns.Select(x => CreatePattern(x, directions)));
+        // Collect pattern definitions for this piece.
+        var patternDefs = new List<PieceDirectionPatternDefinition>();
+        foreach (var pd in pattern)
+        {
+            if (pd.PieceId == piece.PieceId)
+            {
+                patternDefs.Add(pd);
+            }
+        }
+
+        // Transform to concrete IPattern list.
+        var compiled = new List<IPattern>(patternDefs.Count);
+        foreach (var pd in patternDefs)
+        {
+            compiled.Add(CreatePattern(pd, directions));
+        }
+
+        return new Piece(piece.PieceId, player, compiled);
     }
 
     private static IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)
     {
-        var patternDirections = piece.DirectionIds.Select(directionId => directions.Single(x => string.Equals(x.Id, directionId))).ToList();
+        // Hot path compile: explicit direction resolution without LINQ.
+        var patternDirections = new List<Direction>();
+        foreach (var directionId in piece.DirectionIds)
+        {
+            Direction? found = null;
+            foreach (var dir in directions)
+            {
+                if (string.Equals(dir.Id, directionId))
+                {
+                    found = dir;
+                    break;
+                }
+            }
 
-        if (!patternDirections.Any())
+            if (found is null)
+            {
+                throw new InvalidOperationException($"Pattern references unknown direction '{directionId}'.");
+            }
+
+            patternDirections.Add(found);
+        }
+
+        if (patternDirections.Count == 0)
         {
             return new NullPattern();
         }
 
-        if (patternDirections.Count() == 1)
+        if (patternDirections.Count == 1)
         {
-            return new DirectionPattern(patternDirections.Single(), piece.IsRepeatable);
+            return new DirectionPattern(patternDirections[0], piece.IsRepeatable);
         }
 
         return piece.IsRepeatable
@@ -109,8 +213,12 @@ public abstract class GameBuilder
     /// <returns>Fluent player definition.</returns>
     protected PlayerDefinition AddPlayer(string playerId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
+
         var player = new PlayerDefinition(this).WithId(playerId);
         _playerDefinitions.Add(player);
+        _playerDefinitionsById[player.PlayerId] = player;
+
         return player;
     }
 
@@ -124,10 +232,7 @@ public abstract class GameBuilder
     /// </remarks>
     protected void WithActivePlayer(string playerId, bool isActive)
     {
-        if (string.IsNullOrWhiteSpace(playerId))
-        {
-            throw new ArgumentException("Player id must be supplied", nameof(playerId));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
 
         // Defer validation (existence, uniqueness) until compile to allow out-of-order declarations.
         _activePlayerAssignments.Add((playerId, isActive));
@@ -140,7 +245,14 @@ public abstract class GameBuilder
     /// <returns>Player definition.</returns>
     protected PlayerDefinition WithPlayer(string playerId)
     {
-        return _playerDefinitions.Single(x => string.Equals(x.PlayerId, playerId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(playerId, nameof(playerId));
+
+        if (!_playerDefinitionsById.TryGetValue(playerId, out var def))
+        {
+            throw new InvalidOperationException($"Unknown player definition '{playerId}'.");
+        }
+
+        return def;
     }
 
     /// <summary>
@@ -150,8 +262,12 @@ public abstract class GameBuilder
     /// <returns>Tile definition.</returns>
     protected TileDefinition AddTile(string tileId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
         var tile = new TileDefinition(this).WithId(tileId);
         _tileDefinitions.Add(tile);
+        _tileDefinitionsById[tile.TileId] = tile;
+
         return tile;
     }
 
@@ -162,7 +278,14 @@ public abstract class GameBuilder
     /// <returns>Tile definition.</returns>
     protected TileDefinition WithTile(string tileId)
     {
-        return _tileDefinitions.Single(x => string.Equals(x.TileId, tileId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
+        if (!_tileDefinitionsById.TryGetValue(tileId, out var def))
+        {
+            throw new InvalidOperationException($"Unknown tile definition '{tileId}'.");
+        }
+
+        return def;
     }
 
     /// <summary>
@@ -172,8 +295,12 @@ public abstract class GameBuilder
     /// <returns>Direction definition.</returns>
     protected DirectionDefinition AddDirection(string directionId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(directionId, nameof(directionId));
+
         var direction = new DirectionDefinition(this).WithId(directionId);
         _directionDefinitions.Add(direction);
+        _directionDefinitionsById[direction.DirectionId] = direction;
+
         return direction;
     }
 
@@ -184,8 +311,12 @@ public abstract class GameBuilder
     /// <returns>Dice definition.</returns>
     protected DiceDefinition AddDice(string diceId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
         var dice = new DiceDefinition(this).WithId(diceId);
         _diceDefinitions.Add(dice);
+        _diceDefinitionsById[dice.DiceId] = dice;
+
         return dice;
     }
 
@@ -196,7 +327,14 @@ public abstract class GameBuilder
     /// <returns>Dice definition.</returns>
     protected DiceDefinition WithDice(string diceId)
     {
-        return _diceDefinitions.Single(x => string.Equals(x.DiceId, diceId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
+        if (!_diceDefinitionsById.TryGetValue(diceId, out var def))
+        {
+            throw new InvalidOperationException($"Unknown dice definition '{diceId}'.");
+        }
+
+        return def;
     }
 
     /// <summary>
@@ -206,8 +344,12 @@ public abstract class GameBuilder
     /// <returns>Piece definition.</returns>
     protected PieceDefinition AddPiece(string pieceId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+
         var piece = new PieceDefinition(this).WithId(pieceId);
         _pieceDefinitions.Add(piece);
+        _pieceDefinitionsById[piece.PieceId] = piece;
+
         return piece;
     }
 
@@ -218,7 +360,14 @@ public abstract class GameBuilder
     /// <returns>Piece definition.</returns>
     protected PieceDefinition WithPiece(string pieceId)
     {
-        return _pieceDefinitions.Single(x => string.Equals(x.PieceId, pieceId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+
+        if (!_pieceDefinitionsById.TryGetValue(pieceId, out var def))
+        {
+            throw new InvalidOperationException($"Unknown piece definition '{pieceId}'.");
+        }
+
+        return def;
     }
 
     /// <summary>
@@ -228,8 +377,12 @@ public abstract class GameBuilder
     /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition AddArtifact(string artifactId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(artifactId, nameof(artifactId));
+
         var artifact = new ArtifactDefinition(this).WithId(artifactId);
         _artifactDefinitions.Add(artifact);
+        _artifactDefinitionsById[artifact.ArtifactId] = artifact;
+
         return artifact;
     }
 
@@ -240,7 +393,14 @@ public abstract class GameBuilder
     /// <returns>Artifact definition.</returns>
     protected ArtifactDefinition WithArtifact(string artifactId)
     {
-        return _artifactDefinitions.Single(x => string.Equals(x.ArtifactId, artifactId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(artifactId, nameof(artifactId));
+
+        if (!_artifactDefinitionsById.TryGetValue(artifactId, out var def))
+        {
+            throw new InvalidOperationException($"Unknown artifact definition '{artifactId}'.");
+        }
+
+        return def;
     }
 
     internal void Add(PieceDirectionPatternDefinition pattern)
@@ -259,14 +419,18 @@ public abstract class GameBuilder
 
     internal void AddDiceState(string diceId, int? value)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(diceId, nameof(diceId));
+
         _diceState.Add(diceId, value);
     }
 
     internal void AddPieceOnTile(string pieceId, string tileId)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(pieceId, nameof(pieceId));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
+
         _piecePositions.Add(pieceId, tileId);
     }
-
     /// <summary>
     /// Adds a game phase definition which can attach rules, conditions and event handlers.
     /// </summary>
@@ -274,8 +438,11 @@ public abstract class GameBuilder
     /// <returns>Phase definition fluent object.</returns>
     protected IGamePhaseDefinition AddGamePhase(string label) // label not used for anything, just to document in builder
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(label, nameof(label));
+
         var gamePhase = new GamePhaseDefinition(this, label);
         _gamePhaseDefinitions.Add(gamePhase);
+
         return gamePhase;
     }
 
@@ -284,7 +451,7 @@ public abstract class GameBuilder
     /// </summary>
     protected abstract void Build();
 
-    private GameProgress _initialGameProgress;
+    private GameProgress? _initialGameProgress;
 
     private IEvaluationObserver _observer = NullEvaluationObserver.Instance;
     private ulong? _seed; // deterministic RNG seed (optional)
@@ -312,6 +479,7 @@ public abstract class GameBuilder
     public GameBuilder WithSeed(ulong seed)
     {
         _seed = seed;
+
         return this;
     }
 
@@ -343,9 +511,9 @@ public abstract class GameBuilder
 
         // Add synthetic artifacts for extras states (one per extras type) so they participate in hashing & diffs deterministically.
         var extrasArtifacts = new Dictionary<Type, Artifact>();
-        foreach (var extras in _extrasStates)
+        foreach (var kv in _extrasStates)
         {
-            var t = extras.GetType();
+            var t = kv.Key;
             // stable id includes full type name for uniqueness across modules
             var id = $"extras-{t.FullName}";
             var art = new ExtrasArtifact(id);
@@ -354,26 +522,59 @@ public abstract class GameBuilder
         }
 
         // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
-        TurnArtifact turnArtifact = null;
-        if (Internal.FeatureFlags.EnableTurnSequencing)
+        TurnArtifact? turnArtifact = null;
+        if (FeatureFlags.EnableTurnSequencing)
         {
             turnArtifact = new TurnArtifact("turn-timeline");
             artifacts.Add(turnArtifact);
         }
 
+        if (BoardId is null)
+        {
+            throw new InvalidOperationException("BoardId must be configured before building the game.");
+        }
+
         var board = new Board(BoardId, relations);
-        var game = new Game(board, players, pieces.Concat(dice).Concat(artifacts));
+        // Assemble artifact sequence in deterministic order: pieces -> dice -> custom artifacts (including extras, turn)
+        var allArtifacts = new Artifact[pieces.Length + dice.Length + artifacts.Count];
+        var index = 0;
+
+        for (var i = 0; i < pieces.Length; i++)
+        {
+            allArtifacts[index++] = pieces[i];
+        }
+
+        for (var i = 0; i < dice.Length; i++)
+        {
+            allArtifacts[index++] = dice[i];
+        }
+
+        for (var i = 0; i < artifacts.Count; i++)
+        {
+            allArtifacts[index++] = artifacts[i];
+        }
+
+        var game = new Game(board, players, allArtifacts);
 
         // compile Initial state
 
         var pieceStates = _piecePositions
-            .Select(x => new PieceState(game.GetPiece(x.Key), game.GetTile(x.Value)))
+            .Select(x =>
+            {
+                var p = game.GetPiece(x.Key) ?? throw new InvalidOperationException($"Unknown piece id '{x.Key}' in initial positions.");
+                var t = game.GetTile(x.Value) ?? throw new InvalidOperationException($"Unknown tile id '{x.Value}' in initial positions.");
+                return new PieceState(p, t);
+            })
             .ToList();
 
         var diceStates = _diceState
-            .Select(x => x.Value is null
-                ? (IArtifactState)new NullDiceState(game.GetArtifact<Dice>(x.Key))
-                : (IArtifactState)new DiceState<int>(game.GetArtifact<Dice>(x.Key), x.Value.Value))
+            .Select(x =>
+            {
+                var d = game.GetArtifact<Dice>(x.Key) ?? throw new InvalidOperationException($"Unknown dice id '{x.Key}' in initial dice state.");
+                return x.Value is null
+                    ? (IArtifactState)new NullDiceState(d)
+                    : (IArtifactState)new DiceState<int>(d, x.Value.Value);
+            })
             .ToList();
 
         // Seed base states collection (pieces + dice)
@@ -391,6 +592,7 @@ public abstract class GameBuilder
                 {
                     throw new InvalidOperationException($"Active player declaration references unknown player '{PlayerId}'.");
                 }
+
                 baseStates.Add(new ActivePlayerState(player, IsActive));
             }
 
@@ -402,16 +604,14 @@ public abstract class GameBuilder
             }
         }
 
-        // Materialize extras states into artifact states
-        foreach (var extras in _extrasStates)
+        // Materialize extras states (non-generic wrapper avoids reflection during initial compile)
+        foreach (var kv in _extrasStates)
         {
-            var t = extras.GetType();
+            var t = kv.Key;
+            var extras = kv.Value;
             if (extrasArtifacts.TryGetValue(t, out var art))
             {
-                // Wrap via generic runtime constructed ExtrasState<T>
-                var extrasStateType = typeof(ExtrasState<>).MakeGenericType(t);
-                var state = (IArtifactState)Activator.CreateInstance(extrasStateType, art, extras);
-                baseStates.Add(state);
+                baseStates.Add(new ExtrasState(art, extras, t));
             }
         }
 
@@ -428,7 +628,7 @@ public abstract class GameBuilder
 
         // compile GamePhase root
 
-        GamePhase gamePhaseRoot = null;
+        GamePhase? gamePhaseRoot = null;
 
         if (_gamePhaseDefinitions.Any())
         {
@@ -457,11 +657,11 @@ public abstract class GameBuilder
         var shape = Internal.Layout.BoardShape.Build(game.Board);
         var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
 
-        Internal.Paths.IPathResolver pathResolver = null;
+        Internal.Paths.IPathResolver? pathResolver = null;
         if (FeatureFlags.EnableCompiledPatterns)
         {
             var table = Flows.Patterns.PatternCompiler.Compile(game);
-            Internal.Compiled.BoardAdjacencyCache adjacency = null;
+            Internal.Compiled.BoardAdjacencyCache? adjacency = null;
             if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
             {
                 adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
@@ -508,11 +708,13 @@ public abstract class GameBuilder
             pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
         }
 
+        // Ensure non-null pathResolver (legacy visitor resolver fallback already applied earlier if compiled disabled)
+        pathResolver ??= new Internal.Paths.SimplePatternPathResolver(game.Board);
         var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 
         // GameProgress no longer carries snapshots explicitly (acceleration context retains internal state)
-        _initialGameProgress = new GameProgress(engine, initialGameState, null);
+        _initialGameProgress = new GameProgress(engine, initialGameState, Flows.Events.EventChain.Empty);
 
         return _initialGameProgress;
     }
@@ -524,10 +726,16 @@ public abstract class GameBuilder
     /// <param name="extras">Instance (must be reference type).</param>
     protected void WithState<T>(T extras) where T : class
     {
-        ArgumentNullException.ThrowIfNull(extras);
+        ArgumentNullException.ThrowIfNull(extras, nameof(extras));
 
         // TODO: Revisit Extras state/artifact design (naming + potential consolidation). Consider exposing a more explicit
         // registration API to distinguish engine-level capabilities from per-game auxiliary state. (Tracked from user note)
-        _extrasStates.Add(extras);
+        var t = typeof(T);
+        if (_extrasStates.ContainsKey(t))
+        {
+            throw new InvalidOperationException($"Extras state of type '{t.FullName}' already registered.");
+        }
+
+        _extrasStates[t] = extras;
     }
 }

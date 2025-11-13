@@ -49,7 +49,7 @@ internal sealed class BoardAdjacencyCache
     /// <param name="direction">Direction.</param>
     /// <param name="relation">Result relation (may be null if false).</param>
     /// <returns><c>true</c> when relation exists; otherwise <c>false</c>.</returns>
-    public bool TryGet(Tile from, Direction direction, out TileRelation relation)
+    public bool TryGet(Tile from, Direction direction, out TileRelation? relation)
     {
         relation = null;
         if (from is null || direction is null)
@@ -58,7 +58,12 @@ internal sealed class BoardAdjacencyCache
         }
         if (_cache.TryGetValue(from, out var inner))
         {
-            return inner.TryGetValue(direction, out relation);
+            if (inner.TryGetValue(direction, out var rel))
+            {
+                relation = rel;
+                return true;
+            }
+            return false;
         }
         return false;
     }

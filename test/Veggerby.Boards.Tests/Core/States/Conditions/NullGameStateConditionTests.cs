@@ -13,7 +13,7 @@ public class NullGameStateConditionTests
         public void Should_evaluate_true_on_initial_state(bool defaultValue)
         {
             // arrange
-            var state = GameState.New(null);
+            var state = GameState.New(null!);
             var condition = new NullGameStateCondition(defaultValue);
 
             // act

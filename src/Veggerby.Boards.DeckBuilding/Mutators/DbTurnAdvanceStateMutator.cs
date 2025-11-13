@@ -13,11 +13,24 @@ public sealed class DbTurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, EndTurnSegmentEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         // locate existing TurnState
-        TurnState current = null;
-        foreach (var ts in gameState.GetStates<TurnState>()) { current = ts; break; }
-        if (current is null) { return gameState; }
-        if (current.Segment != @event.Segment) { return gameState; }
+        TurnState? current = null;
+        foreach (var ts in gameState.GetStates<TurnState>())
+        {
+            current = ts;
+            break;
+        }
+        if (current is null)
+        {
+            return gameState;
+        }
+        if (current.Segment != @event.Segment)
+        {
+            return gameState;
+        }
         // Hard-coded profile: Start -> Main -> End
         TurnSegment? next = current.Segment switch
         {

@@ -3,9 +3,9 @@ using BenchmarkDotNet.Attributes;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
-using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.States;
@@ -113,7 +113,8 @@ public class SlidingPathResolutionBenchmark
         }
 
         var board = new Board("bench-sliding-8x8", relations);
-        var white = new Player("white"); var black = new Player("black");
+        var white = new Player("white");
+        var black = new Player("black");
 
         // Slider archetypes
         _rook = new Piece("rook", white, [new DirectionPattern(north, true), new DirectionPattern(east, true), new DirectionPattern(south, true), new DirectionPattern(west, true)]);
@@ -173,7 +174,8 @@ public class SlidingPathResolutionBenchmark
                 pattern.Accept(visitor);
                 if (visitor.ResultPath is not null && visitor.ResultPath.To.Equals(to))
                 {
-                    count++; break;
+                    count++;
+                    break;
                 }
             }
         }
@@ -345,11 +347,11 @@ public class SlidingPathResolutionBenchmark
             var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
 
             // Minimal phase root (no rules needed for path resolution benchmark)
-            var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
+            var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
             // DecisionPlan mandatory (GameEngine enforces non-null); compile minimal plan for benchmark phase root.
             var plan = DecisionPlan.Compile(phaseRoot);
             var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-            return new GameProgress(engine, state, null);
+            return new GameProgress(engine, state, Veggerby.Boards.Flows.Events.EventChain.Empty);
         }
 
         _progressEmpty = Build(new HashSet<Tile>());

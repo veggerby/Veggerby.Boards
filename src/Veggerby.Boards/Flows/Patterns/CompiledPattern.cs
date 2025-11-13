@@ -20,9 +20,18 @@ internal enum CompiledPatternKind
 /// </summary>
 internal sealed class CompiledPattern
 {
-    public CompiledPatternKind Kind { get; }
-    public Direction[] Directions { get; } // For Fixed this is the exact ordered steps; for Ray a single element; for MultiRay the candidate directions.
-    public bool IsRepeatable { get; }
+    public CompiledPatternKind Kind
+    {
+        get;
+    }
+    public Direction[] Directions
+    {
+        get;
+    } // For Fixed this is the exact ordered steps; for Ray a single element; for MultiRay the candidate directions.
+    public bool IsRepeatable
+    {
+        get;
+    }
 
     private CompiledPattern(CompiledPatternKind kind, Direction[] directions, bool isRepeatable)
     {
@@ -35,7 +44,7 @@ internal sealed class CompiledPattern
     {
         if (steps is null || steps.Length == 0)
         {
-            throw new ArgumentException("Empty fixed steps", nameof(steps));
+            throw new ArgumentException(ExceptionMessages.EmptyFixedSteps, nameof(steps));
         }
 
         return new CompiledPattern(CompiledPatternKind.Fixed, steps, false);
@@ -51,7 +60,7 @@ internal sealed class CompiledPattern
     {
         if (directions is null || directions.Length == 0)
         {
-            throw new ArgumentException("Empty multi-ray directions", nameof(directions));
+            throw new ArgumentException(ExceptionMessages.EmptyMultiRayDirections, nameof(directions));
         }
 
         return new CompiledPattern(CompiledPatternKind.MultiRay, directions, repeatable);

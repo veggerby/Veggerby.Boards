@@ -11,11 +11,11 @@ namespace Veggerby.Boards.Builder.Phases;
 internal class GamePhaseDefinition(GameBuilder builder, string label) : DefinitionBase(builder), IGamePhaseDefinition, IThenGameEventRule
 {
     private int? _number;
-    private CompositeGamePhaseConditionDefinition _conditionDefinition;
-    private GameEventRuleDefinitions _ruleDefinitions;
+    private CompositeGamePhaseConditionDefinition? _conditionDefinition;
+    private GameEventRuleDefinitions? _ruleDefinitions;
     private readonly IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = [];
     private readonly string _label = label;
-    private string _exclusivityGroup;
+    private string? _exclusivityGroup;
 
     internal void Add(GameEventPreProcessorDefinition preProcessorDefinition)
     {
@@ -57,7 +57,7 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         return _ruleDefinitions;
     }
 
-    internal GamePhase Build(int number, Game game, CompositeGamePhase parent = null)
+    internal GamePhase Build(int number, Game game, CompositeGamePhase? parent = null)
     {
         if (_conditionDefinition is null || _ruleDefinitions is null)
         {

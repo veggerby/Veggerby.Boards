@@ -4,7 +4,7 @@ namespace Veggerby.Boards.Internal.Compiled;
 
 internal interface ICompiledPatternResolver
 {
-    bool TryResolve(Artifacts.Piece piece, Artifacts.Tile from, Artifacts.Tile to, out Artifacts.Relations.TilePath path);
+    bool TryResolve(Artifacts.Piece piece, Artifacts.Tile from, Artifacts.Tile to, out Artifacts.Relations.TilePath? path);
 }
 
 internal sealed class CompiledPatternServices(CompiledPatternTable table, ICompiledPatternResolver resolver, BoardAdjacencyCache adjacency)

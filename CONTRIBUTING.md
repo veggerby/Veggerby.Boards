@@ -179,4 +179,16 @@ Be constructive and respectful. Assume good intent. Technical critique is welcom
 - [ ] Phase conditions remain deterministic
 - [ ] Docs updated (README / docs/* if applicable)
 
+## Determinism Checklist (Authoritative Quick Win)
+
+Before submitting changes that touch engine state transitions, confirm:
+
+1. No banned nondeterministic APIs introduced (Random, Guid.NewGuid, DateTime.Now/UtcNow, Task.Run, Parallel.For*, Thread.Sleep, Task.Delay in tests).
+2. Feature flags used only within explicit capability boundaries or temporarily wrapped in disposable scopes within tests.
+3. Reapplying identical event sequences on identical prior state yields identical resulting state (existing tests cover common paths; add one for new mutators).
+4. No reflection-based dynamic invocation added in hot paths (state mutation, pattern resolution, rule evaluation).
+5. No hidden global mutable state added (static caches must be immutable after construction and justified in docs if introduced).
+6. All new tests deterministic (fixed seeds use TestDeterministicRng not System.Random).
+7. Performance-sensitive loops avoid LINQ / allocations beyond documented exceptions.
+
 Thanks for helping make Veggerby.Boards better.

@@ -18,7 +18,7 @@ internal static class TestPathHelper
     /// <param name="fromTileId">The starting tile id (current tile sanity check).</param>
     /// <param name="targetTileIds">Ordered candidate destination tile ids (first resolvable wins).</param>
     /// <returns>The first valid <see cref="TilePath"/> or <c>null</c> if none resolve.</returns>
-    public static TilePath ResolveFirstValidPath(Game game, Piece piece, string fromTileId, params string[] targetTileIds)
+    public static TilePath? ResolveFirstValidPath(Game game, Piece piece, string fromTileId, params string[] targetTileIds)
     {
         var fromTile = game.GetTile(fromTileId);
         if (fromTile is null)

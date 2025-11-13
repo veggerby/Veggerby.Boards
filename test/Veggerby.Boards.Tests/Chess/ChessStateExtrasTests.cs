@@ -11,6 +11,9 @@ public class ChessStateExtrasTests
         // arrange
 
         // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var extras = progress.State.GetExtras<ChessStateExtras>();
 

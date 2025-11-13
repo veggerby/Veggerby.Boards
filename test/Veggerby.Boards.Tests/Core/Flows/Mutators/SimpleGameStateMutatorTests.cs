@@ -18,6 +18,9 @@ public class SimpleGameStateMutatorTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 
             // assert
@@ -30,7 +33,10 @@ public class SimpleGameStateMutatorTests
             // arrange
 
             // act
-            var actual = () => new SimpleGameStateMutator<NullGameEvent>(null);
+
+            // assert
+
+            var actual = () => new SimpleGameStateMutator<NullGameEvent>(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("stateFunc");
@@ -43,15 +49,23 @@ public class SimpleGameStateMutatorTests
         public void Should_mutate_simple_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
             var piece = game.GetPiece("piece-1");
-            var state = initialState.GetState<PieceState>(piece);
+            piece.Should().NotBeNull();
+            var state = initialState.GetState<PieceState>(piece!);
+            state.Should().NotBeNull();
             var toTile = game.GetTile("tile-2");
+            toTile.Should().NotBeNull();
 
-            var path = new TilePath([new TileRelation(state.CurrentTile, toTile, Direction.Clockwise)]);
-            var @event = new MovePieceGameEvent(piece, path);
+            var path = new TilePath([new TileRelation(state!.CurrentTile!, toTile!, Direction.Clockwise)]);
+            var @event = new MovePieceGameEvent(piece!, path);
 
             var mutator = new SimpleGameStateMutator<MovePieceGameEvent>(e => new PieceState(e.Piece, e.To));
 
@@ -61,20 +75,26 @@ public class SimpleGameStateMutatorTests
             // assert
             actual.Should().NotBe(initialState);
             actual.IsInitialState.Should().BeFalse();
-            var pieceState = actual.GetState<PieceState>(piece);
-            pieceState.CurrentTile.Should().Be(toTile);
+            var pieceState = actual.GetState<PieceState>(piece!);
+            pieceState.Should().NotBeNull();
+            pieceState!.CurrentTile.Should().Be(toTile);
         }
 
         [Fact]
         public void Should_return_original_when_null_artifactstate()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
             var @event = new NullGameEvent();
 
-            var mutator = new SimpleGameStateMutator<NullGameEvent>(e => null);
+            var mutator = new SimpleGameStateMutator<NullGameEvent>(e => null!);
 
             // act
             var actual = mutator.MutateState(engine.Engine, initialState, @event);

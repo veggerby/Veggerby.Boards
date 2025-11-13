@@ -1,0 +1,26 @@
+name: Fast Build & Test
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  fast-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore
+        run: dotnet restore Veggerby.Boards.sln
+      - name: Build (FastBuild analyzers off)
+        run: dotnet build Veggerby.Boards.sln -p:FastBuild=true --configuration Debug --no-restore
+      - name: Test (unit + invariant traits only)
+        run: dotnet test Veggerby.Boards.sln --configuration Debug --no-build --filter "Category!=Parity&Category!=Performance"

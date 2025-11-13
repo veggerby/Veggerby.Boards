@@ -10,7 +10,8 @@ namespace Veggerby.Boards.Tests.Core.Patterns;
 
 public class CompiledPatternParityTests
 {
-    private static (TilePath legacy, TilePath compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
+    // Both legacy visitor and compiled resolver may yield no path; model both tuple elements as nullable.
+    private static (TilePath? legacy, TilePath? compiled) ResolveBoth(Game game, Piece piece, Tile from, Tile to)
     {
         // legacy
         var legacyVisitor = new ResolveTilePathPatternVisitor(game.Board, from, to);
@@ -31,14 +32,24 @@ public class CompiledPatternParityTests
     public void GivenFixedPattern_WhenResolving_ThenCompiledMatchesLegacy()
     {
         // arrange
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var d1 = new Direction("ab"); var d2 = new Direction("bc");
-        var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2);
+
+        // act
+
+        // assert
+
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d1 = new Direction("ab");
+        var d2 = new Direction("bc");
+        var r1 = new TileRelation(a, b, d1);
+        var r2 = new TileRelation(b, c, d2);
         var board = new Board("board-1", [r1, r2]);
         var player = new Player("pl1");
         var piece = new Piece("p1", player, [new FixedPattern([d1, d2])]);
         var game = new Game(board, [player], [piece]);
-        var from = a; var to = c;
+        var from = a;
+        var to = c;
 
         // act
         var (legacy, compiled) = ResolveBoth(game, piece, from, to);
@@ -56,9 +67,18 @@ public class CompiledPatternParityTests
     public void GivenBoardShapeFastPathToggled_WhenResolvingFixedPattern_ThenPathsRemainIdentical()
     {
         // arrange
-        var a = new Tile("a"); var b = new Tile("b"); var c = new Tile("c");
-        var d1 = new Direction("ab"); var d2 = new Direction("bc");
-        var r1 = new TileRelation(a, b, d1); var r2 = new TileRelation(b, c, d2);
+
+        // act
+
+        // assert
+
+        var a = new Tile("a");
+        var b = new Tile("b");
+        var c = new Tile("c");
+        var d1 = new Direction("ab");
+        var d2 = new Direction("bc");
+        var r1 = new TileRelation(a, b, d1);
+        var r2 = new TileRelation(b, c, d2);
         var board = new Board("board-bs-1", [r1, r2]);
         var player = new Player("pl1");
         var piece = new Piece("p1", player, [new FixedPattern([d1, d2])]);

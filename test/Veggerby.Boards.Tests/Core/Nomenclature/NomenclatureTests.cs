@@ -19,8 +19,13 @@ public class NomenclatureTests
     public void GivenChessPiece_WhenNamed_ThenUsesRoleLetter()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
-        var piece = new Piece("white-pawn-5", owner: null, patterns: []);
+        var piece = new Piece("white-pawn-5", owner: null!, patterns: []);
 
         // act
         var name = nomenclature.GetPieceName(piece);
@@ -33,6 +38,11 @@ public class NomenclatureTests
     public void GivenBackgammonTile_WhenNamed_ThenStripsPrefix()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new BackgammonNomenclature();
         var tile = new Tile("tile-point-12");
 
@@ -47,8 +57,13 @@ public class NomenclatureTests
     public void GivenSimplePawnAdvance_WhenDescribed_ThenUsesDestinationOnly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
-        var pawn = new Piece("white-pawn-5", owner: null, patterns: []);
+        var pawn = new Piece("white-pawn-5", owner: null!, patterns: []);
         var from = new Tile(ChessIds.Tiles.E2);
         var mid = new Tile(ChessIds.Tiles.E3);
         var to = new Tile(ChessIds.Tiles.E4);
@@ -68,6 +83,11 @@ public class NomenclatureTests
     public void GivenPawnCapture_WhenDescribed_ThenIncludesFileAndX()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var black = new Player(ChessIds.Players.Black);
@@ -97,6 +117,11 @@ public class NomenclatureTests
     public void GivenTwoKnightsCanReach_WhenDescribed_ThenFileDisambiguates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var patterns = new List<IPattern>
@@ -149,6 +174,11 @@ public class NomenclatureTests
     public void GivenRookMoveGivingCheck_WhenDescribed_ThenEndsWithPlus()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var black = new Player(ChessIds.Players.Black);
@@ -163,12 +193,21 @@ public class NomenclatureTests
         var rook = new Piece("white-rook-1", white, rookPatterns);
         var king = new Piece("black-king", black, []);
         // Tiles a1..a8
-        var a1 = new Tile(ChessIds.Tiles.A1); var a2 = new Tile(ChessIds.Tiles.A2); var a3 = new Tile(ChessIds.Tiles.A3); var a4 = new Tile(ChessIds.Tiles.A4);
-        var a5 = new Tile(ChessIds.Tiles.A5); var a6 = new Tile(ChessIds.Tiles.A6); var a7 = new Tile(ChessIds.Tiles.A7); var a8 = new Tile(ChessIds.Tiles.A8);
+        var a1 = new Tile(ChessIds.Tiles.A1);
+        var a2 = new Tile(ChessIds.Tiles.A2);
+        var a3 = new Tile(ChessIds.Tiles.A3);
+        var a4 = new Tile(ChessIds.Tiles.A4);
+        var a5 = new Tile(ChessIds.Tiles.A5);
+        var a6 = new Tile(ChessIds.Tiles.A6);
+        var a7 = new Tile(ChessIds.Tiles.A7);
+        var a8 = new Tile(ChessIds.Tiles.A8);
         // Relations up the file
-        var r1 = new TileRelation(a1, a2, Direction.North); var r2 = new TileRelation(a2, a3, Direction.North);
-        var r3 = new TileRelation(a3, a4, Direction.North); var r4 = new TileRelation(a4, a5, Direction.North);
-        var r5 = new TileRelation(a5, a6, Direction.North); var r6 = new TileRelation(a6, a7, Direction.North);
+        var r1 = new TileRelation(a1, a2, Direction.North);
+        var r2 = new TileRelation(a2, a3, Direction.North);
+        var r3 = new TileRelation(a3, a4, Direction.North);
+        var r4 = new TileRelation(a4, a5, Direction.North);
+        var r5 = new TileRelation(a5, a6, Direction.North);
+        var r6 = new TileRelation(a6, a7, Direction.North);
         var r7 = new TileRelation(a7, a8, Direction.North);
         var board = new Board("test-board-check", new[] { r1, r2, r3, r4, r5, r6, r7 });
         var game = new Game(board, new[] { white, black }, new Artifact[] { rook, king });
@@ -188,6 +227,11 @@ public class NomenclatureTests
     public void GivenKingSideCastlingMove_WhenDescribed_ThenOutputsOO()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
@@ -217,6 +261,11 @@ public class NomenclatureTests
     public void GivenQueenSideCastlingMove_WhenDescribed_ThenOutputsOOO()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
@@ -246,6 +295,11 @@ public class NomenclatureTests
     public void GivenPawnPromotes_WhenDescribed_ThenAppendsEqualsQ()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var pawn = new Piece("white-pawn-1", white, new IPattern[] { new DirectionPattern(Direction.South, false) });

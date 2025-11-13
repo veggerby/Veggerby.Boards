@@ -62,13 +62,17 @@ internal static class DeterministicChessOpening
             switch (i)
             {
                 case 0: // white pawn e2 -> e4 fallback e3
-                    candidateTargets = new[] { toId, "e3" }; break;
+                    candidateTargets = new[] { toId, "e3" };
+                    break;
                 case 1: // black pawn e7 -> e5 fallback e6
-                    candidateTargets = new[] { toId, "e6" }; break;
+                    candidateTargets = new[] { toId, "e6" };
+                    break;
                 case 4: // bishop f1 -> b5 fallback c4
-                    candidateTargets = new[] { toId, "c4" }; break;
+                    candidateTargets = new[] { toId, "c4" };
+                    break;
                 default:
-                    candidateTargets = new[] { toId }; break;
+                    candidateTargets = new[] { toId };
+                    break;
             }
 
             var path = TestPathHelper.ResolveFirstValidPath(game, piece, fromId, candidateTargets);

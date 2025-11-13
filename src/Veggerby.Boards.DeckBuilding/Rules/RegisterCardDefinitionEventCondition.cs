@@ -11,6 +11,9 @@ public sealed class RegisterCardDefinitionEventCondition : IGameEventCondition<R
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RegisterCardDefinitionEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         foreach (var existing in state.GetStates<CardDefinitionState>())
         {
             if (existing.Artifact.Id == @event.CardId)

@@ -4,9 +4,9 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;
-using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.Internal.Layout;
 using Veggerby.Boards.Internal.Paths;
@@ -37,7 +37,10 @@ public class SlidingFastPathMicroBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        var north = new Direction(Constants.Directions.North); var south = new Direction(Constants.Directions.South); var east = new Direction(Constants.Directions.East); var west = new Direction(Constants.Directions.West);
+        var north = new Direction(Constants.Directions.North);
+        var south = new Direction(Constants.Directions.South);
+        var east = new Direction(Constants.Directions.East);
+        var west = new Direction(Constants.Directions.West);
         var boardTiles = new List<Tile>();
         for (int r = 1; r <= 8; r++)
         {
@@ -49,20 +52,31 @@ public class SlidingFastPathMicroBenchmark
         var relations = new List<TileRelation>();
         for (int r = 1; r <= 8; r++)
         {
-            if (r < 8) { relations.Add(new TileRelation(boardTiles[r - 1], boardTiles[r], north)); }
-            if (r > 1) { relations.Add(new TileRelation(boardTiles[r - 1], boardTiles[r - 2 + 1], south)); }
+            if (r < 8)
+            {
+                relations.Add(new TileRelation(boardTiles[r - 1], boardTiles[r], north));
+            }
+            if (r > 1)
+            {
+                relations.Add(new TileRelation(boardTiles[r - 1], boardTiles[r - 2 + 1], south));
+            }
         }
         // lateral east/west from a1 <-> b1
         relations.Add(new TileRelation(boardTiles[0], lateral, east));
         relations.Add(new TileRelation(lateral, boardTiles[0], west));
         var board = new Board("micro-sliding", relations);
-        var white = new Player("white"); var black = new Player("black");
+        var white = new Player("white");
+        var black = new Player("black");
         _rook = new Piece("rook", white, new[] { new DirectionPattern(north, true) });
         var artifacts = new List<Artifact> { board, white, black, _rook };
         _game = new Game(board, new[] { white, black }, artifacts);
         _shape = BoardShape.Build(board);
 
-        _a1 = boardTiles[0]; _a5 = boardTiles[4]; _a4 = boardTiles[3]; _a3 = boardTiles[2]; _b1 = lateral;
+        _a1 = boardTiles[0];
+        _a5 = boardTiles[4];
+        _a4 = boardTiles[3];
+        _a3 = boardTiles[2];
+        _b1 = lateral;
 
         _progressEmpty = BuildProgress(new List<(Piece piece, Tile tile)> { (_rook, _a1) });
         // Blocker at a4 (one before destination a5)
@@ -77,7 +91,9 @@ public class SlidingFastPathMicroBenchmark
     [Benchmark(Baseline = true)]
     public bool CompiledOnly()
     {
-        FeatureFlags.EnableBitboards = false; FeatureFlags.EnableSlidingFastPath = false; FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableBitboards = false;
+        FeatureFlags.EnableSlidingFastPath = false;
+        FeatureFlags.EnableCompiledPatterns = true;
         var progress = SelectProgress();
         var target = SelectTarget();
         var path = progress.ResolvePathCompiledFirst(_rook, _a1, target);
@@ -87,7 +103,9 @@ public class SlidingFastPathMicroBenchmark
     [Benchmark]
     public bool FastPath()
     {
-        FeatureFlags.EnableBitboards = true; FeatureFlags.EnableSlidingFastPath = true; FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableBitboards = true;
+        FeatureFlags.EnableSlidingFastPath = true;
+        FeatureFlags.EnableCompiledPatterns = true;
         var progress = SelectProgress();
         var target = SelectTarget();
         var path = progress.ResolvePathCompiledFirst(_rook, _a1, target);
@@ -101,7 +119,9 @@ public class SlidingFastPathMicroBenchmark
         {
             return false; // only measured for empty-ray invariant scenario
         }
-        FeatureFlags.EnableBitboards = true; FeatureFlags.EnableSlidingFastPath = true; FeatureFlags.EnableCompiledPatterns = true;
+        FeatureFlags.EnableBitboards = true;
+        FeatureFlags.EnableSlidingFastPath = true;
+        FeatureFlags.EnableCompiledPatterns = true;
         var progress = _progressEmpty;
         var target = _a5;
         var probe = FastPathAllocationProbe.Start();
@@ -183,9 +203,10 @@ public class SlidingFastPathMicroBenchmark
         }
 
         var capabilities = new EngineCapabilities(topology, resolver, accelerationContext);
-        var phaseRoot = GamePhase.New(1, "n/a", new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
+        var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);
         var plan = DecisionPlan.Compile(phaseRoot);
         var engine = new GameEngine(_game, phaseRoot, plan, Flows.Observers.NullEvaluationObserver.Instance, capabilities);
-        return new GameProgress(engine, state, null);
+        // Benchmarks start with empty immutable event chain.
+        return new GameProgress(engine, state, Veggerby.Boards.Flows.Events.EventChain.Empty);
     }
 }

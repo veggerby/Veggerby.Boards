@@ -35,19 +35,31 @@ public class ClearToTileStateMutator : IStateMutator<MovePieceGameEvent>
     /// <summary>
     /// Gets the relocation target tile.
     /// </summary>
-    public Tile NewTile { get; }
+    public Tile NewTile
+    {
+        get;
+    }
     /// <summary>
     /// Gets which players' pieces are considered.
     /// </summary>
-    public PlayerOption Player { get; }
+    public PlayerOption Player
+    {
+        get;
+    }
     /// <summary>
     /// Gets the maximum number of pieces permitted (throws if exceeded).
     /// </summary>
-    public int? MaxPieceCount { get; }
+    public int? MaxPieceCount
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var pieces = gameState.GetPiecesOnTile(@event.To);
 
         if (!pieces.Any())

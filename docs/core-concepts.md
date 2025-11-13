@@ -48,6 +48,25 @@ Direction, MultiDirection, Fixed, (experimental compiled IR) produce candidate p
 
 Optional hashing + RNG fingerprinting provide replay validation; identical inputs produce identical state hashes. See `determinism-rng-timeline.md`.
 
+## Defensive Returns vs Invariant Exceptions
+
+Two categories govern error signaling:
+
+1. Resolution / query APIs (e.g., path resolution, optional lookups) may return `null` or an empty collection when a target cannot be produced. These are defensive fallbacks and must be documented.
+2. State machine / lifecycle transitions (turn sequencing, builder id resolution, artifact creation) throw when invariants are violated (unknown id, unknown turn segment). Silent `null` would mask corruption and threaten deterministic replay.
+
+Guidelines:
+
+- Optional capabilities: prefer `Try*` pattern (`bool TryResolveX(out Y result)`). If returning `null`, ensure XML docs clarify semantics.
+- Invariant breaches: throw `InvalidOperationException` or domain-specific exception early.
+- Never convert invariant failures into defensive `null`.
+
+Examples:
+
+* `TurnProfile.Next` throws on unknown segment (invariant breach).
+* Builder ID lookups use dictionary access + explicit exception on miss.
+* Path resolution now prefers `TryResolvePath` with `out TilePath?` rather than nullable returns; legacy visitor samples retained only in README examples.
+
 ## Extension Surface
 
 Add: new event, mutator, condition, phase wiring, or pattern type. Avoid relying on internal acceleration data structures; treat `EngineCapabilities.PathResolver` + topology as the boundary.

@@ -10,7 +10,7 @@ public class PlayerDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets the configured player identifier.
     /// </summary>
-    public string PlayerId { get; private set; }
+    public string PlayerId { get; private set; } = null!; // LIFECYCLE: set by WithId() before Build()
 
     /// <summary>
     /// Assigns the identifier for the player being defined.
@@ -18,12 +18,10 @@ public class PlayerDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <param name="id">Unique player identifier.</param>
     /// <returns>The same definition instance for fluent chaining.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="id"/> is null or empty.</exception>
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(PlayerId))]
     public PlayerDefinition WithId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Value cannot be null or empty", nameof(id));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         PlayerId = id;
         return this;

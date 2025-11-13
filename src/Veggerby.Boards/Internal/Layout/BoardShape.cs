@@ -13,12 +13,24 @@ namespace Veggerby.Boards.Internal.Layout;
 /// </summary>
 internal sealed class BoardShape
 {
-    public Tile[] Tiles { get; }
-    public Direction[] Directions { get; }
-    public short[] Neighbors { get; } // (tileIndex * DirectionCount + directionIndex) => neighbor tile index or -1
+    public Tile[] Tiles
+    {
+        get;
+    }
+    public Direction[] Directions
+    {
+        get;
+    }
+    public short[] Neighbors
+    {
+        get;
+    } // (tileIndex * DirectionCount + directionIndex) => neighbor tile index or -1
     private readonly Dictionary<Tile, int> _tileToIndex;
     private readonly Dictionary<Direction, int> _directionToIndex;
-    public BoardTopology Topology { get; }
+    public BoardTopology Topology
+    {
+        get;
+    }
 
     private BoardShape(Tile[] tiles, Direction[] directions, short[] neighbors, Dictionary<Tile, int> t2i, Dictionary<Direction, int> d2i, BoardTopology topology)
     {
@@ -121,7 +133,7 @@ internal sealed class BoardShape
 
     public bool TryGetNeighbor(Tile from, Direction direction, out Tile neighbor)
     {
-        neighbor = null;
+        neighbor = null!; // null-forgiving: out param only meaningful when method returns true
 
         if (!_tileToIndex.TryGetValue(from, out var f) || !_directionToIndex.TryGetValue(direction, out var d))
         {

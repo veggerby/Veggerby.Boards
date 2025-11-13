@@ -1,5 +1,6 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
+using Veggerby.Boards.Tests.TestHelpers;
 
 using static Veggerby.Boards.Chess.ChessIds.Pieces;
 
@@ -15,9 +16,14 @@ public class ChessQueenUnlockingTests
     public void GivenPawnAdvance_WhenQueenMovesIntoVacatedSquare_ThenQueenMoves()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
-        var queen = progress.Game.GetPiece(WhiteQueen);
-        var queenStart = progress.State.GetState<PieceState>(queen).CurrentTile;
+        var queen = progress.Game.GetPiece(WhiteQueen).EnsureNotNull();
+        var queenStart = progress.State.GetRequiredPieceState(queen).CurrentTile;
 
         // act (white pawn double-step, black makes a quiet reply, then white queen moves)
         progress = progress.Move(WhitePawn5, "e4");
@@ -25,7 +31,7 @@ public class ChessQueenUnlockingTests
         progress = progress.Move(WhiteQueen, "e2");
 
         // assert
-        progress.State.GetState<PieceState>(queen).CurrentTile.Id.Should().Be(ChessIds.Tiles.E2);
+        progress.State.GetRequiredPieceState(queen).CurrentTile.Id.Should().Be(ChessIds.Tiles.E2);
         queenStart.Id.Should().Be(ChessIds.Tiles.D1); // sanity (original queen start square)
     }
 
@@ -33,9 +39,14 @@ public class ChessQueenUnlockingTests
     public void GivenPawnAdvance_WhenQueenAttemptsToMoveTwoSquares_ThenBlockedByPawnAtE3()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
-        var queen = progress.Game.GetPiece(WhiteQueen);
-        var start = progress.State.GetState<PieceState>(queen).CurrentTile;
+        var queen = progress.Game.GetPiece(WhiteQueen).EnsureNotNull();
+        var start = progress.State.GetRequiredPieceState(queen).CurrentTile;
 
         // act (white pawn advances, black replies, white queen attempts illegal capture of own pawn)
         progress = progress.Move(WhitePawn5, "e4");
@@ -45,6 +56,6 @@ public class ChessQueenUnlockingTests
 
         // assert (queen remains and progress unchanged)
         progress.Should().BeSameAs(before);
-        progress.State.GetState<PieceState>(queen).CurrentTile.Should().Be(start);
+        progress.State.GetRequiredPieceState(queen).CurrentTile.Should().Be(start);
     }
 }

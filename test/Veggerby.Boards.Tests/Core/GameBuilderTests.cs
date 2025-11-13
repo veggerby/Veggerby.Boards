@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
@@ -14,6 +14,11 @@ public class GameBuilderTests
         public void Should_build_game()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
 
             // act
@@ -57,6 +62,11 @@ public class GameBuilderTests
         public void Should_not_build_game_twice()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
             var engine = builder.Compile();
 
@@ -74,6 +84,11 @@ public class GameBuilderTests
         public void Should_initialize_game_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var builder = new TestGameBuilder();
 
             // act
@@ -90,20 +105,27 @@ public class GameBuilderTests
 
             var game = actual.Game;
             var piece1 = game.GetPiece("piece-1");
+            piece1.Should().NotBeNull();
             var piece2 = game.GetPiece("piece-2");
+            piece2.Should().NotBeNull();
             var pieceN = game.GetPiece("piece-n");
+            pieceN.Should().NotBeNull();
 
             var tile1 = game.GetTile("tile-1");
+            tile1.Should().NotBeNull();
             var tile2 = game.GetTile("tile-2");
+            tile2.Should().NotBeNull();
 
             var dice = game.GetArtifact<Dice>("dice");
+            dice.Should().NotBeNull();
             var dice2 = game.GetArtifact<Dice>("dice-secondary");
+            dice2.Should().NotBeNull();
 
 
-            var state1 = actual.State.GetState<PieceState>(piece1);
-            var state2 = actual.State.GetState<PieceState>(piece2);
-            var stateN = actual.State.GetState<PieceState>(pieceN);
-            var stateDice2 = actual.State.GetState<DiceState<int>>(dice2);
+            var state1 = actual.State.GetState<PieceState>(piece1!);
+            var state2 = actual.State.GetState<PieceState>(piece2!);
+            var stateN = actual.State.GetState<PieceState>(pieceN!);
+            var stateDice2 = actual.State.GetState<DiceState<int>>(dice2!);
 
             state1.Should().NotBeNull();
             state1.CurrentTile.Should().Be(tile1);

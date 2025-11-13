@@ -4,6 +4,8 @@ namespace Veggerby.Boards.Tests.Simulation;
 
 using System;
 
+using AwesomeAssertions;
+
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
@@ -18,21 +20,31 @@ public class SequentialSimulatorTests
     public void GivenSimulationDisabled_WhenRun_ThenThrows()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = false;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 
         // act
-        void Act() => SequentialSimulator.Run(progress, _ => null);
+        Action act = () => SequentialSimulator.Run(progress, _ => null);
 
         // assert
-        Assert.Throws<InvalidOperationException>(Act);
+        act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
     public void GivenSimplePolicy_WhenRunWithDeterministicSeed_ThenDeterministicTerminalHash()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         builder.WithSeed(1234);
@@ -45,7 +57,8 @@ public class SequentialSimulatorTests
         IGameEvent? Policy(GameState s)
         {
             var king = game.GetPiece("white-king");
-            var pieceState = s.GetState<PieceState>(king);
+            king.Should().NotBeNull();
+            var pieceState = s.GetState<PieceState>(king!);
             if (pieceState is null)
             {
                 return null;
@@ -59,13 +72,18 @@ public class SequentialSimulatorTests
         var terminal2 = SequentialSimulator.Run(progress, Policy, maxDepth: 2);
 
         // assert
-        Assert.Equal(terminal1.State.GetHashCode(), terminal2.State.GetHashCode());
+        terminal1.State.GetHashCode().Should().Be(terminal2.State.GetHashCode());
     }
 
     [Fact]
     public void GivenStopPredicate_WhenSatisfied_ThenStopsEarly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -83,8 +101,8 @@ public class SequentialSimulatorTests
         var terminal = SequentialSimulator.Run(progress, Policy, Stop, maxDepth: 10);
 
         // assert
-        Assert.NotNull(terminal);
-        Assert.Equal(0, observedDepth);
+        terminal.Should().NotBeNull();
+        observedDepth.Should().Be(0);
     }
 }
 

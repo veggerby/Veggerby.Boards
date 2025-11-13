@@ -16,7 +16,10 @@ internal interface IOccupancyIndex
     bool IsOwnedBy(Tile tile, Player player);
 
     /// <summary>Gets a bit mask of globally occupied tiles (low-bit index ordering equals board tile ordering). Implementations may return 0 when unsupported.</summary>
-    ulong GlobalMask { get; }
+    ulong GlobalMask
+    {
+        get;
+    }
 
     /// <summary>Gets a bit mask of tiles occupied by the specified player. Implementations may return 0 when unsupported.</summary>
     ulong PlayerMask(Player player);

@@ -12,7 +12,9 @@ public class BoardException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="BoardException"/> class.
     /// </summary>
-    public BoardException() { }
+    public BoardException()
+    {
+    }
     /// <summary>
     /// Initializes a new instance with an error message.
     /// </summary>

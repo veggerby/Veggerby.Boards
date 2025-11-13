@@ -15,7 +15,10 @@ public class RollDiceGameEvent<T> : IGameEvent
     /// <summary>
     /// Gets the new dice states.
     /// </summary>
-    public IEnumerable<DiceState<T>> NewDiceStates { get; }
+    public IEnumerable<DiceState<T>> NewDiceStates
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RollDiceGameEvent{T}"/> class.
@@ -27,7 +30,7 @@ public class RollDiceGameEvent<T> : IGameEvent
 
         if (!states.Any())
         {
-            throw new ArgumentException("Must provide at least one new state", nameof(states));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDiceStateRequired, nameof(states));
         }
 
         NewDiceStates = states.ToList().AsReadOnly();

@@ -14,6 +14,10 @@ public static class ChessPiece
     public static bool IsRole(GameState state, string pieceId, ChessPieceRole role)
     {
         var roles = state.GetExtras<ChessPieceRolesExtras>();
+        if (roles is null)
+        {
+            return false;
+        }
         return ChessPieceRoles.TryGetRole(roles, pieceId, out var r) && r == role;
     }
 
@@ -24,6 +28,10 @@ public static class ChessPiece
     public static bool IsColor(GameState state, string pieceId, ChessPieceColor color)
     {
         var colors = state.GetExtras<ChessPieceColorsExtras>();
+        if (colors is null)
+        {
+            return false;
+        }
         return ChessPieceColors.TryGetColor(colors, pieceId, out var c) && c == color;
     }
 

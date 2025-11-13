@@ -3,8 +3,6 @@ using System.Linq;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
-using Xunit;
-
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -17,23 +15,36 @@ public class ChessPieceClassificationTests
     public void GivenStandardChessGame_WhenBuilt_AllPieceIdsResolveRoleAndColor()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var state = progress.State;
         var roles = state.GetExtras<ChessPieceRolesExtras>();
         var colors = state.GetExtras<ChessPieceColorsExtras>();
-        Assert.NotNull(roles);
-        Assert.NotNull(colors);
+        roles.Should().NotBeNull();
+        colors.Should().NotBeNull();
 
         // Derive canonical set from role map itself (builder validated coverage already)
-        var allPieceIds = roles.Roles.Keys.ToArray();
+        var allPieceIds = roles!.Roles.Keys.ToArray();
 
-        // act & assert
-        foreach (var pid in allPieceIds)
+        // act
+        var roleColorResolution = allPieceIds
+            .Select(pid => new
+            {
+                Id = pid,
+                HasRole = ChessPieceRoles.TryGetRole(roles, pid, out _),
+                HasColor = ChessPieceColors.TryGetColor(colors, pid, out _)
+            })
+            .ToArray();
+
+        // assert
+        foreach (var rc in roleColorResolution)
         {
-            var hasRole = ChessPieceRoles.TryGetRole(roles, pid, out _);
-            var hasColor = ChessPieceColors.TryGetColor(colors, pid, out _);
-            Assert.True(hasRole, $"Missing role mapping for piece id '{pid}'");
-            Assert.True(hasColor, $"Missing color mapping for piece id '{pid}'");
+            rc.HasRole.Should().BeTrue($"Missing role mapping for piece id '{rc.Id}'");
+            rc.HasColor.Should().BeTrue($"Missing color mapping for piece id '{rc.Id}'");
         }
     }
 }

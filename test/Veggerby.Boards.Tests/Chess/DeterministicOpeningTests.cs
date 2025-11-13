@@ -18,6 +18,11 @@ public class DeterministicOpeningTests
     public void GivenStandardChessGame_WhenApplyingDeterministicOpening_ThenPiecesReachExpectedSquares()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var initialState = progress.State;
@@ -39,32 +44,42 @@ public class DeterministicOpeningTests
 
         if (whitePawn is not null && applied >= 1)
         {
-            var ps = progress.State.GetState<PieceState>(whitePawn);
-            new[] { "e3", "e4" }.Should().Contain(Normalize(ps.CurrentTile.Id));
+            var ps = progress.State.GetState<PieceState>(whitePawn!);
+            ps.Should().NotBeNull();
+            ps!.CurrentTile.Should().NotBeNull();
+            new[] { "e3", "e4" }.Should().Contain(Normalize(ps!.CurrentTile!.Id));
         }
 
         if (blackPawn is not null && applied >= 2)
         {
-            var ps = progress.State.GetState<PieceState>(blackPawn);
-            new[] { "e6", "e5" }.Should().Contain(Normalize(ps.CurrentTile.Id));
+            var ps = progress.State.GetState<PieceState>(blackPawn!);
+            ps.Should().NotBeNull();
+            ps!.CurrentTile.Should().NotBeNull();
+            new[] { "e6", "e5" }.Should().Contain(Normalize(ps!.CurrentTile!.Id));
         }
 
         if (whiteKnight is not null && applied >= 3)
         {
-            var ks = progress.State.GetState<PieceState>(whiteKnight);
-            Normalize(ks.CurrentTile.Id).Should().Be("f3");
+            var ks = progress.State.GetState<PieceState>(whiteKnight!);
+            ks.Should().NotBeNull();
+            ks!.CurrentTile.Should().NotBeNull();
+            Normalize(ks!.CurrentTile!.Id).Should().Be("f3");
         }
 
         if (blackKnight is not null && applied >= 4)
         {
-            var ks = progress.State.GetState<PieceState>(blackKnight);
-            Normalize(ks.CurrentTile.Id).Should().Be("c6");
+            var ks = progress.State.GetState<PieceState>(blackKnight!);
+            ks.Should().NotBeNull();
+            ks!.CurrentTile.Should().NotBeNull();
+            Normalize(ks!.CurrentTile!.Id).Should().Be("c6");
         }
 
         if (whiteBishop is not null && applied == 5)
         {
-            var bs = progress.State.GetState<PieceState>(whiteBishop);
-            new[] { "b5", "c4" }.Should().Contain(Normalize(bs.CurrentTile.Id));
+            var bs = progress.State.GetState<PieceState>(whiteBishop!);
+            bs.Should().NotBeNull();
+            bs!.CurrentTile.Should().NotBeNull();
+            new[] { "b5", "c4" }.Should().Contain(Normalize(bs!.CurrentTile!.Id));
         }
 
         // Previous state must remain unchanged (immutability)

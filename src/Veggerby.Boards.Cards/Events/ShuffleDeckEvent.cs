@@ -10,9 +10,15 @@ namespace Veggerby.Boards.Cards;
 public sealed class ShuffleDeckEvent : IGameEvent, IStateMutationGameEvent
 {
     /// <summary>Gets the deck artifact to shuffle.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
     /// <summary>Gets the pile identifier within the deck to shuffle.</summary>
-    public string PileId { get; }
+    public string PileId
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShuffleDeckEvent"/> class.

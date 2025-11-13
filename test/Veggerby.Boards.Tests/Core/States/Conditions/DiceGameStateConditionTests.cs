@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
@@ -15,6 +15,11 @@ public class DiceGameStateConditionTests
         public void Should_create_with_dice()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
 
             // act
@@ -28,6 +33,11 @@ public class DiceGameStateConditionTests
         public void Should_create_distinct_list_with_dice()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
 
             // act
@@ -41,10 +51,15 @@ public class DiceGameStateConditionTests
         public void Should_throw_when_null_dice()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
 
             // act
-            var actual = () => new DiceGameStateCondition<int>(null, CompositeMode.All);
+            var actual = () => new DiceGameStateCondition<int>(null!, CompositeMode.All);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("dice");
@@ -54,7 +69,11 @@ public class DiceGameStateConditionTests
         public void Should_throw_when_empty_dice()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new DiceGameStateCondition<int>(Enumerable.Empty<Dice>(), CompositeMode.All);
 
             // assert
@@ -68,6 +87,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_true_when_single_dice_has_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var diceState = new DiceState<int>(dice, 5);
             var gameState = GameState.New([diceState]);
@@ -84,8 +108,13 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_when_single_dice_does_not_have_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
-            var gameState = GameState.New(null);
+            var gameState = GameState.New(null!);
             var condition = new DiceGameStateCondition<int>([dice], CompositeMode.All);
 
             // act
@@ -99,6 +128,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_when_single_dice_does_not_have_state_but_other_dice_has()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
             var diceState = new DiceState<int>(dice1, 5);
@@ -116,6 +150,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_when_single_dice_has_null_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var diceState = new NullDiceState(dice);
             var gameState = GameState.New([diceState]);
@@ -132,6 +171,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_true_with_multiple_dice_with_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
             var diceState1 = new DiceState<int>(dice1, 2);
@@ -150,6 +194,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_with_multiple_dice_only_one_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
             var diceState1 = new DiceState<int>(dice1, 2);
@@ -168,6 +217,11 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_with_multiple_dice_null_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
             var diceState1 = new NullDiceState(dice1);
@@ -186,9 +240,14 @@ public class DiceGameStateConditionTests
         public void Should_evaluate_false_with_multiple_dice_no_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice1");
             var dice2 = new Dice("dice2");
-            var gameState = GameState.New(null);
+            var gameState = GameState.New(null!);
             var condition = new DiceGameStateCondition<int>([dice1, dice2], CompositeMode.All);
 
             // act

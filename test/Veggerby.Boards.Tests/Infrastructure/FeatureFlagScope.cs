@@ -137,8 +137,8 @@ public sealed class FeatureFlagScope : IDisposable
         Depth.Value = Depth.Value - 1;
         if (_isOuter)
         {
+            // Instead of assigning null (violates nullable reference expectations), clear stack to release references.
             Snapshots.Value!.Clear();
-            Snapshots.Value = null;
             Gate.Release();
         }
     }

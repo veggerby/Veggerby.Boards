@@ -15,12 +15,18 @@ public class CompositeGameStateCondition : IGameStateCondition
     /// <summary>
     /// Gets the child conditions participating in the composition.
     /// </summary>
-    public IEnumerable<IGameStateCondition> ChildConditions { get; }
+    public IEnumerable<IGameStateCondition> ChildConditions
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the composite mode governing evaluation semantics.
     /// </summary>
-    public CompositeMode CompositeMode { get; }
+    public CompositeMode CompositeMode
+    {
+        get;
+    }
 
     private CompositeGameStateCondition(IEnumerable<IGameStateCondition> childConditions, CompositeMode compositeMode)
     {

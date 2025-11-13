@@ -11,6 +11,11 @@ public class ChessBitboardTests
     public void GivenInitialChessPosition_WhenBitboardsEnabled_ThenOccupancyMatchesPieceCount()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(compiledPatterns: true, bitboards: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -19,11 +24,17 @@ public class ChessBitboardTests
         var ok = progress.TryGetBitboards(out var occupancy, out var perPlayer);
 
         // assert
-        Assert.True(ok);
-        Assert.Equal(progress.State.GetStates<Boards.States.PieceState>().Count(), occupancy.PopCount()); // all pieces occupy unique tiles
-        Assert.Equal(2, perPlayer.Count);
-        var white = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White).Value.PopCount();
-        var black = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black).Value.PopCount();
-        Assert.Equal(occupancy.PopCount(), white + black);
+        ok.Should().BeTrue();
+        occupancy.PopCount().Should().Be(progress.State.GetStates<Boards.States.PieceState>().Count()); // all pieces occupy unique tiles
+        perPlayer.Should().NotBeNull();
+        perPlayer!.Count.Should().Be(2);
+        perPlayer.Should().NotBeNull();
+        var whitePair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White);
+        var blackPair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black);
+        whitePair.Value.Should().NotBeNull();
+        blackPair.Value.Should().NotBeNull();
+        var white = whitePair.Value.PopCount();
+        var black = blackPair.Value.PopCount();
+        (white + black).Should().Be(occupancy.PopCount());
     }
 }

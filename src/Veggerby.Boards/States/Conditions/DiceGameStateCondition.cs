@@ -26,12 +26,18 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
     /// <summary>
     /// Gets the distinct dice participating in this condition.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the composite evaluation mode applied to the dice results.
     /// </summary>
-    public CompositeMode Mode { get; }
+    public CompositeMode Mode
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceGameStateCondition{TValue}"/> class.
@@ -46,12 +52,12 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
 
         if (!dice.Any())
         {
-            throw new ArgumentException("Dice list cannot be empty", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.DiceListEmpty, nameof(dice));
         }
 
         if (dice.Any(x => x is null))
         {
-            throw new ArgumentException("All dice must be non null", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.DiceListContainsNull, nameof(dice));
         }
 
         Dice = dice.Distinct().ToList().AsReadOnly();
@@ -65,11 +71,16 @@ public class DiceGameStateCondition<TValue> : IGameStateCondition
     /// <returns><see cref="ConditionResponse.Valid"/> if the composite dice rule is satisfied; otherwise <see cref="ConditionResponse.Invalid"/>.</returns>
     public ConditionResponse Evaluate(GameState state)
     {
-        var rolledDice = Dice
-            .Select(x => state.GetState<DiceState<TValue>>(x))
-            .Where(x => x is not null && !EqualityComparer<TValue>.Default.Equals(x.CurrentValue, default(TValue)))
-            .Select(x => x.Artifact)
-            .ToList();
+        ArgumentNullException.ThrowIfNull(state);
+        var rolledDice = new List<Dice>();
+        foreach (var d in Dice)
+        {
+            var ds = state.GetState<DiceState<TValue>>(d);
+            if (ds is not null && !EqualityComparer<TValue>.Default.Equals(ds.CurrentValue, default!))
+            {
+                rolledDice.Add(ds.Artifact);
+            }
+        }
 
         bool result;
         switch (Mode)

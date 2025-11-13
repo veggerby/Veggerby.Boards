@@ -30,15 +30,20 @@ public class TurnAdvanceStateMutatorTests
     public void GivenNonFinalSegment_WhenEndTurnSegmentEvent_ThenAdvancesSegment()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Start);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start);
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();
@@ -50,15 +55,20 @@ public class TurnAdvanceStateMutatorTests
     public void GivenFinalSegment_WhenEndTurnSegmentEvent_ThenIncrementsTurnAndRotatesActivePlayer()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();
@@ -72,15 +82,20 @@ public class TurnAdvanceStateMutatorTests
     public void GivenSegmentMismatch_WhenEndTurnSegmentEvent_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Main);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start); // mismatch
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         updated.Should().BeSameAs(state);
@@ -90,11 +105,16 @@ public class TurnAdvanceStateMutatorTests
     public void GivenDisabledFeatureFlag_WhenEndTurnSegmentEvent_ThenNoChange()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
         try
         {
             // act
@@ -104,7 +124,7 @@ public class TurnAdvanceStateMutatorTests
         }
         finally
         {
-            Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+            Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
         }
     }
 
@@ -112,6 +132,11 @@ public class TurnAdvanceStateMutatorTests
     public void GivenNoActivePlayerProjection_WhenFinalSegment_ThenOnlyTurnStateAdvances()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var p1 = new Player("p1");
         var turnArtifact = new TurnArtifact("turn");
         var builder = new TestTurnGameBuilder(p1);
@@ -120,12 +145,12 @@ public class TurnAdvanceStateMutatorTests
         var state = GameState.New(new IArtifactState[] { new TurnState(turnArtifact, 1, TurnSegment.End) });
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
+        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
+        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();

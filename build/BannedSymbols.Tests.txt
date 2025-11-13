@@ -1,0 +1,8 @@
+# Banned symbols for the solution
+# Format: <symbol id>;<justification>
+# Ban direct usage of xUnit Assert methods in favor of AwesomeAssertions Should() fluent API.
+T:Xunit.Assert;Use AwesomeAssertions Should() fluent assertions instead of xUnit Assert.*
+M:Xunit.Assert.*;Use AwesomeAssertions Should() fluent assertions instead of xUnit Assert.*
+M:System.Threading.Thread.Sleep;Use deterministic wait abstractions or immediate evaluation—tests must be fast & reliable
+M:System.Threading.Tasks.Task.Delay;Avoid timing-based flakiness; restructure test for synchronous determinism
+M:System.Random..ctor;Inject deterministic RNG (FsCheck or DiceState) for reproducible property tests

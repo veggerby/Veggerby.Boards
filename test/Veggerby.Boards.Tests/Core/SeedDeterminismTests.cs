@@ -8,6 +8,11 @@ public class SeedDeterminismTests
     public void GivenSameSeed_WhenBuildingGame_ThenRandomSourceSeedMatches()
     {
         // arrange
+
+        // act
+
+        // assert
+
         const ulong seed = 424242UL;
         var builder1 = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);
         var builder2 = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);
@@ -17,7 +22,9 @@ public class SeedDeterminismTests
         var progress2 = builder2.Compile();
 
         // assert
-        progress1.State.Random.Seed.Should().Be(seed);
-        progress2.State.Random.Seed.Should().Be(seed);
+        progress1.State.Random.Should().NotBeNull();
+        progress2.State.Random.Should().NotBeNull();
+        progress1.State.Random!.Seed.Should().Be(seed);
+        progress2.State.Random!.Seed.Should().Be(seed);
     }
 }

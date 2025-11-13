@@ -18,14 +18,33 @@ public sealed class DeckBuildingSupplyConfigurator
 
     private sealed class CardDefinitionSpec
     {
-        public string Id { get; }
-        public string Name { get; }
-        public IList<string> Types { get; }
-        public int Cost { get; }
-        public int Victory { get; }
+        public string Id
+        {
+            get;
+        }
+        public string Name
+        {
+            get;
+        }
+        public IList<string> Types
+        {
+            get;
+        }
+        public int Cost
+        {
+            get;
+        }
+        public int Victory
+        {
+            get;
+        }
         public CardDefinitionSpec(string id, string name, IList<string> types, int cost, int victory)
         {
-            Id = id; Name = name; Types = types; Cost = cost; Victory = victory;
+            Id = id;
+            Name = name;
+            Types = types;
+            Cost = cost;
+            Victory = victory;
         }
     }
 
@@ -34,8 +53,14 @@ public sealed class DeckBuildingSupplyConfigurator
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        if (types is null) { throw new ArgumentNullException(nameof(types)); }
-        if (cost < 0) { throw new ArgumentOutOfRangeException(nameof(cost)); }
+        if (types is null)
+        {
+            throw new ArgumentNullException(nameof(types));
+        }
+        if (cost < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(cost));
+        }
         if (_definitions.ContainsKey(id))
         {
             throw new InvalidOperationException($"Card definition '{id}' already added.");
@@ -43,7 +68,10 @@ public sealed class DeckBuildingSupplyConfigurator
         var list = new List<string>();
         foreach (var t in types)
         {
-            if (!string.IsNullOrWhiteSpace(t)) { list.Add(t); }
+            if (!string.IsNullOrWhiteSpace(t))
+            {
+                list.Add(t);
+            }
         }
         _definitions[id] = new CardDefinitionSpec(id, name, list, cost, victoryPoints);
         _definitionOrder.Add(id);
@@ -54,7 +82,10 @@ public sealed class DeckBuildingSupplyConfigurator
     public DeckBuildingSupplyConfigurator AddSupply(string id, int count)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
-        if (count < 0) { throw new ArgumentOutOfRangeException(nameof(count)); }
+        if (count < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count));
+        }
         if (!_definitions.ContainsKey(id))
         {
             throw new InvalidOperationException($"Cannot assign supply for undefined card id '{id}'. Add definition first.");
@@ -66,7 +97,10 @@ public sealed class DeckBuildingSupplyConfigurator
     /// <summary>Builds startup events (definitions then single CreateDeckEvent with empty piles + supply).</summary>
     public IReadOnlyList<IGameEvent> BuildStartupEvents(Deck deck)
     {
-        if (deck is null) { throw new ArgumentNullException(nameof(deck)); }
+        if (deck is null)
+        {
+            throw new ArgumentNullException(nameof(deck));
+        }
         var events = new List<IGameEvent>(_definitionOrder.Count + 1);
         // Register definitions in insertion order.
         for (var i = 0; i < _definitionOrder.Count; i++)
@@ -85,7 +119,10 @@ public sealed class DeckBuildingSupplyConfigurator
         var supplyDict = new Dictionary<string, int>(StringComparer.Ordinal);
         foreach (var kv in _supply)
         {
-            if (kv.Value > 0) { supplyDict[kv.Key] = kv.Value; }
+            if (kv.Value > 0)
+            {
+                supplyDict[kv.Key] = kv.Value;
+            }
         }
         events.Add(new CreateDeckEvent(deck, piles, supplyDict));
         return events;
@@ -100,8 +137,14 @@ public static class DeckBuildingSupplyConfiguratorExtensions
     /// <summary>Gets or lazily creates a supply configurator attached to the builder.</summary>
     public static DeckBuildingSupplyConfigurator ConfigureSupply(this DeckBuildingGameBuilder builder, Action<DeckBuildingSupplyConfigurator> configure)
     {
-        if (builder is null) { throw new ArgumentNullException(nameof(builder)); }
-        if (configure is null) { throw new ArgumentNullException(nameof(configure)); }
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+        if (configure is null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
         var cfg = builder.SupplyConfigurator ?? new DeckBuildingSupplyConfigurator();
         configure(cfg);
         builder.SupplyConfigurator = cfg; // store (internal set) for later retrieval

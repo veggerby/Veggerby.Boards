@@ -1,4 +1,3 @@
-using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.DeckBuilding;
@@ -16,20 +15,23 @@ public sealed class CardDefinitionState : ArtifactState<CardDefinition>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as CardDefinitionState);
+    public override bool Equals(object? obj) => Equals(obj as CardDefinitionState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as CardDefinitionState);
 
-    private bool Equals(CardDefinitionState other)
+    private bool Equals(CardDefinitionState? other)
     {
-        if (other is null) { return false; }
+        if (other is null)
+        {
+            return false;
+        }
         return Artifact.Equals(other.Artifact);
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return System.HashCode.Combine(GetType(), Artifact);
+        return HashCode.Combine(GetType(), Artifact);
     }
 }

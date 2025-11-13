@@ -12,16 +12,23 @@ namespace Veggerby.Boards.Cards;
 public sealed class DeckState : ArtifactState<Deck>
 {
     /// <summary>Gets the ordered cards per pile id.</summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<Card>> Piles { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<Card>> Piles
+    {
+        get;
+    }
 
     /// <summary>Gets supply counts for card identifiers (optional).</summary>
-    public IReadOnlyDictionary<string, int> Supply { get; }
+    public IReadOnlyDictionary<string, int> Supply
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeckState"/> class.
     /// </summary>
-    public DeckState(Deck deck, IDictionary<string, IList<Card>> piles, IDictionary<string, int> supply = null) : base(deck)
+    public DeckState(Deck deck, IDictionary<string, IList<Card>> piles, IDictionary<string, int>? supply = null) : base(deck)
     {
+        ArgumentNullException.ThrowIfNull(deck);
         ArgumentNullException.ThrowIfNull(piles);
         // Validate deck piles
         foreach (var required in deck.Piles)
@@ -51,12 +58,12 @@ public sealed class DeckState : ArtifactState<Deck>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as DeckState);
+    public override bool Equals(object? obj) => Equals(obj as DeckState);
 
     /// <inheritdoc />
     public override bool Equals(IArtifactState other) => Equals(other as DeckState);
 
-    private bool Equals(DeckState other)
+    private bool Equals(DeckState? other)
     {
         if (other is null)
         {
@@ -72,18 +79,22 @@ public sealed class DeckState : ArtifactState<Deck>
         }
         foreach (var k in Piles.Keys)
         {
-            if (!other.Piles.ContainsKey(k)) return false;
+            if (!other.Piles.ContainsKey(k))
+                return false;
             var a = Piles[k];
             var b = other.Piles[k];
-            if (a.Count != b.Count) return false;
+            if (a.Count != b.Count)
+                return false;
             for (int i = 0; i < a.Count; i++)
             {
-                if (!a[i].Equals(b[i])) return false;
+                if (!a[i].Equals(b[i]))
+                    return false;
             }
         }
         foreach (var kv in Supply)
         {
-            if (!other.Supply.TryGetValue(kv.Key, out var v) || v != kv.Value) return false;
+            if (!other.Supply.TryGetValue(kv.Key, out var v) || v != kv.Value)
+                return false;
         }
         return true;
     }

@@ -23,7 +23,7 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
 
         if (!dice.Any())
         {
-            throw new ArgumentException("At least one dice must be added to condition", nameof(dice));
+            throw new ArgumentException(ExceptionMessages.AtLeastOneDiceRequired, nameof(dice));
         }
 
         Dice = dice;
@@ -32,11 +32,17 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
     /// <summary>
     /// Gets the dice considered for clearing.
     /// </summary>
-    public IEnumerable<Dice> Dice { get; }
+    public IEnumerable<Dice> Dice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var diceState = Dice
             .Select(dice => state.GetState<DiceState<int>>(dice))
             .FirstOrDefault(x => x is not null && x.CurrentValue.Equals(@event.Path.Distance));

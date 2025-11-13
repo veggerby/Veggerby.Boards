@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -30,13 +31,21 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+
         // Resolve role via metadata (no string heuristics)
-        if (!ChessPiece.IsKing(state, @event.Piece.Id))
+        if (@event.Piece is null || !ChessPiece.IsKing(state, @event.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a king");
         }
 
         var extras = state.GetExtras<ChessStateExtras>();
+        if (extras is null)
+        {
+            return ConditionResponse.Ignore("Missing extras");
+        }
         var from = @event.Path?.From;
         var to = @event.Path?.To;
         if (from is null || to is null)
@@ -45,7 +54,12 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         }
 
         // Determine color & initial king square baseline (standard chess: king on e-file)
-        var isWhite = @event.Piece.Owner.Id == ChessIds.Players.White;
+        var owner = @event.Piece.Owner;
+        if (owner is null)
+        {
+            return ConditionResponse.Ignore("Piece owner missing");
+        }
+        var isWhite = owner.Id == ChessIds.Players.White;
         var startTileId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
         if (from.Id != startTileId)
         {
@@ -102,8 +116,15 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         foreach (var tileConst in pathCheckTiles)
         {
             // Skip destination here; it will be validated for emptiness after loop.
-            if (tileConst == to.Id) { continue; }
+            if (tileConst == to.Id)
+            {
+                continue;
+            }
             var tile = engine.Game.GetTile(tileConst);
+            if (tile is null)
+            {
+                return ConditionResponse.Fail("Board missing tile");
+            }
             if (state.GetPiecesOnTile(tile).Any())
             {
                 return ConditionResponse.Fail("Path blocked");
@@ -111,7 +132,7 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         }
 
         // Destination must be empty for castling (king cannot capture during castling)
-        if (state.GetPiecesOnTile(to).Any())
+        if (to is null || state.GetPiecesOnTile(to).Any())
         {
             return ConditionResponse.Fail("Destination occupied");
         }

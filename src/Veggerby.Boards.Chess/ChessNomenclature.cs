@@ -2,6 +2,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.Flows.Events;
 
 namespace Veggerby.Boards.Chess;
@@ -85,7 +86,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         }
 
         // Destination SAN square
-        var to = GetTileName(moveEvent.Path?.To);
+        var toTile = moveEvent.Path?.To;
+        var to = toTile is null ? string.Empty : GetTileName(toTile);
         if (string.IsNullOrEmpty(to))
         {
             return string.Empty;
@@ -111,13 +113,13 @@ public sealed class ChessNomenclature : IGameNomenclature
     /// <inheritdoc />
     public string Describe(States.GameState state, MovePieceGameEvent moveEvent)
     {
-        if (moveEvent is null)
+        if (moveEvent is null || moveEvent.Piece is null)
         {
             return string.Empty;
         }
 
         var toTile = moveEvent.Path?.To;
-        var to = GetTileName(toTile);
+        var to = toTile is null ? string.Empty : GetTileName(toTile);
         if (string.IsNullOrEmpty(to))
         {
             return string.Empty;
@@ -159,7 +161,8 @@ public sealed class ChessNomenclature : IGameNomenclature
         if (isPawn && isCapture)
         {
             // Derive file letter from origin square id (tile-e4 -> e4 -> file 'e')
-            var fromSquare = GetTileName(moveEvent.Path?.From);
+            var fromTile = moveEvent.Path?.From;
+            var fromSquare = fromTile is null ? string.Empty : GetTileName(fromTile);
             if (!string.IsNullOrEmpty(fromSquare))
             {
                 pawnFile = fromSquare.Substring(0, 1);
@@ -196,39 +199,63 @@ public sealed class ChessNomenclature : IGameNomenclature
     /// <inheritdoc />
     public string Describe(Game game, States.GameState state, MovePieceGameEvent moveEvent)
     {
+        if (moveEvent?.Piece is null)
+        {
+            return string.Empty;
+        }
+
         // Castling detection: king moves exactly two horizontal squares on same rank via two consistent east/west relations.
-        if (moveEvent?.Piece is not null)
+        if (moveEvent.Path is not null)
         {
             var idParts = moveEvent.Piece.Id.Split('-');
-            if (idParts.Length > 1 && idParts[1] == "king" && moveEvent.Path is not null)
+            if (idParts.Length > 1 && idParts[1] == "king")
             {
                 var relations = moveEvent.Path.Relations.ToList();
                 if (relations.Count == 2)
                 {
-                    bool sameRank = GetTileName(relations.First().From)[1] == GetTileName(relations.Last().To)[1];
-                    bool allEast = relations.All(r => r.Direction == Direction.East);
-                    bool allWest = relations.All(r => r.Direction == Direction.West);
-                    if (sameRank && (allEast || allWest))
+                    var firstFrom = relations.First().From;
+                    var lastTo = relations.Last().To;
+                    if (firstFrom is not null && lastTo is not null)
                     {
-                        var notation = allEast ? "O-O" : "O-O-O"; // east assumed king-side, west queen-side
-                        // (Optional) append check marker if king move itself gives check; rook relocation ignored for now.
-                        if (IsCheckAfter(game, state, moveEvent)) { notation += "+"; }
-                        if (IsCheckmateAfter(game, state, moveEvent)) { notation += "#"; }
-                        return notation;
+                        var firstFromName = GetTileName(firstFrom);
+                        var lastToName = GetTileName(lastTo);
+                        if (firstFromName.Length == 2 && lastToName.Length == 2)
+                        {
+                            bool sameRank = firstFromName[1] == lastToName[1];
+                            bool allEast = relations.All(r => r.Direction == Direction.East);
+                            bool allWest = relations.All(r => r.Direction == Direction.West);
+                            if (sameRank && (allEast || allWest))
+                            {
+                                var notation = allEast ? "O-O" : "O-O-O"; // east assumed king-side, west queen-side
+                                if (IsCheckAfter(game, state, moveEvent))
+                                {
+                                    notation += "+";
+                                }
+                                if (IsCheckmateAfter(game, state, moveEvent))
+                                {
+                                    notation += "#";
+                                }
+                                return notation;
+                            }
+                        }
                     }
                 }
             }
         }
-        // Start from state-aware capture implementation first
-        var baseText = Describe(state, moveEvent);
 
-        // Disambiguation not needed for pawns or when result already contains 'x' with pawn file (exd5) which is inherently disambiguated for pawns
-        var parts = moveEvent.Piece.Id.Split('-');
-        if (parts.Length < 2)
+        // Base SAN / capture from state-aware method
+        var baseText = Describe(state, moveEvent);
+        if (string.IsNullOrEmpty(baseText))
         {
-            return baseText;
+            return string.Empty;
         }
-        var role = parts[1];
+
+        var pieceParts = moveEvent.Piece.Id.Split('-');
+        if (pieceParts.Length < 2)
+        {
+            return baseText; // cannot infer role
+        }
+        var role = pieceParts[1];
         bool isPawn = role == "pawn";
 
         // Promotion detection (simplified): pawn reaches last rank (white: rank 8, black: rank 1)
@@ -238,44 +265,41 @@ public sealed class ChessNomenclature : IGameNomenclature
             if (toSquare.Length == 2)
             {
                 var rankChar = toSquare[1];
-                // Assume white moves toward higher rank numbers (8), black toward lower (1)
                 var ownerId = moveEvent.Piece.Owner?.Id;
                 bool promote = (ownerId == ChessIds.Players.White && rankChar == '8') || (ownerId == ChessIds.Players.Black && rankChar == '1');
                 if (promote)
                 {
-                    // baseText for pawn non-capture move is destination; capture form is exd8. Append =Q (fixed queen for now).
-                    var promo = baseText + "=Q";
+                    var promo = baseText + "=Q"; // assume queen promotion
                     if (IsCheckAfter(game, state, moveEvent))
                     {
                         promo += "+";
                     }
-
                     if (IsCheckmateAfter(game, state, moveEvent))
                     {
                         promo += "#";
                     }
-
                     return promo;
                 }
             }
-
             return baseText; // normal pawn move already correct
         }
 
         if (isPawn)
         {
-            return baseText; // no further processing (disambiguation not needed)
+            return baseText; // pawn notation complete
         }
 
-        // Extract already computed designator and destination from baseText
-        // baseText patterns: Piece[optional 'x']square or Piece square or Piecex square (no spaces actually)
-        // We'll recompose instead of parsing; compute capture flag again
-        var to = GetTileName(moveEvent.Path?.To);
+        // Recompute destination and designator for disambiguation
+        var destTile = moveEvent.Path?.To;
+        if (destTile is null)
+        {
+            return baseText;
+        }
+        var to = GetTileName(destTile);
         if (string.IsNullOrEmpty(to))
         {
             return baseText;
         }
-
         var designator = role switch
         {
             "king" => "K",
@@ -285,47 +309,50 @@ public sealed class ChessNomenclature : IGameNomenclature
             "knight" => "N",
             _ => string.Empty
         };
-
         bool isCapture = baseText.Contains('x');
 
-        // Find other candidate pieces of same role & owner that could also move to destination
         var moverOwner = moveEvent.Piece.Owner;
-        var destination = moveEvent.Path?.To;
-        if (state is null || destination is null)
+        if (state is null || moverOwner is null)
         {
             return baseText;
         }
 
-        var moverFromName = GetTileName(moveEvent.Path.From);
-        var moverFile = moverFromName.Length > 0 ? moverFromName[0].ToString() : string.Empty;
-        var moverRank = moverFromName.Length > 1 ? moverFromName[1].ToString() : string.Empty;
-
         var candidateStates = state.GetStates<States.PieceState>()
             .Where(ps => ps.Artifact != moveEvent.Piece && ps.Artifact.Owner == moverOwner && ps.Artifact.Id.Split('-').Length > 1 && ps.Artifact.Id.Split('-')[1] == role)
             .ToList();
-
         if (!candidateStates.Any())
         {
-            // No ambiguity; still append check marker if applicable
+            // No ambiguity; append check/mate markers
             var suffix = string.Empty;
             if (IsCheckAfter(game, state, moveEvent))
             {
                 suffix += "+";
             }
-
             if (IsCheckmateAfter(game, state, moveEvent))
             {
                 suffix += "#";
             }
-
             return baseText + suffix;
         }
+
+        var fromTile = moveEvent.Path?.From;
+        if (fromTile is null)
+        {
+            return baseText; // cannot disambiguate
+        }
+        var fromSquare = GetTileName(fromTile);
+        if (fromSquare.Length < 2)
+        {
+            return baseText;
+        }
+        var moverFile = fromSquare[0].ToString();
+        var moverRank = fromSquare[1].ToString();
 
         bool AnyCanReach(States.PieceState ps)
         {
             foreach (var pattern in ps.Artifact.Patterns)
             {
-                var visitor = new ResolveTilePathPatternVisitor(game.Board, ps.CurrentTile, destination);
+                var visitor = new ResolveTilePathPatternVisitor(game.Board, ps.CurrentTile, destTile);
                 pattern.Accept(visitor);
                 if (visitor.ResultPath is not null)
                 {
@@ -338,62 +365,41 @@ public sealed class ChessNomenclature : IGameNomenclature
         var ambiguous = candidateStates.Where(AnyCanReach).ToList();
         if (!ambiguous.Any())
         {
-            return baseText; // no other can reach
+            return baseText; // no alternative pieces
         }
 
-        // Determine disambiguation by SAN rules: prefer file if differs among candidates (including mover), else rank, else both
-        var moverFromTile = moveEvent.Path.From;
-        string moverSquare = GetTileName(moverFromTile);
-
-        var allFiles = ambiguous.Select(ps => GetTileName(ps.CurrentTile)[0]).Concat(new[] { moverSquare[0] }).Distinct().ToList();
-        var allRanks = ambiguous.Select(ps => GetTileName(ps.CurrentTile)[1]).Concat(new[] { moverSquare[1] }).Distinct().ToList();
+        var allFiles = ambiguous.Select(ps => GetTileName(ps.CurrentTile)[0]).Concat(new[] { moverFile[0] }).Distinct().ToList();
+        var allRanks = ambiguous.Select(ps => GetTileName(ps.CurrentTile)[1]).Concat(new[] { moverRank[0] }).Distinct().ToList();
 
         string disambiguator = string.Empty;
         if (allFiles.Count > 1)
         {
-            disambiguator = moverFile; // file differentiates
+            disambiguator = moverFile;
         }
         else if (allRanks.Count > 1)
         {
-            disambiguator = moverRank; // ranks differentiate
+            disambiguator = moverRank;
         }
         else
         {
-            disambiguator = moverFile + moverRank; // need full square (rare)
+            disambiguator = moverFile + moverRank;
         }
 
-        if (isCapture)
-        {
-            var notation = $"{designator}{disambiguator}x{to}";
-            if (IsCheckAfter(game, state, moveEvent))
-            {
-                notation += "+";
-            }
-
-            if (IsCheckmateAfter(game, state, moveEvent))
-            {
-                notation += "#";
-            }
-
-            return notation;
-        }
-        var simple = $"{designator}{disambiguator}{to}";
+        string result = isCapture ? $"{designator}{disambiguator}x{to}" : $"{designator}{disambiguator}{to}";
         if (IsCheckAfter(game, state, moveEvent))
         {
-            simple += "+";
+            result += "+";
         }
-
         if (IsCheckmateAfter(game, state, moveEvent))
         {
-            simple += "#";
+            result += "#";
         }
-
-        return simple;
+        return result;
     }
 
     private bool IsCheckAfter(Game game, States.GameState state, MovePieceGameEvent moveEvent)
     {
-        if (game is null || state is null || moveEvent?.Piece?.Owner is null)
+        if (game is null || state is null || moveEvent?.Piece?.Owner is null || moveEvent.Path?.To is null)
         {
             return false;
         }
@@ -409,14 +415,18 @@ public sealed class ChessNomenclature : IGameNomenclature
         }
 
         // Build hypothetical post-move state (simplified): update moving piece position, remove any captured victim on destination
-        var destination = moveEvent.Path.To;
+        var destination = moveEvent.Path?.To;
+        if (destination is null)
+        {
+            return false;
+        }
         var updatedStates = state.GetStates<States.PieceState>()
             .Where(ps => ps.Artifact != moveEvent.Piece && ps.CurrentTile != destination) // remove captured piece if any opposing there
             .Select(ps => (States.IArtifactState)ps)
             .ToList();
 
         updatedStates.Add(new States.PieceState(moveEvent.Piece, destination));
-        var post = Veggerby.Boards.States.GameState.New(updatedStates);
+        var post = States.GameState.New(updatedStates);
 
         // For each mover side piece, see if any pattern reaches king square
         var kingTile = opponentKingState.CurrentTile;
@@ -437,8 +447,48 @@ public sealed class ChessNomenclature : IGameNomenclature
 
     private bool IsCheckmateAfter(Game game, States.GameState state, MovePieceGameEvent moveEvent)
     {
-        // Placeholder: full legality not yet implemented; cannot determine mate reliably.
-        // Will be replaced once legal move generation exists.
-        return false;
+        if (game is null || state is null || moveEvent?.Piece?.Owner is null || moveEvent.Path?.To is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            // Simulate the move to get the resulting state
+            var destination = moveEvent.Path.To;
+            var movedPiece = moveEvent.Piece;
+            
+            // Create a simplified post-move state
+            var updatedStates = state.GetStates<States.PieceState>()
+                .Where(ps => ps.Artifact != movedPiece && ps.CurrentTile != destination)
+                .Select(ps => (States.IArtifactState)ps)
+                .ToList();
+
+            updatedStates.Add(new States.PieceState(movedPiece, destination));
+            
+            // Switch active player for the resulting state
+            var currentActivePlayer = movedPiece.Owner;
+            var players = game.Players.ToList();
+            var opponentPlayer = players.FirstOrDefault(p => p.Id != currentActivePlayer?.Id);
+            
+            if (opponentPlayer != null)
+            {
+                // Update active player states
+                foreach (var player in players)
+                {
+                    updatedStates.Add(new States.ActivePlayerState(player, player.Id == opponentPlayer.Id));
+                }
+            }
+            
+            var postState = States.GameState.New(updatedStates);
+            
+            // Use the endgame detector to check for checkmate
+            var detector = new ChessEndgameDetector(game);
+            return detector.IsCheckmate(postState);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

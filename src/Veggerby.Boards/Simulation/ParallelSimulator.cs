@@ -36,10 +36,14 @@ public static class ParallelSimulator
 
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
-        if (playoutCount <= 0) throw new ArgumentOutOfRangeException(nameof(playoutCount));
-        if (maxDepth <= 0) throw new ArgumentOutOfRangeException(nameof(maxDepth));
-        if (degreeOfParallelism < 0) throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
-        if (degreeOfParallelism == 0) degreeOfParallelism = Environment.ProcessorCount;
+        if (playoutCount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(playoutCount));
+        if (maxDepth <= 0)
+            throw new ArgumentOutOfRangeException(nameof(maxDepth));
+        if (degreeOfParallelism < 0)
+            throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
+        if (degreeOfParallelism == 0)
+            degreeOfParallelism = Environment.ProcessorCount;
 
         var results = new PlayoutResult[playoutCount];
 
@@ -90,10 +94,14 @@ public static class ParallelSimulator
 
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
-        if (playoutCount <= 0) throw new ArgumentOutOfRangeException(nameof(playoutCount));
-        if (maxDepth <= 0) throw new ArgumentOutOfRangeException(nameof(maxDepth));
-        if (degreeOfParallelism < 0) throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
-        if (degreeOfParallelism == 0) degreeOfParallelism = Environment.ProcessorCount;
+        if (playoutCount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(playoutCount));
+        if (maxDepth <= 0)
+            throw new ArgumentOutOfRangeException(nameof(maxDepth));
+        if (degreeOfParallelism < 0)
+            throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
+        if (degreeOfParallelism == 0)
+            degreeOfParallelism = Environment.ProcessorCount;
 
         var results = new PlayoutResult[playoutCount];
         var metrics = new PlayoutMetrics[playoutCount];
@@ -147,10 +155,14 @@ public static class ParallelSimulator
 
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
-        if (playoutCount <= 0) throw new ArgumentOutOfRangeException(nameof(playoutCount));
-        if (maxDepth <= 0) throw new ArgumentOutOfRangeException(nameof(maxDepth));
-        if (degreeOfParallelism < 0) throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
-        if (degreeOfParallelism == 0) degreeOfParallelism = Environment.ProcessorCount;
+        if (playoutCount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(playoutCount));
+        if (maxDepth <= 0)
+            throw new ArgumentOutOfRangeException(nameof(maxDepth));
+        if (degreeOfParallelism < 0)
+            throw new ArgumentOutOfRangeException(nameof(degreeOfParallelism));
+        if (degreeOfParallelism == 0)
+            degreeOfParallelism = Environment.ProcessorCount;
 
         var results = new PlayoutResult[playoutCount];
         var metrics = new PlayoutMetrics[playoutCount];
@@ -171,7 +183,10 @@ public static class ParallelSimulator
             {
                 try
                 {
-                    if (cancellationToken.IsCancellationRequested) { return; }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     var policy = policyFactory(index);
                     var seededProgress = progress;
                     var detailed = SequentialSimulator.RunDetailed(seededProgress, policy, stopPredicate, maxDepth);

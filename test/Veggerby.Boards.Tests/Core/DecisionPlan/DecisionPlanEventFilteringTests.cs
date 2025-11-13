@@ -12,7 +12,10 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 internal sealed class RecordingCondition<TEvent> : IGameEventCondition<TEvent> where TEvent : IGameEvent
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameEngine engine, GameState state, TEvent @event)
     {
         Evaluations++;
@@ -36,6 +39,11 @@ public class DecisionPlanEventFilteringTests
     public void GivenMoveEvent_WhenFilteringEnabled_ThenRollRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingCondition<MovePieceGameEvent>();
         var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
         var progress = BuildProgressWithPhases(moveCond, rollCond);
@@ -58,6 +66,11 @@ public class DecisionPlanEventFilteringTests
     public void GivenRollEvent_WhenFilteringEnabled_ThenMoveRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingCondition<MovePieceGameEvent>();
         var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
         var progress = BuildProgressWithPhases(moveCond, rollCond);

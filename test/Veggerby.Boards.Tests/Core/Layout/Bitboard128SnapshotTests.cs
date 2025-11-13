@@ -46,20 +46,29 @@ public class Bitboard128SnapshotTests
     public void GivenBoardWithMoreThan64Tiles_WhenSnapshotBuilt_Then128BitOccupancyPopCountMatches()
     {
         // arrange
-        var progress = new SyntheticLargeBoardBuilder(72).Compile();
-        var game = progress.Game;
-        var state = progress.State;
-        var shape = Veggerby.Boards.Internal.Layout.BoardShape.Build(game.Board);
-        var layout = Veggerby.Boards.Internal.Layout.BitboardLayout.Build(game);
 
         // act
-        var snapshot = Veggerby.Boards.Internal.Layout.BitboardSnapshot.Build(layout, state, shape);
 
         // assert
-        snapshot.GlobalOccupancy128.HasValue.Should().BeTrue();
+
+        var progress = new SyntheticLargeBoardBuilder(72).Compile();
+        var game = progress.Game;
+        game.Should().NotBeNull();
+        var state = progress.State;
+        state.Should().NotBeNull();
+        var shape = Boards.Internal.Layout.BoardShape.Build(game.Board);
+        var layout = Boards.Internal.Layout.BitboardLayout.Build(game);
+
+        // act
+        var snapshot = Boards.Internal.Layout.BitboardSnapshot.Build(layout, state, shape);
+
+        // assert
+        var occupancy = snapshot.GlobalOccupancy128;
+        occupancy.HasValue.Should().BeTrue();
         var occupiedCount = state.GetStates<PieceState>().Count();
-        var lowBits = System.Numerics.BitOperations.PopCount(snapshot.GlobalOccupancy128.Value.Low);
-        var highBits = System.Numerics.BitOperations.PopCount(snapshot.GlobalOccupancy128.Value.High);
+        var value = occupancy!.Value;
+        var lowBits = System.Numerics.BitOperations.PopCount(value.Low);
+        var highBits = System.Numerics.BitOperations.PopCount(value.High);
         (lowBits + highBits).Should().Be(occupiedCount);
     }
 }

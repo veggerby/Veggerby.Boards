@@ -15,14 +15,11 @@ public class ChessCastlingSafetyTests
     public void GivenIntermediateSquareF1UnderAttackByKnight_WhenWhiteAttemptsKingSideCastle_ThenCastlingDeniedAndRightsIntact()
     {
         // arrange
-        // Deterministic sequence to create an attack on f1 by a black knight positioned at g3 while keeping castling rights true.
-        // Sequence rationale:
-        // 1. White frees e-pawn (needed later for bishop relocation path clarity, but mainly to consume turn).
-        // 2. Black develops knight g8 -> e7.
-        // 3. White vacates g1 (knight g1 -> f3) clearing destination path square g1.
-        // 4. Black knight e7 -> f5 continuing route toward g3.
-        // 5. White vacates f1 (bishop f1 -> e2) clearing intermediate path square f1; e2 was cleared in step 1.
-        // 6. Black knight f5 -> g3 now attacks f1 (knight move (-1,-2)). Path squares for castling (f1,g1) are empty but f1 is attacked.
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         progress = progress.Move(WhitePawn5, E4);     // 1
         progress = progress.Move(BlackKnight2, E7);    // 2 (g8 -> e7)
@@ -33,6 +30,7 @@ public class ChessCastlingSafetyTests
 
         // pre-assert sanity
         var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        extrasBefore.Should().NotBeNull();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
 
@@ -44,6 +42,7 @@ public class ChessCastlingSafetyTests
         ex.Should().BeOfType<InvalidGameEventException>();
         // Current implementation does not surface attacked square id in exception message; future improvement could assert message details.
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
+        extrasAfter.Should().NotBeNull();
         // Rights must remain (castling was denied without moving king/rook)
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
         extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue();
@@ -53,8 +52,11 @@ public class ChessCastlingSafetyTests
     public void GivenDestinationSquareC1UnderAttackByKnight_WhenWhiteAttemptsQueenSideCastle_ThenCastlingDeniedAndRightsIntact()
     {
         // arrange
-        // Goal: Black knight on b3 attacks c1 while path (d1, c1) clear and rights intact.
-        // Knight attack pattern: from b3 it attacks a1, c1, d2, d4, a5, c5, a? etc. So b3 -> c1 is valid.
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Sequence:
         // 1. White clears d1, c1 by moving obstructing pieces: bishop c1 -> e3 (needs path cleared by moving pawn e2 first? Actually c1 bishop path to e3 requires d2 & e3 squares; d2 blocked by pawn d2. We'll use bishop c1 -> b2 route after clearing b2 pawn.)
@@ -73,6 +75,7 @@ public class ChessCastlingSafetyTests
         progress = progress.Move(BlackKnight2, B3);        // b2 -> b3 now attacking c1
 
         var extrasBefore = progress.State.GetExtras<ChessStateExtras>();
+        extrasBefore.Should().NotBeNull();
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
 
@@ -83,6 +86,7 @@ public class ChessCastlingSafetyTests
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         var extrasAfter = progress.State.GetExtras<ChessStateExtras>();
+        extrasAfter.Should().NotBeNull();
         extrasAfter.WhiteCanCastleQueenSide.Should().BeTrue(); // rights unchanged (attempt denied)
         extrasAfter.WhiteCanCastleKingSide.Should().BeTrue();
     }

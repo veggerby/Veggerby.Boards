@@ -4,12 +4,16 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
+using Veggerby.Boards.Tests.TestHelpers;
 
 namespace Veggerby.Boards.Tests.Core.States;
 
 public class GameStateTests
 {
-    public Game Game { get; }
+    public Game Game
+    {
+        get;
+    }
     public GameStateTests()
     {
         Game = new TestGameBuilder().Compile().Game;
@@ -23,7 +27,10 @@ public class GameStateTests
             // arrange
 
             // act
-            var actual = GameState.New(null);
+
+            // assert
+
+            var actual = GameState.New(Array.Empty<IArtifactState>());
 
             // assert
             actual.Should().NotBeNull();
@@ -35,12 +42,17 @@ public class GameStateTests
         public void Should_create_new_game_state_child_states()
         {
             // arrange
-            var piece = Game.GetPiece("piece-1");
-            var tile = Game.GetTile("tile-1");
-            var state1 = new PieceState(piece, tile);
 
             // act
-            var actual = GameState.New(null);
+
+            // assert
+
+            var piece = Game.GetPiece("piece-1").EnsureNotNull();
+            var tile = Game.GetTile("tile-1").EnsureNotNull();
+            var state1 = new PieceState(piece, tile); // unused state used just to assert creation
+
+            // act
+            var actual = GameState.New(Array.Empty<IArtifactState>());
 
             // assert
             actual.Should().NotBeNull();
@@ -55,8 +67,13 @@ public class GameStateTests
         public void Should_return_artifact_get_state()
         {
             // arrange
-            var piece = Game.GetPiece("piece-1");
-            var tile = Game.GetTile("tile-1");
+
+            // act
+
+            // assert
+
+            var piece = Game.GetPiece("piece-1").EnsureNotNull();
+            var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
             var gameState = GameState.New([expected]);
 
@@ -76,8 +93,13 @@ public class GameStateTests
         public void Should_return_initial_state()
         {
             // arrange
-            var piece = Game.GetPiece("piece-1");
-            var tile = Game.GetTile("tile-1");
+
+            // act
+
+            // assert
+
+            var piece = Game.GetPiece("piece-1").EnsureNotNull();
+            var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
             var gameState = GameState.New([expected]);
 
@@ -92,10 +114,15 @@ public class GameStateTests
         public void Should_not_return_initial_state()
         {
             // arrange
-            var piece = Game.GetPiece("piece-1");
-            var tile = Game.GetTile("tile-1");
+
+            // act
+
+            // assert
+
+            var piece = Game.GetPiece("piece-1").EnsureNotNull();
+            var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
-            var gameState = GameState.New(null)
+            var gameState = GameState.New(Array.Empty<IArtifactState>())
                 .Next([expected]);
 
             // act
@@ -112,9 +139,14 @@ public class GameStateTests
         public void Should_return_next_state()
         {
             // arrange
-            var piece = Game.GetPiece("piece-1");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece = Game.GetPiece("piece-1").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece, tile1);
             var pieceState2 = new PieceState(piece, tile2);
@@ -137,10 +169,15 @@ public class GameStateTests
         public void Should_return_no_changes_when_equals()
         {
             // arrange
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece1, tile1);
             var pieceState2 = new PieceState(piece2, tile2);
@@ -158,10 +195,15 @@ public class GameStateTests
         public void Should_single_addition()
         {
             // arrange
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece1, tile1);
             var pieceState2 = new PieceState(piece2, tile2);
@@ -182,10 +224,15 @@ public class GameStateTests
         public void Should_single_change()
         {
             // arrange
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece1, tile1);
             var pieceState2 = new PieceState(piece2, tile2);
@@ -207,11 +254,16 @@ public class GameStateTests
         public void Should_capture_various_updates()
         {
             // arrange
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var pieceN = Game.GetPiece("piece-n");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var pieceN = Game.GetPiece("piece-n").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece1, tile1);
             var pieceState2 = new PieceState(piece2, tile2);
@@ -227,31 +279,46 @@ public class GameStateTests
 
             // assert
             actual.Count().Should().Be(3);
-            actual.Count(x => x.From is null && x.To.Equals(pieceStateN)).Should().Be(1);
-            actual.Count(x => pieceState1.Equals(x.From) && pieceState1new.Equals(x.To)).Should().Be(1);
-            actual.Count(x => diceState1.Equals(x.From) && diceState2.Equals(x.To)).Should().Be(1);
+            actual.Count(x => x.From is null && x.To is not null && x.To.Equals(pieceStateN)).Should().Be(1);
+            actual.Count(x => x.From is not null && x.To is not null && pieceState1.Equals(x.From) && pieceState1new.Equals(x.To)).Should().Be(1);
+            actual.Count(x => x.From is not null && x.To is not null && diceState1.Equals(x.From) && diceState2.Equals(x.To)).Should().Be(1);
         }
     }
 
     public class _Equals : GameStateTests
     {
-        private GameState NewGameState(string tileId1 = "tile-1", string tileId2 = "tile-2", int diceValue = 3)
+        private GameState NewGameState(string? tileId1 = "tile-1", string? tileId2 = "tile-2", int diceValue = 3)
         {
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var tile1 = !string.IsNullOrEmpty(tileId1) ? Game.GetTile(tileId1) : null;
-            var tile2 = !string.IsNullOrEmpty(tileId2) ? Game.GetTile(tileId2) : null;
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var tile1Maybe = !string.IsNullOrEmpty(tileId1) ? Game.GetTile(tileId1!).EnsureNotNull() : null;
+            var tile2Maybe = !string.IsNullOrEmpty(tileId2) ? Game.GetTile(tileId2!).EnsureNotNull() : null;
             var dice = new Dice("dice");
-            var pieceState1 = tile1 is not null ? new PieceState(piece1, tile1) : null;
-            var pieceState2 = tile2 is not null ? new PieceState(piece2, tile2) : null;
-            var diceState = new DiceState<int>(dice, diceValue);
-            return GameState.New(new IArtifactState[] { diceState, pieceState1, pieceState2 }.Where(x => x is not null));
+            var states = new System.Collections.Generic.List<IArtifactState>
+            {
+                new DiceState<int>(dice, diceValue)
+            };
+            if (tile1Maybe is not null)
+            {
+                states.Add(new PieceState(piece1, tile1Maybe));
+            }
+            if (tile2Maybe is not null)
+            {
+                states.Add(new PieceState(piece2, tile2Maybe));
+            }
+
+            return GameState.New(states);
         }
 
         [Fact]
         public void Should_equal_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -265,6 +332,11 @@ public class GameStateTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -278,6 +350,11 @@ public class GameStateTests
         public void Should_equal_similar_values_different_instance()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState();
             var gameState2 = NewGameState();
 
@@ -293,6 +370,11 @@ public class GameStateTests
         public void Should_not_equal_similar_values_but_not_initial()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState();
             var gameState2 = NewGameState().Next(Enumerable.Empty<IArtifactState>());
 
@@ -307,6 +389,11 @@ public class GameStateTests
         public void Should_not_equal_one_state_different()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState("tile-1", "tile-2", 3);
             var gameState2 = NewGameState("tile-1", "tile-2", 4);
 
@@ -321,6 +408,11 @@ public class GameStateTests
         public void Should_not_equal_different_state_count()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState("tile-1", "tile-2", 3);
             var gameState2 = NewGameState("tile-1", null, 3);
 
@@ -335,6 +427,11 @@ public class GameStateTests
         public void Should_not_equal_different_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -348,10 +445,15 @@ public class GameStateTests
         public void Should_equal_same_states_different_order()
         {
             // arrange
-            var piece1 = Game.GetPiece("piece-1");
-            var piece2 = Game.GetPiece("piece-2");
-            var tile1 = Game.GetTile("tile-1");
-            var tile2 = Game.GetTile("tile-2");
+
+            // act
+
+            // assert
+
+            var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
+            var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
+            var tile1 = Game.GetTile("tile-1").EnsureNotNull();
+            var tile2 = Game.GetTile("tile-2").EnsureNotNull();
             var dice = new Dice("dice");
             var pieceState1 = new PieceState(piece1, tile1);
             var pieceState2 = new PieceState(piece2, tile2);

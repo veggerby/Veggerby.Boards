@@ -8,23 +8,27 @@ public class NullPattern : IPattern
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 
     /// <summary>
     /// Compares two <see cref="NullPattern"/> instances (all instances are considered equal).
     /// </summary>
-    public static bool Equals(NullPattern other)
+    public static bool Equals(NullPattern? other)
     {
         return other is not null;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((NullPattern)obj);
     }
 

@@ -14,12 +14,18 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets all tiles belonging to the board.
     /// </summary>
-    public IEnumerable<Tile> Tiles { get; }
+    public IEnumerable<Tile> Tiles
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets all relations between tiles.
     /// </summary>
-    public IEnumerable<TileRelation> TileRelations { get; }
+    public IEnumerable<TileRelation> TileRelations
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Board"/> class.
@@ -29,7 +35,7 @@ public class Board : Artifact, IEquatable<Board>
     /// <exception cref="ArgumentException">Thrown when <paramref name="tileRelations"/> is empty.</exception>
     public Board(string id, IEnumerable<TileRelation> tileRelations) : base(id)
     {
-        ArgumentNullException.ThrowIfNull(tileRelations);
+        ArgumentNullException.ThrowIfNull(tileRelations, nameof(tileRelations));
 
         if (!tileRelations.Any())
         {
@@ -45,12 +51,9 @@ public class Board : Artifact, IEquatable<Board>
     /// </summary>
     /// <param name="tileId">Tile identifier.</param>
     /// <returns>The tile or null if not found.</returns>
-    public Tile GetTile(string tileId)
+    public Tile? GetTile(string tileId)
     {
-        if (string.IsNullOrEmpty(tileId))
-        {
-            throw new ArgumentException("Invalid Tile Id", nameof(tileId));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
 
         return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId));
     }
@@ -58,11 +61,11 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets a relation originating from a tile in a specific direction.
     /// </summary>
-    public TileRelation GetTileRelation(Tile from, Direction direction)
+    public TileRelation? GetTileRelation(Tile from, Direction direction)
     {
-        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(from, nameof(from));
 
-        ArgumentNullException.ThrowIfNull(direction);
+        ArgumentNullException.ThrowIfNull(direction, nameof(direction));
 
         return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
     }
@@ -70,20 +73,20 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets a relation connecting two tiles.
     /// </summary>
-    public TileRelation GetTileRelation(Tile from, Tile to)
+    public TileRelation? GetTileRelation(Tile from, Tile to)
     {
-        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(from, nameof(from));
 
-        ArgumentNullException.ThrowIfNull(to);
+        ArgumentNullException.ThrowIfNull(to, nameof(to));
 
         return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));
     }
 
     /// <inheritdoc />
-    public bool Equals(Board other) => base.Equals(other);
+    public bool Equals(Board? other) => base.Equals(other);
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as Board);
+    public override bool Equals(object? obj) => Equals(obj as Board);
 
     /// <inheritdoc />
     public override int GetHashCode()

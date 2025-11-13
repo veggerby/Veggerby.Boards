@@ -41,6 +41,11 @@ public class TurnSequencingHashParityTests
     public void GivenSameMoves_WhenSequencingOffAndOn_ThenPiecePositionsMatchAndTurnStateExplainsHashDelta()
     {
         // arrange
+
+        // act
+
+        // assert
+
         GameProgress offProgress;
         GameProgress onProgress;
 
@@ -75,6 +80,11 @@ public class TurnSequencingHashParityTests
     public void GivenSequencingEnabled_WhenPassingTurn_ThenTurnNumberIncrementsAndSegmentResets()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FlagScope(true);
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State.GetStates<TurnState>().FirstOrDefault();

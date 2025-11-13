@@ -37,7 +37,8 @@ internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>
             moved.Add(from[i]);
         }
         var remaining = new List<Card>(from.Count - @event.Count);
-        for (int i = @event.Count; i < from.Count; i++) remaining.Add(from[i]);
+        for (int i = @event.Count; i < from.Count; i++)
+            remaining.Add(from[i]);
 
         var newTo = new List<Card>(to.Count + moved.Count);
         newTo.AddRange(to);
@@ -46,9 +47,12 @@ internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>
         var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
-            if (kv.Key == @event.FromPileId) newPiles[kv.Key] = remaining;
-            else if (kv.Key == @event.ToPileId) newPiles[kv.Key] = newTo;
-            else newPiles[kv.Key] = new List<Card>(kv.Value);
+            if (kv.Key == @event.FromPileId)
+                newPiles[kv.Key] = remaining;
+            else if (kv.Key == @event.ToPileId)
+                newPiles[kv.Key] = newTo;
+            else
+                newPiles[kv.Key] = new List<Card>(kv.Value);
         }
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
@@ -78,17 +82,21 @@ internal sealed class MoveCardsStateMutator : IStateMutator<MoveCardsEvent>
             // validate presence
             foreach (var c in @event.Cards)
             {
-                if (!from.Contains(c)) throw new BoardException("Card not present in source pile.");
+                if (!from.Contains(c))
+                    throw new BoardException("Card not present in source pile.");
             }
             selected = new List<Card>(@event.Cards);
         }
         else
         {
             var count = @event.Count.GetValueOrDefault();
-            if (count == 0) return state; // no-op
-            if (from.Count < count) throw new BoardException("Insufficient cards in source pile.");
+            if (count == 0)
+                return state; // no-op
+            if (from.Count < count)
+                throw new BoardException("Insufficient cards in source pile.");
             selected = new List<Card>(count);
-            for (int i = 0; i < count; i++) selected.Add(from[i]);
+            for (int i = 0; i < count; i++)
+                selected.Add(from[i]);
         }
 
         // build new piles
@@ -105,9 +113,12 @@ internal sealed class MoveCardsStateMutator : IStateMutator<MoveCardsEvent>
         var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
-            if (kv.Key == @event.FromPileId) newPiles[kv.Key] = newFrom;
-            else if (kv.Key == @event.ToPileId) newPiles[kv.Key] = newTo;
-            else newPiles[kv.Key] = new List<Card>(kv.Value);
+            if (kv.Key == @event.FromPileId)
+                newPiles[kv.Key] = newFrom;
+            else if (kv.Key == @event.ToPileId)
+                newPiles[kv.Key] = newTo;
+            else
+                newPiles[kv.Key] = new List<Card>(kv.Value);
         }
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
@@ -137,9 +148,14 @@ internal sealed class DiscardCardsStateMutator : IStateMutator<DiscardCardsEvent
             var present = false;
             foreach (var p in ds.Piles.Values)
             {
-                if (p.Contains(c)) { present = true; break; }
+                if (p.Contains(c))
+                {
+                    present = true;
+                    break;
+                }
             }
-            if (!present) throw new BoardException("Card not present in any pile.");
+            if (!present)
+                throw new BoardException("Card not present in any pile.");
         }
         // remove card from its current pile and append to destination in order
         var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);

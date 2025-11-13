@@ -25,7 +25,10 @@ public class NotGameEventConditon<T> : IGameEventCondition<T> where T : IGameEve
     /// <summary>
     /// Gets the wrapped condition.
     /// </summary>
-    public IGameEventCondition<T> InnerCondition { get; }
+    public IGameEventCondition<T> InnerCondition
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
@@ -34,11 +37,11 @@ public class NotGameEventConditon<T> : IGameEventCondition<T> where T : IGameEve
         switch (innerResult.Result)
         {
             case ConditionResult.Valid:
-                return ConditionResponse.Fail(innerResult.Reason);
+                return ConditionResponse.Fail(innerResult.Reason ?? string.Empty);
             case ConditionResult.Ignore:
                 return innerResult;
             case ConditionResult.Invalid:
-                return ConditionResponse.Success(innerResult.Reason);
+                return ConditionResponse.Success(innerResult.Reason ?? string.Empty);
         }
 
         throw new BoardException("Invalid response");

@@ -22,17 +22,22 @@ public class SingleStepPathFinderTests
         // arrange
         var progress = new TestForPathValidationGameBuilder(diceValue1, diceValue2).Compile();
         var piece1 = progress.Game.GetPiece("piece-1");
+        piece1.Should().NotBeNull();
         var fromTile = progress.Game.GetTile(fromTileId);
+        fromTile.Should().NotBeNull();
         var toTile = progress.Game.GetTile(toTileId);
+        toTile.Should().NotBeNull();
         var dice1 = progress.Game.GetArtifact<Dice>("dice-1");
+        dice1.Should().NotBeNull();
         var dice2 = progress.Game.GetArtifact<Dice>("dice-2");
+        dice2.Should().NotBeNull();
         var finder = new SingleStepPathFinder(
             new SimpleGameEventCondition<MovePieceGameEvent>((eng, s, e) => e.To.Id.Equals("tile-2") ? ConditionResponse.Invalid : ConditionResponse.Valid),
-            dice1, dice2
+            dice1!, dice2!
         );
 
         // act
-        var actual = finder.GetPaths(progress.Engine, progress.State, piece1, fromTile, toTile);
+        var actual = finder.GetPaths(progress.Engine, progress.State, piece1!, fromTile!, toTile!);
 
         // assert
         actual.Count().Should().Be(expectedResult);

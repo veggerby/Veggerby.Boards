@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 
@@ -17,7 +18,10 @@ public class DiceState<T> : ArtifactState<Dice>
     /// <summary>
     /// Gets the current (rolled) value for the die.
     /// </summary>
-    public T CurrentValue { get; }
+    public T CurrentValue
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceState{T}"/> class.
@@ -36,7 +40,7 @@ public class DiceState<T> : ArtifactState<Dice>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as DiceState<T>);
     }
@@ -52,14 +56,14 @@ public class DiceState<T> : ArtifactState<Dice>
     /// </summary>
     /// <param name="other">The other dice state.</param>
     /// <returns><c>true</c> when artifact and value match; otherwise <c>false</c>.</returns>
-    public bool Equals(DiceState<T> other)
+    public bool Equals(DiceState<T>? other)
     {
         if (other is null)
         {
             return false;
         }
 
-        return Artifact.Equals(other.Artifact) && CurrentValue.Equals(other.CurrentValue);
+        return Artifact.Equals(other.Artifact) && EqualityComparer<T>.Default.Equals(CurrentValue, other.CurrentValue);
     }
 
     /// <inheritdoc />

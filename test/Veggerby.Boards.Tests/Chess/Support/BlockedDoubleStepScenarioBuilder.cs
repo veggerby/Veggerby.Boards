@@ -41,14 +41,38 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
             {
                 var id = $"tile-{FileChar(file)}{rank}";
                 var tile = AddTile(id);
-                if (file < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection(Constants.Directions.East); }
-                if (file > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection(Constants.Directions.West); }
-                if (rank < 8) { tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection(Constants.Directions.North); }
-                if (rank > 1) { tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection(Constants.Directions.South); }
-                if (file < 8 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection(Constants.Directions.NorthEast); }
-                if (file > 1 && rank < 8) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection(Constants.Directions.NorthWest); }
-                if (file < 8 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection(Constants.Directions.SouthEast); }
-                if (file > 1 && rank > 1) { tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection(Constants.Directions.SouthWest); }
+                if (file < 8)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection(Constants.Directions.East);
+                }
+                if (file > 1)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection(Constants.Directions.West);
+                }
+                if (rank < 8)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection(Constants.Directions.North);
+                }
+                if (rank > 1)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection(Constants.Directions.South);
+                }
+                if (file < 8 && rank < 8)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection(Constants.Directions.NorthEast);
+                }
+                if (file > 1 && rank < 8)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection(Constants.Directions.NorthWest);
+                }
+                if (file < 8 && rank > 1)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection(Constants.Directions.SouthEast);
+                }
+                if (file > 1 && rank > 1)
+                {
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection(Constants.Directions.SouthWest);
+                }
             }
         }
 
@@ -69,7 +93,7 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
         WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
         WithPiece("black-knight-blocker").OnTile(ChessIds.Tiles.E3);
 
-        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
+        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 
         // Movement phase replicate ordering: only need forward move & double-step (capture rules unnecessary here)
         AddGamePhase("move pieces")

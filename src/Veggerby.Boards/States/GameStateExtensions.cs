@@ -19,8 +19,9 @@ public static class GameStateExtensions
     /// <remarks>
     /// This helper avoids exceptions when zero or multiple active players exist, simplifying conditions and guards.
     /// </remarks>
-    public static bool TryGetActivePlayer(this GameState gameState, out Player activePlayer)
+    public static bool TryGetActivePlayer(this GameState gameState, out Player? activePlayer)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
         activePlayer = null;
         var seen = false;
         foreach (var aps in gameState.GetStates<ActivePlayerState>())
@@ -54,6 +55,7 @@ public static class GameStateExtensions
     /// <exception cref="System.InvalidOperationException">Thrown when zero or multiple active players are present.</exception>
     public static Player GetActivePlayer(this GameState gameState)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
         return gameState
             .GetStates<ActivePlayerState>()
             .Where(x => x.IsActive)
@@ -68,8 +70,10 @@ public static class GameStateExtensions
     /// <param name="tile">The tile to inspect.</param>
     /// <param name="owner">Optional owner filter.</param>
     /// <returns>Enumeration of piece artifacts.</returns>
-    public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player owner = null)
+    public static IEnumerable<Piece> GetPiecesOnTile(this GameState gameState, Tile tile, Player? owner = null)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(tile);
         // Only material piece states (exclude captured)
         return [.. gameState
             .GetStates<PieceState>()
@@ -80,9 +84,11 @@ public static class GameStateExtensions
     /// <summary>
     /// Gets the captured state for a specific piece or null if the piece is not captured.
     /// </summary>
-    public static CapturedPieceState GetCapturedState(this GameState gameState, Piece piece)
+    public static CapturedPieceState? GetCapturedState(this GameState gameState, Piece piece)
     {
-        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece)) as CapturedPieceState;
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(piece);
+        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece));
     }
 
     /// <summary>
@@ -96,19 +102,17 @@ public static class GameStateExtensions
     /// <typeparam name="T">Extras record type.</typeparam>
     /// <param name="gameState">Game state.</param>
     /// <returns>Extras instance or null.</returns>
-    public static T GetExtras<T>(this GameState gameState) where T : class
+    public static T? GetExtras<T>(this GameState gameState) where T : class
     {
-        // Find matching generic ExtrasState<T>
-        foreach (var state in gameState.ChildStates)
+        ArgumentNullException.ThrowIfNull(gameState);
+        foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
-            if (state.GetType().IsGenericType && state.GetType().GetGenericTypeDefinition() == typeof(ExtrasState<>) && state is IArtifactState)
+            if (extrasState.ExtrasType == typeof(T))
             {
-                if (state.GetType().GetGenericArguments()[0] == typeof(T))
-                {
-                    return (T)state.GetType().GetProperty("Value").GetValue(state);
-                }
+                return extrasState.Value as T;
             }
         }
+
         return null;
     }
 
@@ -117,17 +121,20 @@ public static class GameStateExtensions
     /// </summary>
     public static GameState ReplaceExtras<T>(this GameState gameState, T value) where T : class
     {
-        Artifact artifact = null;
-        foreach (var state in gameState.ChildStates)
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(value);
+        Artifact? artifact = null;
+        foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
-            if (state.GetType().IsGenericType && state.GetType().GetGenericTypeDefinition() == typeof(ExtrasState<>) && state.GetType().GetGenericArguments()[0] == typeof(T))
+            if (extrasState.ExtrasType == typeof(T))
             {
-                artifact = state.Artifact;
+                artifact = extrasState.Artifact;
                 break;
             }
         }
+
         artifact ??= new ExtrasArtifact($"extras-{typeof(T).FullName}");
-        var wrapper = new ExtrasState<T>(artifact, value);
+        var wrapper = new ExtrasState(artifact, value!, typeof(T));
         return gameState.Next([wrapper]);
     }
 }

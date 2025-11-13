@@ -15,8 +15,14 @@ public sealed class ComputeScoresStateMutator : IStateMutator<ComputeScoresEvent
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState state, ComputeScoresEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Prevent double computation (condition should block but guard anyway for purity).
-        foreach (var _ in state.GetStates<ScoreState>()) { return state; }
+        foreach (var _ in state.GetStates<ScoreState>())
+        {
+            return state;
+        }
 
         // Build lookup: cardId -> victory points
         var vp = new Dictionary<string, int>(StringComparer.Ordinal);

@@ -14,7 +14,11 @@ public class MultiDirectionPatternTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new MultiDirectionPattern([Direction.Clockwise, Direction.CounterClockwise]);
 
             // assert
@@ -40,8 +44,12 @@ public class MultiDirectionPatternTests
         public void Should_throw_with_null_patterns()
         {
             // arrange
+
             // act
-            var actual = () => new MultiDirectionPattern(null);
+
+            // assert
+
+            var actual = () => new MultiDirectionPattern(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("directions");
@@ -51,7 +59,11 @@ public class MultiDirectionPatternTests
         public void Should_throw_with_empty_patterns()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new MultiDirectionPattern(Enumerable.Empty<Direction>());
 
             // assert
@@ -65,6 +77,11 @@ public class MultiDirectionPatternTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
 
             // act
@@ -78,6 +95,11 @@ public class MultiDirectionPatternTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new MultiDirectionPattern([Direction.South]);
 
             // act
@@ -91,6 +113,11 @@ public class MultiDirectionPatternTests
         public void Should_equal_same_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
 
@@ -105,6 +132,11 @@ public class MultiDirectionPatternTests
         public void Should_equal_pattern_same_directions_different_order()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new MultiDirectionPattern([Direction.East, Direction.North, Direction.North]);
 
@@ -119,6 +151,11 @@ public class MultiDirectionPatternTests
         public void Should_not_equal_pattern_same_not_repeatable()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East], false);
 
@@ -133,6 +170,11 @@ public class MultiDirectionPatternTests
         public void Should_not_equal_another_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new DirectionPattern(Direction.North, true);
 
@@ -147,6 +189,11 @@ public class MultiDirectionPatternTests
         public void Should_not_equal_other_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new MultiDirectionPattern([Direction.North, Direction.North, Direction.East]);
 
             // act

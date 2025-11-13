@@ -12,6 +12,9 @@ public sealed class DeckBuildingCreateDeckEventCondition : IGameEventCondition<C
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, CreateDeckEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         foreach (var p in @event.Deck.Piles)
         {
             if (!@event.Piles.ContainsKey(p))

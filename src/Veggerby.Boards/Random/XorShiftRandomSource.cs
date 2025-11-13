@@ -13,7 +13,10 @@ public sealed class XorShiftRandomSource : IRandomSource
     private ulong _state;
 
     /// <inheritdoc />
-    public ulong Seed { get; }
+    public ulong Seed
+    {
+        get;
+    }
 
     private XorShiftRandomSource(ulong state, ulong seed)
     {

@@ -9,7 +9,10 @@
 /// </remarks>
 public class NullGameStateCondition(bool result) : IGameStateCondition
 {
-    private readonly bool _result = result;
+    /// <summary>
+    /// Gets the configured constant evaluation result.
+    /// </summary>
+    public bool Result { get; } = result;
 
     /// <summary>
     /// Initializes a new instance that always evaluates to <c>true</c>.
@@ -25,6 +28,6 @@ public class NullGameStateCondition(bool result) : IGameStateCondition
     /// <returns>The configured <see cref="ConditionResponse"/>.</returns>
     public ConditionResponse Evaluate(GameState state)
     {
-        return _result ? ConditionResponse.Valid : ConditionResponse.Invalid;
+        return Result ? ConditionResponse.Valid : ConditionResponse.Invalid;
     }
 }

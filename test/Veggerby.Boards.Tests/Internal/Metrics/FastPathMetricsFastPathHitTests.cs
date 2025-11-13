@@ -15,7 +15,9 @@ public class FastPathMetricsFastPathHitTests
             BoardId = "fastpath-rook";
             AddDirection(Constants.Directions.East);
             AddPlayer("white");
-            AddTile("a1"); AddTile("b1"); AddTile("c1");
+            AddTile("a1");
+            AddTile("b1");
+            AddTile("c1");
             WithTile("a1").WithRelationTo("b1").InDirection(Constants.Directions.East);
             WithTile("b1").WithRelationTo("c1").InDirection(Constants.Directions.East);
             AddPiece("rook").WithOwner("white").HasDirection(Constants.Directions.East).CanRepeat().OnTile("a1");
@@ -26,6 +28,11 @@ public class FastPathMetricsFastPathHitTests
     public void GivenSliderAndBitboardsEnabled_WhenResolving_ThenFastPathHitIncrements()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path enabled by default
         var builder = new SimpleRookBoard();
@@ -40,9 +47,9 @@ public class FastPathMetricsFastPathHitTests
         var snap = FastPathMetrics.Snapshot();
 
         // assert
-        Assert.NotNull(path);
-        Assert.Equal(1, snap.Attempts);
-        Assert.True(snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1, $"Expected fast-path hit or attack-miss skip, snapshot: hits={snap.FastPathHits}, miss={snap.FastPathSkipAttackMiss}");
-        Assert.Equal(snap.Attempts, snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
+        path.Should().NotBeNull();
+        snap.Attempts.Should().Be(1);
+        (snap.FastPathHits == 1 || snap.FastPathSkipAttackMiss >= 1).Should().BeTrue($"Expected fast-path hit or attack-miss skip, snapshot: hits={snap.FastPathHits}, miss={snap.FastPathSkipAttackMiss}");
+        snap.Attempts.Should().Be(snap.FastPathHits + snap.CompiledHits + snap.LegacyHits + snap.FastPathSkipNoServices + snap.FastPathSkipNotSlider + snap.FastPathSkipAttackMiss + snap.FastPathSkipReconstructFail);
     }
 }

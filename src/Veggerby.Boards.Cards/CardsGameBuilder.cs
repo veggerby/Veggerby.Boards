@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Veggerby.Boards.Cards.Mutators;
@@ -39,7 +40,7 @@ public class CardsGameBuilder : GameBuilder
         public const string C5 = "card-5";
     }
 
-    private Deck _deck;
+    private Deck? _deck;
     private readonly Dictionary<string, IList<Card>> _initialPiles = new();
 
     /// <summary>
@@ -61,14 +62,20 @@ public class CardsGameBuilder : GameBuilder
 
         // Use artifacts to host deck & cards (no board relations needed for this module)
         var pileIds = new[] { Piles.Draw, Piles.Discard, Piles.Hand, Piles.InPlay };
-        _deck = new Deck("deck-1", pileIds);
-        AddArtifact(_deck.Id).WithFactory(id => _deck);
+        var deck = new Deck("deck-1", pileIds);
+        _deck = deck;
+        AddArtifact(deck.Id).WithFactory(id => deck);
 
-        var c1 = new Card(CardIds.C1); AddArtifact(c1.Id).WithFactory(id => c1);
-        var c2 = new Card(CardIds.C2); AddArtifact(c2.Id).WithFactory(id => c2);
-        var c3 = new Card(CardIds.C3); AddArtifact(c3.Id).WithFactory(id => c3);
-        var c4 = new Card(CardIds.C4); AddArtifact(c4.Id).WithFactory(id => c4);
-        var c5 = new Card(CardIds.C5); AddArtifact(c5.Id).WithFactory(id => c5);
+        var c1 = new Card(CardIds.C1);
+        AddArtifact(c1.Id).WithFactory(id => c1);
+        var c2 = new Card(CardIds.C2);
+        AddArtifact(c2.Id).WithFactory(id => c2);
+        var c3 = new Card(CardIds.C3);
+        AddArtifact(c3.Id).WithFactory(id => c3);
+        var c4 = new Card(CardIds.C4);
+        AddArtifact(c4.Id).WithFactory(id => c4);
+        var c5 = new Card(CardIds.C5);
+        AddArtifact(c5.Id).WithFactory(id => c5);
 
         _initialPiles[Piles.Draw] = new List<Card> { c1, c2, c3, c4, c5 };
         _initialPiles[Piles.Discard] = new List<Card>();
@@ -92,5 +99,12 @@ public class CardsGameBuilder : GameBuilder
     /// <summary>
     /// Helper to build initial CreateDeckEvent payload.
     /// </summary>
-    public CreateDeckEvent CreateInitialDeckEvent() => new(_deck, _initialPiles);
+    public CreateDeckEvent CreateInitialDeckEvent()
+    {
+        if (_deck is null)
+        {
+            throw new InvalidOperationException("Deck not initialized. Build must be invoked before calling this helper.");
+        }
+        return new CreateDeckEvent(_deck, _initialPiles);
+    }
 }

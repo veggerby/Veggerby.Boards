@@ -15,19 +15,28 @@ public class ChessCaptureScaffoldingTests
     [Fact]
     public void GivenOpponentPieceInLine_WhenQueenMovesOntoIt_ThenCaptureOccurs()
     {
-        // arrange (direct capture position: queen e1, pawn e7)
+        // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessCaptureScenarioBuilder().Compile();
         var whiteQueen = progress.Game.GetPiece(WhiteQueen);
+        whiteQueen.Should().NotBeNull();
         var blackPawn = progress.Game.GetPiece(BlackPawn5);
+        blackPawn.Should().NotBeNull();
 
         // act: queen moves to e7 capturing pawn
         progress = progress.Move(WhiteQueen, E7);
 
         // assert
-        var queenState = progress.State.GetState<PieceState>(whiteQueen);
-        queenState.CurrentTile.Id.Should().Be(ChessIds.Tiles.E7);
-        progress.State.IsCaptured(blackPawn).Should().BeTrue();
-        progress.State.GetPiecesOnTile(queenState.CurrentTile)
+        var queenState = progress.State.GetState<PieceState>(whiteQueen!);
+        queenState.Should().NotBeNull();
+        queenState!.CurrentTile.Should().NotBeNull();
+        queenState!.CurrentTile!.Id.Should().Be(E7);
+        progress.State.IsCaptured(blackPawn!).Should().BeTrue();
+        progress.State.GetPiecesOnTile(queenState!.CurrentTile)
             .Should().NotContain(p => p.Equals(blackPawn));
     }
 }

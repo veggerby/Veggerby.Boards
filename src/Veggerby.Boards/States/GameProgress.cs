@@ -24,7 +24,7 @@ public partial class GameProgress
     /// <param name="engine">The game engine hosting rules and phase graph.</param>
     /// <param name="state">The current game state.</param>
     /// <param name="events">The historical events (optional).</param>
-    internal GameProgress(GameEngine engine, GameState state, IEnumerable<IGameEvent> events)
+    internal GameProgress(GameEngine engine, GameState state, Veggerby.Boards.Flows.Events.EventChain? events)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
@@ -32,7 +32,7 @@ public partial class GameProgress
 
         Engine = engine;
         State = state;
-        Events = [.. (events ?? Enumerable.Empty<IGameEvent>())];
+        Events = events ?? Veggerby.Boards.Flows.Events.EventChain.Empty;
         Phase = Engine.GamePhaseRoot.GetActiveGamePhase(State);
         // Acceleration snapshots now encapsulated inside EngineCapabilities.AccelerationContext
     }
@@ -40,22 +40,34 @@ public partial class GameProgress
     /// <summary>
     /// Gets the engine context.
     /// </summary>
-    public GameEngine Engine { get; }
+    public GameEngine Engine
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the current state snapshot.
     /// </summary>
-    public GameState State { get; }
+    public GameState State
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the active phase derived from the phase tree and current state.
     /// </summary>
-    public GamePhase Phase { get; }
+    public GamePhase? Phase
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the event history up to this progress state.
     /// </summary>
-    public IEnumerable<IGameEvent> Events { get; }
+    public Veggerby.Boards.Flows.Events.EventChain Events
+    {
+        get;
+    }
 
     // Removed internal snapshot exposure (non-leaky acceleration context now authoritative)
 
@@ -73,7 +85,7 @@ public partial class GameProgress
     {
         // For manual state creation path we fall back to full rebuild if piece map acceleration is enabled.
         var newState = State.Next(newStates);
-        Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, null);
+        Engine.Capabilities?.AccelerationContext?.OnStateTransition(State, newState, new Flows.Events.NullGameEvent());
         return new GameProgress(Engine, newState, Events);
     }
 
@@ -98,10 +110,11 @@ public partial class GameProgress
             var currentEventKind = eventKindFiltering ? EventKindClassifier.Classify(evt) : EventKind.Any;
             var masksEnabled = Internal.FeatureFlags.EnableDecisionPlanMasks && Engine.DecisionPlan.ExclusivityGroupRoots.Length == Engine.DecisionPlan.Entries.Count;
             // Track which group roots have applied (per event) to skip remaining entries in same group when masking enabled.
-            var appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
+            HashSet<int>? appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
             if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
             {
                 // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
+                // Early pruning: if gate condition invalid (or event kind filtered), entire group is skipped with batched observer notifications.
                 foreach (var group in Engine.DecisionPlan.Groups)
                 {
                     var gateEntry = Engine.DecisionPlan.Entries[group.StartIndex];
@@ -116,6 +129,7 @@ public partial class GameProgress
                                 var skipEntry = Engine.DecisionPlan.Entries[idx];
                                 Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, idx);
                             }
+
                             continue; // skip group
                         }
                     }
@@ -129,6 +143,7 @@ public partial class GameProgress
                             var skipEntry = Engine.DecisionPlan.Entries[idx];
                             Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.GroupGateFailed, progress.State, idx);
                         }
+
                         continue; // skip entire group
                     }
 
@@ -139,7 +154,7 @@ public partial class GameProgress
                         if (masksEnabled)
                         {
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
-                            if (root >= 0 && appliedGroupRoots.Contains(root))
+                            if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
                             {
                                 Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, index);
                                 continue; // another entry in this exclusivity group already applied
@@ -183,14 +198,14 @@ public partial class GameProgress
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
 
-                            progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                            progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
                             if (masksEnabled)
                             {
                                 var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
                                 if (root >= 0)
                                 {
-                                    appliedGroupRoots.Add(root);
+                                    appliedGroupRoots?.Add(root);
                                 }
                             }
 
@@ -199,7 +214,7 @@ public partial class GameProgress
                         }
                         else if (ruleCheck.Result == ConditionResult.Invalid)
                         {
-                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                         }
                     }
 
@@ -217,7 +232,7 @@ public partial class GameProgress
                     if (masksEnabled)
                     {
                         var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
-                        if (root >= 0 && appliedGroupRoots.Contains(root))
+                        if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
                         {
                             Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, i);
                             continue;
@@ -255,14 +270,14 @@ public partial class GameProgress
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
 
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Concat([evt]));
+                        progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
                         if (masksEnabled)
                         {
                             var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
                             if (root >= 0)
                             {
-                                appliedGroupRoots.Add(root);
+                                appliedGroupRoots?.Add(root);
                             }
                         }
 
@@ -271,7 +286,7 @@ public partial class GameProgress
                     }
                     else if (ruleCheck.Result == ConditionResult.Invalid)
                     {
-                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase, progress.State);
+                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                     }
                 }
             }
@@ -334,6 +349,7 @@ public partial class GameProgress
             {
                 return EventResult.Accepted(after.State);
             }
+
             return EventResult.Rejected(before, EventRejectionReason.NotApplicable, "No rule produced a state change.");
         }
         catch (InvalidGameEventException ex)
@@ -352,6 +368,7 @@ public partial class GameProgress
             {
                 reason = EventRejectionReason.InvalidOwnership;
             }
+
             return EventResult.Rejected(before, reason, ex.Message);
         }
         catch (Exception ex)

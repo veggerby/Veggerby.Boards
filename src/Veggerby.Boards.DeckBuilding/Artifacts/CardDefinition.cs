@@ -17,16 +17,28 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class CardDefinition : Artifact
 {
     /// <summary>Gets the display name of the card.</summary>
-    public string Name { get; }
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>Gets the set of types associated with the card (e.g., Action, Treasure, Victory).</summary>
-    public IReadOnlyList<string> Types { get; }
+    public IReadOnlyList<string> Types
+    {
+        get;
+    }
 
     /// <summary>Gets the cost used during buy phase.</summary>
-    public int Cost { get; }
+    public int Cost
+    {
+        get;
+    }
 
     /// <summary>Gets the victory points contributed by this card at scoring time.</summary>
-    public int VictoryPoints { get; }
+    public int VictoryPoints
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CardDefinition"/> class.

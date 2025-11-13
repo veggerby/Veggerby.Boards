@@ -43,7 +43,11 @@ public class DirectionTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new Direction("id");
 
             // assert
@@ -54,7 +58,11 @@ public class DirectionTests
         public void Should_throw_from_constructor_no_id()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new Direction(string.Empty);
 
             // assert
@@ -68,6 +76,11 @@ public class DirectionTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new Direction("dir");
 
             // act
@@ -81,6 +94,11 @@ public class DirectionTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new Direction("dir");
 
             // act
@@ -94,6 +112,11 @@ public class DirectionTests
         public void Should_equal_same_type_same_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction1 = new Direction("dir");
             var direction2 = new Direction("dir");
 
@@ -108,6 +131,11 @@ public class DirectionTests
         public void Should_not_equal_same_type_different_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction1 = new Direction("dir1");
             var direction2 = new Direction("dir2");
 
@@ -122,6 +150,11 @@ public class DirectionTests
         public void Should_equal_any_direction()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new Direction("dir1");
 
             // act
@@ -135,6 +168,11 @@ public class DirectionTests
         public void Should_equal_any_other_direction()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction1 = new AnyDirection();
             var direction2 = new Direction("dir2");
 
@@ -149,6 +187,11 @@ public class DirectionTests
         public void Should_not_equal_other_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new Direction("dir");
 
             // act
@@ -165,6 +208,11 @@ public class DirectionTests
         public void Should_return_expected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var direction = new Direction(Constants.Directions.South);
 
             // act

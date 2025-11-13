@@ -32,7 +32,7 @@ public class BitboardIncrementalRandomizedParityTests
 
     private static GameProgress ApplyRandomMoves(GameProgress progress, int targetMoves, int seed)
     {
-        var rng = new System.Random(seed);
+        var rng = new TestDeterministicRng(seed);
         var board = progress.Game.Board;
         var tiles = board.Tiles.Select(t => t.Id).ToArray();
         var movesApplied = 0;
@@ -78,6 +78,11 @@ public class BitboardIncrementalRandomizedParityTests
     public void GivenDeterministicRandomMoveSequence_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var baseline = new ChessGameBuilder().Compile();
         GameProgress incremental;
         using (new FlagScope(true))

@@ -31,10 +31,17 @@ public class SlidingFastPathParityPackTests
 
         protected override void Build()
         {
-            AddDirection(Constants.Directions.North); AddDirection(Constants.Directions.South); AddDirection(Constants.Directions.East); AddDirection(Constants.Directions.West);
-            AddDirection(Constants.Directions.NorthEast); AddDirection(Constants.Directions.NorthWest); AddDirection(Constants.Directions.SouthEast); AddDirection(Constants.Directions.SouthWest);
+            AddDirection(Constants.Directions.North);
+            AddDirection(Constants.Directions.South);
+            AddDirection(Constants.Directions.East);
+            AddDirection(Constants.Directions.West);
+            AddDirection(Constants.Directions.NorthEast);
+            AddDirection(Constants.Directions.NorthWest);
+            AddDirection(Constants.Directions.SouthEast);
+            AddDirection(Constants.Directions.SouthWest);
 
-            AddPlayer("white"); AddPlayer("black");
+            AddPlayer("white");
+            AddPlayer("black");
 
             var files = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
             for (int rank = 1; rank <= 8; rank++)
@@ -51,7 +58,8 @@ public class SlidingFastPathParityPackTests
                 for (int rank = 1; rank <= 8; rank++)
                 {
                     var id = tileId(file, rank);
-                    var n = rank + 1; var s = rank - 1;
+                    var n = rank + 1;
+                    var s = rank - 1;
                     if (n <= 8)
                     {
                         WithTile(id).WithRelationTo(tileId(file, n)).InDirection(Constants.Directions.North);
@@ -123,14 +131,15 @@ public class SlidingFastPathParityPackTests
                         break;
                     case "immobile":
                         break; // intentionally no directions
-                    default: throw new System.InvalidOperationException("Unknown piece spec type");
+                    default:
+                        throw new System.InvalidOperationException("Unknown piece spec type");
                 }
                 pd.OnTile(spec.FromTile);
             }
         }
     }
 
-    private static TilePath ResolveWithFlags(IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
+    private static TilePath? ResolveWithFlags(IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
         using var scope = new FeatureFlagScope(compiledPatterns: compiled, bitboards: bitboards, boardShape: true);
         // Sliding fast-path is enabled by default; enabling bitboards triggers decorator eligibility. For clarity keep explicit intent:
@@ -140,27 +149,33 @@ public class SlidingFastPathParityPackTests
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        if (from == to) { return null; }
-        return progress.ResolvePathCompiledFirst(piece, from, to);
+        piece.Should().NotBeNull();
+        from.Should().NotBeNull();
+        to.Should().NotBeNull();
+        if (from == to)
+        {
+            return null;
+        }
+        return progress.ResolvePathCompiledFirst(piece!, from!, to!);
     }
 
     private static void AssertParity(IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
         // arrange reference (compiled only, no bitboards)
-        var reference = ResolveWithFlags(specs, moving, target, bitboards: false, compiled: true);
+        TilePath? reference = ResolveWithFlags(specs, moving, target, bitboards: false, compiled: true);
         // act fast-path
-        var fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
+        TilePath? fast = ResolveWithFlags(specs, moving, target, bitboards: true, compiled: true);
         // assert
         if (reference is null)
         {
-            Assert.Null(fast);
+            fast.Should().BeNull();
             return;
         }
-        Assert.NotNull(fast);
-        Assert.Equal(reference.To.Id, fast!.To.Id);
+        fast.Should().NotBeNull();
+        fast!.To.Id.Should().Be(reference.To.Id);
         var fastSeq = fast.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
         var refSeq = reference.Relations.Select(r => r.Direction.Id + ":" + r.From.Id + ":" + r.To.Id).ToArray();
-        Assert.Equal(refSeq, fastSeq);
+        fastSeq.Should().BeEquivalentTo(refSeq);
     }
 
     public static IEnumerable<object[]> PackScenarios()

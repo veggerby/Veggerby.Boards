@@ -20,7 +20,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             // Phase condition always false => no active phase.
             AddGamePhase("never active")
                 .If(game => new NullGameStateCondition(false))
@@ -40,7 +40,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             AddGamePhase("invalid move phase")
                 .If<NullGameStateCondition>()
                 .Then()
@@ -60,7 +60,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").CanRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").CanRepeat();
             AddDice("d1").HasValue(4);
             AddDice("d2").HasValue(5);
             AddGamePhase("move phase")
@@ -76,7 +76,9 @@ public class EventResultTests
 
     private class NoMoveRuleGameBuilder : GameBuilder
     {
-        public class NoOpGameEvent : IGameEvent { }
+        public class NoOpGameEvent : IGameEvent
+        {
+        }
 
         private class NoOpMutator : IStateMutator<NoOpGameEvent>
         {
@@ -92,7 +94,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             // Provide a rule for a custom no-op event whose mutator returns the same state reference => NotApplicable.
             AddGamePhase("noop phase")
                 .If<NullGameStateCondition>()
@@ -107,13 +109,21 @@ public class EventResultTests
     public void HandleEventResult_Should_return_Accepted_on_state_change()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
-        var state = progress.State.GetState<PieceState>(piece);
+        piece.Should().NotBeNull();
+        var state = progress.State.GetState<PieceState>(piece!);
+        state.Should().NotBeNull();
         var toTile = game.GetTile("tile-2");
-        var path = new TilePath([new TileRelation(state.CurrentTile, toTile, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        toTile.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(state!.CurrentTile, toTile!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -122,13 +132,22 @@ public class EventResultTests
         result.Applied.Should().BeTrue();
         result.Reason.Should().Be(EventRejectionReason.None);
         result.State.Should().NotBe(progress.State);
-        result.State.GetState<PieceState>(piece).CurrentTile.Should().Be(toTile);
+        piece.Should().NotBeNull();
+        toTile.Should().NotBeNull();
+        var updatedPieceState = result.State.GetState<PieceState>(piece!);
+        updatedPieceState.Should().NotBeNull();
+        updatedPieceState!.CurrentTile.Should().Be(toTile!);
     }
 
     [Fact]
     public void HandleEventResult_Should_return_NotApplicable_when_no_state_change()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new NoMoveRuleGameBuilder().Compile();
         var evt = new NoMoveRuleGameBuilder.NoOpGameEvent();
 
@@ -145,13 +164,21 @@ public class EventResultTests
     public void HandleEventResult_Should_return_InvalidOwnership_on_invalid_from_tile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var wrongFrom = game.GetTile("tile-2");
+        wrongFrom.Should().NotBeNull();
         var toTile = game.GetTile("tile-1");
-        var path = new TilePath([new TileRelation(wrongFrom, toTile, Direction.CounterClockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        toTile.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(wrongFrom!, toTile!, Direction.CounterClockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -166,13 +193,21 @@ public class EventResultTests
     public void HandleEventResult_Should_return_RuleRejected_on_invalid_condition()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new RuleRejectedGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = game.GetTile("a");
+        from.Should().NotBeNull();
         var to = game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -186,13 +221,21 @@ public class EventResultTests
     public void HandleEventResult_Should_return_PathNotFound_on_dice_mismatch()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DiceMismatchGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = game.GetTile("a");
+        from.Should().NotBeNull();
         var to = game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]); // distance 1 not matching dice 4/5
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]); // distance 1 not matching dice 4/5
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -206,13 +249,21 @@ public class EventResultTests
     public void HandleEventResult_Should_return_PhaseClosed_when_no_active_phase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new PhaseClosedGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         // Valid single-step path (phase still closed so it won't apply)
         var from = progress.Game.GetTile("a");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);
@@ -238,7 +289,7 @@ public class EventResultTests
             AddDirection("d");
             AddTile("a").WithRelationTo("b").InDirection("d");
             AddTile("b");
-            AddPiece("piece-1").OnTile("a").HasDirection("d").DoesNotRepeat();
+            AddPiece("piece-1").WithOwner("p1").OnTile("a").HasDirection("d").DoesNotRepeat();
             AddGamePhase("throwing phase")
                 .If<NullGameStateCondition>()
                 .Then()
@@ -253,12 +304,20 @@ public class EventResultTests
     public void HandleEventResult_Should_return_InvalidEvent_on_unmapped_board_exception()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new InvalidEventGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
+        piece.Should().NotBeNull();
         var from = progress.Game.GetTile("a");
+        from.Should().NotBeNull();
         var to = progress.Game.GetTile("b");
-        var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
-        var evt = new MovePieceGameEvent(piece, path);
+        to.Should().NotBeNull();
+        var path = new TilePath([new TileRelation(from!, to!, Direction.Clockwise)]);
+        var evt = new MovePieceGameEvent(piece!, path);
 
         // act
         var result = progress.HandleEventResult(evt);

@@ -13,7 +13,11 @@ public class DirectionPatternTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new DirectionPattern(Direction.Clockwise);
 
             // assert
@@ -25,8 +29,12 @@ public class DirectionPatternTests
         public void Should_throw_with_null_pattern()
         {
             // arrange
+
             // act
-            var actual = () => new DirectionPattern(null);
+
+            // assert
+
+            var actual = () => new DirectionPattern(null!);
 
             // assert
             actual.Should().Throw<ArgumentNullException>().WithParameterName("direction");
@@ -53,6 +61,11 @@ public class DirectionPatternTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new DirectionPattern(Direction.North, true);
 
             // act
@@ -66,6 +79,11 @@ public class DirectionPatternTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new DirectionPattern(Direction.North, true);
 
             // act
@@ -79,6 +97,11 @@ public class DirectionPatternTests
         public void Should_equal_same_type_same_pattern_and_repeat_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new DirectionPattern(Direction.North, true);
             var pattern2 = new DirectionPattern(Direction.North, true);
 
@@ -93,6 +116,11 @@ public class DirectionPatternTests
         public void Should_not_equal_same_type_same_pattern_and_different_repeat_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new DirectionPattern(Direction.North, true);
             var pattern2 = new DirectionPattern(Direction.North, false);
 
@@ -107,6 +135,11 @@ public class DirectionPatternTests
         public void Should_not_equal_same_type_different_pattern_and_same_repeat_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new DirectionPattern(Direction.North, true);
             var pattern2 = new DirectionPattern(Direction.South, true);
 
@@ -121,6 +154,11 @@ public class DirectionPatternTests
         public void Should_not_equal_another_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new DirectionPattern(Direction.North, true);
             var pattern2 = new AnyPattern();
 
@@ -135,6 +173,11 @@ public class DirectionPatternTests
         public void Should_not_equal_other_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new DirectionPattern(Direction.North, true);
 
             // act

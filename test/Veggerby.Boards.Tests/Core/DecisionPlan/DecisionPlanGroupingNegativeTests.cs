@@ -8,7 +8,10 @@ namespace Veggerby.Boards.Tests.Core.DecisionPlan;
 
 internal sealed class CountingFalseCondition : IGameStateCondition
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameState state)
     {
         Evaluations++;
@@ -22,6 +25,11 @@ public class DecisionPlanGroupingNegativeTests
     public void GivenFalseGateCondition_WhenGroupingEnabled_ThenGroupSkippedAndEvaluatedOnce()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var falseGate = new CountingFalseCondition();
         var root = GamePhase.NewParent(200, "root", new NullGameStateCondition());
         GamePhase.New(10, "a", falseGate, GameEventRule<IGameEvent>.Null, root);
@@ -31,10 +39,11 @@ public class DecisionPlanGroupingNegativeTests
         using var _ = new Infrastructure.FeatureFlagScope(grouping: true);
 
         // act - simulate grouped evaluation gate path
+        var dummyState = GameState.New(Array.Empty<IArtifactState>());
         foreach (var g in plan.Groups)
         {
             var gate = plan.Entries[g.StartIndex];
-            gate.Condition.Evaluate(null); // one evaluation only
+            gate.Condition.Evaluate(dummyState); // one evaluation only
         }
 
         // assert

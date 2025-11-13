@@ -16,6 +16,9 @@ public sealed class CapturePieceStateMutator : IStateMutator<MovePieceGameEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(@event);
         var opponentPiece = gameState
             .GetPiecesOnTile(@event.To)
             .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner));
@@ -26,7 +29,7 @@ public sealed class CapturePieceStateMutator : IStateMutator<MovePieceGameEvent>
         }
 
         var attackerCurrent = gameState.GetState<PieceState>(@event.Piece);
-        if (!attackerCurrent.CurrentTile.Equals(@event.From))
+        if (attackerCurrent is null || attackerCurrent.CurrentTile is null || !attackerCurrent.CurrentTile.Equals(@event.From))
         {
             throw new BoardException("Invalid from tile on capture move event");
         }

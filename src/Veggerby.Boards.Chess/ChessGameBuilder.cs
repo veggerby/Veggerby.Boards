@@ -295,7 +295,7 @@ public class ChessGameBuilder : GameBuilder
             EnPassantTargetTileId: null,
             HalfmoveClock: 0,
             FullmoveNumber: 1,
-            MovedPieceIds: System.Array.Empty<string>()));
+            MovedPieceIds: Array.Empty<string>()));
 
         // Piece role metadata map (piece id -> role) used by conditions instead of string heuristics
         // Immutable and color/index agnostic; populated explicitly for clarity.

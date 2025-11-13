@@ -26,11 +26,17 @@ public class DoublingDiceWithActivePlayerGameEventCondition : IGameEventConditio
     /// <summary>
     /// Gets the doubling dice artifact.
     /// </summary>
-    public Dice DoublingDice { get; }
+    public Dice DoublingDice
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, RollDiceGameEvent<int> @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         // Ensure event specifically targets the doubling cube artifact (single dice state)
         var newStates = @event.NewDiceStates.ToList();
         var targetsDoublingCube = newStates.Count == 1 && newStates[0].Artifact.Equals(DoublingDice);

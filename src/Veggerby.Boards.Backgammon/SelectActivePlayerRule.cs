@@ -33,6 +33,10 @@ internal sealed class SelectActivePlayerRule(IGameEventRule inner) : IGameEventR
                 {
                     var white = engine.Game.GetPlayer("white");
                     var black = engine.Game.GetPlayer("black");
+                    if (white is null || black is null)
+                    {
+                        return afterInner; // cannot determine players
+                    }
                     var active = d1.CurrentValue > d2.CurrentValue ? white : black;
                     var selectEvent = new SelectActivePlayerGameEvent(active.Id);
                     var mutator = new SelectActivePlayerGameStateMutator();

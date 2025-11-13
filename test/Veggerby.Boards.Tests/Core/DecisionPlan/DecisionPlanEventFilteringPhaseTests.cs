@@ -17,7 +17,10 @@ internal sealed class TestPhaseControlEvent(string phaseId) : IPhaseControlGameE
 
 internal sealed class RecordingConditionPhase<TEvent> : IGameEventCondition<TEvent> where TEvent : IGameEvent
 {
-    public int Evaluations { get; private set; }
+    public int Evaluations
+    {
+        get; private set;
+    }
     public ConditionResponse Evaluate(GameEngine engine, GameState state, TEvent @event)
     {
         Evaluations++;
@@ -42,6 +45,11 @@ public class DecisionPlanEventFilteringPhaseTests
     public void GivenPhaseEvent_WhenFilteringEnabled_ThenOnlyPhaseRuleEvaluated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingConditionPhase<MovePieceGameEvent>();
         var rollCond = new RecordingConditionPhase<RollDiceGameEvent<int>>();
         var phaseCond = new RecordingConditionPhase<TestPhaseControlEvent>();
@@ -61,6 +69,11 @@ public class DecisionPlanEventFilteringPhaseTests
     public void GivenMoveEvent_WhenFilteringEnabled_ThenPhaseRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingConditionPhase<MovePieceGameEvent>();
         var rollCond = new RecordingConditionPhase<RollDiceGameEvent<int>>();
         var phaseCond = new RecordingConditionPhase<TestPhaseControlEvent>();

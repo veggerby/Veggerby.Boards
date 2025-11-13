@@ -13,6 +13,7 @@ Compiled rule evaluation pipeline + performance layers. Semantics remain invaria
 | Stage | Flag | Effect |
 |-------|------|--------|
 | Grouping | `EnableDecisionPlanGrouping` | Evaluate shared predicate once for grouped entries |
+| Group Gate Pruning | (implicit with grouping) | If the gate predicate fails, the entire contiguous group is skipped (single evaluation + batched skip notifications) |
 | EventKind Filtering | `EnableDecisionPlanEventFiltering` | Skip rules whose coarse kind mismatches current event |
 | Exclusivity Masks | `EnableDecisionPlanMasks` | Skip remaining entries in a mutually exclusive group once one applied |
 

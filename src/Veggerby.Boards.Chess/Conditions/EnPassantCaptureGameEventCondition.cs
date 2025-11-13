@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -20,6 +21,10 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
     /// <returns>Valid if en-passant target matches diagonal pawn move; otherwise Ignore.</returns>
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent moveEvent)
     {
+        ArgumentNullException.ThrowIfNull(engine, nameof(engine));
+        ArgumentNullException.ThrowIfNull(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(moveEvent, nameof(moveEvent));
+
         var @event = moveEvent;
         var rolesExtras = state.GetExtras<ChessPieceRolesExtras>(); // retained for victim lookup later
         if (!ChessPiece.IsPawn(state, @event.Piece.Id))
@@ -51,13 +56,13 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
         }
 
         // Destination must be empty (normal capture condition would have triggered otherwise). If any piece present -> ignore.
-        if (state.GetPiecesOnTile(@event.To).Any())
+        if (@event.To is null || state.GetPiecesOnTile(@event.To).Any())
         {
             return ConditionResponse.Ignore("Destination occupied (not en-passant)");
         }
 
         // Validate structural victim presence: victim is pawn on same file as destination but one rank behind relative to mover direction.
-        if (!ChessCoordinates.TryParse(@event.To.Id, out var file, out var rank))
+        if (@event.To is null || !ChessCoordinates.TryParse(@event.To.Id, out var file, out var rank))
         {
             return ConditionResponse.Ignore("Unparsable target id");
         }
@@ -72,7 +77,7 @@ public sealed class EnPassantCaptureGameEventCondition : IGameEventCondition<Mov
 
         var victimTileId = ChessCoordinates.BuildTileId(file, victimRank);
         var victimTile = engine.Game.Board.GetTile(victimTileId);
-        var victimPawn = state.GetPiecesOnTile(victimTile)
+        var victimPawn = victimTile is null ? null : state.GetPiecesOnTile(victimTile)
             .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(state, p.Id));
 
         if (victimPawn is null)

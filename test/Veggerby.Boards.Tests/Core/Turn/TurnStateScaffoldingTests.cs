@@ -14,6 +14,11 @@ public class TurnStateScaffoldingTests
     public void GivenCompiledGame_WhenInspectingInitialState_ThenTurnStateIsPresent()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder(); // any concrete builder suffices
 
         // act

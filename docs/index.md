@@ -16,6 +16,7 @@ Unified, task‑oriented documentation for the Veggerby.Boards engine focusing o
 | [Extensibility Guide](extensibility.md) | Adding games, events, mutators, conditions, phases |
 | [Feature Flags](feature-flags.md) | List of flags, stability, defaults, related docs |
 | [Performance & Benchmarks](performance.md) | Benchmarks schema, movement & fast-path metrics |
+| [Benchmark Results](benchmark-results.md) | Latest consolidated benchmark summary (generated) |
 | [Diagnostics & Observability](diagnostics.md) | Tracing, observers, metrics, rejection reasons |
 | [Deck-building Module](deck-building.md) | Dominion-like deterministic deck-building core (supply, phases, scoring) |
 | [Roadmap](ROADMAP.md) | Forward-looking capabilities & planned milestones |

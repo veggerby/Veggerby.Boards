@@ -14,7 +14,7 @@ namespace Veggerby.Boards.Tests.Integration.CompiledPatterns;
 /// </summary>
 public class CompiledPatternAdjacencyCacheParityTests
 {
-    private static TilePath ResolveCompiled(GameProgress progress, Piece piece, Tile from, Tile to)
+    private static TilePath? ResolveCompiled(GameProgress progress, Piece piece, Tile from, Tile to)
     {
         return progress.ResolvePathCompiledFirst(piece, from, to);
     }
@@ -29,30 +29,40 @@ public class CompiledPatternAdjacencyCacheParityTests
     {
         // arrange
         var builder = new ChessGameBuilder();
-        TilePath without;
+        TilePath? without;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece(pieceId);
             var from = progress.Game.GetTile($"tile-{fromId}");
             var to = progress.Game.GetTile($"tile-{toId}");
-            without = ResolveCompiled(progress, piece, from, to);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
+            without = ResolveCompiled(progress, piece!, from!, to!);
         }
 
-        TilePath with;
+        TilePath? with;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece(pieceId);
             var from = progress.Game.GetTile($"tile-{fromId}");
             var to = progress.Game.GetTile($"tile-{toId}");
-            with = ResolveCompiled(progress, piece, from, to);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
+            with = ResolveCompiled(progress, piece!, from!, to!);
         }
 
         // assert
-        if (without is null) { with.Should().BeNull(); return; }
+        if (without is null)
+        {
+            with.Should().BeNull();
+            return;
+        }
         with.Should().NotBeNull();
-        with.Distance.Should().Be(without.Distance);
+        with!.Distance.Should().Be(without!.Distance);
         with.To.Should().Be(without.To);
         with.From.Should().Be(without.From);
         with.Relations.Should().HaveSameCount(without.Relations);
@@ -61,31 +71,42 @@ public class CompiledPatternAdjacencyCacheParityTests
     [Fact]
     public void GivenAdjacencyCacheToggle_WhenResolvingDoublePawnAdvance_ThenStructuralPathMatches()
     {
-        // arrange (two-step pawn advance structurally present via fixed pattern)
+        // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
-        TilePath without;
+        TilePath? without;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
             var from = progress.Game.GetTile(ChessIds.Tiles.E2);
             var to = progress.Game.GetTile(ChessIds.Tiles.E4);
-            without = ResolveCompiled(progress, piece, from, to);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
+            without = ResolveCompiled(progress, piece!, from!, to!);
         }
-        TilePath with;
+        TilePath? with;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
             var from = progress.Game.GetTile(ChessIds.Tiles.E2);
             var to = progress.Game.GetTile(ChessIds.Tiles.E4);
-            with = ResolveCompiled(progress, piece, from, to);
+            piece.Should().NotBeNull();
+            from.Should().NotBeNull();
+            to.Should().NotBeNull();
+            with = ResolveCompiled(progress, piece!, from!, to!);
         }
 
         // assert structural path present and consistent both with and without adjacency cache
         without.Should().NotBeNull();
         with.Should().NotBeNull();
-        with.Distance.Should().Be(without.Distance);
+        with!.Distance.Should().Be(without!.Distance);
         with.Relations.Should().HaveSameCount(without.Relations);
     }
 }

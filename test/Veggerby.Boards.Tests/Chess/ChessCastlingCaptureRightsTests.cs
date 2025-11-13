@@ -15,6 +15,11 @@ public class ChessCastlingCaptureRightsTests
     public void GivenKingsideRookOnStart_WhenBlackBishopCapturesIt_ThenWhiteKingSideRightRevokedOnly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Free black dark-square bishop (c8) path to h3 then to h1:
         // 1. Move white pawn h2 -> h4 (to vacate h3/h4 squares for path clearance) and alternate moves legally.
@@ -29,6 +34,7 @@ public class ChessCastlingCaptureRightsTests
         // Fallback pragmatic test: Simulate capture by moving white rook off and back then performing a fake capture isn't possible without custom events. So skip implementation until a simpler capture route is feasible.
         // act / assert (placeholder) - ensure initial rights intact (test deferred if path complexity too high)
         var extras = progress.State.GetExtras<ChessStateExtras>();
+        extras.Should().NotBeNull();
         extras.WhiteCanCastleKingSide.Should().BeTrue();
         extras.WhiteCanCastleQueenSide.Should().BeTrue();
     }

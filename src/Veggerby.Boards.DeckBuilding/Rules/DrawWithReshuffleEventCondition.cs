@@ -12,6 +12,9 @@ public sealed class DrawWithReshuffleEventCondition : IGameEventCondition<DrawWi
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, DrawWithReshuffleEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(@event);
         var ds = state.GetState<DeckState>(@event.Deck);
         if (ds is null)
         {

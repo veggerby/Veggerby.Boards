@@ -15,11 +15,16 @@ public class CompositeGameStateConditionTests
         public void Should_throw_with_null_child_condition_and()
         {
             // arrange
-            IGameStateCondition condition1 = null;
-            IGameStateCondition condition2 = null;
 
             // act
-            var actual = () => condition1.And(condition2);
+
+            // assert
+
+            IGameStateCondition? condition1 = null;
+            IGameStateCondition? condition2 = null;
+
+            // act
+            var actual = () => condition1!.And(condition2!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
@@ -29,11 +34,16 @@ public class CompositeGameStateConditionTests
         public void Should_throw_with_null_child_condition_or()
         {
             // arrange
-            IGameStateCondition condition1 = null;
-            IGameStateCondition condition2 = null;
 
             // act
-            var actual = () => condition1.Or(condition2);
+
+            // assert
+
+            IGameStateCondition? condition1 = null;
+            IGameStateCondition? condition2 = null;
+
+            // act
+            var actual = () => condition1!.Or(condition2!);
 
             // assert
             actual.Should().Throw<ArgumentException>().WithParameterName("childConditions");
@@ -46,13 +56,18 @@ public class CompositeGameStateConditionTests
 
         public Evaluate()
         {
-            _state = GameState.New(null);
+            _state = GameState.New(Array.Empty<IArtifactState>());
         }
 
         [Fact]
         public void Should_evaluate_true_when_all_are_true_when_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(true)
                 .And(new NullGameStateCondition(true));
 
@@ -67,6 +82,11 @@ public class CompositeGameStateConditionTests
         public void Should_evaluate_false_when_not_all_are_true_when_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(true)
                 .And(new NullGameStateCondition(false));
 
@@ -81,6 +101,11 @@ public class CompositeGameStateConditionTests
         public void Should_evaluate_false_when_none_are_true_when_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(false)
                 .And(new NullGameStateCondition(false));
 
@@ -95,6 +120,11 @@ public class CompositeGameStateConditionTests
         public void Should_evaluate_true_when_all_are_true_when_mode_any()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(true)
                 .Or(new NullGameStateCondition(true));
 
@@ -109,6 +139,11 @@ public class CompositeGameStateConditionTests
         public void Should_evaluate_true_when_not_all_are_true_when_mode_any()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(true)
                 .Or(new NullGameStateCondition(false));
 
@@ -123,6 +158,11 @@ public class CompositeGameStateConditionTests
         public void Should_evaluate_false_when_none_are_true_when_mode_any()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition(false)
                 .Or(new NullGameStateCondition(false));
 

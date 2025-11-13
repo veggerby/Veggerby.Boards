@@ -18,11 +18,13 @@ public static partial class GameExtensions
     /// <param name="occupancy">All-piece occupancy mask.</param>
     /// <param name="perPlayer">Optional per-player occupancy mapping.</param>
     /// <returns>True when bitboards available; otherwise false.</returns>
-    internal static bool TryGetBitboards(this GameProgress progress, out Bitboard64 occupancy, out Dictionary<Artifacts.Player, Bitboard64> perPlayer)
+    internal static bool TryGetBitboards(this GameProgress progress, out Bitboard64 occupancy, out Dictionary<Artifacts.Player, Bitboard64>? perPlayer)
     {
         if (!FeatureFlags.EnableBitboards)
         {
-            occupancy = default; perPlayer = null; return false;
+            occupancy = default;
+            perPlayer = null;
+            return false;
         }
         // Bitboard snapshots are now internal to the acceleration context; expose only via occupancy masks when bitboards enabled.
         // Provide minimal reconstruction using IOccupancyIndex when available.
@@ -39,6 +41,8 @@ public static partial class GameExtensions
             }
             return true;
         }
-        occupancy = default; perPlayer = null; return false;
+        occupancy = default;
+        perPlayer = null;
+        return false;
     }
 }

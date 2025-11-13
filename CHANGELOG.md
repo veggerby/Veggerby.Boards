@@ -8,10 +8,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Go Game Module (Workstream 11) - COMPLETE**: Go is now fully playable with complete capture mechanics, ko rule, game termination, and area scoring.
+  - `GroupScanner`: Iterative flood-fill algorithm for finding connected stones and counting liberties. Uses efficient non-recursive implementation suitable for 19x19 boards.
+  - `PlaceStoneStateMutator`: Enhanced with complete capture logic. Removes opponent groups with zero liberties, enforces suicide rule (cannot place stone that leaves own group at zero liberties unless capturing), detects and tracks ko situations.
+  - `PassTurnStateMutator`: Enhanced with game termination logic. Tracks consecutive passes and marks game as ended after double-pass.
+  - `GameEndedState`: Terminal state marker indicating game completion.
+  - `GoScoring`: Area scoring algorithm that flood-fills empty regions to assign territory to controlling player. Counts stones on board plus surrounded territory.
+  - Ko detection: Simple ko rule implemented - prevents immediate recapture in single-stone capture situations by tracking `KoTileId` in extras. Ko is cleared when playing elsewhere or passing.
+  - Comprehensive test suite: **29/29 tests passing (100% success rate)** covering single/multi-stone captures, suicide rule enforcement, ko rule validation (immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere), snapback distinction (multi-stone captures don't trigger ko), pass counting, game termination, and area scoring.
+  - All board sizes functional: 9x9, 13x13, 19x19 with orthogonal liberty topology.
+  - Game fully playable: Can play complete games from opening through capture sequences to double-pass termination and scoring.
+
+- **Chess Full Move Legality (Workstream 10) - COMPLETE**: Chess is now fully playable from start to finish with complete legal move generation and endgame detection.
+  - `ChessMoveGenerator`: Complete pseudo-legal move generation for all piece types (pawns, knights, bishops, rooks, queens, kings) with proper occupancy handling, castling, en passant, and promotion support.
+  - `ChessLegalityFilter`: King safety validation filtering that simulates each move and removes any that would leave the player's king in check. Handles pins, discovered checks, and all special moves.
+  - `ChessEndgameDetector`: Detects checkmate (in check + no legal moves), stalemate (not in check + no legal moves), and check conditions. Provides `GetEndgameStatus()` for game status queries.
+  - `PseudoMove` record type: Represents candidate moves with metadata (piece, from/to tiles, kind, promotion role, capture flag).
+  - `PseudoMoveKind` enum: Classifies move types (Normal, Castle, EnPassant, Promotion).
+  - `EndgameStatus` enum: Represents game status (InProgress, Check, Checkmate, Stalemate).
+  - Enhanced `ChessNomenclature`: Updated `IsCheckmateAfter()` to use `ChessEndgameDetector` for accurate checkmate notation. Full SAN notation now includes # (checkmate), + (check), =Q (promotion), O-O/O-O-O (castling), x (captures), and e.p. (en passant).
+  - Comprehensive test suite: 16+ unit tests covering move generation, legality filtering, endgame detection, and all move variants. 4 integration tests demonstrating full game playability including Scholar's Mate.
+  - All capture types validated: pawn, knight, bishop, rook, queen, and en passant captures with explicit verification that captured pieces are marked via `IsCaptured()` and removed from the board.
+  - Castling tests: Kingside and queenside castling with validation that both king and rook move correctly.
+  - Multiple sequential captures: Tests verify capture state persists across multiple captures in a single game.
+
 - Deck-building: Optional supply depletion alternate end trigger via `WithEndTrigger(new DeckBuildingEndTriggerOptions(...))` enabling threshold and/or key pile emptiness to permit `EndGameEvent`.
- - Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
- - Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).
- - Tests: Structural sharing test ensuring only target pile content changes on `GainFromSupplyEvent`; supply stats decrement tests (no increment unless crossing to zero).
+- Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
+- Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).
+- Tests: Structural sharing test ensuring only target pile content changes on `GainFromSupplyEvent`; supply stats decrement tests (no increment unless crossing to zero).
 
 > Bitboard128 scaffolding introduced (global + per-player occupancy up to 128 tiles). See Added/Changed below.
 
@@ -159,8 +183,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Changed
 
 - Acceleration context selection now enables bitboards for boards up to 128 tiles (previously ≤64). Fast path for ≤64 unchanged.
- - Deck-building: `GainFromSupplyStateMutator` optimized (selective cloning) to allocate only a new list for the target pile instead of cloning every pile prior to `DeckState` freezing, reducing intermediate allocations while preserving immutability guarantees.
- - Deck-building: `EndGameEventCondition` now fast-paths supply depletion threshold checks via `DeckSupplyStats` (falls back to legacy scan if stats missing for backward compatibility).
+- Deck-building: `GainFromSupplyStateMutator` optimized (selective cloning) to allocate only a new list for the target pile instead of cloning every pile prior to `DeckState` freezing, reducing intermediate allocations while preserving immutability guarantees.
+- Deck-building: `EndGameEventCondition` now fast-paths supply depletion threshold checks via `DeckSupplyStats` (falls back to legacy scan if stats missing for backward compatibility).
 - Sliding attack generator now defensively skips precomputation on degenerate single-direction boards >64 tiles to avoid pathological allocation growth (no functional regression – rays offer no additional branching on such topologies).
 - `BitboardSnapshot` incremental update path extended to handle 128-bit occupancy when active.
 
@@ -187,10 +211,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Maintenance
 
 - Fully removed legacy traversal code.
+- Refactored extras state wrapper from generic `ExtrasState<T>` + reflection construction to non-generic `ExtrasState` eliminating `Activator.CreateInstance` and property reflection during retrieval.
+- Eliminated LINQ from builder hot paths (`CreateTileRelation`, `CreatePiece`, `CreatePattern`) reducing allocations and repeated enumerations during game compile.
 - Added defensive cycle detection + per-ray caps in sliding attack generation and neutralization guard for large single-direction boards (stability improvements for synthetic parity tests).
 - Added benchmarks, parity packs, and cleanup checklists for regression safety.
 - Reaffirmed repository style charter (file-scoped namespaces, explicit braces, no LINQ in hot paths, immutability, deterministic state).
-  - Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
+- Extended style enforcement narrative to include: centralized `ChessIds` usage, metadata predicates instead of heuristics, and guard-based coverage validation.
+- DecisionPlan group gate early pruning implemented (skip entire identical-condition groups when gate fails) reducing redundant condition evaluations and observer noise.
+- Movement path performance: `TilePath` refactored to cache relations, tiles, directions, and distance (removed LINQ from hot accessors).
+- Benchmarks assertion hygiene: converted non-critical setup artifact presence checks from exceptions to `Debug.Assert` to reduce noise without affecting release semantics.
 
 ## [0.1.0] – Initial
 

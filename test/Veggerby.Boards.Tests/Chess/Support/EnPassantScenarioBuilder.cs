@@ -43,14 +43,22 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
             {
                 var id = $"tile-{FileChar(file)}{rank}";
                 var tile = AddTile(id);
-                if (file < 8) tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection(Constants.Directions.East);
-                if (file > 1) tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection(Constants.Directions.West);
-                if (rank < 8) tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection(Constants.Directions.North);
-                if (rank > 1) tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection(Constants.Directions.South);
-                if (file < 8 && rank < 8) tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection(Constants.Directions.NorthEast);
-                if (file > 1 && rank < 8) tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection(Constants.Directions.NorthWest);
-                if (file < 8 && rank > 1) tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection(Constants.Directions.SouthEast);
-                if (file > 1 && rank > 1) tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection(Constants.Directions.SouthWest);
+                if (file < 8)
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank}").InDirection(Constants.Directions.East);
+                if (file > 1)
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank}").InDirection(Constants.Directions.West);
+                if (rank < 8)
+                    tile.WithRelationTo($"tile-{FileChar(file)}{rank + 1}").InDirection(Constants.Directions.North);
+                if (rank > 1)
+                    tile.WithRelationTo($"tile-{FileChar(file)}{rank - 1}").InDirection(Constants.Directions.South);
+                if (file < 8 && rank < 8)
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank + 1}").InDirection(Constants.Directions.NorthEast);
+                if (file > 1 && rank < 8)
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank + 1}").InDirection(Constants.Directions.NorthWest);
+                if (file < 8 && rank > 1)
+                    tile.WithRelationTo($"tile-{FileChar(file + 1)}{rank - 1}").InDirection(Constants.Directions.SouthEast);
+                if (file > 1 && rank > 1)
+                    tile.WithRelationTo($"tile-{FileChar(file - 1)}{rank - 1}").InDirection(Constants.Directions.SouthWest);
             }
         }
 
@@ -91,7 +99,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         }
 
         // Chess extras baseline
-        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, System.Array.Empty<string>()));
+        WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 
         // Role metadata for test pieces
         var roles = new System.Collections.Generic.Dictionary<string, ChessPieceRole>
@@ -120,7 +128,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         WithState(new ChessPieceColorsExtras(colors));
 
         // Guard: ensure every added piece has both role and color metadata (defensive for future edits)
-        Tests.Chess.Support.MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
+        MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
 
         // Active player projection now explicit via WithActivePlayer declarations above.
 

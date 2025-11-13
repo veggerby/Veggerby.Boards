@@ -23,18 +23,21 @@ internal sealed class TurnProfile
     {
         _orderedSegments = ordered.ToArray();
         _segmentOrderIndex = new Dictionary<TurnSegment, int>(_orderedSegments.Length);
+
         for (var i = 0; i < _orderedSegments.Length; i++)
         {
             var seg = _orderedSegments[i];
             if (_segmentOrderIndex.ContainsKey(seg))
             {
-                throw new ArgumentException($"Duplicate segment '{seg}' in turn profile.");
+                throw new ArgumentException(ExceptionMessages.DuplicateTurnProfileSegment);
             }
+
             _segmentOrderIndex.Add(seg, i);
         }
+
         if (_orderedSegments.Length == 0)
         {
-            throw new ArgumentException("Turn profile must contain at least one segment.");
+            throw new ArgumentException(ExceptionMessages.TurnProfileEmpty);
         }
     }
 
@@ -44,21 +47,23 @@ internal sealed class TurnProfile
     public static TurnProfile Default { get; } = new TurnProfile(new[] { TurnSegment.Start, TurnSegment.Main, TurnSegment.End });
 
     /// <summary>
-    /// Returns the next segment after the supplied <paramref name="current"/>, or <c>null</c> if it is the final segment.
+    /// Returns the next segment following <paramref name="current"/> or <c>null</c> when <paramref name="current"/> is terminal.
     /// </summary>
     /// <param name="current">Current segment.</param>
-    /// <returns>Next segment or <c>null</c>.</returns>
+    /// <returns>Next segment or <c>null</c> if the provided segment is the last segment.</returns>
     public TurnSegment? Next(TurnSegment current)
     {
         if (!_segmentOrderIndex.TryGetValue(current, out var index))
         {
-            return null; // unknown segment: treat as terminal (defensive – should not occur)
+            throw new InvalidOperationException($"Unknown segment '{current}' not present in profile.");
         }
+
         var nextIndex = index + 1;
         if (nextIndex >= _orderedSegments.Length)
         {
             return null;
         }
+
         return _orderedSegments[nextIndex];
     }
 
@@ -73,6 +78,7 @@ internal sealed class TurnProfile
         {
             return true; // defensive: unknown treated as terminal
         }
+
         return index == _orderedSegments.Length - 1;
     }
 }

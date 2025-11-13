@@ -12,10 +12,16 @@ namespace Veggerby.Boards.DeckBuilding;
 public sealed class TrashFromHandEvent : IGameEvent
 {
     /// <summary>Target deck.</summary>
-    public Deck Deck { get; }
+    public Deck Deck
+    {
+        get;
+    }
 
     /// <summary>Cards to trash; must be present in the Hand pile.</summary>
-    public IReadOnlyList<Card> Cards { get; }
+    public IReadOnlyList<Card> Cards
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TrashFromHandEvent"/> class.

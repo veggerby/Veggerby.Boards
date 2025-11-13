@@ -16,14 +16,14 @@ internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, ITh
 
     internal CompositeGameEventConditionDefinition<T> Add(GameEventConditionDefinitionBase<T> conditionDefinition, CompositeMode? mode)
     {
-        if (mode is null && _childDefinitions.Any())
+        if (mode is null && _childDefinitions.Count > 0)
         {
-            throw new ArgumentException("Must provide mode for multiple conditions", nameof(mode));
+            throw new ArgumentException(ExceptionMessages.CompositeModeRequired, nameof(mode));
         }
 
         if (_conditionCompositeMode is not null && _conditionCompositeMode.Value != mode)
         {
-            throw new ArgumentException("Must be same composite mode", nameof(mode));
+            throw new ArgumentException(ExceptionMessages.CompositeModeMismatch, nameof(mode));
         }
 
         _conditionCompositeMode = mode;
@@ -33,18 +33,23 @@ internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, ITh
 
     internal override IGameEventCondition<T> Build(Game game)
     {
-        if (!(_childDefinitions.Any()))
+        if (_childDefinitions.Count == 0)
         {
-            return null;
+            IGameEventCondition<T> nullCond = new NullGameEventCondition<T>();
+            return nullCond;
+        }
+        if (_childDefinitions.Count == 1)
+        {
+            var built = _childDefinitions[0].Build(game);
+            return built ?? new NullGameEventCondition<T>();
         }
 
-        if (_childDefinitions.Count() == 1)
+        var conditions = new IGameEventCondition<T>[_childDefinitions.Count];
+        for (int i = 0; i < _childDefinitions.Count; i++)
         {
-            return _childDefinitions.Single().Build(game);
+            conditions[i] = _childDefinitions[i].Build(game);
         }
-
-        var conditions = _childDefinitions.Select(definition => definition.Build(game)).ToArray();
-        return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.Value, conditions);
+        return CompositeGameEventCondition<T>.CreateCompositeCondition(_conditionCompositeMode.GetValueOrDefault(CompositeMode.Any), conditions);
     }
 
     IGameEventConditionDefinitionAnd<T> IGameEventConditionDefinitionAnd<T>.And(GameEventConditionFactory<T> factory)

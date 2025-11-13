@@ -15,6 +15,7 @@ public class InitialGameStateCondition : IGameStateCondition
     /// <returns><see cref="ConditionResponse.Valid"/> when <see cref="GameState.IsInitialState"/> is true; otherwise <see cref="ConditionResponse.Invalid"/>.</returns>
     public ConditionResponse Evaluate(GameState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
         return state.IsInitialState ? ConditionResponse.Valid : ConditionResponse.Invalid;
     }
 }

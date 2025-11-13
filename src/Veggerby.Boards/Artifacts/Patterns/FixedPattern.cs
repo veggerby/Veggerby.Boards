@@ -14,7 +14,10 @@ public class FixedPattern : IPattern
     /// <summary>
     /// Gets the ordered sequence of directions composing the pattern.
     /// </summary>
-    public IEnumerable<Direction> Pattern { get; }
+    public IEnumerable<Direction> Pattern
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FixedPattern"/> class.
@@ -36,21 +39,25 @@ public class FixedPattern : IPattern
     /// <inheritdoc />
     public void Accept(IPatternVisitor visitor)
     {
+        ArgumentNullException.ThrowIfNull(visitor);
         visitor.Visit(this);
     }
 
     /// <inheritdoc />
-    public bool Equals(FixedPattern other)
+    public bool Equals(FixedPattern? other)
     {
         return other is not null && Pattern.SequenceEqual(other.Pattern);
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((FixedPattern)obj);
     }
 

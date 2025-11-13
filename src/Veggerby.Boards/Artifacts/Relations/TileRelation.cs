@@ -10,12 +10,18 @@ public class TileRelation : ArtifactRelation<Tile, Tile>
     /// <summary>
     /// Gets the direction of travel from <see cref="ArtifactRelation{TFrom, TTo}.From"/> to <see cref="ArtifactRelation{TFrom, TTo}.To"/>.
     /// </summary>
-    public Direction Direction { get; }
+    public Direction Direction
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the distance in steps along this relation (must be positive).
     /// </summary>
-    public int Distance { get; }
+    public int Distance
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new tile relation.

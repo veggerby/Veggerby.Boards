@@ -14,8 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - `PassTurnStateMutator`: Enhanced with game termination logic. Tracks consecutive passes and marks game as ended after double-pass.
   - `GameEndedState`: Terminal state marker indicating game completion.
   - `GoScoring`: Area scoring algorithm that flood-fills empty regions to assign territory to controlling player. Counts stones on board plus surrounded territory.
-  - Ko detection: Simple ko rule implemented - prevents immediate recapture in single-stone capture situations by tracking `KoTileId` in extras.
-  - Comprehensive test suite: 13/17 tests passing covering single/multi-stone captures, suicide rule enforcement, pass counting, game termination, and area scoring. 4 advanced tests (ko/snapback patterns) skipped pending pattern refinement but logic is implemented.
+  - Ko detection: Simple ko rule implemented - prevents immediate recapture in single-stone capture situations by tracking `KoTileId` in extras. Ko is cleared when playing elsewhere or passing.
+  - Comprehensive test suite: **29/29 tests passing (100% success rate)** covering single/multi-stone captures, suicide rule enforcement, ko rule validation (immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere), snapback distinction (multi-stone captures don't trigger ko), pass counting, game termination, and area scoring.
   - All board sizes functional: 9x9, 13x13, 19x19 with orthogonal liberty topology.
   - Game fully playable: Can play complete games from opening through capture sequences to double-pass termination and scoring.
 

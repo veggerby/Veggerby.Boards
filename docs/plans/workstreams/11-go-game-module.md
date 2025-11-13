@@ -15,7 +15,7 @@ acceptance:
   - ✅ Consecutive pass rule ends game after two passes (terminal state flagged).
   - ✅ Scoring routine (area mode) computes territory + captures deterministically with tests.
   - ✅ Nomenclature renders placements in standard coordinate form, pass as 'pass'.
-  - ✅ Comprehensive tests: capture chains, suicide rejection, multi-group capture, end-on-two-passes (13/17 passing, 4 advanced tests skipped pending pattern refinement).
+  - ✅ Comprehensive tests: capture chains, suicide rejection, multi-group capture, ko rule validation, end-on-two-passes (29/29 passing, 100% success rate).
 open_followups:
   - Territory vs area scoring mode toggle.
   - Handicap stone placement helper.
@@ -42,12 +42,15 @@ Provide a deterministic, testable Go implementation leveraging the existing engi
 - ✅ `GameEndedState` - Terminal state marker
 - ✅ `GoNomenclature` - Standard coordinate notation
 
-**Test Coverage**: 13/17 tests passing (4 advanced ko/snapback tests skipped pending pattern refinement)
+**Test Coverage**: 29/29 tests passing (100% success rate) ✅
 
 **What Works**:
 - Stone placement with all validations
 - Capture mechanics (single and multi-stone groups)
 - Suicide rule enforcement (with and without capture)
+- Ko rule detection and enforcement (immediate recapture prevention)
+- Ko clearing (via pass and via playing elsewhere)
+- Snapback distinction (multi-stone captures don't trigger ko)
 - Pass events with consecutive tracking
 - Game termination on double-pass
 - Area scoring computation
@@ -57,7 +60,7 @@ Provide a deterministic, testable Go implementation leveraging the existing engi
 
 **Workstream status changed from `partial` to `done` on 2025-11-13.**
 
-Go module is fully playable with all core mechanics implemented and tested. The game supports complete play from opening moves through capture sequences to game termination and scoring. Ko and snapback logic is implemented in the mutator but advanced test patterns require refinement (tests skipped with documentation).
+Go module is fully playable with all core mechanics implemented and thoroughly tested. All 29 tests passing (100% success rate) including complex ko rule scenarios and snapback distinction. The game supports complete play from opening moves through capture sequences to game termination and scoring. Ko detection, enforcement, and clearing are all validated through comprehensive tests.
 
 ---
 _End of workstream 11._

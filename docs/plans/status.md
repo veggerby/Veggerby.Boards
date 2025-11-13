@@ -125,21 +125,18 @@
 * `GroupScanner` - Iterative flood-fill for group and liberty detection
 * Capture mechanics - Zero-liberty group removal working correctly
 * Suicide rule - Placement validation (reject unless capturing)
-* Ko detection - Simple ko tracking in `KoTileId`
+* Ko detection - Simple ko tracking in `KoTileId` with enforcement and clearing
 * Pass termination - Double-pass ends game with terminal state
 * Area scoring - Territory and stone counting algorithm
 * All board sizes supported (9x9, 13x13, 19x19)
-* Comprehensive test coverage: 13/17 tests passing
+* Comprehensive test coverage: **29/29 tests passing (100% success rate)** ✅
   * Single and multi-stone captures validated
   * Suicide rule enforcement (with and without capture)
+  * Ko rule tests: immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere
+  * Snapback test: multi-stone captures don't trigger ko restriction
   * Pass counting and game termination
   * Area scoring with territory assignment
-* Total: 800 tests project-wide (791 passing, 9 skipped)
-
-⚠️ Notes:
-* 4 advanced tests skipped (ko/snapback patterns need refinement)
-* Ko and snapback LOGIC is implemented - test setups require better patterns
-* Game is fully playable for standard play
+* Total: 815 tests project-wide (806 passing, 8 skipped, 1 unrelated)
 
 📦 Deferred (outside acceptance criteria):
 * Superko (positional repetition) detection

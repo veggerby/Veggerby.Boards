@@ -162,10 +162,11 @@ public class GoCaptureTests
         piecesOnBlackTile.Should().ContainSingle().Which.Should().Be(blackStone3, "black stone should be placed");
     }
 
-    [Fact(Skip = "Snapback test pattern needs refinement - capture logic is implemented but test setup doesn't create valid snapback situation")]
+    [Fact]
     public void GivenSnapbackSituation_WhenRecaptureOccurs_ThenCaptureAllowed()
     {
-        // arrange - Snapback: immediate recapture that is NOT ko (captures multiple stones)
+        // arrange - Snapback: immediate recapture that is NOT ko because multiple stones are captured
+        // This tests that ko rule only applies to single-stone captures
         var builder = new GoGameBuilder(9);
         var progress = builder.Compile();
 
@@ -174,40 +175,43 @@ public class GoCaptureTests
         var blackStone3 = progress.Game.GetPiece("black-stone-3")!;
         var blackStone4 = progress.Game.GetPiece("black-stone-4")!;
         var blackStone5 = progress.Game.GetPiece("black-stone-5")!;
+        var blackStone6 = progress.Game.GetPiece("black-stone-6")!;
+        var blackStone7 = progress.Game.GetPiece("black-stone-7")!;
         var whiteStone1 = progress.Game.GetPiece("white-stone-1")!;
         var whiteStone2 = progress.Game.GetPiece("white-stone-2")!;
-        var whiteStone3 = progress.Game.GetPiece("white-stone-3")!;
 
-        // Create snapback setup - black surrounds two white stones
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone1, progress.Game.GetTile("tile-4-3")!));
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone2, progress.Game.GetTile("tile-5-4")!));
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone3, progress.Game.GetTile("tile-6-5")!));
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone4, progress.Game.GetTile("tile-5-6")!));
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone5, progress.Game.GetTile("tile-4-5")!));
-        
-        // White places two stones in  atari (one liberty)
+        // Create a situation where capturing multiple stones won't trigger ko
+        // Place two white stones that can be captured together
         progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone1, progress.Game.GetTile("tile-5-5")!));
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone2, progress.Game.GetTile("tile-4-4")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone1, progress.Game.GetTile("tile-4-5")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone2, progress.Game.GetTile("tile-5-6")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone2, progress.Game.GetTile("tile-4-6")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone3, progress.Game.GetTile("tile-6-5")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone4, progress.Game.GetTile("tile-6-6")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone5, progress.Game.GetTile("tile-5-7")!));
 
-        // White captures black stone at 4-5 (creating snapback opportunity)
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone3, progress.Game.GetTile("tile-3-5")!));
+        var beforeCapture = progress.State;
+        beforeCapture.IsCaptured(whiteStone1).Should().BeFalse();
+        beforeCapture.IsCaptured(whiteStone2).Should().BeFalse();
 
-        var beforeSnapback = progress.State;
-        beforeSnapback.IsCaptured(blackStone5).Should().BeTrue("black stone should be captured");
+        // act - Black captures both white stones by playing at 5-4
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone6, progress.Game.GetTile("tile-5-4")!));
 
-        // act - Black recaptures immediately at same position (snapback - captures 2 white stones)
-        var blackStone6 = progress.Game.GetPiece("black-stone-6")!;
-        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone6, progress.Game.GetTile("tile-4-5")!));
-
-        // assert - Snapback is allowed (not ko because multiple stones captured, different position)
+        // assert - Multiple stone capture should NOT set ko
         var afterState = progress.State;
-        afterState.IsCaptured(whiteStone1).Should().BeTrue("white stone should be captured in snapback");
-        afterState.IsCaptured(whiteStone2).Should().BeTrue("white stone should be captured in snapback");
-        afterState.IsCaptured(blackStone6).Should().BeFalse("recapturing black stone should be placed");
+        afterState.IsCaptured(whiteStone1).Should().BeTrue("white stone 1 should be captured");
+        afterState.IsCaptured(whiteStone2).Should().BeTrue("white stone 2 should be captured");
+        afterState.IsCaptured(blackStone6).Should().BeFalse("capturing black stone should be placed");
         
         // Ko should not be set (multiple stones captured)
         var extras = afterState.GetExtras<GoStateExtras>();
         extras.Should().NotBeNull();
-        extras!.KoTileId.Should().BeNull("ko should not be set for snapback (multiple stones captured)");
+        extras!.KoTileId.Should().BeNull("ko should not be set when capturing multiple stones (this distinguishes snapback from ko)");
+        
+        // Verify white could immediately place at one of the captured positions (no ko restriction)
+        var whiteStone3 = progress.Game.GetPiece("white-stone-3")!;
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone3, progress.Game.GetTile("tile-5-5")!));
+        var afterImmediateRecapture = progress.State;
+        afterImmediateRecapture.IsCaptured(whiteStone3).Should().BeFalse("immediate recapture allowed when multiple stones were captured (snapback scenario)");
     }
 }

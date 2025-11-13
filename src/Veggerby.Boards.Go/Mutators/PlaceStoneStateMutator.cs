@@ -24,7 +24,8 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
         ArgumentNullException.ThrowIfNull(@event);
 
         // Reject placement if tile occupied
-        if (gameState.GetStates<PieceState>().Any(ps => ps.CurrentTile.Id == @event.Target.Id))
+        var existingPieces = gameState.GetPiecesOnTile(@event.Target);
+        if (existingPieces.Any())
         {
             return gameState;
         }
@@ -42,6 +43,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
 
         var scanner = new GroupScanner(engine.Game);
         var capturedStones = new List<Piece>();
+        var capturedTileIds = new List<string>();
 
         // Find and capture opponent groups with zero liberties
         var adjacentTiles = GetAdjacentTiles(engine.Game, @event.Target).ToList();
@@ -50,16 +52,16 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
 
         foreach (var adjTile in adjacentTiles)
         {
-            var adjPiece = tentativeState.GetStates<PieceState>()
-                .FirstOrDefault(ps => ps.CurrentTile.Id == adjTile.Id);
+            var adjPieces = tentativeState.GetPiecesOnTile(adjTile);
+            var adjPiece = adjPieces.FirstOrDefault();
 
-            if (adjPiece != null && adjPiece.Artifact.Owner?.Id != placedStoneOwner?.Id)
+            if (adjPiece != null && adjPiece.Owner?.Id != placedStoneOwner?.Id)
             {
                 // Found an opponent stone, check if its group has zero liberties
-                var groupKey = adjPiece.Artifact.Id;
+                var groupKey = adjPiece.Id;
                 if (!processedGroups.Contains(groupKey))
                 {
-                    var groupInfo = scanner.ScanGroup(tentativeState, (Piece)adjPiece.Artifact);
+                    var groupInfo = scanner.ScanGroup(tentativeState, adjPiece);
                     processedGroups.Add(groupKey);
 
                     // Mark all stones in group as processed
@@ -70,8 +72,16 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
 
                     if (groupInfo.Liberties == 0)
                     {
-                        // Capture the entire group
-                        capturedStones.AddRange(groupInfo.Stones);
+                        // Capture the entire group - record tiles before capturing
+                        foreach (var stone in groupInfo.Stones)
+                        {
+                            capturedStones.Add(stone);
+                            var stoneState = tentativeState.GetState<PieceState>(stone);
+                            if (stoneState != null)
+                            {
+                                capturedTileIds.Add(stoneState.CurrentTile.Id);
+                            }
+                        }
                     }
                 }
             }
@@ -90,20 +100,15 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
             return gameState;
         }
 
-        // Detect ko: single stone capture that could be immediately recaptured
+        // Detect ko: single stone capture by single stone that could be immediately recaptured
         string? newKoTile = null;
-        if (capturedStones.Count == 1 && ownGroup.Stones.Count == 1)
+        if (capturedStones.Count == 1 && ownGroup.Stones.Count == 1 && capturedTileIds.Count == 1)
         {
-            // Check if recapture would recreate the position
-            var capturedTile = gameState.GetStates<PieceState>()
-                .FirstOrDefault(ps => ps.Artifact.Id == capturedStones[0].Id)?.CurrentTile;
-            if (capturedTile != null)
-            {
-                newKoTile = capturedTile.Id;
-            }
+            // Ko is only when single stone captures single stone and recapture would restore position
+            newKoTile = capturedTileIds[0];
         }
 
-        // Update extras: reset pass counter, set ko if applicable
+        // Update extras: reset pass counter, set ko if applicable, clear ko otherwise
         var updatedExtras = extras with
         {
             KoTileId = newKoTile,

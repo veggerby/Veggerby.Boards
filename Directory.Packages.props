@@ -36,8 +36,8 @@
 
     <!-- Benchmarks -->
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
-    <PackageVersion Include="FsCheck.Xunit" Version="3.3.1" />
-    <PackageVersion Include="FsCheck" Version="3.3.1" />
+    <PackageVersion Include="FsCheck.Xunit" Version="3.3.2" />
+    <PackageVersion Include="FsCheck" Version="3.3.2" />
 
     <!-- Public API approval -->
     <PackageVersion Include="PublicApiGenerator" Version="11.4.6" />

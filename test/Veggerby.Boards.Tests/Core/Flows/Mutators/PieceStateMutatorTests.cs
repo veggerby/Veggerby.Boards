@@ -14,6 +14,11 @@ public class PieceStateMutatorTests
         public void Should_update_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -42,6 +47,11 @@ public class PieceStateMutatorTests
         public void Should_throw_with_invalid_from_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;

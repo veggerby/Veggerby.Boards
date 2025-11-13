@@ -14,7 +14,11 @@ public class FixedPatternTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = new FixedPattern([Direction.Clockwise, Direction.Clockwise, Direction.Across]);
 
             // assert
@@ -25,7 +29,11 @@ public class FixedPatternTests
         public void Should_throw_with_null_patterns()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new FixedPattern(null!);
 
             // assert
@@ -36,7 +44,11 @@ public class FixedPatternTests
         public void Should_throw_with_empty_patterns()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new FixedPattern(Enumerable.Empty<Direction>());
 
             // assert
@@ -50,6 +62,11 @@ public class FixedPatternTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
             // act
@@ -63,6 +80,11 @@ public class FixedPatternTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new FixedPattern([Direction.South]);
 
             // act
@@ -76,6 +98,11 @@ public class FixedPatternTests
         public void Should_equal_same_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
@@ -90,6 +117,11 @@ public class FixedPatternTests
         public void Should_not_equal_pattern_same_directions_different_order()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new FixedPattern([Direction.East, Direction.North, Direction.North]);
 
@@ -104,6 +136,11 @@ public class FixedPatternTests
         public void Should_not_equal_another_pattern()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern1 = new FixedPattern([Direction.North, Direction.North, Direction.East]);
             var pattern2 = new DirectionPattern(Direction.North, true);
 
@@ -118,6 +155,11 @@ public class FixedPatternTests
         public void Should_not_equal_other_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var pattern = new FixedPattern([Direction.North, Direction.North, Direction.East]);
 
             // act

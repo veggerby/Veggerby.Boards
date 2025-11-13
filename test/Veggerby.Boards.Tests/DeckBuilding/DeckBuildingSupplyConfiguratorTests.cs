@@ -12,6 +12,12 @@ public class DeckBuildingSupplyConfiguratorTests
     [Fact]
     public void BuildStartupEvents_Definitions_And_Supply_Applied_InInsertionOrder()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -44,6 +50,11 @@ public class DeckBuildingSupplyConfiguratorTests
     public void AddDefinition_Duplicate_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cfg = new DeckBuildingSupplyConfigurator();
         cfg.AddDefinition("copper", "Copper", new[] { "Treasure" }, 0, 0);
 
@@ -58,6 +69,11 @@ public class DeckBuildingSupplyConfiguratorTests
     public void AddSupply_ForUndefinedDefinition_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cfg = new DeckBuildingSupplyConfigurator();
 
         // act
@@ -70,6 +86,12 @@ public class DeckBuildingSupplyConfiguratorTests
     [Fact]
     public void Integration_GainFromSupply_DecrementsAfterStartup()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

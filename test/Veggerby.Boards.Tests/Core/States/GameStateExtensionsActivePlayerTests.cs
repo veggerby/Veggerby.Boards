@@ -11,6 +11,11 @@ public class GameStateExtensionsActivePlayerTests
     public void GivenExactlyOneActive_WhenTryGetActivePlayer_ThenReturnsTrueAndPlayer()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder().Compile();
         var players = progress.Game.Players.ToArray();
         var p1 = players[0];
@@ -32,6 +37,11 @@ public class GameStateExtensionsActivePlayerTests
     public void GivenNoActive_WhenTryGetActivePlayer_ThenReturnsFalse()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder().Compile();
         var players = progress.Game.Players.ToArray();
         var p1 = players[0];
@@ -53,6 +63,11 @@ public class GameStateExtensionsActivePlayerTests
     public void GivenMultipleActive_WhenTryGetActivePlayer_ThenReturnsFalse()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder().Compile();
         var players = progress.Game.Players.ToArray();
         var p1 = players[0];

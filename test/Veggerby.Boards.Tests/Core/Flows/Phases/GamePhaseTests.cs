@@ -18,6 +18,11 @@ public class GamePhaseTests
         public void Should_instantiate_new_gamephase()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var condition = new NullGameStateCondition();
             var parent = GamePhase.NewParent(1);
             var rule = GameEventRule<IGameEvent>.Null;
@@ -54,6 +59,11 @@ public class GamePhaseTests
         public void Should_throw_with_null_condition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var parent = GamePhase.NewParent(1);
 
             // act
@@ -68,6 +78,11 @@ public class GamePhaseTests
         public void Should_throw_with_null_rule()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var parent = GamePhase.NewParent(1);
 
             // act
@@ -91,6 +106,11 @@ public class GamePhaseTests
         public void Should_return_simple_gamephase()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var child = GamePhase.New(1, "test", new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null);
 
             // act
@@ -104,6 +124,11 @@ public class GamePhaseTests
         public void Should_return_null_simple_gamephase_condition_false()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var child = GamePhase.New(1, "test", new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null);
 
             // act
@@ -117,6 +142,11 @@ public class GamePhaseTests
         public void Should_return_simple_gamephase_child()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var parent = GamePhase.NewParent(1);
             var child = GamePhase.New(1, "test", new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, parent);
 
@@ -131,6 +161,11 @@ public class GamePhaseTests
         public void Should_return_null_simple_gamephase_child_condition_is_fakse()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var parent = GamePhase.NewParent(1);
             var child = GamePhase.New(1, "test", new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, parent);
 
@@ -145,6 +180,11 @@ public class GamePhaseTests
         public void Should_return_child_with_valid_condition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var parent = GamePhase.NewParent(1);
             var child1 = GamePhase.New(1, "test 1", new NullGameStateCondition(false), GameEventRule<IGameEvent>.Null, parent);
             var child2 = GamePhase.New(2, "test 2", new NullGameStateCondition(true), GameEventRule<IGameEvent>.Null, parent);
@@ -160,6 +200,11 @@ public class GamePhaseTests
         public void Should_return_correct_child_more_complex_phase_hierarchy()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var root = GamePhase.NewParent(1);
             var group1 = GamePhase.NewParent(1, "test 1", null, root);
             var group2 = GamePhase.NewParent(2, "test 2", new NullGameStateCondition(false), root);

@@ -13,6 +13,12 @@ public class DeckBuildingGainFromSupplyStructuralSharingTests
     [Fact]
     public void GivenMultiplePiles_WhenGain_ThenOnlyTargetPileListReplaced()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

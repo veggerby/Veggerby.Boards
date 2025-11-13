@@ -19,6 +19,11 @@ public class NomenclatureTests
     public void GivenChessPiece_WhenNamed_ThenUsesRoleLetter()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var piece = new Piece("white-pawn-5", owner: null!, patterns: []);
 
@@ -33,6 +38,11 @@ public class NomenclatureTests
     public void GivenBackgammonTile_WhenNamed_ThenStripsPrefix()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new BackgammonNomenclature();
         var tile = new Tile("tile-point-12");
 
@@ -47,6 +57,11 @@ public class NomenclatureTests
     public void GivenSimplePawnAdvance_WhenDescribed_ThenUsesDestinationOnly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var pawn = new Piece("white-pawn-5", owner: null!, patterns: []);
         var from = new Tile(ChessIds.Tiles.E2);
@@ -68,6 +83,11 @@ public class NomenclatureTests
     public void GivenPawnCapture_WhenDescribed_ThenIncludesFileAndX()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var black = new Player(ChessIds.Players.Black);
@@ -97,6 +117,11 @@ public class NomenclatureTests
     public void GivenTwoKnightsCanReach_WhenDescribed_ThenFileDisambiguates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var patterns = new List<IPattern>
@@ -149,6 +174,11 @@ public class NomenclatureTests
     public void GivenRookMoveGivingCheck_WhenDescribed_ThenEndsWithPlus()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var black = new Player(ChessIds.Players.Black);
@@ -197,6 +227,11 @@ public class NomenclatureTests
     public void GivenKingSideCastlingMove_WhenDescribed_ThenOutputsOO()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
@@ -226,6 +261,11 @@ public class NomenclatureTests
     public void GivenQueenSideCastlingMove_WhenDescribed_ThenOutputsOOO()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var king = new Piece("white-king", white, new IPattern[]
@@ -255,6 +295,11 @@ public class NomenclatureTests
     public void GivenPawnPromotes_WhenDescribed_ThenAppendsEqualsQ()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var nomenclature = new ChessNomenclature();
         var white = new Player(ChessIds.Players.White);
         var pawn = new Piece("white-pawn-1", white, new IPattern[] { new DirectionPattern(Direction.South, false) });

@@ -15,6 +15,11 @@ public class ChessCastlingCaptureRightsTests
     public void GivenKingsideRookOnStart_WhenBlackBishopCapturesIt_ThenWhiteKingSideRightRevokedOnly()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Free black dark-square bishop (c8) path to h3 then to h1:
         // 1. Move white pawn h2 -> h4 (to vacate h3/h4 squares for path clearance) and alternate moves legally.

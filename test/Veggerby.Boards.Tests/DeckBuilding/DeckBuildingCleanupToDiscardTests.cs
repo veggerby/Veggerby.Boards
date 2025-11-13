@@ -13,6 +13,12 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenCardsInHandAndInPlay_WhenCleanup_ThenAllMoveToDiscardAndSourcesCleared()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -58,6 +64,12 @@ public class DeckBuildingCleanupToDiscardTests
     [Fact]
     public void GivenNoCardsInHandOrInPlay_WhenCleanup_ThenNoOp()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

@@ -33,7 +33,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenAnyPattern_WhenCompiled_ThenNoCompiledPatternsEmitted()
     {
-        // arrange / act
+        // arrange
+
+        // act
+
+        // assert
+
         var compiled = CompileFor(new AnyPattern());
         // assert
         compiled.Patterns.Should().BeEmpty();
@@ -42,6 +47,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenNullPattern_WhenCompiled_ThenNoCompiledPatternsEmitted()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var compiled = CompileFor(new NullPattern());
         compiled.Patterns.Should().BeEmpty();
     }
@@ -49,6 +60,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenFixedPattern_WhenCompiled_ThenFixedCompiledPatternPresent()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var dir1 = new Direction("ab");
         var dir2 = new Direction("bc");
         var compiled = CompileFor(new FixedPattern(new[] { dir1, dir2 }));
@@ -58,6 +75,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenDirectionPattern_WhenCompiled_ThenRayCompiledPatternPresent()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var dir = new Direction("ab");
         var compiled = CompileFor(new DirectionPattern(dir, isRepeatable: true));
         compiled.Patterns.Should().ContainSingle(p => p.Kind == CompiledPatternKind.Ray && p.IsRepeatable);
@@ -66,6 +89,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenMultiDirectionPattern_WhenCompiled_ThenMultiRayCompiledPatternPresent()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var d1 = new Direction("ab");
         var d2 = new Direction("ac");
         var compiled = CompileFor(new MultiDirectionPattern(new[] { d1, d2 }, isRepeatable: false));
@@ -75,7 +104,12 @@ public class CompiledPatternScopeGuardTests
     [Fact]
     public void GivenTinyBoard_WithAllSupportedKinds_WhenResolving_ThenCompiledMatchesLegacy()
     {
-        // arrange tiny topology: a -> b -> c plus a -> d diagonal like relation for multi-ray shortest path
+        // arrange
+
+        // act
+
+        // assert
+
         var a = new Tile("a");
         var b = new Tile("b");
         var c = new Tile("c");

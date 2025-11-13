@@ -21,6 +21,11 @@ public class StateHashingTests
     public void GivenHashingDisabled_WhenBuildingState_ThenHashIsNull()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = Build(false);
 
         // act (no action – construction only)
@@ -33,6 +38,11 @@ public class StateHashingTests
     public void GivenHashingEnabled_WhenBuildingState_ThenHashHasValue()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = Build(true);
 
         // act (no action – construction only)
@@ -45,6 +55,11 @@ public class StateHashingTests
     public void GivenSameSequence_WhenHashingEnabled_ThenFinalHashesMatch()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
@@ -72,6 +87,11 @@ public class StateHashingTests
     public void GivenDifferentEvents_WhenHashingEnabled_ThenFinalHashesDiffer()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
@@ -99,6 +119,11 @@ public class StateHashingTests
     public void GivenHashingEnabled_WhenBuildingState_ThenHash128HasValue()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = Build(true);
 
         // act (no action – construction only)
@@ -111,6 +136,11 @@ public class StateHashingTests
     public void GivenSameSequence_WhenHashingEnabled_ThenFinalHash128Match()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);

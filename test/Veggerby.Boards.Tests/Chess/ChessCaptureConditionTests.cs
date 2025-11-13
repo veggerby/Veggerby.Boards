@@ -34,7 +34,11 @@ public class ChessCaptureConditionTests
     public void DestinationHasOpponentPiece_ReturnsValid_WhenOpponentPresent()
     {
         // arrange
-        // queen to d7 along blocked path (will not matter for condition itself, just occupancy)
+
+        // act
+
+        // assert
+
         var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D7);
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationHasOpponentPieceGameEventCondition();
@@ -51,6 +55,11 @@ public class ChessCaptureConditionTests
     public void DestinationHasOpponentPiece_ReturnsIgnore_WhenEmpty()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D2); // friendly occupied -> not opponent
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationHasOpponentPieceGameEventCondition();

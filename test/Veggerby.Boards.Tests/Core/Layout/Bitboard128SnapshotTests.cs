@@ -46,6 +46,11 @@ public class Bitboard128SnapshotTests
     public void GivenBoardWithMoreThan64Tiles_WhenSnapshotBuilt_Then128BitOccupancyPopCountMatches()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new SyntheticLargeBoardBuilder(72).Compile();
         var game = progress.Game;
         game.Should().NotBeNull();

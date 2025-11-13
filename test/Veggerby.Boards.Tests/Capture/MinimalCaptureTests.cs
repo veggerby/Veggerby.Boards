@@ -15,6 +15,11 @@ public class MinimalCaptureTests
     public void GivenLinearBoard_WhenSlidingPieceMovesOntoOpponent_ThenCaptureOccurs()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(compiledPatterns: true); // bitboards optional here
         var progress = new MinimalCaptureGameBuilder().Compile();
         var white = progress.Game.GetPiece("white-slider");

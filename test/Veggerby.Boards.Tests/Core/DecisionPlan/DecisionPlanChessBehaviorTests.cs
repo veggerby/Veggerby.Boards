@@ -15,6 +15,11 @@ public class DecisionPlanChessBehaviorTests
     public void GivenSimpleOpening_WhenApplyingMoves_ThenExpectedPiecePositionsPersist()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
 
         // act

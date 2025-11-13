@@ -41,6 +41,11 @@ public class ChessConditionDirectTests
     public void PathNotObstructed_Should_Ignore_Queen_D1_D4()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D4); // passes over d2 (occupied by pawn)
         var engine = new ChessGameBuilder().Compile().Engine; // fresh engine for condition context
         var condition = new PathNotObstructedGameEventCondition();
@@ -60,6 +65,11 @@ public class ChessConditionDirectTests
     public void DestinationNotOwnPiece_Should_Ignore_Queen_D1_D2()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D2); // tile occupied by white pawn
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationNotOwnPieceGameEventCondition();

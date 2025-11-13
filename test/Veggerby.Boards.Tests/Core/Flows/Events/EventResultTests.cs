@@ -109,6 +109,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_Accepted_on_state_change()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
@@ -138,6 +143,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_NotApplicable_when_no_state_change()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new NoMoveRuleGameBuilder().Compile();
         var evt = new NoMoveRuleGameBuilder.NoOpGameEvent();
 
@@ -154,6 +164,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_InvalidOwnership_on_invalid_from_tile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
@@ -178,6 +193,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_RuleRejected_on_invalid_condition()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new RuleRejectedGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
@@ -201,6 +221,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_PathNotFound_on_dice_mismatch()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DiceMismatchGameBuilder().Compile();
         var game = progress.Game;
         var piece = game.GetPiece("piece-1");
@@ -224,6 +249,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_PhaseClosed_when_no_active_phase()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new PhaseClosedGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
         piece.Should().NotBeNull();
@@ -274,6 +304,11 @@ public class EventResultTests
     public void HandleEventResult_Should_return_InvalidEvent_on_unmapped_board_exception()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new InvalidEventGameBuilder().Compile();
         var piece = progress.Game.GetPiece("piece-1");
         piece.Should().NotBeNull();

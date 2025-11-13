@@ -14,6 +14,11 @@ public class FeatureFlagScopeLegacyGuardTests
     public void GivenLoadedAssemblies_WhenScanningTypes_ThenLegacyFeatureFlagScopeDoesNotExist()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         // act

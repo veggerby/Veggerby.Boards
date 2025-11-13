@@ -27,6 +27,11 @@ public class DeckBuildingScoringTests
     public void GivenDefinitionsAndCards_WhenComputeScores_ThenVictoryPointsAggregated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, p2Deck, p1, p2) = BuildGame();
         progress.Should().NotBeNull();
@@ -77,6 +82,11 @@ public class DeckBuildingScoringTests
     public void GivenScoresAlreadyComputed_WhenComputeScoresAgain_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, _, _, _) = BuildGame();
         progress.Should().NotBeNull();
@@ -107,6 +117,11 @@ public class DeckBuildingScoringTests
     public void GivenNoDefinitions_WhenComputeScores_ThenAllZero()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var (progress, p1Deck, p2Deck, p1, p2) = BuildGame();
         progress.Should().NotBeNull();

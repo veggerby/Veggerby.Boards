@@ -19,6 +19,11 @@ public class CompositeGameEventRuleTests
         public void Should_instatiate_composite_rule()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var rule1 = GameEventRule<IGameEvent>.Null;
             var rule2 = GameEventRule<IGameEvent>.Null;
 
@@ -39,6 +44,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_valid_all_rules()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = GameEventRule<IGameEvent>.Null
@@ -57,6 +67,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_valid_all_rules_when_one_ignore()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Valid))
@@ -75,6 +90,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_invalid_all_rules_when_one_fails()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Valid))
@@ -93,6 +113,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_invalid_all_rules_when_all_fail()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Fail("a reason")))
@@ -110,6 +135,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_valid_any_rules()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Valid))
@@ -128,6 +158,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_valid_any_rules_when_one_fails()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Valid))
@@ -146,6 +181,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_invalid_any_rules_when_all_fail()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.Fail("a reason")))
@@ -163,6 +203,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_ignore_when_all_rules_are_ignore_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.NotApplicable))
@@ -181,6 +226,11 @@ public class CompositeGameEventRuleTests
         public void Should_return_ignore_when_all_rules_are_ignore_mode_any()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
 
             var rule = SimpleGameEventRule<IGameEvent>.New(new SimpleGameEventCondition<IGameEvent>((eng, state, @event) => ConditionResponse.NotApplicable))
@@ -202,6 +252,11 @@ public class CompositeGameEventRuleTests
         public void Sould_handle_simple_event_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -234,6 +289,11 @@ public class CompositeGameEventRuleTests
         public void Sould_handle_simple_event_mode_any()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -266,6 +326,11 @@ public class CompositeGameEventRuleTests
         public void Sould_ignore_simple_event_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -295,6 +360,11 @@ public class CompositeGameEventRuleTests
         public void Should_aggregate_game_states()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;
@@ -335,6 +405,11 @@ public class CompositeGameEventRuleTests
         public void Sould_throw_when_event_mode_all()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;

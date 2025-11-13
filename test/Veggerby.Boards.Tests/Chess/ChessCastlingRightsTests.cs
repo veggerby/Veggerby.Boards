@@ -16,6 +16,11 @@ public class ChessCastlingRightsTests
     public void GivenInitialPosition_WhenWhiteMovesKingsideRook_ThenOnlyKingSideRightRevoked()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var extrasBefore = progress.State.GetRequiredExtras<ChessStateExtras>();
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
@@ -38,6 +43,11 @@ public class ChessCastlingRightsTests
     public void GivenInitialPosition_WhenWhiteMovesQueensideRook_ThenOnlyQueenSideRightRevoked()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Clear path: pawn a2 forward double; alternate turn; then move rook a1->a2
         progress = progress.Move(WhitePawn1, A4);
@@ -54,6 +64,11 @@ public class ChessCastlingRightsTests
     public void GivenBothRooksMoved_WhenWhiteAttemptsCastling_ThenInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         // Clear both rook paths and move each rook from its starting square.
         progress = progress.Move(WhitePawn8, H4); // clear kingside

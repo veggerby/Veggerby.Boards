@@ -39,6 +39,11 @@ public class DecisionPlanEventFilteringTests
     public void GivenMoveEvent_WhenFilteringEnabled_ThenRollRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingCondition<MovePieceGameEvent>();
         var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
         var progress = BuildProgressWithPhases(moveCond, rollCond);
@@ -61,6 +66,11 @@ public class DecisionPlanEventFilteringTests
     public void GivenRollEvent_WhenFilteringEnabled_ThenMoveRuleSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var moveCond = new RecordingCondition<MovePieceGameEvent>();
         var rollCond = new RecordingCondition<RollDiceGameEvent<int>>();
         var progress = BuildProgressWithPhases(moveCond, rollCond);

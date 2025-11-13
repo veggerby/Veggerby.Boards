@@ -71,7 +71,12 @@ public class CompiledPatternAdjacencyCacheParityTests
     [Fact]
     public void GivenAdjacencyCacheToggle_WhenResolvingDoublePawnAdvance_ThenStructuralPathMatches()
     {
-        // arrange (two-step pawn advance structurally present via fixed pattern)
+        // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         TilePath? without;
         using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))

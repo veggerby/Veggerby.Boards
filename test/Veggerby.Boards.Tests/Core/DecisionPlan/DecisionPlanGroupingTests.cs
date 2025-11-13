@@ -30,6 +30,11 @@ public class DecisionPlanGroupingTests
     public void GivenContiguousIdenticalConditions_WhenGroupingEnabled_ThenGateEvaluatedOnce()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cTrue = new CountingCondition(true);
         var root = GamePhase.NewParent(100, "root", new NullGameStateCondition());
         // three phases sharing identical condition reference
@@ -63,6 +68,11 @@ public class DecisionPlanGroupingTests
     public void GivenGroupedFalseGate_WhenGroupingEnabled_ThenOnlyNonGroupedConditionEvaluatesIndependently()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var cFalse = new CountingCondition(false);
         var cInner = new CountingCondition(true);
         var root = GamePhase.NewParent(200, "root", new NullGameStateCondition());

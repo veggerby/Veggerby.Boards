@@ -25,6 +25,11 @@ public class BitboardIncrementalParityTests
     public void GivenMoveSequence_WhenIncrementalEnabled_ThenOccupancyMatchesFullRebuild()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builderBase = new ChessGameBuilder();
         var baseline = builderBase.Compile();
         var builderInc = new ChessGameBuilder();

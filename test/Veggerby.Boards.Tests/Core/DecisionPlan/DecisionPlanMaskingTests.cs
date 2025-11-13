@@ -19,6 +19,11 @@ public class DecisionPlanMaskingTests
     public void GivenExclusivePhases_WhenMasksEnabled_ThenSecondPhaseSkippedAfterFirstApplies()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var plan = Build(true, true);
         var piece = plan.Game.GetPiece("a");
         piece.Should().NotBeNull();
@@ -51,6 +56,11 @@ public class DecisionPlanMaskingTests
     public void GivenExclusivePhases_WhenMasksDisabled_ThenSecondPhaseStillEligible()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var plan = Build(true, false);
         var piece = plan.Game.GetPiece("a");
         piece.Should().NotBeNull();

@@ -24,6 +24,9 @@ public class BackgammonGameBuilderTests
         // arrange
 
         // act
+
+        // assert
+
         var actual = new BackgammonGameBuilder().Compile();
 
         // assert

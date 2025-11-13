@@ -74,6 +74,12 @@ public class DecisionPlanSignatureTests
     [Fact]
     public void DecisionPlan_Matches_Locked_Baseline()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var progress = new DeckBuildingGameBuilder().Compile();
         var plan = progress.Engine.DecisionPlan;

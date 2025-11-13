@@ -12,6 +12,12 @@ public class DeckBuildingRuleGuardsTests
     [Fact]
     public void GainFromSupply_NotApplicable_WhenNoDeckState()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var builder = new DeckBuildingGameBuilder();
         builder.WithCard("c1");
@@ -33,6 +39,12 @@ public class DeckBuildingRuleGuardsTests
     [Fact]
     public void GainFromSupply_Fails_WhenUnknownPile()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var builder = new DeckBuildingGameBuilder();
         builder.WithCard("c1");
@@ -60,6 +72,12 @@ public class DeckBuildingRuleGuardsTests
     [Fact]
     public void GainFromSupply_Fails_WhenCardArtifactMissing()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var builder = new DeckBuildingGameBuilder();
         // Intentionally do NOT register card artifact
@@ -86,6 +104,12 @@ public class DeckBuildingRuleGuardsTests
     [Fact]
     public void EndGame_Ignored_WhenScoresMissing_AndOptionsPresent()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var builder = new DeckBuildingGameBuilder().WithEndTrigger(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 1));
         builder.WithCard("c1");
@@ -112,6 +136,12 @@ public class DeckBuildingRuleGuardsTests
     [Fact]
     public void EndGame_Ignored_WhenAlreadyEnded_AndOptionsPresent()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = Support.FeatureFlagGuard.ForceTurnSequencing(true);
         var builder = new DeckBuildingGameBuilder().WithEndTrigger(new DeckBuildingEndTriggerOptions(emptySupplyPilesThreshold: 1));
         builder.WithCard("c1");

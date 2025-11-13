@@ -22,6 +22,11 @@ public class XmlDocCoverageTests
     public void GivenPublicTypes_WhenEnumerated_ThenXmlDocsExistForEachUnlessIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var assembly = typeof(Veggerby.Boards.GameBuilder).Assembly; // anchor on core assembly
         var xmlPath = Path.Combine(Path.GetDirectoryName(assembly.Location)!, Path.GetFileNameWithoutExtension(assembly.Location) + ".xml");
         File.Exists(xmlPath).Should().BeTrue("XML documentation file must be present for coverage enforcement");

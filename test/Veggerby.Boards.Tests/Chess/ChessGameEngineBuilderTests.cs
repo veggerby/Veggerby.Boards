@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Chess;
@@ -19,6 +19,12 @@ public class ChessGameEngineBuilderTests
     [Fact]
     public void Should_initialize_game()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var actual = new ChessGameBuilder().Compile();
 
         // local helper for partial relation presence (does not assert full set)

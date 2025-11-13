@@ -13,6 +13,11 @@ public class TileRelationTests
         public void Should_initialize_from_constructor()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
 
@@ -30,6 +35,11 @@ public class TileRelationTests
         public void Should_initialize_from_constructor_explicit_distance()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
 
@@ -46,6 +56,12 @@ public class TileRelationTests
         [Fact]
         public void Should_throw_null_from()
         {
+            // arrange
+
+            // act
+
+            // assert
+
             var to = new Tile("tile-2");
 
             // act
@@ -58,6 +74,12 @@ public class TileRelationTests
         [Fact]
         public void Should_throw_null_to()
         {
+            // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
 
             // act
@@ -70,6 +92,12 @@ public class TileRelationTests
         [Fact]
         public void Should_throw_null_direction()
         {
+            // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
 
@@ -83,6 +111,12 @@ public class TileRelationTests
         [Fact]
         public void Should_throw_zero_distance()
         {
+            // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
 
@@ -96,6 +130,12 @@ public class TileRelationTests
         [Fact]
         public void Should_throw_negative_distance()
         {
+            // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
 
@@ -113,6 +153,11 @@ public class TileRelationTests
         public void Should_return_expected_string()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
             var relation = new TileRelation(from, to, Direction.Clockwise);

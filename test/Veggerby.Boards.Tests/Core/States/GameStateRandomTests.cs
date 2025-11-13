@@ -19,6 +19,11 @@ public class GameStateRandomTests
     public void GivenStateWithRandom_WhenNextCalled_ThenRandomCloned()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var rng = XorShiftRandomSource.Create(123UL);
         var artifact = new DummyArtifact("a1");
         var state = GameState.New([new DummyArtifactState(artifact)], rng);
@@ -37,6 +42,11 @@ public class GameStateRandomTests
     public void GivenState_WhenWithRandomCalled_ThenRandomReplaced()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var artifact = new DummyArtifact("a1");
         var state = GameState.New([new DummyArtifactState(artifact)]);
         var rng = XorShiftRandomSource.Create(999UL);

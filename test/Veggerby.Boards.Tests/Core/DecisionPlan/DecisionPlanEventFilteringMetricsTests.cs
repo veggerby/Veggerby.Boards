@@ -96,6 +96,11 @@ public class DecisionPlanEventFilteringMetricsTests
     public void GivenMoveEvent_FilteringEnabled_SkipsNonMatchingRuleEvaluations()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObserver) = Build(filtering: false);
         var (enabledProgress, enabledObserver) = Build(filtering: true);
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();

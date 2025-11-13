@@ -1,10 +1,10 @@
 ---
 slug: workstreams
 name: "Workstreams Overview"
-last_updated: 2025-10-12
+last_updated: 2025-11-13
 status_index:
-  done: [1,2,3,17,18]
-  partial: [4,5,6,7,8,9,10,11]
+  done: [1,2,3,10,11,17,18]
+  partial: [4,5,6,7,8,9]
   planned: [12,13,14,16]
 ---
 
@@ -21,8 +21,8 @@ status_index:
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |
 | 8 | Structural Refactors | partial | Timeline zipper + hashing scaffolding (flag-gated). |
 | 9 | Turn & Round Sequencing | partial | Default-on sequencing; mutators + rotation helper; docs helper guidance delivered; Go two-pass & hash parity pending. |
-| 10 | Chess Full Move Legality | partial | Castling rights + safety, metadata predicates, ids normalized; generation & endgame pending. |
-| 11 | Go Game Module | partial | Board + placement/pass scaffolding; capture/ko/scoring pending. |
+| 10 | Chess Full Move Legality | done | Complete legal move generation, king safety filtering, checkmate/stalemate detection, full SAN notation. |
+| 11 | Go Game Module | done | Complete Go implementation: capture/ko/liberty rules, pass termination, area scoring. |
 | 12 | Ludo / Parcheesi Game Module | planned | Race track, entry on 6, capture reset, safe squares baseline. |
 | 13 | Checkers / Draughts Game Module | planned | Dark-square graph, mandatory capture, multi-jump deterministic. |
 | 14 | Monopoly Game Module | planned | Track, property ownership, rent, jail & deck (simplified baseline). |

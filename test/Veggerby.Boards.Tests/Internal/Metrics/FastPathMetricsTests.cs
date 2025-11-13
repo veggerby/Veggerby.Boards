@@ -11,6 +11,11 @@ public class FastPathMetricsTests
     public void GivenBoardWithMoreThan64Tiles_WhenResolvingSlidingPath_ThenFastPathSkippedNoServicesIncrementsAndNoCrash()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path default on
         var progress = new LargeLinearBuilder().Compile();
@@ -33,6 +38,11 @@ public class FastPathMetricsTests
     public void GivenDegenerateLargeSingleDirectionBoard_WhenQueryingSlidingRays_ThenGeneratorNeutralized()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new LargeLinearBuilder().Compile();
@@ -53,6 +63,11 @@ public class FastPathMetricsTests
     public void GivenBitboardsEnabled_WhenResolvingSlidingPath_ThenFastPathHitIncrementsCounter()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
@@ -75,6 +90,11 @@ public class FastPathMetricsTests
     public void GivenBitboardsDisabled_WhenResolvingSlidingPath_ThenFastPathSkippedNoPrereqIncrementsCounter()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
@@ -97,6 +117,11 @@ public class FastPathMetricsTests
     public void GivenNonSlider_WhenResolvingPath_ThenFastPathSkipNotSliderIncrements()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new NonSliderBuilder().Compile();
@@ -119,6 +144,11 @@ public class FastPathMetricsTests
     public void GivenCompiledPatternsEnabledAndFastPathPrereqsMissing_WhenResolving_ThenCompiledHitIncrements()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
@@ -140,6 +170,11 @@ public class FastPathMetricsTests
     public void GivenCompiledPatternsDisabled_WhenResolving_ThenLegacyHitIncrements()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: false);
         var progress = new RookNorthBuilder().Compile();

@@ -28,6 +28,12 @@ public class SimulationProgressingTests
     [Fact]
     public void GivenSequentialSimulator_WhenProgressingMovePolicyAndMaxDepth1_ThenMaxDepthAndOneApplied()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Policy always selects the single forward relation (t1->t2) and emits exactly one move.
@@ -61,6 +67,12 @@ public class SimulationProgressingTests
     [Fact]
     public void GivenSequentialSimulator_WhenPolicyReturnsNullButMovesExist_ThenPolicyReturnedNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Policy applies exactly one legal move (t1->t2) and then returns null on the next invocation.
@@ -95,6 +107,12 @@ public class SimulationProgressingTests
     [Fact]
     public async Task GivenParallelSimulator_WhenProgressingMovePolicyAndMaxDepth1_ThenEachPlayoutMaxDepthAndOneApplied()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         PlayoutPolicy policy = state =>
@@ -126,6 +144,12 @@ public class SimulationProgressingTests
     [Fact]
     public async Task GivenParallelSimulator_WhenPolicyReturnsNullAfterProgress_ThenPolicyReturnedNull()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         var batch = await ParallelSimulator.RunManyDetailedAsync(progress, playoutCount: 2, policyFactory: _ =>
@@ -166,6 +190,12 @@ public class SimulationProgressingTests
     [Fact]
     public void GivenSequentialSimulator_WhenPolicyEmitsIllegalMove_ThenPolicyReturnedNullAndRejectedIncremented()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Rejection scenario: first policy call emits a valid MovePieceGameEvent (applies). Second call emits a TurnPassEvent

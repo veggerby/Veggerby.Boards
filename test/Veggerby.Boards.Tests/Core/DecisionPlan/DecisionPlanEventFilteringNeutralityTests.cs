@@ -84,6 +84,11 @@ public class DecisionPlanEventFilteringNeutralityTests
     public void GivenMoveEvent_FilteringIsNeutral()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildMoveLast(precedingGroups: 4, filtering: false); // groups before move: roll/state/control/dummy
         var (enabledProgress, enabledObs) = BuildMoveLast(precedingGroups: 4, filtering: true);
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();
@@ -106,6 +111,11 @@ public class DecisionPlanEventFilteringNeutralityTests
     public void GivenRollEvent_FilteringIsNeutral()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildRollLast(precedingGroups: 5, filtering: false); // move/state/control/dummy/move2 before roll
         var (enabledProgress, enabledObs) = BuildRollLast(precedingGroups: 5, filtering: true);
         var diceStates = enabledProgress.Game.GetArtifacts<Dice>().Select(d => new DiceState<int>(d, 1)).ToArray();
@@ -125,6 +135,11 @@ public class DecisionPlanEventFilteringNeutralityTests
     public void GivenSingleMatchingRule_FilteringIsNeutral()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var (disabledProgress, disabledObs) = BuildMoveLast(precedingGroups: 0, filtering: false);
         var (enabledProgress, enabledObs) = BuildMoveLast(precedingGroups: 0, filtering: true);
         var piece = disabledProgress.Game.GetArtifacts<Piece>().First();

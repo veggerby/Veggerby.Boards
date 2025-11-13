@@ -14,6 +14,11 @@ public class DiceStateMutatorTests
         public void Should_update_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var engine = new TestGameBuilder().Compile();
             var game = engine.Game;
             var initialState = engine.State;

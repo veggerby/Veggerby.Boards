@@ -11,6 +11,11 @@ public class CardsModuleInvalidFlowTests
     public void CreateDeck_MissingRequiredPile_IsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var deck = new Deck("d", new[] { CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand });
@@ -34,6 +39,11 @@ public class CardsModuleInvalidFlowTests
     public void Move_Explicit_IncludesCardNotInSource_IsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -56,6 +66,11 @@ public class CardsModuleInvalidFlowTests
     public void Discard_ToUnknownPile_IsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());

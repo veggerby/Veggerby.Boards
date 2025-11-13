@@ -11,6 +11,11 @@ public class GoBuilderSmokeTests
     public void GivenNewGoGame_WhenBuilt_ThenBoardHasSize()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new GoGameBuilder(9);
 
         // act
@@ -26,6 +31,11 @@ public class GoBuilderSmokeTests
     public void GivenEmptyIntersection_WhenPlacingStone_ThenPieceStateAdded()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new GoGameBuilder(9);
         var progress = builder.Compile();
         var stone = progress.Game.GetPiece("black-stone-1");

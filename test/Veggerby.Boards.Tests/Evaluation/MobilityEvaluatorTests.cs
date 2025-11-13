@@ -9,6 +9,11 @@ public class MobilityEvaluatorTests
     public void GivenStandardChessStart_WhenComputingMobility_ThenCountsNonZeroAndDeterministic()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, slidingFastPath: true);
         var builder = new Boards.Chess.ChessGameBuilder();
         var progress = builder.Compile();

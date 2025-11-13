@@ -12,6 +12,11 @@ public class CardsModuleEdgeTests
     public void Draw_MoreThanAvailable_IsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -29,6 +34,11 @@ public class CardsModuleEdgeTests
     public void Shuffle_SingleCard_NoOp()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -53,6 +63,11 @@ public class CardsModuleEdgeTests
     public void DeckState_Equality_And_HashCode_Work()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         var create = builder.CreateInitialDeckEvent();
@@ -74,6 +89,11 @@ public class CardsModuleEdgeTests
     public void MoveCardsEvent_CountConstructor_Validates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var deck = new Deck("d", new[] { "draw", "hand" });
 
         // act
@@ -87,6 +107,11 @@ public class CardsModuleEdgeTests
     public void DiscardCardsEvent_Constructor_Validates()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var deck = new Deck("d", new[] { "discard" });
 
         // act
@@ -100,6 +125,11 @@ public class CardsModuleEdgeTests
     public void Deck_Equality_BasedOnIdAndType()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var d1 = new Deck("same", new[] { "p" });
         var d2 = new Deck("same", new[] { "p2" });
         var d3 = new Deck("other", new[] { "p" });
@@ -113,6 +143,11 @@ public class CardsModuleEdgeTests
     public void Deck_Requires_Unique_Piles()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var dupPiles = new[] { "draw", "draw" };
 
         // act
@@ -126,6 +161,11 @@ public class CardsModuleEdgeTests
     public void Deck_Requires_AtLeastOnePile()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var empty = Array.Empty<string>();
 
         // act
@@ -139,6 +179,11 @@ public class CardsModuleEdgeTests
     public void DeckState_MissingRequiredPile_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var deck = new Deck("d", new[] { "draw", "discard" });
         var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal)
         {
@@ -157,6 +202,11 @@ public class CardsModuleEdgeTests
     public void Move_ByCount_Insufficient_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());
@@ -174,6 +224,11 @@ public class CardsModuleEdgeTests
     public void Discard_CardNotPresent_Throws()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new CardsGameBuilder();
         var progress = builder.Compile();
         progress = progress.HandleEvent(builder.CreateInitialDeckEvent());

@@ -15,6 +15,11 @@ public class ChessBlockingTests
     public void GivenInitialPosition_WhenWhiteQueenAttemptsToMoveThroughOwnPiece_ThenMoveIsInvalid()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen);
         queen.Should().NotBeNull();

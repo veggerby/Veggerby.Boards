@@ -15,6 +15,11 @@ public class MovePieceGameEventTests
         public void Should_create_event()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("p");
             var piece = new Piece("piece", owner, [new DirectionPattern(Direction.Clockwise, true)]);
             var from = new Tile("tile-1");
@@ -36,6 +41,11 @@ public class MovePieceGameEventTests
         public void Should_throw_with_null_piece()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var from = new Tile("tile-1");
             var to = new Tile("tile-2");
             var path = new TilePath([new TileRelation(from, to, Direction.Clockwise)]);
@@ -51,6 +61,11 @@ public class MovePieceGameEventTests
         public void Should_throw_with_null_path()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("p");
             var piece = new Piece("piece", owner, [new DirectionPattern(Direction.Clockwise, true)]);
 

@@ -148,6 +148,11 @@ public class ChessInvariants
     public void GivenRandomPawnCaptureScenarios_WhenApplyingCapture_ThenPieceCountDecrementsExactlyOnce()
     {
         // arrange
+
+        // act
+
+        // assert
+
         for (int i = 0; i < 25; i++)
         {
             var builder = new ChessGameBuilder();
@@ -199,6 +204,11 @@ public class ChessInvariants
     public void GivenBlockedPathAttempt_WhenResolvingMove_ThenStateEitherUnchangedOrMoveAppliedWithoutMutation()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         // Attempt to move a rook through a blocking piece (a1 rook trying to reach a4 while own pawn at a2 blocks)
@@ -223,6 +233,11 @@ public class ChessInvariants
     public void GivenTwoStepPawnAdvanceFollowedByIllegalRepeat_WhenReapplied_ThenSecondAdvanceRejectedDeterministically()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var pawn = progress.Game.GetPiece("white-pawn-5"); // e2
@@ -245,6 +260,11 @@ public class ChessInvariants
     public void GivenKingsideCastlingPathBlocked_WhenAttemptingKingSideCastle_ThenStateUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         // Simplified: emulate a kingside castle attempt for white king from d1 toward rook at h1 passing over occupied tiles f1/g1 (bishop/knight present)
@@ -270,6 +290,11 @@ public class ChessInvariants
     public void GivenSimpleAdvanceThenCapture_WhenWhitePawnCapturesBlackPawn_ThenBlackPieceRemovedAndHistoryIntact()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var whitePawn = progress.Game.GetPiece("white-pawn-5"); // e2

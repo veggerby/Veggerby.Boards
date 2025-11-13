@@ -13,6 +13,11 @@ public class NullDiceStateTests
         public void Should_create_dice_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
 
             // act
@@ -25,9 +30,12 @@ public class NullDiceStateTests
         [Fact]
         public void Should_throw_when_null_dice()
         {
-            // arrange (nothing to arrange)
+            // arrange
 
             // act
+
+            // assert
+
             var actual = () => new NullDiceState(null!);
 
             // assert
@@ -41,6 +49,11 @@ public class NullDiceStateTests
         public void Should_equal_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new NullDiceState(dice);
 
@@ -55,6 +68,11 @@ public class NullDiceStateTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new NullDiceState(dice);
 
@@ -69,6 +87,11 @@ public class NullDiceStateTests
         public void Should_equal_other_null_state_same_artifact()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state1 = new NullDiceState(dice);
             var state2 = new NullDiceState(dice);
@@ -84,6 +107,11 @@ public class NullDiceStateTests
         public void Should_not_equal_different_artifacts()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice1 = new Dice("dice-1");
             var dice2 = new Dice("dice-2");
             var state1 = new NullDiceState(dice1);
@@ -100,6 +128,11 @@ public class NullDiceStateTests
         public void Should_not_equal_different_artifact_state_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var owner = new Player("p");
             var piece = new Piece("piece", owner, Array.Empty<Veggerby.Boards.Artifacts.Patterns.IPattern>());
@@ -118,6 +151,11 @@ public class NullDiceStateTests
         public void Should_not_equal_another_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var state = new NullDiceState(dice);
 

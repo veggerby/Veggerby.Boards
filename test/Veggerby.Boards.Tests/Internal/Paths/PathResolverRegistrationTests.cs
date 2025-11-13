@@ -9,6 +9,11 @@ public class PathResolverRegistrationTests
     public void GivenCompiledPatternsEnabled_WhenBuildingGame_ThenPathResolverRegistered()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
@@ -24,6 +29,11 @@ public class PathResolverRegistrationTests
     public void GivenCompiledPatternsDisabled_WhenBuildingGame_ThenFallbackPathResolverRegistered()
     {
         // arrange
+
+        // act
+
+        // assert
+
         using var scope = new FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 

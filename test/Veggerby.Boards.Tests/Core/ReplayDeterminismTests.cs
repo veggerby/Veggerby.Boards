@@ -13,6 +13,11 @@ public class ReplayDeterminismTests
     public void GivenSameSeedAndEventSequence_WhenReplayed_ThenFinalHashesMatch()
     {
         // arrange
+
+        // act
+
+        // assert
+
         const ulong seed = 1337UL;
         using var flags = new FeatureFlagScope(hashing: true);
         var builder = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);

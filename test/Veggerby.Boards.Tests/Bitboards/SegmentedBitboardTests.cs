@@ -12,7 +12,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenEmptySegments_WhenBuilding_ThenEmptyBitboardReturned()
     {
+        // arrange
+
         // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(ReadOnlySpan<ulong>.Empty);
 
         // assert
@@ -26,6 +31,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenSingleSegment_WhenSettingAndClearingBits_ThenStateReflectsChanges()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 0UL });
 
         // act - set bit 5
@@ -46,6 +57,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenNegativeIndex_WhenTestingAndSetting_ThenNoEffect()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 0UL });
 
         bb.Test(-1).Should().BeFalse();
@@ -81,7 +98,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenSetBit_WhenClearingBitAcrossEachInlineSegment_ThenBitRemoved()
     {
-        // arrange: create bits at start of each segment
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 1UL, 1UL, 1UL, 1UL });
         bb.PopCount().Should().Be(4);
 
@@ -99,6 +121,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenOutOfRangeIndex_WhenSettingOrClearing_ThenNoChange()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 0UL });
         var set = bb.WithSet(9999); // segment index far beyond count => no-op
         var cleared = bb.WithCleared(9999);
@@ -111,7 +139,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenSpillSegment_WhenSettingAndClearing_ThenSpillArrayClonedAndUpdated()
     {
-        // arrange: 5 segments triggers spill (Inline capacity = 4). Provide a non-zero bit only in spill for validation.
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 0UL, 0UL, 0UL, 0UL, 0UL });
         bb.SegmentCount.Should().Be(5);
         bb.Any.Should().BeFalse();
@@ -135,7 +168,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenSpillOnlyHasBit_WhenCheckingAny_ThenSpillIterationDetected()
     {
-        // arrange 6 segments, set one bit only in the last spill segment to force loop detection
+        // arrange
+
+        // act
+
+        // assert
+
         var segments = new ulong[] { 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
         var bb = SegmentedBitboard.FromSegments(segments);
         var withBit = bb.WithSet((5 * 64) + 13); // 6th segment (index 5)
@@ -148,9 +186,12 @@ public class SegmentedBitboardTests
     [Fact]
     public void GivenMultipleSegmentsWithBits_WhenPopCount_ThenTotalAccurate()
     {
-        // arrange explicit segment values (choose popcounts for deterministic expectation)
-        // s0: 0b1011 (3) ; s1: 0b10000001 (2) ; s2: 0 (0) ; s3: 0xFFFFFFFFFFFFFFFF (64)
-        // spill[0]: 0b1 (1) => total = 70
+        // arrange
+
+        // act
+
+        // assert
+
         var bb = SegmentedBitboard.FromSegments(stackalloc ulong[] { 0b1011UL, 0b1000_0001UL, 0UL, ulong.MaxValue, 0b1UL });
 
         // act

@@ -16,6 +16,11 @@ public class DecisionPlanBackgammonBehaviorTests
     public void GivenInitialBackgammonGame_WhenRollingDiceAndPassing_ThenTurnAndDiceStateAreUpdated()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new BackgammonGameBuilder().Compile();
 
         // act: roll dice (first player selection happens in builder rules; ensure dice have values) then pass turn

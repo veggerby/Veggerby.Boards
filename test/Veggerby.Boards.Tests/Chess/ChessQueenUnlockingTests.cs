@@ -16,6 +16,11 @@ public class ChessQueenUnlockingTests
     public void GivenPawnAdvance_WhenQueenMovesIntoVacatedSquare_ThenQueenMoves()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen).EnsureNotNull();
         var queenStart = progress.State.GetRequiredPieceState(queen).CurrentTile;
@@ -34,6 +39,11 @@ public class ChessQueenUnlockingTests
     public void GivenPawnAdvance_WhenQueenAttemptsToMoveTwoSquares_ThenBlockedByPawnAtE3()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen).EnsureNotNull();
         var start = progress.State.GetRequiredPieceState(queen).CurrentTile;

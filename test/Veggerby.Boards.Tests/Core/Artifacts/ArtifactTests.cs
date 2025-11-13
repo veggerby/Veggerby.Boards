@@ -12,6 +12,11 @@ public class ArtifactTests
         public void Should_create_with_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("player");
 
             // act
@@ -27,6 +32,9 @@ public class ArtifactTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new Player(null!);
 
             // assert
@@ -40,6 +48,11 @@ public class ArtifactTests
         public void Should_equal_same_object()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("player");
 
             // act
@@ -53,6 +66,11 @@ public class ArtifactTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("player");
 
             // act
@@ -66,6 +84,11 @@ public class ArtifactTests
         public void Should_equal_same_type_same_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player1 = new Player("player");
             var player2 = new Player("player");
 
@@ -80,6 +103,11 @@ public class ArtifactTests
         public void Should_not_equal_same_type_different_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player1 = new Player("player1");
             var player2 = new Player("player2");
 
@@ -94,6 +122,11 @@ public class ArtifactTests
         public void Should_not_equal_different_type_same_id()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player = new Player("id");
             var dice = new Dice("id");
 

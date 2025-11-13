@@ -16,6 +16,11 @@ public class GameTests
         public void Should_initialize_properties()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var player1 = new Player("player1");
             var player2 = new Player("player2");
@@ -35,6 +40,11 @@ public class GameTests
         public void Should_throw_when_null_board_is_specified()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var player1 = new Player("player1");
             var player2 = new Player("player2");
             var piece1 = new Piece("piece1", player1, [new DirectionPattern(Direction.North)]);
@@ -51,6 +61,11 @@ public class GameTests
         public void Should_throw_when_null_players_are_specified()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var player1 = new Player("player1");
             var player2 = new Player("player2");
@@ -68,6 +83,11 @@ public class GameTests
         public void Should_throw_when_empty_players_are_specified()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var player1 = new Player("player1");
             var player2 = new Player("player2");
@@ -85,6 +105,11 @@ public class GameTests
         public void Should_throw_when_null_pieces_are_specified()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var player1 = new Player("player1");
             var player2 = new Player("player2");
@@ -100,6 +125,11 @@ public class GameTests
         public void Should_throw_when_empty_pieces_are_specified()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var player1 = new Player("player1");
             var player2 = new Player("player2");

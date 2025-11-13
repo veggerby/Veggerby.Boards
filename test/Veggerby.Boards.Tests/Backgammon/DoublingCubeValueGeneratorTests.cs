@@ -16,6 +16,9 @@ public class DoublingCubeValueGeneratorTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = new DoublingDiceValueGenerator();
 
             // assert
@@ -51,6 +54,11 @@ public class DoublingCubeValueGeneratorTests
         public void Should_throw_with_null_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var generator = new DoublingDiceValueGenerator();
 
             // act
@@ -64,6 +72,11 @@ public class DoublingCubeValueGeneratorTests
         public void Should_throw_with_different_state_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var generator = new DoublingDiceValueGenerator();
             var initialState = new NullDiceState(new Dice("dice"));
 
@@ -78,6 +91,11 @@ public class DoublingCubeValueGeneratorTests
         public void Should_throw_with_value_below_min()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var generator = new DoublingDiceValueGenerator();
             var initialState = new DiceState<int>(new Dice("dice"), -1);
 
@@ -92,6 +110,11 @@ public class DoublingCubeValueGeneratorTests
         public void Should_throw_not_a_factor_of_2()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var generator = new DoublingDiceValueGenerator();
             var initialState = new DiceState<int>(new Dice("dice"), 15);
 

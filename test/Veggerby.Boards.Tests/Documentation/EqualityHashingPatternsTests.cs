@@ -15,6 +15,11 @@ public class EqualityHashingPatternsTests
     public void GivenAssemblyTypes_WhenScanning_ThenOnlyExpectedTypesOverrideEqualityOrHashCode()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var assembly = typeof(Veggerby.Boards.Artifacts.Game).Assembly;
         // Expected core set (minimum required overrides). Additional overriding types must be explicitly justified or added here.
         var expected = new HashSet<string>

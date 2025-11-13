@@ -18,6 +18,11 @@ public class ChessPawnDoubleStepInvalidTests
     public void GivenPawnHasMoved_WhenAttemptDoubleStep_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new ChessGameBuilder().Compile();
         var pawn = progress.Game.GetPiece(WhitePawn5).EnsureNotNull();
         // act1 single move e2->e3
@@ -37,6 +42,11 @@ public class ChessPawnDoubleStepInvalidTests
     public void GivenIntermediateBlocked_WhenAttemptDoubleStep_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new BlockedDoubleStepScenarioBuilder().Compile();
         var pawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
         var before = progress.State.GetRequiredPieceState(pawn).CurrentTile;
@@ -50,6 +60,11 @@ public class ChessPawnDoubleStepInvalidTests
     public void GivenDestinationOccupied_WhenAttemptDoubleStep_ThenIgnored()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new DestinationOccupiedDoubleStepScenarioBuilder().Compile();
         var pawn = progress.Game.GetPiece("white-pawn-test").EnsureNotNull();
         var before = progress.State.GetRequiredPieceState(pawn).CurrentTile;

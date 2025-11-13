@@ -25,6 +25,11 @@ public class DecisionPlanGroupingNegativeTests
     public void GivenFalseGateCondition_WhenGroupingEnabled_ThenGroupSkippedAndEvaluatedOnce()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var falseGate = new CountingFalseCondition();
         var root = GamePhase.NewParent(200, "root", new NullGameStateCondition());
         GamePhase.New(10, "a", falseGate, GameEventRule<IGameEvent>.Null, root);

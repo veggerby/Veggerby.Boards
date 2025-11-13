@@ -8,6 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Go Game Module (Workstream 11) - COMPLETE**: Go is now fully playable with complete capture mechanics, ko rule, game termination, and area scoring.
+  - `GroupScanner`: Iterative flood-fill algorithm for finding connected stones and counting liberties. Uses efficient non-recursive implementation suitable for 19x19 boards.
+  - `PlaceStoneStateMutator`: Enhanced with complete capture logic. Removes opponent groups with zero liberties, enforces suicide rule (cannot place stone that leaves own group at zero liberties unless capturing), detects and tracks ko situations.
+  - `PassTurnStateMutator`: Enhanced with game termination logic. Tracks consecutive passes and marks game as ended after double-pass.
+  - `GameEndedState`: Terminal state marker indicating game completion.
+  - `GoScoring`: Area scoring algorithm that flood-fills empty regions to assign territory to controlling player. Counts stones on board plus surrounded territory.
+  - Ko detection: Simple ko rule implemented - prevents immediate recapture in single-stone capture situations by tracking `KoTileId` in extras. Ko is cleared when playing elsewhere or passing.
+  - Comprehensive test suite: **29/29 tests passing (100% success rate)** covering single/multi-stone captures, suicide rule enforcement, ko rule validation (immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere), snapback distinction (multi-stone captures don't trigger ko), pass counting, game termination, and area scoring.
+  - All board sizes functional: 9x9, 13x13, 19x19 with orthogonal liberty topology.
+  - Game fully playable: Can play complete games from opening through capture sequences to double-pass termination and scoring.
+
+- **Chess Full Move Legality (Workstream 10) - COMPLETE**: Chess is now fully playable from start to finish with complete legal move generation and endgame detection.
+  - `ChessMoveGenerator`: Complete pseudo-legal move generation for all piece types (pawns, knights, bishops, rooks, queens, kings) with proper occupancy handling, castling, en passant, and promotion support.
+  - `ChessLegalityFilter`: King safety validation filtering that simulates each move and removes any that would leave the player's king in check. Handles pins, discovered checks, and all special moves.
+  - `ChessEndgameDetector`: Detects checkmate (in check + no legal moves), stalemate (not in check + no legal moves), and check conditions. Provides `GetEndgameStatus()` for game status queries.
+  - `PseudoMove` record type: Represents candidate moves with metadata (piece, from/to tiles, kind, promotion role, capture flag).
+  - `PseudoMoveKind` enum: Classifies move types (Normal, Castle, EnPassant, Promotion).
+  - `EndgameStatus` enum: Represents game status (InProgress, Check, Checkmate, Stalemate).
+  - Enhanced `ChessNomenclature`: Updated `IsCheckmateAfter()` to use `ChessEndgameDetector` for accurate checkmate notation. Full SAN notation now includes # (checkmate), + (check), =Q (promotion), O-O/O-O-O (castling), x (captures), and e.p. (en passant).
+  - Comprehensive test suite: 16+ unit tests covering move generation, legality filtering, endgame detection, and all move variants. 4 integration tests demonstrating full game playability including Scholar's Mate.
+  - All capture types validated: pawn, knight, bishop, rook, queen, and en passant captures with explicit verification that captured pieces are marked via `IsCaptured()` and removed from the board.
+  - Castling tests: Kingside and queenside castling with validation that both king and rook move correctly.
+  - Multiple sequential captures: Tests verify capture state persists across multiple captures in a single game.
+
 - Deck-building: Optional supply depletion alternate end trigger via `WithEndTrigger(new DeckBuildingEndTriggerOptions(...))` enabling threshold and/or key pile emptiness to permit `EndGameEvent`.
 - Deck-building: `DeckSupplyStats` extras providing O(1) empty supply pile tracking (cached `TotalPiles` / `EmptyPiles`) maintained incrementally by mutators to avoid repeated dictionary scans during end-trigger evaluation.
 - Benchmarks: `DeckBuildingConditionsBenchmark` and `DeckBuildingConditionOnlyBenchmark` added to quantify full event vs gating condition cost (post-optimization capture: GainFromSupply valid path ≈2.94µs / 7.37KB; condition-only ≈97.6ns / 176B).

@@ -13,6 +13,11 @@ public class GameExtensionsTests
         public void Should_get_piece()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -35,6 +40,11 @@ public class GameExtensionsTests
         public void Should_return_null_for_non_existing_piece()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -60,6 +70,11 @@ public class GameExtensionsTests
         public void Should_get_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -82,6 +97,11 @@ public class GameExtensionsTests
         public void Should_return_null_for_non_existing_tile()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -107,6 +127,11 @@ public class GameExtensionsTests
         public void Should_return_artifact()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -131,6 +156,11 @@ public class GameExtensionsTests
         public void Should_not_return_artifact_not_in_list()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);
@@ -155,6 +185,11 @@ public class GameExtensionsTests
         public void Should_not_return_artifact_incorrect_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var owner = new Player("player");
             var piece1 = new Piece("piece-1", owner, [new NullPattern()]);
             var piece2 = new Piece("piece-2", owner, [new NullPattern()]);

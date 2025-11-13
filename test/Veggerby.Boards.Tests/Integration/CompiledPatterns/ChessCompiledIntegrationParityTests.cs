@@ -47,7 +47,12 @@ public class ChessCompiledIntegrationParityTests
     [Fact]
     public void GivenCompiledPatternsEnabled_WhenResolvingPawnSingleAdvance_ThenPathMatchesLegacy()
     {
-        // arrange (single square advance supported; structural two-step now exists as fixed pattern)
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
@@ -86,7 +91,12 @@ public class ChessCompiledIntegrationParityTests
     [Fact]
     public void GivenCompiledPatternsEnabled_WhenResolvingPawnDoubleAdvance_ThenStructuralPathExists()
     {
-        // arrange (double advance now structurally represented by fixed two-step pattern; legality gated by rules elsewhere)
+        // arrange
+
+        // act
+
+        // assert
+
         using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();

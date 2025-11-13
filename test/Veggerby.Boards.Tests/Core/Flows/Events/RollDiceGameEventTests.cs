@@ -14,6 +14,11 @@ public class RollDiceGameEventTests
         public void Should_create_event()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var dice = new Dice("dice");
             var newState = new DiceState<int>(dice, 4);
 
@@ -30,6 +35,9 @@ public class RollDiceGameEventTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new RollDiceGameEvent<int>(null!);
 
             // assert
@@ -42,6 +50,9 @@ public class RollDiceGameEventTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = () => new RollDiceGameEvent<string>();
 
             // assert

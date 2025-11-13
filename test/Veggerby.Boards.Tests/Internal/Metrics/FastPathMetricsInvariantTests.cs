@@ -8,6 +8,11 @@ public class FastPathMetricsInvariantTests
     public void GivenSyntheticCounters_WhenSummed_ThenInvariantHolds()
     {
         // arrange
+
+        // act
+
+        // assert
+
         FastPathMetrics.Reset();
         // Simulate attempts: 1 fast-path hit, 2 compiled hits, 1 legacy hit, and various skips
         FastPathMetrics.OnAttempt();

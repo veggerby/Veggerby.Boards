@@ -13,6 +13,12 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenEmptyDraw_WithDiscard_WhenDraw2_ReshufflesAndDraws()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();
@@ -56,6 +62,12 @@ public class DeckBuildingDrawWithReshuffleTests
     [Fact]
     public void GivenInsufficientTotal_WhenDraw_ThenRejected()
     {
+        // arrange
+
+        // act
+
+        // assert
+
         using var guard = FeatureFlagGuard.ForceTurnSequencing(true);
         // arrange
         var builder = new DeckBuildingGameBuilder();

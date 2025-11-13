@@ -27,6 +27,9 @@ public class GameStateTests
             // arrange
 
             // act
+
+            // assert
+
             var actual = GameState.New(Array.Empty<IArtifactState>());
 
             // assert
@@ -39,6 +42,11 @@ public class GameStateTests
         public void Should_create_new_game_state_child_states()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = Game.GetPiece("piece-1").EnsureNotNull();
             var tile = Game.GetTile("tile-1").EnsureNotNull();
             var state1 = new PieceState(piece, tile); // unused state used just to assert creation
@@ -59,6 +67,11 @@ public class GameStateTests
         public void Should_return_artifact_get_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = Game.GetPiece("piece-1").EnsureNotNull();
             var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
@@ -80,6 +93,11 @@ public class GameStateTests
         public void Should_return_initial_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = Game.GetPiece("piece-1").EnsureNotNull();
             var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
@@ -96,6 +114,11 @@ public class GameStateTests
         public void Should_not_return_initial_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = Game.GetPiece("piece-1").EnsureNotNull();
             var tile = Game.GetTile("tile-1").EnsureNotNull();
             var expected = new PieceState(piece, tile);
@@ -116,6 +139,11 @@ public class GameStateTests
         public void Should_return_next_state()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece = Game.GetPiece("piece-1").EnsureNotNull();
             var tile1 = Game.GetTile("tile-1").EnsureNotNull();
             var tile2 = Game.GetTile("tile-2").EnsureNotNull();
@@ -141,6 +169,11 @@ public class GameStateTests
         public void Should_return_no_changes_when_equals()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
             var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
             var tile1 = Game.GetTile("tile-1").EnsureNotNull();
@@ -162,6 +195,11 @@ public class GameStateTests
         public void Should_single_addition()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
             var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
             var tile1 = Game.GetTile("tile-1").EnsureNotNull();
@@ -186,6 +224,11 @@ public class GameStateTests
         public void Should_single_change()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
             var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
             var tile1 = Game.GetTile("tile-1").EnsureNotNull();
@@ -211,6 +254,11 @@ public class GameStateTests
         public void Should_capture_various_updates()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
             var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
             var pieceN = Game.GetPiece("piece-n").EnsureNotNull();
@@ -266,6 +314,11 @@ public class GameStateTests
         public void Should_equal_self()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -279,6 +332,11 @@ public class GameStateTests
         public void Should_not_equal_null()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -292,6 +350,11 @@ public class GameStateTests
         public void Should_equal_similar_values_different_instance()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState();
             var gameState2 = NewGameState();
 
@@ -307,6 +370,11 @@ public class GameStateTests
         public void Should_not_equal_similar_values_but_not_initial()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState();
             var gameState2 = NewGameState().Next(Enumerable.Empty<IArtifactState>());
 
@@ -321,6 +389,11 @@ public class GameStateTests
         public void Should_not_equal_one_state_different()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState("tile-1", "tile-2", 3);
             var gameState2 = NewGameState("tile-1", "tile-2", 4);
 
@@ -335,6 +408,11 @@ public class GameStateTests
         public void Should_not_equal_different_state_count()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState1 = NewGameState("tile-1", "tile-2", 3);
             var gameState2 = NewGameState("tile-1", null, 3);
 
@@ -349,6 +427,11 @@ public class GameStateTests
         public void Should_not_equal_different_type()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var gameState = NewGameState();
 
             // act
@@ -362,6 +445,11 @@ public class GameStateTests
         public void Should_equal_same_states_different_order()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var piece1 = Game.GetPiece("piece-1").EnsureNotNull();
             var piece2 = Game.GetPiece("piece-2").EnsureNotNull();
             var tile1 = Game.GetTile("tile-1").EnsureNotNull();

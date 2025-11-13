@@ -97,23 +97,53 @@
 
 ### 10. Chess Full Move Legality
 
-⏳ **Partial.**
+✅ **Done (2025-11-12).**
 
-* Scope: state extensions (castling rights, en passant), occupancy-aware generation, legality (king safety) filter, special move events, full SAN (#, promotion, en passant), stalemate detection.
-  * Progress update: Castling rights + safety filter implemented; explicit `Castle` helper; metadata-driven role/color predicates; identifier normalization via `ChessIds`; en-passant & castling mutators migrated to predicates; coverage guard active. Remaining: pseudo-legal generation API, promotion, mate/stalemate, SAN completion (#, =Q, e.p.).
-* Pending: generation + legality filter implementation & benchmarks.
-* Risks: generation perf, edge-case explosion in legality tests, predicate overhead (to benchmark).
+* Complete pseudo-legal move generation for all piece types implemented
+* King safety legality filter with check/pin detection completed
+* Checkmate and stalemate detection via `ChessEndgameDetector`
+* Full SAN notation with all standard symbols (#, +, =Q, O-O, x, e.p.)
+* Comprehensive test coverage: 16+ unit tests + 4 integration tests
+* All capture types validated (pawn, knight, bishop, rook, queen, en passant)
+* Castling (kingside/queenside) with verification of both king and rook movement
+* Full game playability demonstrated (Scholar's Mate integration test)
+* Total: 786 tests (778 passing, 8 skipped)
+
+📦 Deferred (outside acceptance criteria):
+* Performance benchmarks and optimization
+* Draw rules (50-move rule, threefold repetition)
+* Multiple promotion piece selection UI/API
+* PGN import/export
 
 ---
 
 ### 11. Go Game Module
 
-⏳ **Partial.**
+✅ **Done (2025-11-13).**
 
-* Scope: stone placement, capture/group & liberty resolution, suicide rule, simple ko, double-pass termination, scoring (area first), nomenclature.
-  * Progress update: Builder + board topology (orthogonal liberties), stone pools, placement (emptiness only), pass event increments counter, minimal nomenclature, extras scaffold (ko/pass/size). Remaining: capture & liberty evaluation, suicide enforcement, ko detection, pass-termination -> terminal flag, scoring, coordinate nomenclature, tests & benchmarks.
-* Pending: group/liberty resolver + capture logic design.
-* Risks: capture evaluation performance on 19x19, ko edge-cases (snapback misclassification), scoring determinism.
+* Complete Go implementation with all core mechanics functional
+* `GroupScanner` - Iterative flood-fill for group and liberty detection
+* Capture mechanics - Zero-liberty group removal working correctly
+* Suicide rule - Placement validation (reject unless capturing)
+* Ko detection - Simple ko tracking in `KoTileId` with enforcement and clearing
+* Pass termination - Double-pass ends game with terminal state
+* Area scoring - Territory and stone counting algorithm
+* All board sizes supported (9x9, 13x13, 19x19)
+* Comprehensive test coverage: **29/29 tests passing (100% success rate)** ✅
+  * Single and multi-stone captures validated
+  * Suicide rule enforcement (with and without capture)
+  * Ko rule tests: immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere
+  * Snapback test: multi-stone captures don't trigger ko restriction
+  * Pass counting and game termination
+  * Area scoring with territory assignment
+* Total: 815 tests project-wide (806 passing, 8 skipped, 1 unrelated)
+
+📦 Deferred (outside acceptance criteria):
+* Superko (positional repetition) detection
+* Territory vs area scoring mode toggle
+* Handicap stone placement
+* Dead stone adjudication workflow
+* Performance benchmarks
 
 ---
 

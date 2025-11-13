@@ -14,6 +14,11 @@ public class BackgammonInvariants
     public void GivenInitialBackgammonState_WhenRollingStartingDice_ThenDistinctValuesOrRepeatUntilDistinct()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
         var d1 = progress.Game.Artifacts.OfType<Dice>().Single(d => d.Id == "dice-1");
@@ -33,6 +38,11 @@ public class BackgammonInvariants
     public void GivenDoublingDice_FirstValidRollDoublesValueAndAssignsOwner()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
         var cube = progress.Game.Artifacts.OfType<Dice>().Single(a => a.Id == "doubling-dice");
@@ -65,6 +75,11 @@ public class BackgammonInvariants
     public void GivenDoublingDice_WhenRedoubleAttemptSameTurn_ThenValueUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
         var cube = progress.Game.Artifacts.OfType<Dice>().Single(a => a.Id == "doubling-dice");
@@ -96,6 +111,11 @@ public class BackgammonInvariants
     public void GivenNoActivePlayer_WhenAttemptDoubling_ThenCubeUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
         var cube = progress.Game.Artifacts.OfType<Dice>().Single(a => a.Id == "doubling-dice");
@@ -116,6 +136,11 @@ public class BackgammonInvariants
     public void GivenDoublingDiceOwned_WhenOwnerAttemptsImmediateRedouble_ThenUnchanged()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
         var cube = progress.Game.Artifacts.OfType<Dice>().Single(a => a.Id == "doubling-dice");
@@ -147,6 +172,11 @@ public class BackgammonInvariants
     public void GivenDistinctTurns_WhenOpponentsAlternateRedoubles_ThenValueProgresses2xEachTurn()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
         Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
         try

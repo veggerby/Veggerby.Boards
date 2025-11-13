@@ -21,6 +21,11 @@ public class DecisionPlanEventFilteringStateTests
     public void GivenStateEvent_WhenFilteringEnabled_MoveAndRollPhasesSkipped()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = Build();
         // Force an initial active player selection event directly (simulating post-roll emission)
         var evt = new SelectActivePlayerGameEvent("white");

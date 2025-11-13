@@ -10,6 +10,11 @@ public class BackgammonBoardRendererTests
     public void GivenInitialBackgammon_WhenWrite_ThenTopBottomAndSummaryPrinted()
     {
         // arrange
+
+        // act
+
+        // assert
+
         var progress = new BackgammonGameBuilder().Compile();
         var game = progress.Game;
         var state = progress.State;

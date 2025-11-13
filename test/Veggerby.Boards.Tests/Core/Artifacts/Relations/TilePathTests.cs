@@ -14,6 +14,11 @@ public class TilePathTests
         public void Should_create_tilepath()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();
@@ -42,7 +47,11 @@ public class TilePathTests
         public void Should_throw_null_relations()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new TilePath(null!);
 
             // assert
@@ -53,7 +62,11 @@ public class TilePathTests
         public void Should_throw_empty_relations()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new TilePath(Enumerable.Empty<TileRelation>());
 
             // assert
@@ -64,7 +77,11 @@ public class TilePathTests
         public void Should_throw_null_relation_in_list()
         {
             // arrange
+
             // act
+
+            // assert
+
             var actual = () => new TilePath([null!]);
 
             // assert
@@ -75,6 +92,11 @@ public class TilePathTests
         public void Should_throw_relations_are_not_connected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();
@@ -103,6 +125,11 @@ public class TilePathTests
         public void Should_return_expected()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();
@@ -131,6 +158,11 @@ public class TilePathTests
         public void Should_add_step_to_tilepath()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();
@@ -167,6 +199,11 @@ public class TilePathTests
         public void Should_create_tilepath_from_nothing()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();
@@ -191,6 +228,11 @@ public class TilePathTests
         public void Should_create_tilepath_from_existing()
         {
             // arrange
+
+            // act
+
+            // assert
+
             var board = new TestBoard();
             var tile1 = board.GetTile("tile-1");
             tile1.Should().NotBeNull();

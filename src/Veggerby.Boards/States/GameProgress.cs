@@ -106,189 +106,41 @@ public partial class GameProgress
         foreach (var evt in preProcessed)
         {
             var handled = false;
-            var eventKindFiltering = Internal.FeatureFlags.EnableDecisionPlanEventFiltering;
-            var currentEventKind = eventKindFiltering ? EventKindClassifier.Classify(evt) : EventKind.Any;
-            var masksEnabled = Internal.FeatureFlags.EnableDecisionPlanMasks && Engine.DecisionPlan.ExclusivityGroupRoots.Length == Engine.DecisionPlan.Entries.Count;
-            // Track which group roots have applied (per event) to skip remaining entries in same group when masking enabled.
-            HashSet<int>? appliedGroupRoots = masksEnabled ? new HashSet<int>() : null;
-            if (Internal.FeatureFlags.EnableDecisionPlanGrouping && Engine.DecisionPlan.Groups.Count > 0)
+            // DecisionPlan optimization flags removed (deferred to future performance story) - use simple linear scan
+            for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
             {
-                // Grouped evaluation path: evaluate gate once per contiguous identical-condition group.
-                // Early pruning: if gate condition invalid (or event kind filtered), entire group is skipped with batched observer notifications.
-                foreach (var group in Engine.DecisionPlan.Groups)
+                var entry = Engine.DecisionPlan.Entries[i];
+
+                if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                 {
-                    var gateEntry = Engine.DecisionPlan.Entries[group.StartIndex];
-                    if (eventKindFiltering)
-                    {
-                        var groupKind = Engine.DecisionPlan.SupportedKinds.Length > group.StartIndex ? Engine.DecisionPlan.SupportedKinds[group.StartIndex] : EventKind.Any;
-                        if (groupKind != EventKind.Any && (groupKind & currentEventKind) == 0)
-                        {
-                            for (var offset = 0; offset < group.Length; offset++)
-                            {
-                                var idx = group.StartIndex + offset;
-                                var skipEntry = Engine.DecisionPlan.Entries[idx];
-                                Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, idx);
-                            }
-
-                            continue; // skip group
-                        }
-                    }
-
-                    bool gateValid = gateEntry.ConditionIsAlwaysValid || gateEntry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid);
-                    if (!gateValid)
-                    {
-                        for (var offset = 0; offset < group.Length; offset++)
-                        {
-                            var idx = group.StartIndex + offset;
-                            var skipEntry = Engine.DecisionPlan.Entries[idx];
-                            Engine.Observer.OnRuleSkipped(skipEntry.Phase, skipEntry.Rule, Flows.Observers.RuleSkipReason.GroupGateFailed, progress.State, idx);
-                        }
-
-                        continue; // skip entire group
-                    }
-
-                    for (var offset = 0; offset < group.Length; offset++)
-                    {
-                        var index = group.StartIndex + offset;
-                        var entry = Engine.DecisionPlan.Entries[index];
-                        if (masksEnabled)
-                        {
-                            var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
-                            if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
-                            {
-                                Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, index);
-                                continue; // another entry in this exclusivity group already applied
-                            }
-                        }
-
-                        if (eventKindFiltering)
-                        {
-                            var ek = Engine.DecisionPlan.SupportedKinds.Length > index ? Engine.DecisionPlan.SupportedKinds[index] : EventKind.Any;
-                            if (ek != EventKind.Any && (ek & currentEventKind) == 0)
-                            {
-                                Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, index);
-                                continue;
-                            }
-                        }
-
-                        // For first entry we've already evaluated the condition (unless always-valid); others share same reference so skip Evaluate.
-                        if (offset > 0 && !entry.ConditionIsAlwaysValid)
-                        {
-                            // Skip re-evaluation (identical reference); condition already proven valid by gate.
-                        }
-                        else if (offset == 0)
-                        {
-                            // Already evaluated gate unless always-valid; nothing to do.
-                        }
-
-                        var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                        var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
-                        progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                        progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, index);
-
-                        if (ruleCheck.Result == ConditionResult.Valid)
-                        {
-                            var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                            progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
-
-                            if (newState.Hash.HasValue)
-                            {
-                                progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
-                            }
-
-                            progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
-
-                            progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
-
-                            if (masksEnabled)
-                            {
-                                var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > index ? Engine.DecisionPlan.ExclusivityGroupRoots[index] : -1;
-                                if (root >= 0)
-                                {
-                                    appliedGroupRoots?.Add(root);
-                                }
-                            }
-
-                            handled = true;
-                            break;
-                        }
-                        else if (ruleCheck.Result == ConditionResult.Invalid)
-                        {
-                            throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
-                        }
-                    }
-
-                    if (handled)
-                    {
-                        break; // stop scanning remaining groups
-                    }
+                    continue;
                 }
-            }
-            else
-            {
-                for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
+
+                var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
+                progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
+
+                if (ruleCheck.Result == ConditionResult.Valid)
                 {
-                    var entry = Engine.DecisionPlan.Entries[i];
-                    if (masksEnabled)
+                    var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
+                    progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
+
+                    if (newState.Hash.HasValue)
                     {
-                        var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
-                        if (root >= 0 && appliedGroupRoots is not null && appliedGroupRoots.Contains(root))
-                        {
-                            Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.ExclusivityMasked, progress.State, i);
-                            continue;
-                        }
+                        progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                     }
 
-                    if (eventKindFiltering)
-                    {
-                        var ek = Engine.DecisionPlan.SupportedKinds.Length > i ? Engine.DecisionPlan.SupportedKinds[i] : EventKind.Any;
-                        if (ek != EventKind.Any && (ek & currentEventKind) == 0)
-                        {
-                            Engine.Observer.OnRuleSkipped(entry.Phase, entry.Rule, Flows.Observers.RuleSkipReason.EventKindFiltered, progress.State, i);
-                            continue;
-                        }
-                    }
+                    progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
-                    if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
-                    {
-                        continue;
-                    }
+                    progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
-                    var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                    var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
-                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
-
-                    if (ruleCheck.Result == ConditionResult.Valid)
-                    {
-                        var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                        progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
-
-                        if (newState.Hash.HasValue)
-                        {
-                            progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
-                        }
-
-                        progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
-
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
-
-                        if (masksEnabled)
-                        {
-                            var root = Engine.DecisionPlan.ExclusivityGroupRoots.Length > i ? Engine.DecisionPlan.ExclusivityGroupRoots[i] : -1;
-                            if (root >= 0)
-                            {
-                                appliedGroupRoots?.Add(root);
-                            }
-                        }
-
-                        handled = true;
-                        break;
-                    }
-                    else if (ruleCheck.Result == ConditionResult.Invalid)
-                    {
-                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
-                    }
+                    handled = true;
+                    break;
+                }
+                else if (ruleCheck.Result == ConditionResult.Invalid)
+                {
+                    throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                 }
             }
 

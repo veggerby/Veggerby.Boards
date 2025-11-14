@@ -112,24 +112,14 @@ internal sealed class CompiledPatternResolver(CompiledPatternTable table, Board 
 
     private TileRelation? Resolve(Tile from, Direction dir)
     {
-        // Fast path 1: BoardShape neighbor lookup (feature gated for isolated benchmarking)
-        if (FeatureFlags.EnableBoardShape && _shape is not null && _shape.TryGetNeighbor(from, dir, out var neighbor))
+        // Fast path: BoardShape neighbor lookup (always enabled - graduated feature)
+        if (_shape is not null && _shape.TryGetNeighbor(from, dir, out var neighbor))
         {
-            // Need to retrieve relation for path chain. Use adjacency cache if available, else board lookup.
-            if (FeatureFlags.EnableCompiledPatternsAdjacencyCache && _adjacency is not null && _adjacency.TryGet(from, dir, out var cachedRel))
-            {
-                return cachedRel;
-            }
-
-            // Fallback: board relation scan (rare when cache disabled). This scan is acceptable because BoardShape already confirmed existence.
+            // BoardShape confirmed existence; retrieve relation from board
             return _board.GetTileRelation(from, dir);
         }
 
-        // Fast path 2: existing adjacency cache
-        if (FeatureFlags.EnableCompiledPatternsAdjacencyCache && _adjacency is not null && _adjacency.TryGet(from, dir, out var rel))
-        {
-            return rel;
-        }
+        // Fallback: board relation scan
         return _board.GetTileRelation(from, dir);
     }
 }

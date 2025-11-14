@@ -51,14 +51,10 @@ public static class SequentialSimulator
 
     /// <summary>
     /// Executes a playout producing metrics and a structured result.
+    /// Simulation is always available - using this API is the explicit opt-in.
     /// </summary>
     public static PlayoutResultWithProgress RunWithMetrics(GameProgress progress, PlayoutPolicy policy, PlayoutStopPredicate? stop = null, int maxDepth = 1024)
     {
-        if (!FeatureFlags.EnableSimulation)
-        {
-            throw new InvalidOperationException("Simulation feature disabled – enable FeatureFlags.EnableSimulation to use SequentialSimulator.");
-        }
-
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policy);
         if (maxDepth <= 0)

@@ -655,13 +655,8 @@ public abstract class GameBuilder
 
         // Always use compiled patterns (graduated feature)
         var table = Flows.Patterns.PatternCompiler.Compile(game);
-        Internal.Compiled.BoardAdjacencyCache? adjacency = null;
-        if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
-        {
-            adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
-        }
-
-        var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
+        // BoardShape (graduated) has superseded the adjacency cache
+        var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, null, shape);
         var adapter = new Internal.Paths.CompiledPathResolverAdapter(resolver);
         Internal.Paths.IPathResolver pathResolver = adapter;
 

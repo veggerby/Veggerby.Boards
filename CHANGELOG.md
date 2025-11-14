@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **State Hashing Graduation**: `EnableStateHashing` feature flag graduated from experimental to stable (default: ON).
+  - Provides deterministic 64-bit (FNV-1a) and 128-bit (xxHash128) state fingerprints for replay validation and cross-platform determinism enforcement.
+  - **Hash Parity Test Infrastructure**: New `HashParityTestFixture` base class with `AssertHashParity` helper methods for comparing state hashes across execution paths.
+  - **Cross-Platform Stability Tests**: `CrossPlatformHashStabilityTests` (5 tests) validates hash consistency across platforms and execution environments.
+  - **Randomized Replay Tests**: `RandomizedReplayDeterminismTests` (4 tests) validates deterministic replay with RNG seeds and state transitions.
+  - **Acceleration Path Parity Tests**: `AccelerationPathHashParityTests` (5 tests) validates hash equality across optimization flags (compiled patterns, bitboards, sliding fast-path, decision plan).
+  - **CI Enforcement**: New `determinism-parity` workflow validates hash stability across Linux (x64), Windows (x64), and macOS (ARM). Hash divergence fails the build.
+  - **Documentation Updates**: 
+    - `feature-flags.md`: Updated to reflect graduated status and cross-platform validation.
+    - `determinism-rng-timeline.md`: Enhanced with graduation notes, test coverage details, and usage guidance.
+    - `CONTRIBUTING.md`: Added cross-platform determinism policy section with testing requirements and examples.
+  - **Test Coverage**: 40 total hash-related tests (27 new + 6 existing StateHashingTests + 7 TurnSequencingHashParityTests).
+  - All acceptance criteria met from issue #TBD: hash computation stable, parity infrastructure complete, CI validation active, documentation updated.
+
 - **Cards Module Documentation & Extensions (Workstream 18) - COMPLETE**: Cards module is now fully documented with comprehensive guides, examples, and extended event coverage.
   - **New Events**: 
     - `PeekCardsEvent`: View top N cards without removing them (read-only operation for scrying/preview mechanics).

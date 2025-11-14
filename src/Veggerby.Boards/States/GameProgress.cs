@@ -191,12 +191,12 @@ public partial class GameProgress
                             var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
                             progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
 
-                            progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
-
                             if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
                             {
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
+
+                            progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, index);
 
                             progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
@@ -263,12 +263,13 @@ public partial class GameProgress
                     {
                         var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
                         progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
-                        progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
                         if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
                         {
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }
+
+                        progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
                         progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 

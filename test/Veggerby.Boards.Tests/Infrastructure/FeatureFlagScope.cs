@@ -36,7 +36,14 @@ public sealed class FeatureFlagScope : IDisposable
         var depth = Depth.Value;
         if (depth == 0)
         {
-            Gate.Wait();
+            if (!Gate.Wait(TimeSpan.FromSeconds(30)))
+            {
+                throw new InvalidOperationException(
+                    "FeatureFlagScope timed out waiting for lock acquisition. " +
+                    "This indicates a previous scope was not properly disposed. " +
+                    "Ensure all FeatureFlagScope instances are used with 'using' statements.");
+            }
+
             _isOuter = true;
             Snapshots.Value = new Stack<(bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool)>();
         }

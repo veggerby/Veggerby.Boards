@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Test session timeout in milliseconds (5 minutes to accommodate Debug builds) -->
+    <TestSessionTimeout>300000</TestSessionTimeout>
+    
+    <!-- 
+      CRITICAL: MaxCpuCount=1 (serial execution) is required to prevent deadlocks.
+      
+      The FeatureFlagScope class uses a static semaphore to serialize feature flag changes
+      across all tests. When multiple test assemblies run in parallel (default behavior),
+      they compete for the same static semaphore, causing deadlocks.
+      
+      Setting MaxCpuCount=1 forces test assemblies to run sequentially, preventing the deadlock.
+      This is a necessary tradeoff until FeatureFlagScope is refactored to support parallel execution.
+      
+      Timeout is set to 5 minutes to accommodate slower Debug builds (Release typically completes in ~3 minutes).
+    -->
+    <MaxCpuCount>1</MaxCpuCount>
+    
+    <!-- Results directory for test output -->
+    <ResultsDirectory>./TestResults</ResultsDirectory>
+    
+    <!-- Target platform (x64, x86, ARM, ARM64) -->
+    <TargetPlatform>x64</TargetPlatform>
+    
+    <!-- Target framework version -->
+    <TargetFrameworkVersion>net9.0</TargetFrameworkVersion>
+  </RunConfiguration>
+  
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <!-- Code coverage data collector (optional, can be enabled for coverage reports) -->
+      <!--
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*Veggerby\.Boards\.dll$</ModulePath>
+              </Include>
+              <Exclude>
+                <ModulePath>.*Tests\.dll$</ModulePath>
+              </Exclude>
+            </ModulePaths>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+      -->
+    </DataCollectors>
+  </DataCollectionRunSettings>
+  
+  <LoggerRunSettings>
+    <Loggers>
+      <!-- Console logger verbosity: quiet, minimal, normal, detailed, diagnostic -->
+      <Logger friendlyName="console" enabled="True">
+        <Configuration>
+          <Verbosity>normal</Verbosity>
+        </Configuration>
+      </Logger>
+    </Loggers>
+  </LoggerRunSettings>
+</RunSettings>

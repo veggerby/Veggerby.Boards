@@ -42,12 +42,13 @@ public partial class GameProgress
             if (ruleCheckLocal.Result == ConditionResult.Valid)
             {
                 var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
-                seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal, 0);
 
                 if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
                 {
                     seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
                 }
+
+                seed.Engine.Observer.OnRuleApplied(phaseForEvent, phaseForEvent.Rule, e, seed.State, newStateLocal, 0);
 
                 seed.Engine.Capabilities?.AccelerationContext?.OnStateTransition(seed.State, newStateLocal, e);
                 return new GameProgress(seed.Engine, newStateLocal, seed.Events.Append(e));

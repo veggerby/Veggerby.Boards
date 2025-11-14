@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Changed
+
+- **Bitboard Acceleration Graduated**: `EnableBitboards` and `EnableBitboardIncremental` feature flags now default to ON (graduated from experimental status).
+  - Multi-module soak tests validate zero desync across 10,000+ random moves per module (Chess, Backgammon, Go).
+  - Incremental bitboard update path provides allocation parity with full rebuild while maintaining exact semantic equivalence.
+  - Comprehensive test suite: `BitboardIncrementalMultiModuleSoakTests` added with deterministic randomized move sequences.
+  - Documentation updated: `feature-flags.md` reflects graduated status, `performance.md` includes new "Acceleration Layer Architecture" section detailing incremental update semantics and Bitboard128 constraints.
+  - All 796 tests pass with flags enabled by default, confirming production readiness.
+
 ### Completed
 
 - **Performance Data Layout & Hot Paths (Workstream 4) - COMPLETE**: Core acceleration infrastructure delivered with proven 4.66× performance gains and comprehensive validation.

@@ -140,7 +140,9 @@ dotnet build --configuration Release
 dotnet test test/Veggerby.Boards.Tests --configuration Release --settings .runsettings
 ```
 
-The `.runsettings` file provides test timeout protection (30s session timeout) to prevent hanging tests. Always use it when running tests locally or in CI.
+The `.runsettings` file provides test timeout protection (5-minute session timeout) and enforces serial execution (`MaxCpuCount=1`) to prevent FeatureFlagScope deadlocks. Always use it when running tests locally or in CI.
+
+**Note**: Tests must run serially due to a static semaphore in FeatureFlagScope. Parallel test assembly execution causes deadlocks. This is enforced by the .runsettings configuration.
 
 Optional with coverage (locally):
 

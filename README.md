@@ -95,14 +95,16 @@ dotnet test --settings .runsettings --filter "FullyQualifiedName~Determinism"
 ```
 
 The `.runsettings` file configures:
-- **Test session timeout**: 30 seconds (prevents indefinite hangs)
+- **Test session timeout**: 5 minutes (accommodates Debug builds; Release typically completes in ~3 minutes)
+- **Serial execution**: `MaxCpuCount=1` to prevent deadlocks (see below)
 - **Platform**: x64
 - **Framework**: net9.0
-- **Parallel execution**: Uses all available cores
+
+**Important**: Tests must run serially (`MaxCpuCount=1`) to prevent deadlocks. The `FeatureFlagScope` test infrastructure uses a static semaphore that causes deadlocks when test assemblies run in parallel. This is a known limitation that will be addressed in a future refactoring.
 
 For CI/CD environments or local debugging, you can override settings via command line:
 ```bash
-dotnet test -- RunConfiguration.TestSessionTimeout=60000
+dotnet test -- RunConfiguration.TestSessionTimeout=600000
 ```
 
 ### Benchmarks

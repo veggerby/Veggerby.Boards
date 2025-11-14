@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
   <RunConfiguration>
-    <!-- Test session timeout in milliseconds (30 seconds) -->
-    <TestSessionTimeout>30000</TestSessionTimeout>
+    <!-- Test session timeout in milliseconds (5 minutes to accommodate Debug builds) -->
+    <TestSessionTimeout>300000</TestSessionTimeout>
     
-    <!-- Maximum number of cores to use for parallel test execution -->
-    <MaxCpuCount>0</MaxCpuCount>
+    <!-- 
+      CRITICAL: MaxCpuCount=1 (serial execution) is required to prevent deadlocks.
+      
+      The FeatureFlagScope class uses a static semaphore to serialize feature flag changes
+      across all tests. When multiple test assemblies run in parallel (default behavior),
+      they compete for the same static semaphore, causing deadlocks.
+      
+      Setting MaxCpuCount=1 forces test assemblies to run sequentially, preventing the deadlock.
+      This is a necessary tradeoff until FeatureFlagScope is refactored to support parallel execution.
+      
+      Timeout is set to 5 minutes to accommodate slower Debug builds (Release typically completes in ~3 minutes).
+    -->
+    <MaxCpuCount>1</MaxCpuCount>
     
     <!-- Results directory for test output -->
     <ResultsDirectory>./TestResults</ResultsDirectory>

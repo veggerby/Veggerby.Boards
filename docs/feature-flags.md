@@ -74,6 +74,23 @@ Tests should be gradually updated to remove `FeatureFlagScope` usage as the flag
 
 ---
 
+## Future Work
+
+For detailed documentation of deferred features (including rationale, recommended next steps, and story templates), see:
+
+**[`docs/plans/deferred-features-from-flag-elimination.md`](plans/deferred-features-from-flag-elimination.md)**
+
+This document captures:
+- Decision plan optimizations (grouping, filtering, masks)
+- Observer batching
+- Per-piece occupancy masks
+- Segmented bitboards
+- Topology pruning
+
+Each entry includes context, why it was deferred, current state, and guidance for potential future implementation.
+
+---
+
 **Last Updated**: 2025-11-14  
 **Deprecated**: 2025-11-14  
 **Removal Target**: Future release (TBD)

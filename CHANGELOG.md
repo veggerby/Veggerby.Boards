@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - **Documentation Updates**:
     - `docs/feature-flags.md`: Marked deprecated with migration guide
     - `CONTRIBUTING.md`: Feature flag policy deprecated
+    - `docs/plans/deferred-features-from-flag-elimination.md`: Comprehensive documentation of deferred features with future work guidance, story templates, and implementation recommendations
     - Test compatibility preserved during migration period
 
 ### Added

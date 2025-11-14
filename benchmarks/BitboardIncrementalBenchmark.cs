@@ -33,18 +33,14 @@ public class BitboardIncrementalBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        var origInc = Internal.FeatureFlags.EnableBitboardIncremental;
         try
         {
-            Internal.FeatureFlags.EnableBitboardIncremental = false;
             _rebuild = new ChessGameBuilder().Compile();
 
-            Internal.FeatureFlags.EnableBitboardIncremental = true;
             _incremental = new ChessGameBuilder().Compile();
         }
         finally
         {
-            Internal.FeatureFlags.EnableBitboardIncremental = origInc;
         }
 
         var fromFull = _rebuild.Game.GetTile(ChessIds.Tiles.E2);

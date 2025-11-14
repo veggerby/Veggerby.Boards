@@ -13,9 +13,8 @@ public class SegmentedBitboardParityTests
 {
     private IDisposable EnableSegmentedFlag()
     {
-        var prev = FeatureFlags.EnableSegmentedBitboards;
-        FeatureFlags.EnableSegmentedBitboards = true;
-        return new ActionOnDispose(() => FeatureFlags.EnableSegmentedBitboards = prev);
+        // No-op: Segmented bitboards were removed (experimental feature, no current use case)
+        return new ActionOnDispose(() => { });
     }
 
     [Fact]

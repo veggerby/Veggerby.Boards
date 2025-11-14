@@ -62,8 +62,6 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
 
     private static (GameProgress progress, CountingObserver observer) BuildMoveLast(int precedingGroups, bool filtering)
     {
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = filtering;
         var observer = new CountingObserver();
         var builder = new MoveLastGameBuilder(precedingGroups).WithObserver(observer);
         return (builder.Compile(), observer);
@@ -71,8 +69,6 @@ public class DecisionPlanEventFilteringEvaluationReductionTests
 
     private static (GameProgress progress, CountingObserver observer) BuildRollLast(int precedingGroups, bool filtering)
     {
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = filtering;
         var observer = new CountingObserver();
         var builder = new RollLastGameBuilder(precedingGroups).WithObserver(observer);
         return (builder.Compile(), observer);

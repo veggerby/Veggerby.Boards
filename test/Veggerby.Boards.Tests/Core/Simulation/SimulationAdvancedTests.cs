@@ -32,7 +32,6 @@ public class SimulationAdvancedTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         // Policy attempts to move piece from t1->t2; however relation added is t2 -> t1 (reverse) so FirstOrDefault from current
         // tile (t1) yields null immediately. Returning null at depth==0 results in terminal reason NoMoves (NOT PolicyReturnedNull).
@@ -65,7 +64,6 @@ public class SimulationAdvancedTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>
         {
@@ -105,7 +103,6 @@ public class SimulationAdvancedTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgressWithMove();
         PlayoutPolicy policy = state =>
         {

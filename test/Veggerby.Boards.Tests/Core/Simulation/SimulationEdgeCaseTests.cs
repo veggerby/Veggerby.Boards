@@ -33,7 +33,6 @@ public class SimulationEdgeCaseTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         var act = async () => await ParallelSimulator.RunManyAsync(progress, 0, _ => (_ => new TurnPassEvent()));
         var ex = await act.Should().ThrowAsync<ArgumentOutOfRangeException>();
@@ -49,7 +48,6 @@ public class SimulationEdgeCaseTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         using var cts = new CancellationTokenSource();
         cts.Cancel(); // cancel immediately to force partial (zero or minimal results)
@@ -68,7 +66,6 @@ public class SimulationEdgeCaseTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Simple policy: always pass turn until first null (maxDepth will terminate)
         PlayoutPolicy policy = _ => new TurnPassEvent();
@@ -88,7 +85,6 @@ public class SimulationEdgeCaseTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Pass event in current minimal phase yields no state change; simulator treats non-progress as terminal PolicyReturnedNull.
         var detailed = SequentialSimulator.RunDetailed(progress, _ => new TurnPassEvent(), maxDepth: 2);

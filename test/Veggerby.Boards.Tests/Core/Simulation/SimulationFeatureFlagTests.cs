@@ -31,7 +31,6 @@ public class SimulationFeatureFlagTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = false;
         var progress = BuildProgress();
 
         // act
@@ -51,7 +50,6 @@ public class SimulationFeatureFlagTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 
         // act
@@ -71,7 +69,6 @@ public class SimulationFeatureFlagTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = false;
         var progress = BuildProgress();
 
         // act
@@ -91,7 +88,6 @@ public class SimulationFeatureFlagTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 
         // act

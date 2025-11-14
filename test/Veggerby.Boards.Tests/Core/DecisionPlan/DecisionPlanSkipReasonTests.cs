@@ -91,9 +91,6 @@ public class DecisionPlanSkipReasonTests
     private static (GameProgress progress, CapturingSkipObserver observer, Piece piece, TilePath path) Build()
     {
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
-        FeatureFlags.EnableDecisionPlanMasks = true; // for exclusivity masking
 
         var observer = new CapturingSkipObserver();
         var builder = new SkipReasonBuilder().WithObserver(observer);

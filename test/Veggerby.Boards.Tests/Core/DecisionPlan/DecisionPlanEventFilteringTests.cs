@@ -30,8 +30,6 @@ public class DecisionPlanEventFilteringTests
         // Minimal concrete builder
         var builder = new TestFilteringGameBuilder(moveCond, rollCond);
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true; // ensure groups present
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         return builder.Compile();
     }
 

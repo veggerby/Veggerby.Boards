@@ -23,9 +23,6 @@ public class DecisionPlanVsLegacyBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        FeatureFlags.EnableCompiledPatterns = true;
-        FeatureFlags.EnableSlidingFastPath = false;
-        FeatureFlags.EnableBitboards = false;
 
         var builder = new ChessGameBuilder();
         builder.Compile(); // warm build
@@ -67,14 +64,12 @@ public class DecisionPlanVsLegacyBenchmark
     public GameProgress DecisionPlan_HandleSequence()
     {
         // simulate plan-enabled mode via grouping toggle
-        FeatureFlags.EnableDecisionPlanGrouping = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         foreach (var mv in _moves)
         {
             progress = ApplyMove(progress, mv);
         }
-        FeatureFlags.EnableDecisionPlanGrouping = false; // reset after measurement
         return progress;
     }
 }

@@ -64,7 +64,7 @@ public class MinimalCaptureTests
         updated.State.GetStates<CapturedPieceState>().Count(s => s.Artifact.Equals(black)).Should().Be(1);
 
         // Bitboard parity (only if feature enabled and board <=64 tiles) – occupied squares decrease by one
-        if (FeatureFlags.EnableBitboards)
+        if (true)
         {
             var beforeOccupied = beforePieces.Count(p => p.Item2 is not null);
             var afterOccupied = afterPieces.Count(p => p.Item2 is not null);

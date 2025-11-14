@@ -15,15 +15,11 @@ public class BitboardIncrementalSoakTests
 {
     private sealed class FlagScope : System.IDisposable
     {
-        private readonly bool _original;
         public FlagScope()
         {
-            _original = Boards.Internal.FeatureFlags.EnableBitboardIncremental;
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = true;
         }
         public void Dispose()
         {
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = _original;
         }
     }
 

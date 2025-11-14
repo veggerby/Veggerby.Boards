@@ -18,15 +18,11 @@ public class BitboardIncrementalRandomizedParityTests
 {
     private sealed class FlagScope : IDisposable
     {
-        private readonly bool _original;
         public FlagScope(bool enable)
         {
-            _original = Boards.Internal.FeatureFlags.EnableBitboardIncremental;
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = enable;
         }
         public void Dispose()
         {
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = _original;
         }
     }
 

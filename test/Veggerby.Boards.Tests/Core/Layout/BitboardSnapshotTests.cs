@@ -78,8 +78,6 @@ public class BitboardSnapshotTests
 
         // assert
 
-        var prev = FeatureFlags.EnableSegmentedBitboards;
-        FeatureFlags.EnableSegmentedBitboards = true;
         try
         {
             var progress = new SyntheticBoardBuilder(8).Compile();
@@ -96,7 +94,6 @@ public class BitboardSnapshotTests
         }
         finally
         {
-            FeatureFlags.EnableSegmentedBitboards = prev;
         }
     }
 

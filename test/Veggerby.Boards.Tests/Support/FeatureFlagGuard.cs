@@ -3,7 +3,8 @@ using System;
 namespace Veggerby.Boards.Tests.Support;
 
 /// <summary>
-/// Disposable helper that forces a feature flag value for the duration of a test and restores the prior value on dispose.
+/// NO-OP: Feature flags have been removed. This class remains for test compatibility only.
+/// Turn sequencing is always enabled (graduated feature).
 /// </summary>
 public sealed class FeatureFlagGuard : IDisposable
 {
@@ -16,9 +17,8 @@ public sealed class FeatureFlagGuard : IDisposable
 
     public static FeatureFlagGuard ForceTurnSequencing(bool enable = true)
     {
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = enable;
-        return new FeatureFlagGuard(() => Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
+        // No-op: Turn sequencing always enabled (graduated feature)
+        return new FeatureFlagGuard(() => { });
     }
 
     public void Dispose()

@@ -38,12 +38,9 @@ public class TurnAdvanceStateMutatorTests
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Start);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start);
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();
@@ -63,12 +60,9 @@ public class TurnAdvanceStateMutatorTests
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();
@@ -90,12 +84,9 @@ public class TurnAdvanceStateMutatorTests
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.Main);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.Start); // mismatch
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         updated.Should().BeSameAs(state);
@@ -113,8 +104,6 @@ public class TurnAdvanceStateMutatorTests
         var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = false;
         try
         {
             // act
@@ -124,7 +113,6 @@ public class TurnAdvanceStateMutatorTests
         }
         finally
         {
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
         }
     }
 
@@ -145,12 +133,9 @@ public class TurnAdvanceStateMutatorTests
         var state = GameState.New(new IArtifactState[] { new TurnState(turnArtifact, 1, TurnSegment.End) });
         var mutator = new TurnAdvanceStateMutator();
         var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
 
         // act
         var updated = mutator.MutateState(engine, state, evt);
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
 
         // assert
         var ts = updated.GetStates<TurnState>().Single();

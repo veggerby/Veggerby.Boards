@@ -25,7 +25,6 @@ public class SequentialSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = false;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 
@@ -45,7 +44,6 @@ public class SequentialSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         builder.WithSeed(1234);
         var progress = builder.Compile();
@@ -84,7 +82,6 @@ public class SequentialSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         int observedDepth = -1;

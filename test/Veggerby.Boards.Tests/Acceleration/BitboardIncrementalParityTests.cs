@@ -9,15 +9,11 @@ public class BitboardIncrementalParityTests
 {
     private sealed class FlagScope : System.IDisposable
     {
-        private readonly bool _original;
         public FlagScope(bool enable)
         {
-            _original = Boards.Internal.FeatureFlags.EnableBitboardIncremental;
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = enable;
         }
         public void Dispose()
         {
-            Boards.Internal.FeatureFlags.EnableBitboardIncremental = _original;
         }
     }
 
@@ -33,7 +29,6 @@ public class BitboardIncrementalParityTests
         var builderBase = new ChessGameBuilder();
         var baseline = builderBase.Compile();
         var builderInc = new ChessGameBuilder();
-        Boards.Internal.FeatureFlags.EnableBitboardIncremental = true;
         var incremental = builderInc.Compile();
 
         // script (simple opening sequence)

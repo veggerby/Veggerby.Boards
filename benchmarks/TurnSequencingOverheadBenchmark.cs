@@ -33,18 +33,14 @@ public class TurnSequencingOverheadBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        var original = Internal.FeatureFlags.EnableTurnSequencing;
         try
         {
-            Internal.FeatureFlags.EnableTurnSequencing = false;
             _withoutSequencing = new ChessGameBuilder().Compile();
 
-            Internal.FeatureFlags.EnableTurnSequencing = true;
             _withSequencing = new ChessGameBuilder().Compile();
         }
         finally
         {
-            Internal.FeatureFlags.EnableTurnSequencing = original;
         }
 
         // Resolve identical logical move for both compiled instances (flag on/off) separately to avoid null path usage

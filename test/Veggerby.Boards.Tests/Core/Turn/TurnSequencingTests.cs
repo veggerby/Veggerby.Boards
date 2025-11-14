@@ -13,9 +13,8 @@ public class TurnSequencingCoreTests
 {
     private IDisposable EnableFlag()
     {
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
-        return new ResetFlag(() => Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
+        // No-op: Turn sequencing always enabled (graduated feature)
+        return new ResetFlag(() => { });
     }
 
     private sealed class ResetFlag(Action reset) : IDisposable
@@ -37,7 +36,6 @@ public class TurnSequencingCoreTests
 
         // assert
 
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var initial = progress.State.GetStates<TurnState>().FirstOrDefault();

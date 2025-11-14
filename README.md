@@ -79,6 +79,32 @@ dotnet build
 dotnet test
 ```
 
+### Running Tests
+
+The repository includes a `.runsettings` file with test timeout configuration to prevent hanging tests:
+
+```bash
+# Run all tests with the configured settings
+dotnet test --settings .runsettings
+
+# Run specific test project
+dotnet test test/Veggerby.Boards.Tests --settings .runsettings
+
+# Run with filter
+dotnet test --settings .runsettings --filter "FullyQualifiedName~Determinism"
+```
+
+The `.runsettings` file configures:
+- **Test session timeout**: 30 seconds (prevents indefinite hangs)
+- **Platform**: x64
+- **Framework**: net9.0
+- **Parallel execution**: Uses all available cores
+
+For CI/CD environments or local debugging, you can override settings via command line:
+```bash
+dotnet test -- RunConfiguration.TestSessionTimeout=60000
+```
+
 ### Benchmarks
 
 Run all performance benchmarks (dynamic discovery). The script no longer generates the consolidated markdown report—use the harness for that.

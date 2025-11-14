@@ -137,13 +137,16 @@ Be respectful and considerate in all interactions.
 ```bash
 dotnet restore
 dotnet build --configuration Release
-dotnet test test/Veggerby.Boards.Tests --configuration Release
+dotnet test test/Veggerby.Boards.Tests --configuration Release --settings .runsettings
 ```
+
+The `.runsettings` file provides test timeout protection (30s session timeout) to prevent hanging tests. Always use it when running tests locally or in CI.
 
 Optional with coverage (locally):
 
 ```bash
 dotnet test test/Veggerby.Boards.Tests \
+   --settings .runsettings \
    --collect:"XPlat Code Coverage" \
    -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
 ```

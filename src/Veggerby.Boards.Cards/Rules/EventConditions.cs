@@ -108,3 +108,56 @@ internal sealed class DiscardCardsEventCondition : IGameEventCondition<DiscardCa
         return ConditionResponse.Valid;
     }
 }
+
+internal sealed class PeekCardsEventCondition : IGameEventCondition<PeekCardsEvent>
+{
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, PeekCardsEvent @event)
+    {
+        var ds = state.GetState<DeckState>(@event.Deck);
+        if (ds is null)
+            return ConditionResponse.Fail("Deck not initialized");
+        if (!ds.Piles.ContainsKey(@event.PileId))
+            return ConditionResponse.Fail("Unknown pile");
+        if (@event.Count < 0)
+            return ConditionResponse.Fail("Negative count");
+        if (@event.Count == 0)
+            return ConditionResponse.Valid;
+        if (ds.Piles[@event.PileId].Count < @event.Count)
+            return ConditionResponse.Fail("Insufficient cards");
+        return ConditionResponse.Valid;
+    }
+}
+
+internal sealed class RevealCardsEventCondition : IGameEventCondition<RevealCardsEvent>
+{
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, RevealCardsEvent @event)
+    {
+        var ds = state.GetState<DeckState>(@event.Deck);
+        if (ds is null)
+            return ConditionResponse.Fail("Deck not initialized");
+        if (!ds.Piles.ContainsKey(@event.PileId))
+            return ConditionResponse.Fail("Unknown pile");
+        if (@event.Cards is null || @event.Cards.Count == 0)
+            return ConditionResponse.Valid;
+        var pile = ds.Piles[@event.PileId];
+        foreach (var c in @event.Cards)
+        {
+            if (!pile.Contains(c))
+                return ConditionResponse.Fail("Card not in specified pile");
+        }
+        return ConditionResponse.Valid;
+    }
+}
+
+internal sealed class ReshuffleEventCondition : IGameEventCondition<ReshuffleEvent>
+{
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, ReshuffleEvent @event)
+    {
+        var ds = state.GetState<DeckState>(@event.Deck);
+        if (ds is null)
+            return ConditionResponse.Fail("Deck not initialized");
+        if (!ds.Piles.ContainsKey(@event.FromPileId) || !ds.Piles.ContainsKey(@event.ToPileId))
+            return ConditionResponse.Fail("Unknown pile");
+        return ConditionResponse.Valid;
+    }
+}

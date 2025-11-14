@@ -90,7 +90,10 @@ public class CardsGameBuilder : GameBuilder
             .ForEvent<ShuffleDeckEvent>().If<ShuffleDeckEventCondition>().Then().Do<ShuffleDeckStateMutator>()
             .ForEvent<DrawCardsEvent>().If<DrawCardsEventCondition>().Then().Do<DrawCardsStateMutator>()
             .ForEvent<MoveCardsEvent>().If<MoveCardsEventCondition>().Then().Do<MoveCardsStateMutator>()
-            .ForEvent<DiscardCardsEvent>().If<DiscardCardsEventCondition>().Then().Do<DiscardCardsStateMutator>();
+            .ForEvent<DiscardCardsEvent>().If<DiscardCardsEventCondition>().Then().Do<DiscardCardsStateMutator>()
+            .ForEvent<PeekCardsEvent>().If<PeekCardsEventCondition>().Then().Do<PeekCardsStateMutator>()
+            .ForEvent<RevealCardsEvent>().If<RevealCardsEventCondition>().Then().Do<RevealCardsStateMutator>()
+            .ForEvent<ReshuffleEvent>().If<ReshuffleEventCondition>().Then().Do<ReshuffleStateMutator>();
 
         // Emit initial CreateDeck event via pre-processor? Not available here; instead users send event after Compile.
         // We keep builder minimal and deterministic.

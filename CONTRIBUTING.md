@@ -191,4 +191,24 @@ Before submitting changes that touch engine state transitions, confirm:
 6. All new tests deterministic (fixed seeds use TestDeterministicRng not System.Random).
 7. Performance-sensitive loops avoid LINQ / allocations beyond documented exceptions.
 
+### Cross-Platform Determinism Policy
+
+State hashing (`EnableStateHashing`, graduated to ON by default) provides deterministic 64/128-bit fingerprints for:
+
+- **Replay validation**: Identical initial state + event sequence → identical hashes across platforms
+- **Parity testing**: Verify optimization paths (compiled patterns, bitboards, etc.) produce identical states
+- **Bug reproduction**: Capture and replay deterministic state sequences
+
+**CI Enforcement**: The `determinism-parity` workflow validates hash stability across Linux (x64), Windows (x64), and macOS (ARM). Hash divergence fails the build.
+
+**Testing Requirements**:
+
+- Use `HashParityTestFixture` base class for hash comparison tests
+- Call `AssertHashParity(reference, candidate, context)` to verify hash equality
+- Add parity tests for any new acceleration paths or optimization flags
+- Ensure all serialization uses platform-stable types (no `nint`/`nuint`, explicit endianness)
+- Document hash algorithm changes in `determinism-rng-timeline.md` with version notes
+
+**Examples**: See `CrossPlatformHashStabilityTests`, `RandomizedReplayDeterminismTests`, and `AccelerationPathHashParityTests` for test patterns.
+
 Thanks for helping make Veggerby.Boards better.

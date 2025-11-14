@@ -6,9 +6,11 @@ Deterministic RNG + state hashing + history zipper ensure reproducible simulatio
 
 `IRandomSource` (e.g., XorShift) carried inside `GameState.Random`. Cloned on each state transition (immutability + deterministic progression).
 
-## Hashing (Flags)
+## Hashing (Graduated)
 
-`EnableStateHashing` computes 64-bit (FNV-1a) and 128-bit hashes over canonical serialized artifact states + RNG fingerprint (Seed + two peek values). Identical initial state + event list + flag configuration ⇒ identical hashes.
+`EnableStateHashing` (default: ON) computes 64-bit (FNV-1a) and 128-bit (xxHash128) hashes over canonical serialized artifact states + RNG fingerprint (Seed + two peek values). Identical initial state + event list + flag configuration ⇒ identical hashes.
+
+Cross-platform stability validated across Linux, Windows, macOS (x64/ARM). Hash parity test infrastructure (`HashParityTestFixture`) provides helpers for comparing hashes across acceleration paths.
 
 ## Canonical Serialization Ordering
 
@@ -24,11 +26,15 @@ Optional flag (e.g., `EnableTimelineZipper`) provides immutable `GameTimeline` w
 2. Apply identical event sequence.
 3. Final hashes (64 & 128) and RNG seed must match.
 
+See `CrossPlatformHashStabilityTests`, `RandomizedReplayDeterminismTests`, and `AccelerationPathHashParityTests` for comprehensive test coverage.
+
 ## When to Use Hashes
 
 * Parity & regression tests
 * Detecting duplicate states (future interning)
 * Simulation caching / transposition tables (planned)
+* Cross-platform replay validation
+* Bug reproduction verification
 
 ## Future Enhancements
 

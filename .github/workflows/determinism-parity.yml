@@ -1,0 +1,43 @@
+name: Cross-Platform Determinism Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  determinism-parity:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore Veggerby.Boards.sln
+
+      - name: Build
+        run: dotnet build Veggerby.Boards.sln --configuration Release --no-restore
+
+      - name: Run Determinism Parity Tests
+        run: dotnet test test/Veggerby.Boards.Tests/Veggerby.Boards.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~Determinism|FullyQualifiedName~StateHashingTests"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: determinism-test-results-${{ matrix.os }}
+          path: test/Veggerby.Boards.Tests/TestResults

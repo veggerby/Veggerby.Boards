@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+
+- **Cards Module Documentation & Extensions (Workstream 18) - COMPLETE**: Cards module is now fully documented with comprehensive guides, examples, and extended event coverage.
+  - **New Events**: 
+    - `PeekCardsEvent`: View top N cards without removing them (read-only operation for scrying/preview mechanics).
+    - `RevealCardsEvent`: Make specific cards visible to all players (optional visibility tracking).
+    - `ReshuffleEvent`: Move cards from source pile (discard) to destination pile (draw) and shuffle for continuous play.
+  - **Comprehensive Documentation**:
+    - Updated `/docs/cards/index.md`: Core concepts, event catalog with all 8 events, integration guide, best practices.
+    - New `/docs/cards/examples.md`: 4 practical examples (War card game, deck-building integration, poker hand management, reshuffle mechanics).
+    - New `/docs/cards/api-reference.md`: Complete API reference for all artifacts, states, events, builders, conditions, and extension points.
+  - **Sample Integration**: `samples/CardGameDemo` - Blackjack-style demonstration showing shuffle, draw, peek, reveal, discard, and reshuffle operations across multiple rounds.
+  - **Test Coverage**: 35 total tests (28 existing + 7 new) covering peek, reveal, reshuffle with determinism validation, edge cases (empty pile peek, reshuffle with no discard), and invalid operations.
+  - **All Acceptance Criteria Met**: Peek/Reveal/Reshuffle events implemented, comprehensive documentation delivered, sample integration complete, 100% test pass rate.
+
 ### Changed
 
 - **Bitboard Acceleration Graduated**: `EnableBitboards` and `EnableBitboardIncremental` feature flags now default to ON (graduated from experimental status).

@@ -26,10 +26,10 @@ internal static class FeatureFlags
     public static bool EnableBitboards { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether state hashing (Merkle style) is performed each transition.
-    /// (Placeholder – not yet implemented)
+    /// Gets or sets a value indicating whether state hashing (dual 64/128-bit deterministic fingerprints) is performed each transition.
+    /// Default: true (graduated – cross-platform stability validated, canonical serialization stable, acceptable overhead).
     /// </summary>
-    public static bool EnableStateHashing { get; set; } = false;
+    public static bool EnableStateHashing { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether evaluation traces are captured (requires observer hooks).

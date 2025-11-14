@@ -137,13 +137,18 @@ Be respectful and considerate in all interactions.
 ```bash
 dotnet restore
 dotnet build --configuration Release
-dotnet test test/Veggerby.Boards.Tests --configuration Release
+dotnet test test/Veggerby.Boards.Tests --configuration Release --settings .runsettings
 ```
+
+The `.runsettings` file provides test timeout protection (5-minute session timeout) and enforces serial execution (`MaxCpuCount=1`) to prevent FeatureFlagScope deadlocks. Always use it when running tests locally or in CI.
+
+**Note**: Tests must run serially due to a static semaphore in FeatureFlagScope. Parallel test assembly execution causes deadlocks. This is enforced by the .runsettings configuration.
 
 Optional with coverage (locally):
 
 ```bash
 dotnet test test/Veggerby.Boards.Tests \
+   --settings .runsettings \
    --collect:"XPlat Code Coverage" \
    -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
 ```
@@ -190,5 +195,25 @@ Before submitting changes that touch engine state transitions, confirm:
 5. No hidden global mutable state added (static caches must be immutable after construction and justified in docs if introduced).
 6. All new tests deterministic (fixed seeds use TestDeterministicRng not System.Random).
 7. Performance-sensitive loops avoid LINQ / allocations beyond documented exceptions.
+
+### Cross-Platform Determinism Policy
+
+State hashing (`EnableStateHashing`, graduated to ON by default) provides deterministic 64/128-bit fingerprints for:
+
+- **Replay validation**: Identical initial state + event sequence → identical hashes across platforms
+- **Parity testing**: Verify optimization paths (compiled patterns, bitboards, etc.) produce identical states
+- **Bug reproduction**: Capture and replay deterministic state sequences
+
+**CI Enforcement**: The `determinism-parity` workflow validates hash stability across Linux (x64), Windows (x64), and macOS (ARM). Hash divergence fails the build.
+
+**Testing Requirements**:
+
+- Use `HashParityTestFixture` base class for hash comparison tests
+- Call `AssertHashParity(reference, candidate, context)` to verify hash equality
+- Add parity tests for any new acceleration paths or optimization flags
+- Ensure all serialization uses platform-stable types (no `nint`/`nuint`, explicit endianness)
+- Document hash algorithm changes in `determinism-rng-timeline.md` with version notes
+
+**Examples**: See `CrossPlatformHashStabilityTests`, `RandomizedReplayDeterminismTests`, and `AccelerationPathHashParityTests` for test patterns.
 
 Thanks for helping make Veggerby.Boards better.

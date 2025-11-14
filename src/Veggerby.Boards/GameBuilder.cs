@@ -521,13 +521,9 @@ public abstract class GameBuilder
             artifacts.Add(art);
         }
 
-        // Shadow mode turn timeline artifact (single instance). Only emitted when sequencing enabled.
-        TurnArtifact? turnArtifact = null;
-        if (FeatureFlags.EnableTurnSequencing)
-        {
-            turnArtifact = new TurnArtifact("turn-timeline");
-            artifacts.Add(turnArtifact);
-        }
+        // Turn timeline artifact (single instance) - always enabled (graduated feature)
+        var turnArtifact = new TurnArtifact("turn-timeline");
+        artifacts.Add(turnArtifact);
 
         if (BoardId is null)
         {
@@ -657,30 +653,22 @@ public abstract class GameBuilder
         var shape = Internal.Layout.BoardShape.Build(game.Board);
         var topology = new Internal.Topology.BoardShapeTopologyAdapter(shape);
 
-        Internal.Paths.IPathResolver? pathResolver = null;
-        if (FeatureFlags.EnableCompiledPatterns)
+        // Always use compiled patterns (graduated feature)
+        var table = Flows.Patterns.PatternCompiler.Compile(game);
+        Internal.Compiled.BoardAdjacencyCache? adjacency = null;
+        if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
         {
-            var table = Flows.Patterns.PatternCompiler.Compile(game);
-            Internal.Compiled.BoardAdjacencyCache? adjacency = null;
-            if (FeatureFlags.EnableCompiledPatternsAdjacencyCache)
-            {
-                adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
-            }
-
-            var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
-            var adapter = new Internal.Paths.CompiledPathResolverAdapter(resolver);
-            pathResolver = adapter;
-        }
-        else
-        {
-            // Fallback simple visitor-based resolver
-            pathResolver = new Internal.Paths.SimplePatternPathResolver(game.Board);
+            adjacency = Internal.Compiled.BoardAdjacencyCache.Build(game.Board);
         }
 
-        // Acceleration context selection
+        var resolver = new Flows.Patterns.CompiledPatternResolver(table, game.Board, adjacency, shape);
+        var adapter = new Internal.Paths.CompiledPathResolverAdapter(resolver);
+        Internal.Paths.IPathResolver pathResolver = adapter;
+
+        // Acceleration context selection (bitboards always enabled for boards ≤128 tiles - graduated feature)
         Internal.Acceleration.IAccelerationContext accelerationContext;
         var tileCount = game.Board.Tiles.Count();
-        if (FeatureFlags.EnableBitboards && tileCount <= 128) // extended to 128 via Bitboard128 scaffolding
+        if (tileCount <= 128)
         {
             var pieceLayout = Internal.Layout.PieceMapLayout.Build(game);
             var pieceSnapshot = Internal.Layout.PieceMapSnapshot.Build(pieceLayout, initialGameState, shape);
@@ -690,26 +678,21 @@ public abstract class GameBuilder
             var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, shape, game, initialGameState);
             // Ensure initial snapshot is bound so IsEmpty/IsOwnedBy reflect initial piece placement.
             (occupancy as Internal.Acceleration.IBitboardBackedOccupancy)?.BindSnapshot(bbSnapshot);
-            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-            var attackServices = sliding; // implements IAttackRays
+            var slidingGen = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            var attackServices = slidingGen; // implements IAttackRays
             accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, shape, topology, occupancy, attackServices);
         }
         else
         {
             var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(game, initialGameState);
-            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-            accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
+            var slidingGen = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+            accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, slidingGen);
         }
 
-        // Sliding fast-path decorator layering if enabled (decorates chosen resolver)
-        if (FeatureFlags.EnableSlidingFastPath && pathResolver is not null)
-        {
-            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(shape);
-            pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, sliding, accelerationContext.Occupancy, pathResolver);
-        }
+        // Sliding fast-path decorator layering (always enabled - graduated feature)
+        var slidingFastPath = Internal.Attacks.SlidingAttackGenerator.Build(shape);
+        pathResolver = new Internal.Paths.SlidingFastPathResolver(shape, slidingFastPath, accelerationContext.Occupancy, pathResolver);
 
-        // Ensure non-null pathResolver (legacy visitor resolver fallback already applied earlier if compiled disabled)
-        pathResolver ??= new Internal.Paths.SimplePatternPathResolver(game.Board);
         var capabilities = new EngineCapabilities(topology, pathResolver, accelerationContext);
         var engine = new GameEngine(game, gamePhaseRoot, decisionPlan, _observer, capabilities);
 

@@ -67,7 +67,6 @@ public static class SequentialSimulator
         }
 
         var stopPredicate = stop ?? ((_, _, _) => false);
-        var turnSequencingEnabled = FeatureFlags.EnableTurnSequencing; // cache to avoid repeated static property access in loop
         var initialState = progress.State;
         var current = progress;
         var depth = 0;
@@ -113,30 +112,30 @@ public static class SequentialSimulator
 
             applied++;
             current = next;
-            if (turnSequencingEnabled)
+
+            // Track turn sequencing events (always enabled - graduated feature)
+            if (nextEvent is TurnPassEvent)
             {
-                if (nextEvent is TurnPassEvent)
-                {
-                    passEvents++;
-                }
-                else if (nextEvent is TurnReplayEvent)
-                {
-                    replayEvents++;
-                }
-
-                // capture TurnState after mutator
-                TurnState? afterTurn = null;
-                foreach (var ts in current.State.GetStates<TurnState>())
-                {
-                    afterTurn = ts;
-                    break;
-                }
-
-                if (beforeTurn is not null && afterTurn is not null && afterTurn.TurnNumber > beforeTurn.TurnNumber)
-                {
-                    turnAdvancements++;
-                }
+                passEvents++;
             }
+            else if (nextEvent is TurnReplayEvent)
+            {
+                replayEvents++;
+            }
+
+            // capture TurnState after mutator
+            TurnState? afterTurn = null;
+            foreach (var ts in current.State.GetStates<TurnState>())
+            {
+                afterTurn = ts;
+                break;
+            }
+
+            if (beforeTurn is not null && afterTurn is not null && afterTurn.TurnNumber > beforeTurn.TurnNumber)
+            {
+                turnAdvancements++;
+            }
+
             depth++;
         }
 

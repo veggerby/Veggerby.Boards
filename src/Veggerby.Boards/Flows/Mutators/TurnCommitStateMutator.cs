@@ -16,11 +16,6 @@ internal sealed class TurnCommitStateMutator : IStateMutator<TurnCommitEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, TurnCommitEvent @event)
     {
-        if (!Internal.FeatureFlags.EnableTurnSequencing)
-        {
-            return gameState;
-        }
-
         TurnState? currentTurn = null;
         foreach (var ts in gameState.GetStates<TurnState>())
         {

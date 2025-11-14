@@ -12,12 +12,6 @@ internal sealed class TurnPassStateMutator : IStateMutator<TurnPassEvent>
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, TurnPassEvent @event)
     {
-        var sequencingEnabled = Internal.FeatureFlags.EnableTurnSequencing;
-        if (!sequencingEnabled)
-        {
-            return gameState;
-        }
-
         TurnState? currentTurnState = null;
         foreach (var ts in gameState.GetStates<TurnState>())
         {

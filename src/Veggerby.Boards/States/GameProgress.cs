@@ -191,7 +191,7 @@ public partial class GameProgress
                             var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
                             progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
 
-                            if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                            if (newState.Hash.HasValue)
                             {
                                 progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                             }
@@ -264,7 +264,7 @@ public partial class GameProgress
                         var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
                         progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
 
-                        if (Internal.FeatureFlags.EnableStateHashing && newState.Hash.HasValue)
+                        if (newState.Hash.HasValue)
                         {
                             progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
                         }

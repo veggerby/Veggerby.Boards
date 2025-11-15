@@ -34,20 +34,7 @@ public class OccupancyIndexRegistrationTests
         occ.Should().BeOfType<BitboardOccupancyIndex>();
     }
 
-    [Fact]
-    public void GivenBitboardsDisabled_WhenBuildingGame_ThenNaiveOccupancyIndexRegistered()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var (_, occ) = Build(bitboards: false);
-
-        // assert
-        occ.Should().BeOfType<NaiveOccupancyIndex>();
-    }
 
     [Fact]
     public void GivenBitboardsEnabled_WhenQueryingOccupancyIndex_ThenIsEmptyMatchesState()

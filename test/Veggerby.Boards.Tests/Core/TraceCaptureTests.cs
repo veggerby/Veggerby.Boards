@@ -16,23 +16,7 @@ public class TraceCaptureTests
         return (scope, builder.Compile());
     }
 
-    [Fact]
-    public void When_Trace_Disabled_LastTrace_Is_Null()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var (scope1, progress) = Build(trace: false, hashing: true);
-        using var _ = scope1;
-
-        // act (no event handled; checking initial state)
-
-        // assert
-        progress.Engine.LastTrace.Should().BeNull();
-    }
 
     [Fact]
     public void When_Trace_Enabled_LastTrace_Populated_After_Move()

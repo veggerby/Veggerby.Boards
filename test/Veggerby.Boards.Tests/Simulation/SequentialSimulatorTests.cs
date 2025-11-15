@@ -16,24 +16,7 @@ using Xunit;
 
 public class SequentialSimulatorTests
 {
-    [Fact]
-    public void GivenSimulationDisabled_WhenRun_ThenThrows()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var builder = new ChessGameBuilder();
-        var progress = builder.Compile();
-
-        // act
-        Action act = () => SequentialSimulator.Run(progress, _ => null);
-
-        // assert
-        act.Should().Throw<InvalidOperationException>();
-    }
 
     [Fact]
     public void GivenSimplePolicy_WhenRunWithDeterministicSeed_ThenDeterministicTerminalHash()

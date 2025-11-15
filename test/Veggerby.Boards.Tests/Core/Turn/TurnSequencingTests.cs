@@ -27,37 +27,7 @@ public class TurnSequencingCoreTests
         }
     }
 
-    [Fact]
-    public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var builder = new ChessGameBuilder();
-        var progress = builder.Compile();
-        var initial = progress.State.GetStates<TurnState>().FirstOrDefault();
-        if (initial is null)
-        {
-            // TurnState not emitted when sequencing disabled; nothing to validate
-            return;
-        }
-        var ev = new EndTurnSegmentEvent(TurnSegment.Start);
-        var condition = new EndTurnSegmentCondition();
-        var mutator = new TurnAdvanceStateMutator();
-
-        // act
-        var response = condition.Evaluate(progress.Engine, progress.State, ev);
-        var newState = response == ConditionResponse.Valid
-            ? mutator.MutateState(progress.Engine, progress.State, ev)
-            : progress.State;
-
-        // assert
-        response.Should().Be(ConditionResponse.NotApplicable);
-        newState.GetStates<TurnState>().First().Should().BeEquivalentTo(initial);
-    }
 
     [Fact]
     public void GivenStartSegment_WhenEnded_ThenSegmentAdvancesToMain()

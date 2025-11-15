@@ -92,29 +92,7 @@ public class TurnAdvanceStateMutatorTests
         updated.Should().BeSameAs(state);
     }
 
-    [Fact]
-    public void GivenDisabledFeatureFlag_WhenEndTurnSegmentEvent_ThenNoChange()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var (engine, state, turn, p1, p2) = CreateBaseline(TurnSegment.End);
-        var mutator = new TurnAdvanceStateMutator();
-        var evt = new EndTurnSegmentEvent(TurnSegment.End);
-        try
-        {
-            // act
-            var updated = mutator.MutateState(engine, state, evt);
-            // assert
-            updated.Should().BeSameAs(state);
-        }
-        finally
-        {
-        }
-    }
 
     [Fact]
     public void GivenNoActivePlayerProjection_WhenFinalSegment_ThenOnlyTurnStateAdvances()

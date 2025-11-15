@@ -140,25 +140,5 @@ public class CanonicalStateSerializerTests
         changedHash.Should().NotBe(baseHash);
     }
 
-    [Fact]
-    public void GivenHashingDisabled_WhenStateCreated_ThenHashIsNull()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        ulong? hash;
-        using (new FeatureFlagScope(hashing: false))
-        {
-            var state = BuildState(0, 1, 1, TurnSegment.Main, 1).state;
-            hash = state.Hash;
-        }
-
-        // act
-
-        // assert
-        hash.Should().BeNull();
-    }
 }

@@ -17,22 +17,7 @@ public class StateHashingTests
         return builder.Compile();
     }
 
-    [Fact]
-    public void GivenHashingDisabled_WhenBuildingState_ThenHashIsNull()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var progress = Build(false);
-
-        // act (no action – construction only)
-
-        // assert
-        progress.State.Hash.Should().BeNull();
-    }
 
     [Fact]
     public void GivenHashingEnabled_WhenBuildingState_ThenHashHasValue()

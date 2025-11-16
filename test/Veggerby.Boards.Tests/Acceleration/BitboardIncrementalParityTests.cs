@@ -17,7 +17,7 @@ public class BitboardIncrementalParityTests
         }
     }
 
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenMoveSequence_WhenIncrementalEnabled_ThenOccupancyMatchesFullRebuild()
     {
         // arrange

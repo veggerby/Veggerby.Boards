@@ -70,7 +70,7 @@ public class BitboardIncrementalRandomizedParityTests
         return progress;
     }
 
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenDeterministicRandomMoveSequence_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange

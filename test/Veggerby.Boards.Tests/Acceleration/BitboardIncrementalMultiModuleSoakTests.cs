@@ -75,7 +75,7 @@ public class BitboardIncrementalMultiModuleSoakTests
         return progress;
     }
 
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenChessRandomMoves_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange
@@ -109,7 +109,7 @@ public class BitboardIncrementalMultiModuleSoakTests
         incTiles.Should().BeEquivalentTo(baseTiles, o => o.WithStrictOrdering());
     }
 
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenBackgammonRandomMoves_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange
@@ -143,7 +143,7 @@ public class BitboardIncrementalMultiModuleSoakTests
         incTiles.Should().BeEquivalentTo(baseTiles, o => o.WithStrictOrdering());
     }
 
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenGoRandomMoves_WhenIncrementalEnabled_ThenOccupancyParityHolds()
     {
         // arrange

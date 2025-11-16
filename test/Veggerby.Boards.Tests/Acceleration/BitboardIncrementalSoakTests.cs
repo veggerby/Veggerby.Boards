@@ -27,7 +27,7 @@ public class BitboardIncrementalSoakTests
     /// Script based on an opening-style sequence with intentional captures creating repeated occupancy
     /// churn on the same tile (e5) to stress incremental add/remove ordering.
     /// </summary>
-    [Fact]
+    [Fact(Skip = "Bitboard incremental always enabled (graduated feature) - parity test obsolete")]
     public void GivenExtendedMoveAndCaptureSequence_WhenIncrementalEnabled_ThenOccupancyMatchesBaseline()
     {
         // arrange

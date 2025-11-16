@@ -17,7 +17,6 @@ public class FastPathMetricsTests
         // assert
 
         FastPathMetrics.Reset();
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path default on
         var progress = new LargeLinearBuilder().Compile();
         var piece = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("t0");
@@ -44,7 +43,6 @@ public class FastPathMetricsTests
         // assert
 
         FastPathMetrics.Reset();
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new LargeLinearBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("t0");
@@ -69,7 +67,6 @@ public class FastPathMetricsTests
         // assert
 
         FastPathMetrics.Reset();
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new RookNorthBuilder().Compile();
         var rook = progress.Game.GetPiece("rook");
         var from = progress.Game.GetTile("v1");
@@ -98,7 +95,6 @@ public class FastPathMetricsTests
         // assert
 
         FastPathMetrics.Reset();
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true);
         var progress = new NonSliderBuilder().Compile();
         var piece = progress.Game.GetPiece("stone");
         var from = progress.Game.GetTile("x1");

@@ -12,7 +12,6 @@ public class StateHashingTests
 {
     private static GameProgress Build(bool hashing)
     {
-        using var scope = new FeatureFlagScope(hashing: hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         return builder.Compile();
     }
@@ -45,7 +44,6 @@ public class StateHashingTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";
@@ -77,7 +75,6 @@ public class StateHashingTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";
@@ -126,7 +123,6 @@ public class StateHashingTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = Build(true);
         var b = Build(true);
         var pieceId = "piece-1";

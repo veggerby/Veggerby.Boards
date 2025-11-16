@@ -36,7 +36,6 @@ public class DecisionPlanGroupingNegativeTests
         GamePhase.New(11, "b", falseGate, GameEventRule<IGameEvent>.Null, root);
         GamePhase.New(12, "c", falseGate, GameEventRule<IGameEvent>.Null, root);
         var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
-        using var _ = new Infrastructure.FeatureFlagScope(grouping: true);
 
         // act - simulate grouped evaluation gate path
         var dummyState = GameState.New(Array.Empty<IArtifactState>());

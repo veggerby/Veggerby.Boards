@@ -9,11 +9,10 @@ namespace Veggerby.Boards.Tests.Core;
 
 public class TraceCaptureTests
 {
-    private static (Infrastructure.FeatureFlagScope scope, GameProgress progress) Build(bool trace, bool hashing)
+    private static GameProgress Build(bool trace, bool hashing)
     {
-        var scope = new Infrastructure.FeatureFlagScope(trace: trace, hashing: hashing);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
-        return (scope, builder.Compile());
+        return builder.Compile();
     }
 
 
@@ -27,8 +26,7 @@ public class TraceCaptureTests
 
         // assert
 
-        var (scope2, progress) = Build(trace: true, hashing: true);
-        using var __ = scope2;
+        var progress = Build(trace: true, hashing: true);
         var from = progress.Game.GetTile("tile-1");
         from.Should().NotBeNull();
         var to = progress.Game.GetTile("tile-2");
@@ -60,8 +58,7 @@ public class TraceCaptureTests
 
         // assert
 
-        var (scope3, progress) = Build(trace: true, hashing: false);
-        using var ___ = scope3;
+        var progress = Build(trace: true, hashing: false);
         var from = progress.Game.GetTile("tile-1");
         from.Should().NotBeNull();
         var to = progress.Game.GetTile("tile-2");

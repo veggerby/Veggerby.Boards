@@ -14,7 +14,6 @@ public class PathResolverParityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var rook = progress.Game.GetPiece("white-rook-1");
         var from = progress.Game.GetTile(ChessIds.Tiles.A1);
@@ -45,7 +44,6 @@ public class PathResolverParityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
         var knight = progress.Game.GetPiece("white-knight-1");
         var from = progress.Game.GetTile(ChessIds.Tiles.B1);

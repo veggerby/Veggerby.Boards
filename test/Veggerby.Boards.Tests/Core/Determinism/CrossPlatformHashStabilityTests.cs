@@ -27,7 +27,6 @@ public class CrossPlatformHashStabilityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var b = new TestGameBuilder(useSimpleGamePhase: false).Compile();
 
@@ -49,7 +48,6 @@ public class CrossPlatformHashStabilityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var b = new TestGameBuilder(useSimpleGamePhase: false).Compile();
 
@@ -79,7 +77,6 @@ public class CrossPlatformHashStabilityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var reference = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var candidate = new TestGameBuilder(useSimpleGamePhase: false).Compile();
 
@@ -128,7 +125,6 @@ public class CrossPlatformHashStabilityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var progress = new TestGameBuilder(useSimpleGamePhase: false).Compile();
 
         // act (construction only)
@@ -148,7 +144,6 @@ public class CrossPlatformHashStabilityTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var a = new TestGameBuilder(useSimpleGamePhase: false).Compile();
         var b = new TestGameBuilder(useSimpleGamePhase: false).Compile();
 

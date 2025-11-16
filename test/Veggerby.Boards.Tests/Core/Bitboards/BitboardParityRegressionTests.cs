@@ -79,7 +79,6 @@ public class BitboardParityRegressionTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // bitboards ON
         var progress = new ChessGameBuilder().Compile();
 
         // deterministic move sequence (single step pawn advances + a knight move)

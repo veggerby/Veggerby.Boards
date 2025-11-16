@@ -34,7 +34,6 @@ public class FastPathMetricsFastPathHitTests
         // assert
 
         FastPathMetrics.Reset();
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true); // sliding fast-path enabled by default
         var builder = new SimpleRookBoard();
         var progress = builder.Compile();
         var game = progress.Game;

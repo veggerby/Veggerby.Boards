@@ -67,7 +67,6 @@ public class CanonicalStateSerializerTests
 
         ulong? firstHash;
         ulong? secondHash;
-        using (new FeatureFlagScope(hashing: true))
         {
             var s1 = BuildState(0, 3, 1, TurnSegment.Main, 42).state;
             var s2 = BuildState(0, 3, 1, TurnSegment.Main, 42).state; // rebuilt fresh
@@ -94,7 +93,6 @@ public class CanonicalStateSerializerTests
 
         ulong? orderedHash;
         ulong? shuffledHash;
-        using (new FeatureFlagScope(hashing: true))
         {
             var ordered = BuildState(1, 5, 2, TurnSegment.Start, 7).state;
             orderedHash = ordered.Hash;
@@ -124,7 +122,6 @@ public class CanonicalStateSerializerTests
 
         ulong? baseHash;
         ulong? changedHash;
-        using (new FeatureFlagScope(hashing: true))
         {
             var baseline = BuildState(0, 4, 3, TurnSegment.End, 10).state;
             baseHash = baseline.Hash;

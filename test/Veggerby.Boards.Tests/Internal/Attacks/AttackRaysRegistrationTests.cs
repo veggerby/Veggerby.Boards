@@ -14,7 +14,6 @@ public class AttackRaysRegistrationTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
         // act
@@ -33,7 +32,6 @@ public class AttackRaysRegistrationTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
         // act

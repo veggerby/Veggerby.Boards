@@ -20,7 +20,6 @@ public class MinimalCaptureTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(compiledPatterns: true); // bitboards optional here
         var progress = new MinimalCaptureGameBuilder().Compile();
         var white = progress.Game.GetPiece("white-slider");
         var black = progress.Game.GetPiece("black-block");

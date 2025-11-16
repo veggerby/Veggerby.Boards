@@ -133,7 +133,6 @@ public class SlidingFastPathParityTests
 
     private static TilePath? ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
-        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
         // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
@@ -439,7 +438,6 @@ public class SlidingFastPathParityTests
 
     private static TilePath? ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);
@@ -450,7 +448,6 @@ public class SlidingFastPathParityTests
 
     private static TilePath? ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);

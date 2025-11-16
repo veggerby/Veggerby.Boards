@@ -18,17 +18,18 @@ public class GoTerminationAndScoringTests
         var progress = builder.Compile();
 
         var beforeState = progress.State;
-        var beforeExtras = beforeState.GetExtras<GoStateExtras>()!;
-        beforeExtras.ConsecutivePasses.Should().Be(0);
+        var beforeTurnState = beforeState.GetStates<TurnState>().FirstOrDefault();
+        beforeTurnState.Should().NotBeNull("TurnState should exist");
+        beforeTurnState!.PassStreak.Should().Be(0);
 
         // act
         progress = progress.HandleEvent(new PassTurnGameEvent());
 
         // assert
         var afterState = progress.State;
-        var afterExtras = afterState.GetExtras<GoStateExtras>()!;
-        afterExtras.ConsecutivePasses.Should().Be(1, "pass count should increment");
-        
+        var afterTurnState = afterState.GetStates<TurnState>().First();
+        afterTurnState.PassStreak.Should().Be(1, "pass streak should increment");
+
         afterState.GetStates<GameEndedState>().Should().BeEmpty("game should not end on single pass");
     }
 
@@ -41,19 +42,20 @@ public class GoTerminationAndScoringTests
 
         // First pass
         progress = progress.HandleEvent(new PassTurnGameEvent());
-        
+
         var afterFirstPass = progress.State;
-        var afterFirstPassExtras = afterFirstPass.GetExtras<GoStateExtras>()!;
-        afterFirstPassExtras.ConsecutivePasses.Should().Be(1);
+        var afterFirstPassTurnState = afterFirstPass.GetStates<TurnState>().FirstOrDefault();
+        afterFirstPassTurnState.Should().NotBeNull();
+        afterFirstPassTurnState!.PassStreak.Should().Be(1);
 
         // act - Second pass
         progress = progress.HandleEvent(new PassTurnGameEvent());
 
         // assert
         var afterSecondPass = progress.State;
-        var afterSecondPassExtras = afterSecondPass.GetExtras<GoStateExtras>()!;
-        afterSecondPassExtras.ConsecutivePasses.Should().Be(2, "second pass should increment counter");
-        
+        var afterSecondPassTurnState = afterSecondPass.GetStates<TurnState>().First();
+        afterSecondPassTurnState.PassStreak.Should().Be(2, "second pass should increment counter");
+
         afterSecondPass.GetStates<GameEndedState>().Should().ContainSingle("game should end after two consecutive passes");
     }
 
@@ -66,10 +68,11 @@ public class GoTerminationAndScoringTests
 
         // First pass
         progress = progress.HandleEvent(new PassTurnGameEvent());
-        
+
         var afterPass = progress.State;
-        var afterPassExtras = afterPass.GetExtras<GoStateExtras>()!;
-        afterPassExtras.ConsecutivePasses.Should().Be(1);
+        var afterPassTurnState = afterPass.GetStates<TurnState>().FirstOrDefault();
+        afterPassTurnState.Should().NotBeNull();
+        afterPassTurnState!.PassStreak.Should().Be(1);
 
         // act - Place a stone (resets pass count)
         var blackStone1 = progress.Game.GetPiece("black-stone-1")!;
@@ -77,9 +80,9 @@ public class GoTerminationAndScoringTests
 
         // assert
         var afterPlacement = progress.State;
-        var afterPlacementExtras = afterPlacement.GetExtras<GoStateExtras>()!;
-        afterPlacementExtras.ConsecutivePasses.Should().Be(0, "pass count should reset on placement");
-        
+        var afterPlacementTurnState = afterPlacement.GetStates<TurnState>().First();
+        afterPlacementTurnState.PassStreak.Should().Be(0, "pass streak should reset on placement");
+
         afterPlacement.GetStates<GameEndedState>().Should().BeEmpty("game should continue after placement");
     }
 

@@ -69,12 +69,6 @@ public class BitboardSnapshotTests
         snapshot.GlobalSegmented.HasValue.Should().BeFalse();
     }
 
-    [Fact(Skip = "Segmented bitboards removed - experimental feature with no current use case")]
-    public void GivenSegmentedFlagOn_WhenBuildSmallBoard_ThenSegmentedMatchesLegacy64()
-    {
-        // Placeholder for removed segmented bitboard test
-    }
-
     [Fact]
     public void GivenExpectedFromMismatch_WhenUpdateForMove_ThenNoChange()
     {

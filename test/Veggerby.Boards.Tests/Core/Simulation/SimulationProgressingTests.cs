@@ -34,7 +34,6 @@ public class SimulationProgressingTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Policy always selects the single forward relation (t1->t2) and emits exactly one move.
         // Depth accounting:
@@ -73,7 +72,6 @@ public class SimulationProgressingTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Policy applies exactly one legal move (t1->t2) and then returns null on the next invocation.
         // Distinction logic:
@@ -113,7 +111,6 @@ public class SimulationProgressingTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         PlayoutPolicy policy = state =>
         {
@@ -150,7 +147,6 @@ public class SimulationProgressingTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         var batch = await ParallelSimulator.RunManyDetailedAsync(progress, playoutCount: 2, policyFactory: _ =>
         {
@@ -196,7 +192,6 @@ public class SimulationProgressingTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
         // Rejection scenario: first policy call emits a valid MovePieceGameEvent (applies). Second call emits a TurnPassEvent
         // for which there is no rule in this phase, resulting in no state change (rejected). The simulator treats the

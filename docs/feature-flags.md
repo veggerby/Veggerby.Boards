@@ -1,32 +1,96 @@
-# Feature Flags
+# Feature Flags (DEPRECATED)
 
-All experimental and optimization subsystems are gated behind feature flags. Defaults reflect the current engine state in `src/Veggerby.Boards/Internal/FeatureFlags.cs`. Identical inputs plus identical active flag set must yield identical outputs (determinism invariant).
+> **⚠️ NOTICE**: Feature flags have been eliminated from the production codebase. This document is retained for historical reference only.
+>
+> All features documented below are now unconditionally enabled based on their graduated status. The `FeatureFlags` class exists only as a test compatibility shim and will be removed in a future release.
 
-Stability levels: Experimental (API/semantics may change), Preview (likely to stabilize), Stable (parity-proven & default on), Graduated (legacy path removed or kept only as fallback for troubleshooting).
+## Migration Status
 
-| Flag | Area | Default | Status | Purpose | Owner | Graduation criteria | Related docs |
-|------|------|---------|--------|---------|-------|----------------------|--------------|
-| EnableCompiledPatterns | Movement & Patterns | ON | Graduated | Use compiled movement IR (DFA) instead of visitor; visitor retained for unsupported cases | @veggerby | Completed: full parity suite + adjacency parity, benchmarks within thresholds, docs/tests updated | movement-and-patterns.md |
-| EnableBitboards | Bitboards & Accel | ON | Graduated | Occupancy/attack bitboards for ≤64 tiles | @veggerby | Completed: parity across modules; perf win validated; zero desync in multi-module soak tests; acceptable memory | movement-and-patterns.md, performance.md |
-| EnableSlidingFastPath | Bitboards & Accel | ON | Stable | Sliding ray generation fast-path (requires bitboards when used) | @veggerby | Completed: Parity V2 + benchmarks; toggle remains for troubleshooting | movement-and-patterns.md, performance.md |
-| EnableDecisionPlanGrouping | Decision Plan | OFF | Experimental | Evaluate shared predicate once per group to reduce redundant checks | @veggerby | Parity retained; measurable reduction in predicate invocations; microbench win | decision-plan-and-acceleration.md |
-| EnableDecisionPlanEventFiltering | Decision Plan | OFF | Experimental | Pre-filter plan entries by EventKind before predicate evaluation | @veggerby | No false negatives; reduced predicate cost; analyzer/tests cover edge cases | decision-plan-and-acceleration.md |
-| EnableDecisionPlanMasks | Decision Plan | OFF | Experimental | Skip subsequent entries in exclusivity group once one applies | @veggerby | Parity maintained across groups; measurable evaluation reduction | decision-plan-and-acceleration.md |
-| EnableTurnSequencing | Turn Sequencing | ON | Stable | TurnProfile segments and sequencing events; explicit advancement | @veggerby | Completed: rotation/parity validated; docs/tests updated | turn-sequencing.md |
-| EnableStateHashing | Determinism/Hashing | ON | Graduated | Compute 64/128-bit deterministic state hashes each transition | @veggerby | Completed: cross-platform stability validated; acceptable overhead; parity test infrastructure; used in replay tooling | determinism-rng-timeline.md |
-| EnableTimelineZipper | Timeline | OFF | Experimental | Immutable zipper for undo/redo navigation of history | @veggerby | Determinism preserved; memory/time overhead acceptable; UX/docs updated | determinism-rng-timeline.md |
-| EnableTraceCapture | Diagnostics | OFF | Preview | Capture evaluation traces via observer hooks | @veggerby | Low overhead; stable format; safe defaults; opt-in diagnostics | diagnostics.md |
-| EnableSimulation | Simulation | OFF | Experimental | Deterministic playout/simulation APIs | @veggerby | Determinism preserved; reproducible benchmarks; safe gating in API | performance.md, diagnostics.md |
-| EnableCompiledPatternsAdjacencyCache | Movement & Patterns | OFF | Experimental | Pre-built (tile,direction) adjacency cache for resolver | @veggerby | Parity with topology/boardshape; measurable resolver win | movement-and-patterns.md |
-| EnableBoardShape | Topology/Layout | OFF | Experimental | O(1) neighbor lookup using BoardShape service where available | @veggerby | Parity with adjacency cache; perf gain on supported boards | movement-and-patterns.md |
-| EnableBitboardIncremental | Bitboards & Accel | ON | Graduated | Incremental bitboard + piece map updates on moves | @veggerby | Completed: zero desync in 10,000+ move multi-module soak tests (Chess, Backgammon, Go); allocation parity validated | performance.md |
-| EnablePerPieceMasks | Bitboards & Accel | OFF | Experimental | Maintain per-piece occupancy masks for pruning/heuristics | @veggerby | Overhead negligible; tangible benefit in consumers | performance.md |
-| EnableSegmentedBitboards | Bitboards | OFF | Experimental | Unified segmented bitboard (inline + spill) abstraction | @veggerby | Parity tests across sizes; benchmark justification; memory profile | performance.md |
-| EnableTopologyPruning | Topology/Layout | OFF | Experimental | Skip directions not present for board topology to reduce branching | @veggerby | Parity for mixed topologies; measurable reduction in work | movement-and-patterns.md |
-| EnableObserverBatching | Observability/Eval | OFF | Experimental | Batch high-frequency evaluation observer callbacks until terminal | @veggerby | Ordering preserved; ≤5% overhead small plans; win on large plans | diagnostics.md |
+As of this release, all feature flags have been processed:
 
-Notes and hygiene
+### ✅ Graduated Features (Always Enabled)
+These features have been validated and are now unconditionally enabled in production code:
 
-- Configure flags deterministically at process start or via explicit test scopes; do not toggle mid-evaluation.
-- In tests and benchmarks, wrap changes in a disposable scope helper and restore afterward to avoid leakage between tests. See CONTRIBUTING.md (Feature Flag Policy).
-- Defaults above are authoritative and sourced from code; update this table whenever `FeatureFlags` defaults change or a flag graduates/deprecates.
+- **EnableCompiledPatterns** - Compiled movement patterns (DFA)
+- **EnableBitboards** - Bitboard occupancy for boards ≤128 tiles
+- **EnableStateHashing** - Deterministic state fingerprints
+- **EnableSlidingFastPath** - Ray-based sliding piece resolution
+- **EnableBitboardIncremental** - Incremental bitboard updates
+- **EnableTurnSequencing** - Turn advancement system
+- **EnableTraceCapture** - Evaluation trace diagnostics
+- **EnableBoardShape** - O(1) neighbor lookup
+
+### ❌ Removed Features (Deferred/Superseded)
+These experimental features have been removed from production code:
+
+- **EnableCompiledPatternsAdjacencyCache** - Superseded by BoardShape
+- **EnableSegmentedBitboards** - No current use case
+- **EnablePerPieceMasks** - Deferred to future optimization
+- **EnableTopologyPruning** - Needs benchmarks + parity tests
+- **EnableDecisionPlanGrouping** - Deferred to future perf story
+- **EnableDecisionPlanEventFiltering** - Deferred to future perf story
+- **EnableDecisionPlanMasks** - Deferred to future perf story
+- **EnableTimelineZipper** - No usage, removed
+- **EnableObserverBatching** - Deferred to future perf story
+
+### ✅ Always Available
+- **EnableSimulation** - Simulation APIs are always available; using the API is the explicit opt-in
+
+## Historical Context
+
+Feature flags were used during development to:
+1. Enable gradual rollout of experimental features
+2. Allow A/B testing of optimization paths
+3. Maintain parity between old and new implementations
+4. Facilitate performance benchmarking
+
+The system has now matured to the point where:
+- Graduated features have proven stable and performant
+- All parity tests pass consistently
+- Performance benchmarks meet thresholds
+- Code complexity from conditional paths outweighs benefits
+
+## Benefits of Elimination
+
+1. **Parallel test execution** - No more global mutable state
+2. **Reduced codebase** - ~500+ lines eliminated
+3. **Clear code path** - Single implementation per feature
+4. **Better performance** - No conditional overhead in hot paths
+5. **Easier onboarding** - Obvious what's production-ready
+
+## For Test Authors
+
+The `FeatureFlags` class and `FeatureFlagScope` test helper remain temporarily for backward compatibility but are deprecated:
+
+```csharp
+// ❌ DEPRECATED - Will be removed
+using var _ = new FeatureFlagScope(compiledPatterns: true);
+
+// ✅ PREFERRED - Feature is always enabled, no scope needed
+// (just remove the scope usage)
+```
+
+Tests should be gradually updated to remove `FeatureFlagScope` usage as the flags no longer affect production behavior.
+
+---
+
+## Future Work
+
+For detailed documentation of deferred features (including rationale, recommended next steps, and story templates), see:
+
+**[`docs/plans/deferred-features-from-flag-elimination.md`](plans/deferred-features-from-flag-elimination.md)**
+
+This document captures:
+- Decision plan optimizations (grouping, filtering, masks)
+- Observer batching
+- Per-piece occupancy masks
+- Segmented bitboards
+- Topology pruning
+
+Each entry includes context, why it was deferred, current state, and guidance for potential future implementation.
+
+---
+
+**Last Updated**: 2025-11-14  
+**Deprecated**: 2025-11-14  
+**Removal Target**: Future release (TBD)

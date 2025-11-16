@@ -56,15 +56,11 @@ public class EventKindFilteringBenchmark
     public void Setup()
     {
         // simulate plan grouping only (core plan flag removed)
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = false; // baseline build
         _obsLegacy = new CountingObserver();
         _legacy = new ChessGameBuilder().WithObserver(_obsLegacy).Compile();
 
-        FeatureFlags.EnableDecisionPlanEventFiltering = true; // filtering build
         _obsFiltering = new CountingObserver();
         _filtering = new ChessGameBuilder().WithObserver(_obsFiltering).Compile();
-        FeatureFlags.EnableDecisionPlanEventFiltering = false; // reset
 
         var rook = _legacy.Game.GetPiece(ChessIds.Pieces.WhiteRook1) ?? throw new InvalidOperationException("EventKindFiltering: rook a1 missing");
         var from = _legacy.Game.GetTile("a1") ?? throw new InvalidOperationException("EventKindFiltering: tile a1 missing");
@@ -125,13 +121,11 @@ public class EventKindFilteringBenchmark
     [Benchmark]
     public GameProgress DecisionPlan_Filtering_MoveBurst()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         var gp = _filtering;
         foreach (var m in _moves)
         {
             gp = gp.HandleEvent(m);
         }
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         return gp;
     }
 
@@ -151,7 +145,6 @@ public class EventKindFilteringBenchmark
     [Benchmark]
     public GameProgress Legacy_NoFiltering_Mixed50_50()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         var gp = _legacy;
         foreach (var e in _mixed50)
         {
@@ -163,20 +156,17 @@ public class EventKindFilteringBenchmark
     [Benchmark]
     public GameProgress Filtering_Mixed50_50()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         var gp = _filtering;
         foreach (var e in _mixed50)
         {
             gp = gp.HandleEvent(e);
         }
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         return gp;
     }
 
     [Benchmark]
     public GameProgress Legacy_NoFiltering_Mixed80_20()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         var gp = _legacy;
         foreach (var e in _mixed80Move)
         {
@@ -188,20 +178,17 @@ public class EventKindFilteringBenchmark
     [Benchmark]
     public GameProgress Filtering_Mixed80_20()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         var gp = _filtering;
         foreach (var e in _mixed80Move)
         {
             gp = gp.HandleEvent(e);
         }
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         return gp;
     }
 
     [Benchmark]
     public GameProgress Legacy_NoFiltering_Mixed20_80()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         var gp = _legacy;
         foreach (var e in _mixed20Move)
         {
@@ -213,19 +200,16 @@ public class EventKindFilteringBenchmark
     [Benchmark]
     public GameProgress Filtering_Mixed20_80()
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         var gp = _filtering;
         foreach (var e in _mixed20Move)
         {
             gp = gp.HandleEvent(e);
         }
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         return gp;
     }
 
     private (int evalLegacy, int evalFiltering) RunMixed(IGameEvent[] events)
     {
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         _obsLegacy.RuleEvaluations = 0;
         var gpLegacy = _legacy;
         foreach (var e in events)
@@ -233,14 +217,12 @@ public class EventKindFilteringBenchmark
             gpLegacy = gpLegacy.HandleEvent(e);
         }
 
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         _obsFiltering.RuleEvaluations = 0;
         var gpFiltering = _filtering;
         foreach (var e in events)
         {
             gpFiltering = gpFiltering.HandleEvent(e);
         }
-        FeatureFlags.EnableDecisionPlanEventFiltering = false;
         return (_obsLegacy.RuleEvaluations, _obsFiltering.RuleEvaluations);
     }
 }

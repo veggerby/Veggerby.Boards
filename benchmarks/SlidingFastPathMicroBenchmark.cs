@@ -91,9 +91,6 @@ public class SlidingFastPathMicroBenchmark
     [Benchmark(Baseline = true)]
     public bool CompiledOnly()
     {
-        FeatureFlags.EnableBitboards = false;
-        FeatureFlags.EnableSlidingFastPath = false;
-        FeatureFlags.EnableCompiledPatterns = true;
         var progress = SelectProgress();
         var target = SelectTarget();
         var path = progress.ResolvePathCompiledFirst(_rook, _a1, target);
@@ -103,9 +100,6 @@ public class SlidingFastPathMicroBenchmark
     [Benchmark]
     public bool FastPath()
     {
-        FeatureFlags.EnableBitboards = true;
-        FeatureFlags.EnableSlidingFastPath = true;
-        FeatureFlags.EnableCompiledPatterns = true;
         var progress = SelectProgress();
         var target = SelectTarget();
         var path = progress.ResolvePathCompiledFirst(_rook, _a1, target);
@@ -119,9 +113,6 @@ public class SlidingFastPathMicroBenchmark
         {
             return false; // only measured for empty-ray invariant scenario
         }
-        FeatureFlags.EnableBitboards = true;
-        FeatureFlags.EnableSlidingFastPath = true;
-        FeatureFlags.EnableCompiledPatterns = true;
         var progress = _progressEmpty;
         var target = _a5;
         var probe = FastPathAllocationProbe.Start();
@@ -177,30 +168,16 @@ public class SlidingFastPathMicroBenchmark
 
         // Acceleration context
         Internal.Acceleration.IAccelerationContext accelerationContext;
-        if (FeatureFlags.EnableBitboards && _game.Board.Tiles.Count() <= 64)
-        {
-            var pieceLayout = PieceMapLayout.Build(_game);
-            var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, _shape);
-            var bbLayout = BitboardLayout.Build(_game);
-            var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, _shape);
-            var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, _shape, _game, state);
-            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
-            accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, _shape, topology, occupancy, sliding);
-            if (FeatureFlags.EnableSlidingFastPath)
-            {
-                resolver = new SlidingFastPathResolver(_shape, sliding, accelerationContext.Occupancy, resolver);
-            }
-        }
-        else
-        {
-            var occupancy = new Internal.Occupancy.NaiveOccupancyIndex(_game, state);
-            var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
-            accelerationContext = new Internal.Acceleration.NaiveAccelerationContext(occupancy, sliding);
-            if (FeatureFlags.EnableSlidingFastPath)
-            {
-                resolver = new SlidingFastPathResolver(_shape, sliding, accelerationContext.Occupancy, resolver);
-            }
-        }
+        // Always use bitboards (graduated feature)
+        var pieceLayout = PieceMapLayout.Build(_game);
+        var pieceSnapshot = PieceMapSnapshot.Build(pieceLayout, state, _shape);
+        var bbLayout = BitboardLayout.Build(_game);
+        var bbSnapshot = BitboardSnapshot.Build(bbLayout, state, _shape);
+        var occupancy = new Internal.Occupancy.BitboardOccupancyIndex(bbLayout, bbSnapshot, _shape, _game, state);
+        var sliding = Internal.Attacks.SlidingAttackGenerator.Build(_shape);
+        accelerationContext = new Internal.Acceleration.BitboardAccelerationContext(bbLayout, bbSnapshot, pieceLayout, pieceSnapshot, _shape, topology, occupancy, sliding);
+        // Always use sliding fast path (graduated feature)
+        resolver = new SlidingFastPathResolver(_shape, sliding, accelerationContext.Occupancy, resolver);
 
         var capabilities = new EngineCapabilities(topology, resolver, accelerationContext);
         var phaseRoot = GamePhase.New(1, string.Empty, new States.Conditions.NullGameStateCondition(), Flows.Rules.GameEventRule<Flows.Events.IGameEvent>.Null);

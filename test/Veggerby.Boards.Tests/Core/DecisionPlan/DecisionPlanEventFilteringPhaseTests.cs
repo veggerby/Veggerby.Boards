@@ -36,8 +36,6 @@ public class DecisionPlanEventFilteringPhaseTests
     {
         var builder = new PhaseFilteringGameBuilder(moveCond, rollCond, phaseCond);
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         return builder.Compile();
     }
 

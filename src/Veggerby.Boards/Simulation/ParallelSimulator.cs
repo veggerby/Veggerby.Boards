@@ -19,6 +19,7 @@ public static class ParallelSimulator
     /// Executes multiple playouts in parallel (bounded by <paramref name="degreeOfParallelism"/>).
     /// Determinism: When the supplied policy and stop predicate are deterministic relative to each derived seed, the multiset of terminal state hashes
     /// will be stable across runs (ordering of results list is by playout index for determinism).
+    /// Simulation is always available - using this API is the explicit opt-in.
     /// </summary>
     public static async Task<PlayoutBatchResult> RunManyAsync(
         GameProgress progress,
@@ -29,11 +30,6 @@ public static class ParallelSimulator
         int degreeOfParallelism = 0,
         CancellationToken cancellationToken = default)
     {
-        if (!FeatureFlags.EnableSimulation)
-        {
-            throw new InvalidOperationException("Simulation feature disabled – enable FeatureFlags.EnableSimulation to use ParallelSimulator.");
-        }
-
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
         if (playoutCount <= 0)
@@ -87,11 +83,6 @@ public static class ParallelSimulator
         int degreeOfParallelism = 0,
         CancellationToken cancellationToken = default)
     {
-        if (!FeatureFlags.EnableSimulation)
-        {
-            throw new InvalidOperationException("Simulation feature disabled – enable FeatureFlags.EnableSimulation to use ParallelSimulator.");
-        }
-
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
         if (playoutCount <= 0)
@@ -148,11 +139,6 @@ public static class ParallelSimulator
         int degreeOfParallelism = 0,
         CancellationToken cancellationToken = default)
     {
-        if (!FeatureFlags.EnableSimulation)
-        {
-            throw new InvalidOperationException("Simulation feature disabled – enable FeatureFlags.EnableSimulation to use ParallelSimulator.");
-        }
-
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(policyFactory);
         if (playoutCount <= 0)

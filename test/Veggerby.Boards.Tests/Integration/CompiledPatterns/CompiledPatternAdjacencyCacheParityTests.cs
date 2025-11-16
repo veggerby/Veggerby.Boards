@@ -30,7 +30,6 @@ public class CompiledPatternAdjacencyCacheParityTests
         // arrange
         var builder = new ChessGameBuilder();
         TilePath? without;
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece(pieceId);
@@ -43,7 +42,6 @@ public class CompiledPatternAdjacencyCacheParityTests
         }
 
         TilePath? with;
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece(pieceId);
@@ -79,7 +77,6 @@ public class CompiledPatternAdjacencyCacheParityTests
 
         var builder = new ChessGameBuilder();
         TilePath? without;
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
@@ -91,7 +88,6 @@ public class CompiledPatternAdjacencyCacheParityTests
             without = ResolveCompiled(progress, piece!, from!, to!);
         }
         TilePath? with;
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");

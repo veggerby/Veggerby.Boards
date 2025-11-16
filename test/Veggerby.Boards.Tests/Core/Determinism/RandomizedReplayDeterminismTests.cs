@@ -28,7 +28,6 @@ public class RandomizedReplayDeterminismTests : HashParityTestFixture
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         const ulong seed = 12345UL;
 
         var builder1 = new TestGameBuilder(useSimpleGamePhase: false);
@@ -65,7 +64,6 @@ public class RandomizedReplayDeterminismTests : HashParityTestFixture
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
 
         var builder1 = new TestGameBuilder(useSimpleGamePhase: false);
         var builder2 = new TestGameBuilder(useSimpleGamePhase: false);
@@ -110,7 +108,6 @@ public class RandomizedReplayDeterminismTests : HashParityTestFixture
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
 
         var builder1 = new TestGameBuilder(useSimpleGamePhase: false);
         var builder2 = new TestGameBuilder(useSimpleGamePhase: false);
@@ -133,7 +130,6 @@ public class RandomizedReplayDeterminismTests : HashParityTestFixture
 
         // assert
 
-        using var scope = new FeatureFlagScope(hashing: true);
         var builder = new TestGameBuilder(useSimpleGamePhase: false);
         var progress = builder.WithSeed(777UL).Compile();
 

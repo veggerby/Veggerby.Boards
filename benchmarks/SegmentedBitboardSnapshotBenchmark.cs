@@ -50,14 +50,12 @@ public class SegmentedBitboardSnapshotBenchmark
     public void IterationSetup()
     {
         // Toggle feature flag per param; isolation: flag is static so restore handled in benchmark invocation.
-        FeatureFlags.EnableSegmentedBitboards = SegmentedEnabled;
     }
 
     [IterationCleanup]
     public void IterationCleanup()
     {
         // Reset to default (false) to avoid bleed into other benchmarks.
-        FeatureFlags.EnableSegmentedBitboards = false;
     }
 
     private BitboardSnapshot _last = null!; // set during first benchmark iteration

@@ -55,14 +55,10 @@ public class ObserverOverheadBenchmark
         _baseline = builder1.Compile();
 
         // simulate alternative path via grouping/event filtering toggles for relative observer overhead context
-        FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-        FeatureFlags.EnableObserverBatching = false;
         _observer = new CountingObserver();
         var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
         _observed = builder2.Compile();
 
-        FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-        FeatureFlags.EnableObserverBatching = true;
         _batchedObserver = new CountingObserver();
         var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
         _batched = builder3.Compile();

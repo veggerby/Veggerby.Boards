@@ -70,37 +70,6 @@ public class BitboardSnapshotTests
     }
 
     [Fact]
-    public void GivenSegmentedFlagOn_WhenBuildSmallBoard_ThenSegmentedMatchesLegacy64()
-    {
-        // arrange
-
-        // act
-
-        // assert
-
-        var prev = FeatureFlags.EnableSegmentedBitboards;
-        FeatureFlags.EnableSegmentedBitboards = true;
-        try
-        {
-            var progress = new SyntheticBoardBuilder(8).Compile();
-            var layout = BitboardLayout.Build(progress.Game);
-            var shape = BoardShape.Build(progress.Game.Board);
-
-            // act
-            var snapshot = BitboardSnapshot.Build(layout, progress.State, shape);
-
-            // assert
-            snapshot.GlobalSegmented.HasValue.Should().BeTrue();
-            snapshot.GlobalSegmented!.Value.SegmentCount.Should().Be(1);
-            snapshot.GlobalSegmented!.Value.Low64.Should().Be(snapshot.GlobalOccupancy);
-        }
-        finally
-        {
-            FeatureFlags.EnableSegmentedBitboards = prev;
-        }
-    }
-
-    [Fact]
     public void GivenExpectedFromMismatch_WhenUpdateForMove_ThenNoChange()
     {
         // arrange

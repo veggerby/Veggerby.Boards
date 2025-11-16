@@ -16,7 +16,6 @@ public class ChessBitboardTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(compiledPatterns: true, bitboards: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 

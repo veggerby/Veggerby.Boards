@@ -76,21 +76,7 @@ internal sealed class BitboardSnapshot
             // Build Bitboard128 variant (two 64-bit segments). Segment0 holds tiles [0..63], segment1 holds [64..127].
             var perPlayer128 = new Bitboard128[layout.PlayerCount];
             var global128 = Bitboard128.Empty;
-            SegmentedBitboard? segGlobal = null;
-            SegmentedBitboard[]? segPlayers = null;
-            ulong[]? segGlobalSegs = null;
-            ulong[][]? segPlayerSegs = null;
-            if (FeatureFlags.EnableSegmentedBitboards)
-            {
-                // compute required segment count (ceil(TileCount / 64.0))
-                int segCount = (shape.TileCount + 63) / 64;
-                segGlobalSegs = new ulong[segCount];
-                segPlayerSegs = new ulong[layout.PlayerCount][];
-                for (int i = 0; i < layout.PlayerCount; i++)
-                {
-                    segPlayerSegs[i] = new ulong[segCount];
-                }
-            }
+            // Segmented bitboard experimental code removed (deferred to future optimization)
 
             foreach (var ps in state.GetStates<PieceState>())
             {
@@ -108,51 +94,23 @@ internal sealed class BitboardSnapshot
                 int offset = high ? tileIndex - 64 : tileIndex;
                 var bit = 1UL << offset;
                 global128 = high ? global128.WithHigh(global128.High | bit) : global128.WithLow(global128.Low | bit);
-                if (segGlobalSegs is not null)
-                {
-                    int segIndex = tileIndex >> 6;
-                    segGlobalSegs[segIndex] |= 1UL << (tileIndex & 63);
-                }
+                // Segmented bitboard code removed
 
                 if (ps.Artifact.Owner is not null && layout.TryGetPlayerIndex(ps.Artifact.Owner, out var pIdxH))
                 {
                     var current = perPlayer128[pIdxH];
                     perPlayer128[pIdxH] = high ? current.WithHigh(current.High | bit) : current.WithLow(current.Low | bit);
-                    if (segPlayerSegs is not null)
-                    {
-                        int segIndex = tileIndex >> 6;
-                        segPlayerSegs[pIdxH][segIndex] |= 1UL << (tileIndex & 63);
-                    }
+                    // Segmented bitboard code removed
                 }
             }
-            if (segGlobalSegs is not null)
-            {
-                segGlobal = SegmentedBitboard.FromSegments(segGlobalSegs);
-                segPlayers = new SegmentedBitboard[layout.PlayerCount];
-                for (int i = 0; i < layout.PlayerCount; i++)
-                {
-                    segPlayers[i] = SegmentedBitboard.FromSegments(segPlayerSegs![i]);
-                }
-            }
-            return new BitboardSnapshot(layout, global128, perPlayer128, segGlobal, segPlayers);
+
+            // Segmented bitboard code removed - pass null for optional segmented parameters
+            return new BitboardSnapshot(layout, global128, perPlayer128, null, null);
         }
 
         ulong global = 0UL;
         var perPlayer = new ulong[layout.PlayerCount];
-
-        SegmentedBitboard? segGlobalLow = null;
-        SegmentedBitboard[]? segPlayersLow = null;
-        ulong[]? segGlobalSegsLow = null;
-        ulong[][]? segPlayerSegsLow = null;
-        if (FeatureFlags.EnableSegmentedBitboards)
-        {
-            segGlobalSegsLow = new ulong[1];
-            segPlayerSegsLow = new ulong[layout.PlayerCount][];
-            for (int i = 0; i < layout.PlayerCount; i++)
-            {
-                segPlayerSegsLow[i] = new ulong[1];
-            }
-        }
+        // Segmented bitboard experimental code removed (deferred to future optimization)
 
         foreach (var ps in state.GetStates<PieceState>())
         {
@@ -172,27 +130,13 @@ internal sealed class BitboardSnapshot
             if (ps.Artifact.Owner is not null && layout.TryGetPlayerIndex(ps.Artifact.Owner, out var pIdx))
             {
                 perPlayer[pIdx] |= bit;
-                if (segPlayerSegsLow is not null)
-                {
-                    segPlayerSegsLow[pIdx][0] |= bit;
-                }
+                // Segmented bitboard code removed
             }
-            if (segGlobalSegsLow is not null)
-            {
-                segGlobalSegsLow[0] |= bit;
-            }
+            // Segmented bitboard code removed
         }
-        if (segGlobalSegsLow is not null)
-        {
-            segGlobalLow = SegmentedBitboard.FromSegments(segGlobalSegsLow);
-            segPlayersLow = new SegmentedBitboard[layout.PlayerCount];
-            for (int i = 0; i < layout.PlayerCount; i++)
-            {
-                segPlayersLow[i] = SegmentedBitboard.FromSegments(segPlayerSegsLow![i]);
-            }
-        }
+        // Segmented bitboard code removed
 
-        return new BitboardSnapshot(layout, global, perPlayer, segGlobalLow, segPlayersLow);
+        return new BitboardSnapshot(layout, global, perPlayer, null, null);
     }
 
     /// <summary>

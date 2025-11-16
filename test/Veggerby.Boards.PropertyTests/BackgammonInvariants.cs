@@ -177,8 +177,6 @@ public class BackgammonInvariants
 
         // assert
 
-        var original = Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
         try
         {
             var builder = new BackgammonGameBuilder();
@@ -229,7 +227,6 @@ public class BackgammonInvariants
         }
         finally
         {
-            Veggerby.Boards.Internal.FeatureFlags.EnableTurnSequencing = original;
         }
     }
 

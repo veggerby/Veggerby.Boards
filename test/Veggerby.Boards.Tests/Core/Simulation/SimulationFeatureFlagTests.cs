@@ -1,10 +1,8 @@
-using System;
 using System.Threading.Tasks;
 
 using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.Simulation;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
@@ -12,7 +10,7 @@ using Veggerby.Boards.States.Conditions;
 namespace Veggerby.Boards.Tests.Core.Simulation;
 
 /// <summary>
-/// Guard tests validating that simulation APIs respect FeatureFlags.EnableSimulation toggle and remain deterministic.
+/// Tests validating that simulation APIs remain deterministic and functional.
 /// </summary>
 public class SimulationFeatureFlagTests
 {
@@ -23,35 +21,9 @@ public class SimulationFeatureFlagTests
     }
 
     [Fact]
-    public void GivenSequentialSimulator_WhenFlagDisabled_ThenThrows()
+    public void GivenSequentialSimulator_WhenRun_ThenProducesResult()
     {
         // arrange
-
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = false;
-        var progress = BuildProgress();
-
-        // act
-        var act = () => SequentialSimulator.Run(progress, _ => new TurnPassEvent());
-
-        // assert
-        act.Should().Throw<InvalidOperationException>()
-            .Which.Message.Should().Contain("Simulation feature disabled");
-    }
-
-    [Fact]
-    public void GivenSequentialSimulator_WhenFlagEnabled_ThenRuns()
-    {
-        // arrange
-
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 
         // act
@@ -63,35 +35,9 @@ public class SimulationFeatureFlagTests
     }
 
     [Fact]
-    public async Task GivenParallelSimulator_WhenFlagDisabled_ThenThrows()
+    public async Task GivenParallelSimulator_WhenRunMany_ThenProducesBatch()
     {
         // arrange
-
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = false;
-        var progress = BuildProgress();
-
-        // act
-        var act = async () => await ParallelSimulator.RunManyAsync(progress, 2, _ => (_ => new TurnPassEvent()));
-
-        // assert
-        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
-        ex.Which.Message.Should().Contain("Simulation feature disabled");
-    }
-
-    [Fact]
-    public async Task GivenParallelSimulator_WhenFlagEnabled_ThenRuns()
-    {
-        // arrange
-
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = true;
         var progress = BuildProgress();
 
         // act

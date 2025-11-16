@@ -16,12 +16,6 @@ internal sealed class TurnAdvanceStateMutator : IStateMutator<EndTurnSegmentEven
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, EndTurnSegmentEvent @event)
     {
-        var sequencingEnabled = Internal.FeatureFlags.EnableTurnSequencing;
-        if (!sequencingEnabled)
-        {
-            return gameState; // inert when sequencing disabled
-        }
-
         // Locate existing TurnState (shadow mode injects exactly one)
         TurnState? currentTurnState = null;
         foreach (var ts in gameState.GetStates<TurnState>())

@@ -28,19 +28,15 @@ public class HashingOverheadBenchmark
     public void Setup()
     {
         // Baseline builder without hashing (toggle global flag)
-        var original = Internal.FeatureFlags.EnableStateHashing;
         try
         {
-            Internal.FeatureFlags.EnableStateHashing = false;
             _withoutHashing = new ChessGameBuilder().Compile();
 
-            Internal.FeatureFlags.EnableStateHashing = true;
             _withHashing = new ChessGameBuilder().Compile();
         }
         finally
         {
             // restore to avoid affecting other benchmarks executed in same process
-            Internal.FeatureFlags.EnableStateHashing = original;
         }
 
         var from = _withHashing.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("HashingOverhead: from tile e2 missing");

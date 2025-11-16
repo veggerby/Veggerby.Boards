@@ -26,7 +26,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
         GameProgress referenceProgress;
         GameProgress candidateProgress;
 
-        using (new FeatureFlagScope(hashing: true, compiledPatterns: false))
         {
             var builder = new ChessGameBuilder();
             referenceProgress = builder.Compile();
@@ -34,7 +33,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
             referenceProgress = referenceProgress.Move("black-pawn-5", "e5");
         }
 
-        using (new FeatureFlagScope(hashing: true, compiledPatterns: true))
         {
             var builder = new ChessGameBuilder();
             candidateProgress = builder.Compile();
@@ -58,7 +56,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
         GameProgress referenceProgress;
         GameProgress candidateProgress;
 
-        using (new FeatureFlagScope(hashing: true, bitboards: false))
         {
             var builder = new ChessGameBuilder();
             referenceProgress = builder.Compile();
@@ -66,7 +63,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
             referenceProgress = referenceProgress.Move("black-pawn-5", "e5");
         }
 
-        using (new FeatureFlagScope(hashing: true, bitboards: true))
         {
             var builder = new ChessGameBuilder();
             candidateProgress = builder.Compile();
@@ -90,7 +86,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
         GameProgress referenceProgress;
         GameProgress candidateProgress;
 
-        using (new FeatureFlagScope(hashing: true, slidingFastPath: false, bitboards: true))
         {
             var builder = new ChessGameBuilder();
             referenceProgress = builder.Compile();
@@ -98,7 +93,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
             referenceProgress = referenceProgress.Move("black-rook-1", "a6");
         }
 
-        using (new FeatureFlagScope(hashing: true, slidingFastPath: true, bitboards: true))
         {
             var builder = new ChessGameBuilder();
             candidateProgress = builder.Compile();
@@ -122,7 +116,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
         GameProgress baselineProgress;
         GameProgress optimizedProgress;
 
-        using (new FeatureFlagScope(hashing: true, compiledPatterns: false, bitboards: false, slidingFastPath: false))
         {
             var builder = new ChessGameBuilder();
             baselineProgress = builder.Compile();
@@ -131,7 +124,6 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
             baselineProgress = baselineProgress.Move("white-pawn-5", "e4");
         }
 
-        using (new FeatureFlagScope(hashing: true, compiledPatterns: true, bitboards: true, slidingFastPath: true))
         {
             var builder = new ChessGameBuilder();
             optimizedProgress = builder.Compile();
@@ -156,14 +148,12 @@ public class AccelerationPathHashParityTests : HashParityTestFixture
         GameProgress referenceProgress;
         GameProgress candidateProgress;
 
-        using (new FeatureFlagScope(hashing: true, grouping: false))
         {
             var builder = new ChessGameBuilder();
             referenceProgress = builder.Compile();
             referenceProgress = referenceProgress.Move("white-pawn-5", "e4");
         }
 
-        using (new FeatureFlagScope(hashing: true, grouping: true))
         {
             var builder = new ChessGameBuilder();
             candidateProgress = builder.Compile();

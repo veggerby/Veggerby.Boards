@@ -18,7 +18,6 @@ public class TurnSequencingDeterminismTests
 
         // assert
 
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true; // explicit
         var builder1 = new ChessGameBuilder();
         var progress1 = builder1.Compile();
         var builder2 = new ChessGameBuilder();
@@ -62,7 +61,6 @@ public class TurnSequencingDeterminismTests
 
         // assert
 
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var pass = new TurnPassStateMutator();

@@ -14,7 +14,6 @@ public class PathResolverRegistrationTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(compiledPatterns: true, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
         // act
@@ -34,7 +33,6 @@ public class PathResolverRegistrationTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(compiledPatterns: false, bitboards: false, boardShape: true);
         var progress = new ChessGameBuilder().Compile();
 
         // act

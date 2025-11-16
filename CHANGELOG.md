@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING: Feature Flags Eliminated**: All 18 feature flags have been removed from production code (#035)
+  - **Graduated Features (Always Enabled)**:
+    - Compiled patterns (DFA-based movement resolution)
+    - Bitboards (for boards ≤128 tiles)
+    - State hashing (deterministic fingerprints)
+    - Sliding fast path (ray-based sliding resolution)
+    - Bitboard incremental updates
+    - Turn sequencing system
+    - Trace capture diagnostics
+    - BoardShape neighbor lookup
+  - **Removed Experimental Features**:
+    - Decision plan optimizations (grouping, event filtering, exclusivity masks) - deferred to future performance story
+    - Compiled pattern adjacency cache - superseded by BoardShape
+    - Segmented bitboards - no current use case
+    - Per-piece masks - deferred to future optimization
+    - Topology pruning - needs benchmarks + parity tests
+    - Timeline zipper - no usage
+    - Observer batching - deferred to future performance story
+  - **Simulation**: Always available via API (using API is explicit opt-in)
+  - **Benefits**:
+    - Eliminates global mutable state (enables parallel test execution)
+    - Reduces codebase by ~500+ lines
+    - Single clear code path per feature
+    - Removes conditional overhead in hot paths
+    - Easier onboarding with obvious production-ready features
+  - **Migration**:
+    - `FeatureFlags` class retained as no-op compatibility shim for tests
+    - Tests can be gradually migrated to remove `FeatureFlagScope` usage
+    - All graduated features unconditionally enabled in production code
+  - **Documentation Updates**:
+    - `docs/feature-flags.md`: Marked deprecated with migration guide
+    - `CONTRIBUTING.md`: Feature flag policy deprecated
+    - `docs/plans/deferred-features-from-flag-elimination.md`: Comprehensive documentation of deferred features with future work guidance, story templates, and implementation recommendations
+    - Test compatibility preserved during migration period
+
 ### Added
 
 - **State Hashing Graduation**: `EnableStateHashing` feature flag graduated from experimental to stable (default: ON).

@@ -17,7 +17,6 @@ public class OccupancyBehaviorTests
 
         // assert
 
-        using var flags = new Infrastructure.FeatureFlagScope(bitboards: false); // use naive occupancy for deterministic ground truth
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var game = progress.Game;

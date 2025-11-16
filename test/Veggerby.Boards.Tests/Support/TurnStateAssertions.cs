@@ -34,7 +34,6 @@ public static class TurnStateAssertions
         states.Count.Should().Be(1, "exactly one TurnState expected for deterministic sequencing tests");
         if (requireSequencingEnabled)
         {
-            Boards.Internal.FeatureFlags.EnableTurnSequencing.Should().BeTrue("sequencing must be enabled for deck-building turn segment gating tests");
         }
     }
 }

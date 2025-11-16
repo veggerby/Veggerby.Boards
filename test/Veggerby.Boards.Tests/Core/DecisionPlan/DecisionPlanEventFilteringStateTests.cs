@@ -11,8 +11,6 @@ public class DecisionPlanEventFilteringStateTests
     private static GameProgress Build()
     {
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = true;
         var builder = new BackgammonGameBuilder();
         return builder.Compile();
     }

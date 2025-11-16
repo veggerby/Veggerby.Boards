@@ -30,7 +30,6 @@ public class ObserverBatchingTests
 
         // assert
 
-        Boards.Internal.FeatureFlags.EnableObserverBatching = false;
         var rec1 = new RecordingObserver();
         var unbatched = new ChessGameBuilder().WithObserver(rec1).Compile();
 
@@ -43,7 +42,6 @@ public class ObserverBatchingTests
         unbatched = unbatched.HandleEvent(evt);
         var sequenceUnbatched = rec1.Entries.ToArray();
 
-        Boards.Internal.FeatureFlags.EnableObserverBatching = true;
         var rec2 = new RecordingObserver();
         var batched = new ChessGameBuilder().WithObserver(rec2).Compile();
         var piece2 = batched.Game.GetPiece("white-pawn-5");

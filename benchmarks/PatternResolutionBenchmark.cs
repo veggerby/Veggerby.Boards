@@ -113,8 +113,6 @@ public class PatternResolutionBenchmark
     [Benchmark]
     public int Compiled_BoardShapeFastPath()
     {
-        var previous = FeatureFlags.EnableBoardShape;
-        FeatureFlags.EnableBoardShape = true;
 
         try
         {
@@ -131,7 +129,6 @@ public class PatternResolutionBenchmark
         }
         finally
         {
-            FeatureFlags.EnableBoardShape = previous;
         }
     }
 }

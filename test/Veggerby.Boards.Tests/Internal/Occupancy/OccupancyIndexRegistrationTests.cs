@@ -11,7 +11,6 @@ public class OccupancyIndexRegistrationTests
 {
     private static (GameProgress progress, IOccupancyIndex occ) Build(bool bitboards)
     {
-        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: true, boardShape: true);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var occ = progress.Engine.Capabilities?.AccelerationContext.Occupancy;
@@ -34,20 +33,7 @@ public class OccupancyIndexRegistrationTests
         occ.Should().BeOfType<BitboardOccupancyIndex>();
     }
 
-    [Fact]
-    public void GivenBitboardsDisabled_WhenBuildingGame_ThenNaiveOccupancyIndexRegistered()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        var (_, occ) = Build(bitboards: false);
-
-        // assert
-        occ.Should().BeOfType<NaiveOccupancyIndex>();
-    }
 
     [Fact]
     public void GivenBitboardsEnabled_WhenQueryingOccupancyIndex_ThenIsEmptyMatchesState()

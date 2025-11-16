@@ -30,9 +30,8 @@ public class GameBuilderTests
             actual.State.Should().NotBeNull();
             actual.Engine.Should().NotBeNull();
 
-            var expectedArtifacts = Boards.Internal.FeatureFlags.EnableTurnSequencing
-                ? new[] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x", "turn-timeline" }
-                : new[] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x" };
+            // Turn sequencing always enabled (graduated feature)
+            var expectedArtifacts = new[] { "piece-1", "piece-2", "piece-n", "piece-x", "piece-y", "dice", "dice-secondary", "artifact-x", "turn-timeline" };
             actual.Game.Artifacts.Count().Should().Be(expectedArtifacts.Length);
             actual.Game.Artifacts.Select(x => x.Id).Should().Equal(expectedArtifacts);
 
@@ -97,7 +96,8 @@ public class GameBuilderTests
             // assert
             actual.State.Should().NotBeNull();
             actual.State.IsInitialState.Should().BeTrue();
-            var expectedStateCount = Boards.Internal.FeatureFlags.EnableTurnSequencing ? 6 : 5;
+            // Turn sequencing always enabled (graduated): 3 pieces + 1 null dice + 1 dice + 1 turn state = 6
+            var expectedStateCount = 6;
             actual.State.ChildStates.Count().Should().Be(expectedStateCount);
             actual.State.ChildStates.OfType<PieceState>().Count().Should().Be(3);
             actual.State.ChildStates.OfType<NullDiceState>().Count().Should().Be(1);

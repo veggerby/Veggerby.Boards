@@ -26,10 +26,8 @@ public class TraceCaptureOverheadBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        var original = FeatureFlags.EnableTraceCapture;
         try
         {
-            FeatureFlags.EnableTraceCapture = EnableTraceCapture;
             var builder = new ChessGameBuilder();
             _progress = builder.Compile();
             var game = _progress.Game;
@@ -48,7 +46,6 @@ public class TraceCaptureOverheadBenchmark
         }
         finally
         {
-            FeatureFlags.EnableTraceCapture = original; // restore static for other benchmarks
         }
     }
 

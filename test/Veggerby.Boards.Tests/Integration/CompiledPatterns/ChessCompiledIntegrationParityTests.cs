@@ -13,7 +13,6 @@ public class ChessCompiledIntegrationParityTests
     [Fact(Skip = "diagnostic")]
     public void Diagnostic_PrintWhitePawnPatterns()
     {
-        using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece("white-pawn-5");
@@ -53,7 +52,6 @@ public class ChessCompiledIntegrationParityTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece("white-pawn-5"); // on e2
@@ -97,7 +95,6 @@ public class ChessCompiledIntegrationParityTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(compiledPatterns: true, adjacencyCache: false);
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece("white-pawn-5");

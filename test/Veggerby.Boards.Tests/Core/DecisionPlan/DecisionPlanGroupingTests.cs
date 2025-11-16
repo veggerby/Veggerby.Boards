@@ -44,7 +44,6 @@ public class DecisionPlanGroupingTests
 
         var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true;
 
         // act (simulate evaluation loop using plan directly)
         // We trigger condition evaluation by invoking the linear logic intentionally via a minimal GameProgress-like check.
@@ -82,7 +81,6 @@ public class DecisionPlanGroupingTests
 
         var plan = Boards.Flows.DecisionPlan.DecisionPlan.Compile(root);
         // DecisionPlan always enabled
-        FeatureFlags.EnableDecisionPlanGrouping = true;
         // act
         // Evaluate using same semantics as internal plan evaluation for gating: evaluate group gate only.
         var dummyState = GameState.New(Array.Empty<IArtifactState>());

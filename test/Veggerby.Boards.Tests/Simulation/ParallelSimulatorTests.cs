@@ -15,25 +15,7 @@ using Xunit;
 
 public class ParallelSimulatorTests
 {
-    [Fact]
-    public async Task GivenSimulationDisabled_WhenRunManyAsync_ThenThrows()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = false;
-        var builder = new ChessGameBuilder();
-        var progress = builder.Compile();
-
-        // act
-        Func<Task> act = async () => await ParallelSimulator.RunManyAsync(progress, 2, _ => _ => null);
-
-        // assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
-    }
 
     [Fact]
     public async Task GivenTwoPlayouts_WhenPoliciesDeterministic_ThenTerminalStateHashesStable()
@@ -44,7 +26,6 @@ public class ParallelSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         static PlayoutPolicy DeterministicPolicyFactory(int _) => _ => null; // no-op
@@ -68,7 +49,6 @@ public class ParallelSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         using var cts = new CancellationTokenSource();
@@ -91,7 +71,6 @@ public class ParallelSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         static PlayoutPolicy PolicyFactory(int _) => _ => null; // zero applied events
@@ -114,7 +93,6 @@ public class ParallelSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         using var cts = new CancellationTokenSource();
@@ -138,7 +116,6 @@ public class ParallelSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         static PlayoutPolicy PolicyFactory(int _) => _ => null;

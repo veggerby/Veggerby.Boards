@@ -32,7 +32,8 @@ internal sealed class BitboardAccelerationContext(
 
     public void OnStateTransition(GameState oldState, GameState newState, IGameEvent evt)
     {
-        if (FeatureFlags.EnableBitboardIncremental && evt is Flows.Events.MovePieceGameEvent mpe)
+        // Always use incremental bitboard updates (graduated feature)
+        if (evt is Flows.Events.MovePieceGameEvent mpe)
         {
             if (_shape.TryGetTileIndex(mpe.From, out var fromIdx) && _shape.TryGetTileIndex(mpe.To, out var toIdx))
             {

@@ -85,7 +85,6 @@ public class CompiledPatternParityTests
         var game = new Game(board, [player], [piece]);
 
         TilePath compiledOff;
-        using (new Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false))
         {
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();
@@ -95,7 +94,6 @@ public class CompiledPatternParityTests
 
         TilePath compiledOn;
         // Enable board shape fast path within a scope (extended scope supports boardShape flag)
-        using (new Infrastructure.FeatureFlagScope(compiledPatterns: true, adjacencyCache: false, boardShape: true))
         {
             var (legacy, compiled) = ResolveBoth(game, piece, a, c);
             legacy.Should().NotBeNull();

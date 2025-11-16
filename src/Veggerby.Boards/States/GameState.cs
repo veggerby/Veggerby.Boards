@@ -51,12 +51,10 @@ public class GameState
         _childStates = (childStates ?? Enumerable.Empty<IArtifactState>()).ToDictionary(x => x.Artifact, x => x);
         _previousState = previousState;
         Random = random;
-        if (Internal.FeatureFlags.EnableStateHashing)
-        {
-            // Compute legacy 64-bit and upgraded 128-bit hashes (128-bit built from canonical serialized buffer for now)
-            Hash = ComputeHash();
-            Hash128 = ComputeHash128();
-        }
+
+        // Always compute hashes (graduated feature)
+        Hash = ComputeHash();
+        Hash128 = ComputeHash128();
     }
 
     /// <summary>

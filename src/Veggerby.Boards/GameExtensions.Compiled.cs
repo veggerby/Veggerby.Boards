@@ -32,7 +32,8 @@ public static partial class GameExtensions
             return null;
         }
 
-        if (Internal.FeatureFlags.EnableCompiledPatterns && TryGetCompiledResolver(game, out var services) && services is not null && services.Resolver is not null)
+        // Always use compiled patterns (graduated feature)
+        if (TryGetCompiledResolver(game, out var services) && services is not null && services.Resolver is not null)
         {
             if (services.Resolver.TryResolve(piece, from, to, out var compiledPath))
             {
@@ -81,15 +82,12 @@ public static partial class GameExtensions
     internal static bool TryGetCompiledResolver(this GameProgress? progress, out CompiledPatternServices? services)
     {
         services = null;
-        if (!Internal.FeatureFlags.EnableCompiledPatterns)
-        {
-            return false;
-        }
 
         if (progress?.Engine?.Capabilities is null)
         {
             return false;
         }
+
         // Compiled patterns no longer exposed directly on capabilities (resolver abstracted). Return false.
         return services is not null;
     }
@@ -142,8 +140,8 @@ public static partial class GameExtensions
 
         TilePath? fastPath = null;
         var fastPathAttempted = false;
-        // Fast-path reconstruction attempt (metrics gating centralized here).
-        if (Internal.FeatureFlags.EnableSlidingFastPath && Internal.FeatureFlags.EnableBitboards && pieceIsSlider && accel?.AttackRays is not null && topology is not null)
+        // Fast-path reconstruction attempt (always enabled for sliders - graduated feature)
+        if (pieceIsSlider && accel?.AttackRays is not null && topology is not null)
         {
             fastPathAttempted = true;
             // piece/from/to proven non-null by earlier guard; null-forgiving silences analyzer while preserving runtime safety.

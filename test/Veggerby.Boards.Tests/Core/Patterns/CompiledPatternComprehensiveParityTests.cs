@@ -233,7 +233,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pfca", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
             legacy.Should().NotBeNull();
@@ -257,7 +256,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pfshape", player, [new FixedPattern([dirs[0], dirs[0]])]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2], enableShape: true);
             legacy.Should().NotBeNull();
@@ -281,7 +279,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pdc", player, [new DirectionPattern(dirs[0], true)]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3], enableCache: true);
             legacy.Should().NotBeNull();
@@ -313,7 +310,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pmc", player, [new MultiDirectionPattern([d1, d2], true)]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy, compiled) = Resolve(game, piece, a, d, enableCache: true);
             legacy.Should().NotBeNull();
@@ -337,7 +333,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pdall", player, [new DirectionPattern(dirs[0], true)]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[4], enableCache: true, enableShape: true);
             legacy.Should().NotBeNull();
@@ -361,7 +356,6 @@ public class CompiledPatternComprehensiveParityTests
         var player = new Player("p");
         var piece = new Piece("pmfshape", player, [new MultiDirectionPattern([dirs[0]], true)]);
         var game = new Game(board, [player], [piece]);
-        using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3], enableShape: true);
             legacy.Should().NotBeNull();
@@ -388,7 +382,6 @@ public class CompiledPatternComprehensiveParityTests
         var (legacy1, compiled1) = Resolve(game, piece, tiles[0], tiles[2]);
         legacy1.Should().NotBeNull();
         compiled1.Should().NotBeNull();
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacy2, compiled2) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
             legacy2.Should().NotBeNull();
@@ -425,7 +418,6 @@ public class CompiledPatternComprehensiveParityTests
         var (legacy, compiled) = Resolve(game, piece, a, d);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, a, d, enableCache: true);
             legacyCached.Should().NotBeNull();
@@ -451,7 +443,6 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pdre", player, [new DirectionPattern(dirs[0], false)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]); // unreachable due non-repeatable
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, tiles[0], tiles[2], enableCache: true);
             legacy.Should().BeNull();
@@ -483,7 +474,6 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmchoice", player, [new MultiDirectionPattern([dir1, dir2], false)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, a, b);
-        using (new FeatureFlagScope(compiledPatterns: true, adjacencyCache: true))
         {
             var (legacyCached, compiledCached) = Resolve(game, piece, a, b, enableCache: true);
             compiledCached!.Distance.Should().Be(compiled!.Distance);
@@ -509,7 +499,6 @@ public class CompiledPatternComprehensiveParityTests
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[2]);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, tiles[0], tiles[2], enableShape: true);
             legacyFast.Should().NotBeNull();
@@ -537,7 +526,6 @@ public class CompiledPatternComprehensiveParityTests
         var (legacy, compiled) = Resolve(game, piece, tiles[0], tiles[3]);
         legacy.Should().NotBeNull();
         compiled.Should().NotBeNull();
-        using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, tiles[0], tiles[3], enableShape: true);
             legacyFast.Should().NotBeNull();
@@ -572,7 +560,6 @@ public class CompiledPatternComprehensiveParityTests
         var piece = new Piece("pmff", player, [new MultiDirectionPattern([d1, d2], true)]);
         var game = new Game(board, [player], [piece]);
         var (legacy, compiled) = Resolve(game, piece, a, d);
-        using (new FeatureFlagScope(compiledPatterns: true, boardShape: true))
         {
             var (legacyFast, compiledFast) = Resolve(game, piece, a, d, enableShape: true);
             compiledFast!.Distance.Should().Be(compiled!.Distance);

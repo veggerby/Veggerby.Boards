@@ -16,7 +16,7 @@ internal sealed class BitboardOccupancyIndex(BitboardLayout layout, BitboardSnap
     private readonly BoardShape _shape = shape ?? throw new ArgumentNullException(nameof(shape));
     private readonly Game _game = game ?? throw new ArgumentNullException(nameof(game));
     private readonly GameState _state = state ?? throw new ArgumentNullException(nameof(state)); // retained to map tile → piece owner when needed (for robustness / future extensions)
-    private readonly ulong[] _perPieceMasks = FeatureFlags.EnablePerPieceMasks ? InitializePerPieceMasks(snapshot, shape, layout, state) : Array.Empty<ulong>();
+    // Per-piece masks removed (experimental feature deferred to future optimization story)
 
     public bool IsEmpty(Tile tile)
     {
@@ -58,21 +58,11 @@ internal sealed class BitboardOccupancyIndex(BitboardLayout layout, BitboardSnap
     }
 
     /// <summary>
-    /// Gets the bit mask for a specific piece identity (single bit set for the occupied tile) when per-piece masks are enabled; otherwise returns 0.
+    /// Gets the bit mask for a specific piece identity (deferred to future optimization - always returns 0).
     /// </summary>
     public ulong PieceMask(Piece piece)
     {
-        if (!FeatureFlags.EnablePerPieceMasks || _perPieceMasks.Length == 0)
-        {
-            return 0UL;
-        }
-
-        if (!_layout.TryGetPieceIndex(piece, out var idx) || idx < 0 || idx >= _perPieceMasks.Length)
-        {
-            return 0UL;
-        }
-
-        return _perPieceMasks[idx];
+        return 0UL;
     }
 
     public void BindSnapshot(BitboardSnapshot snapshot)
@@ -83,11 +73,7 @@ internal sealed class BitboardOccupancyIndex(BitboardLayout layout, BitboardSnap
         }
 
         _snapshot = snapshot;
-
-        if (FeatureFlags.EnablePerPieceMasks && _perPieceMasks.Length > 0)
-        {
-            RebuildPerPieceMasks(_perPieceMasks, snapshot, _layout, _shape, _state);
-        }
+        // Per-piece mask updates removed (experimental feature deferred)
     }
 
     private static ulong[] InitializePerPieceMasks(BitboardSnapshot snapshot, BoardShape shape, BitboardLayout layout, GameState state)

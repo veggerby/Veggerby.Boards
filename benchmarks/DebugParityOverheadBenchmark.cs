@@ -23,9 +23,6 @@ public class DebugParityOverheadBenchmark
     public void Setup()
     {
         // DecisionPlan core flag removed; simulate representative config via grouping + filtering + masks
-        FeatureFlags.EnableDecisionPlanGrouping = true;
-        FeatureFlags.EnableDecisionPlanEventFiltering = true; // representative config
-        FeatureFlags.EnableDecisionPlanMasks = true;
 
         // Build baseline (parity disabled)
         // parity flag removed – treat baseline identical

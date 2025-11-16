@@ -52,24 +52,19 @@ See `docs/` (architecture & core concepts) for authoritative model.
 
 The legacy rule traversal has been removed. All event handling uses the compiled DecisionPlan path. Do not add new conditional branches for a "legacy" evaluator—any future large-scale rewrite must introduce its own migration harness and temporary tests. Optimization flags (`EnableDecisionPlanGrouping`, `EnableDecisionPlanEventFiltering`, `EnableDecisionPlanMasks`) are optional layers on the single evaluator and may themselves be removed once permanently enabled.
 
-For the complete authoritative charter (including hot path definition, property test acceptance criteria, and feature flag isolation pattern) see `docs/developer-experience.md`. Any intentional deviation MUST include `// STYLE-DEVIATION:` plus a CHANGELOG entry under Temporary Exceptions.
+For the complete authoritative charter (including hot path definition, property test acceptance criteria) see `docs/developer-experience.md`. Any intentional deviation MUST include `// STYLE-DEVIATION:` plus a CHANGELOG entry under Temporary Exceptions.
 
-### Feature Flag Policy
+### Feature Flag Policy (DEPRECATED)
 
-Feature flags represent transitional optimizations or experimental subsystems. To prevent semantic drift and scattered conditional logic:
+**⚠️ Feature flags have been eliminated from production code.** This section is retained for historical context only.
 
-Policy:
+All graduated features are now unconditionally enabled. Experimental features have been removed or deferred to future work. The `FeatureFlags` class exists only as a test compatibility shim during migration and will be removed in a future release.
 
-- Express feature differences via capabilities / dependency injection (interfaces, strategy objects) rather than inline `if (FeatureFlags.X)` in business logic.
-- Inline flag checks are only acceptable for purely observational code (metrics / trace capture) that cannot alter observable semantics.
-- New flag introductions must provide: purpose, default, removal criteria, and parity / performance guard tests.
-- Parity tests MUST assert identical outcomes between enabled/disabled modes until the flag graduates (then removal is preferred over permanent branching).
-
-Migration TODO (tracked in backlog): Replace remaining inline `FeatureFlags` conditionals in compiled pattern resolver and fast-path resolution layers with capability abstractions (`IPathResolver` decorators / topology services) to reduce branching and centralize optimization seams.
-
-Deviations:
-
-- Any temporary inline branching requires `// STYLE-DEVIATION:` with rationale and a backlog reference. These must appear in the CHANGELOG Temporary Exceptions section until removed.
+**For new contributions:**
+- Do NOT add new feature flags
+- Express optional behavior via explicit capabilities / dependency injection
+- Use interfaces and strategy objects for pluggable implementations
+- Tests using `FeatureFlagScope` should be gradually migrated to remove flag dependencies
 
 ### Property / Invariant Tests
 
@@ -77,7 +72,7 @@ All property-style or invariant tests must:
 
 1. Be deterministic (fixed seed / deterministic sequence)
 2. Use AAA structuring with clear arrange/act/assert separation
-3. Scope feature flags via `FeatureFlagScope` only
+3. ~~Scope feature flags via `FeatureFlagScope` only~~ (DEPRECATED - flags eliminated)
 4. Avoid LINQ in per-iteration hot loops (allowed in aggregation)
 5. Assert both absence of unintended mutation and presence of intended effect
 6. Reuse canonical helpers instead of duplicating engine logic

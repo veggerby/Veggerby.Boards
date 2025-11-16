@@ -12,7 +12,7 @@ namespace Veggerby.Boards;
 public static partial class GameExtensions
 {
     /// <summary>
-    /// Attempts to build occupancy bitboards for the provided progress state when bitboards are enabled.
+    /// Attempts to build occupancy bitboards for the provided progress state (bitboards always enabled - graduated feature).
     /// </summary>
     /// <param name="progress">Progress snapshot.</param>
     /// <param name="occupancy">All-piece occupancy mask.</param>
@@ -20,13 +20,7 @@ public static partial class GameExtensions
     /// <returns>True when bitboards available; otherwise false.</returns>
     internal static bool TryGetBitboards(this GameProgress progress, out Bitboard64 occupancy, out Dictionary<Artifacts.Player, Bitboard64>? perPlayer)
     {
-        if (!FeatureFlags.EnableBitboards)
-        {
-            occupancy = default;
-            perPlayer = null;
-            return false;
-        }
-        // Bitboard snapshots are now internal to the acceleration context; expose only via occupancy masks when bitboards enabled.
+        // Bitboard snapshots are now internal to the acceleration context; expose only via occupancy masks.
         // Provide minimal reconstruction using IOccupancyIndex when available.
         if (progress.Engine.Capabilities?.AccelerationContext?.Occupancy is not null)
         {

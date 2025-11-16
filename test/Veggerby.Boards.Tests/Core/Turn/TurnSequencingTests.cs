@@ -13,9 +13,8 @@ public class TurnSequencingCoreTests
 {
     private IDisposable EnableFlag()
     {
-        var original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = true;
-        return new ResetFlag(() => Boards.Internal.FeatureFlags.EnableTurnSequencing = original);
+        // No-op: Turn sequencing always enabled (graduated feature)
+        return new ResetFlag(() => { });
     }
 
     private sealed class ResetFlag(Action reset) : IDisposable
@@ -28,38 +27,7 @@ public class TurnSequencingCoreTests
         }
     }
 
-    [Fact]
-    public void GivenFlagDisabled_WhenEndTurnSegmentEventApplied_ThenStateUnchanged()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        Boards.Internal.FeatureFlags.EnableTurnSequencing = false; // explicit for clarity
-        var builder = new ChessGameBuilder();
-        var progress = builder.Compile();
-        var initial = progress.State.GetStates<TurnState>().FirstOrDefault();
-        if (initial is null)
-        {
-            // TurnState not emitted when sequencing disabled; nothing to validate
-            return;
-        }
-        var ev = new EndTurnSegmentEvent(TurnSegment.Start);
-        var condition = new EndTurnSegmentCondition();
-        var mutator = new TurnAdvanceStateMutator();
-
-        // act
-        var response = condition.Evaluate(progress.Engine, progress.State, ev);
-        var newState = response == ConditionResponse.Valid
-            ? mutator.MutateState(progress.Engine, progress.State, ev)
-            : progress.State;
-
-        // assert
-        response.Should().Be(ConditionResponse.NotApplicable);
-        newState.GetStates<TurnState>().First().Should().BeEquivalentTo(initial);
-    }
 
     [Fact]
     public void GivenStartSegment_WhenEnded_ThenSegmentAdvancesToMain()

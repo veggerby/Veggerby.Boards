@@ -19,7 +19,6 @@ public class ReplayDeterminismTests
         // assert
 
         const ulong seed = 1337UL;
-        using var flags = new FeatureFlagScope(hashing: true);
         var builder = new TestGameBuilder(useSimpleGamePhase: false).WithSeed(seed);
         var a = builder.Compile();
         var b = builder.WithSeed(seed).Compile();

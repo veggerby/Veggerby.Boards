@@ -14,7 +14,6 @@ public class MobilityEvaluatorTests
 
         // assert
 
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, slidingFastPath: true);
         var builder = new Boards.Chess.ChessGameBuilder();
         var progress = builder.Compile();
         var eval = MobilityEvaluator.TryCreate(progress.Engine.Capabilities);

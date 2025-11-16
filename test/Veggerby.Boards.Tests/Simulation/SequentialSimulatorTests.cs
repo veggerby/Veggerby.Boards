@@ -16,25 +16,7 @@ using Xunit;
 
 public class SequentialSimulatorTests
 {
-    [Fact]
-    public void GivenSimulationDisabled_WhenRun_ThenThrows()
-    {
-        // arrange
 
-        // act
-
-        // assert
-
-        FeatureFlags.EnableSimulation = false;
-        var builder = new ChessGameBuilder();
-        var progress = builder.Compile();
-
-        // act
-        Action act = () => SequentialSimulator.Run(progress, _ => null);
-
-        // assert
-        act.Should().Throw<InvalidOperationException>();
-    }
 
     [Fact]
     public void GivenSimplePolicy_WhenRunWithDeterministicSeed_ThenDeterministicTerminalHash()
@@ -45,7 +27,6 @@ public class SequentialSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         builder.WithSeed(1234);
         var progress = builder.Compile();
@@ -84,7 +65,6 @@ public class SequentialSimulatorTests
 
         // assert
 
-        FeatureFlags.EnableSimulation = true;
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
         int observedDepth = -1;

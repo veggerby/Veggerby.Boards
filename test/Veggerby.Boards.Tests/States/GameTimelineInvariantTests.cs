@@ -54,7 +54,6 @@ public class GameTimelineInvariantTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(hashing: true, compiledPatterns: true, slidingFastPath: false);
         var progress = new ChessGameBuilder().Compile();
         var initialState = progress.State;
         var timeline = GameTimeline.Create(initialState);
@@ -95,7 +94,6 @@ public class GameTimelineInvariantTests
 
         // assert
 
-        using var _ = new FeatureFlagScope(hashing: true, compiledPatterns: true, slidingFastPath: false);
         var progress = new ChessGameBuilder().Compile();
         var moves = new List<GameProgress>();
         var timeline = GameTimeline.Create(progress.State);

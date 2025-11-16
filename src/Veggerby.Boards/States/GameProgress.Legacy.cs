@@ -43,7 +43,7 @@ public partial class GameProgress
             {
                 var newStateLocal = phaseForEvent.Rule.HandleEvent(seed.Engine, seed.State, e);
 
-                if (Internal.FeatureFlags.EnableStateHashing && newStateLocal.Hash.HasValue)
+                if (newStateLocal.Hash.HasValue)
                 {
                     seed.Engine.Observer.OnStateHashed(newStateLocal, newStateLocal.Hash.Value);
                 }

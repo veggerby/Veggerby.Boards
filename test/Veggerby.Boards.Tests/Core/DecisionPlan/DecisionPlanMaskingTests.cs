@@ -11,7 +11,6 @@ public class DecisionPlanMaskingTests
 {
     private static GameProgress Build(bool enablePlan, bool enableMasks)
     {
-        using var _ = new FeatureFlagScope(decisionPlanMasks: enableMasks);
         return new Fakes.MaskingTestGameBuilder().Compile();
     }
 

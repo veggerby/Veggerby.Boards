@@ -59,33 +59,16 @@ public class TraceObserverBatchOverheadBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        var originalTrace = FeatureFlags.EnableTraceCapture;
-        var originalBatch = FeatureFlags.EnableObserverBatching;
         try
         {
-            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-            FeatureFlags.EnableTraceCapture = false;
-            FeatureFlags.EnableObserverBatching = false;
             _baseline = new ChessGameBuilder().Compile();
 
-            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-            FeatureFlags.EnableTraceCapture = false;
-            FeatureFlags.EnableObserverBatching = false;
             _observer = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-            FeatureFlags.EnableTraceCapture = true;
-            FeatureFlags.EnableObserverBatching = false;
             _observerTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-            FeatureFlags.EnableTraceCapture = false;
-            FeatureFlags.EnableObserverBatching = true;
             _observerBatched = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
-            FeatureFlags.EnableDecisionPlanGrouping = SimulatedPlanMode;
-            FeatureFlags.EnableTraceCapture = true;
-            FeatureFlags.EnableObserverBatching = true;
             _observerBatchedTrace = new ChessGameBuilder().WithObserver(new CountingObserver()).Compile();
 
             var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("TraceObserverBatch: pawn2 missing");
@@ -96,8 +79,6 @@ public class TraceObserverBatchOverheadBenchmark
         }
         finally
         {
-            FeatureFlags.EnableTraceCapture = originalTrace;
-            FeatureFlags.EnableObserverBatching = originalBatch;
         }
     }
 

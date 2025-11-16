@@ -133,10 +133,7 @@ public class SlidingFastPathParityTests
 
     private static TilePath? ResolveWithFlags(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target, bool bitboards, bool compiled)
     {
-        using var scope = new FeatureFlagScope(bitboards: bitboards, compiledPatterns: compiled, boardShape: true);
         // Temporarily toggle sliding fast-path flag when bitboards enabled so parity actually exercises fast-path.
-        var prevSliding = FeatureFlags.EnableSlidingFastPath;
-        FeatureFlags.EnableSlidingFastPath = bitboards;
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);
@@ -152,7 +149,6 @@ public class SlidingFastPathParityTests
         }
         finally
         {
-            FeatureFlags.EnableSlidingFastPath = prevSliding;
         }
     }
 
@@ -442,36 +438,22 @@ public class SlidingFastPathParityTests
 
     private static TilePath? ResolveViaDecorator(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: true, compiledPatterns: true, boardShape: true);
-        var prev = FeatureFlags.EnableSlidingFastPath;
-        FeatureFlags.EnableSlidingFastPath = true;
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try
-        {
-            return progress.ResolvePathCompiledFirst(piece, from, to);
-        }
-        finally { FeatureFlags.EnableSlidingFastPath = prev; }
+        return progress.ResolvePathCompiledFirst(piece, from, to);
     }
 
     private static TilePath? ResolveCompiledOnly(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)
     {
-        using var scope = new FeatureFlagScope(bitboards: false, compiledPatterns: true, boardShape: true);
-        var prev = FeatureFlags.EnableSlidingFastPath;
-        FeatureFlags.EnableSlidingFastPath = false;
         var builder = new SlidingTestBuilder(specs);
         var progress = builder.Compile();
         var piece = progress.Game.GetPiece(moving.Id);
         var from = progress.Game.GetTile(moving.FromTile);
         var to = progress.Game.GetTile(target);
-        try
-        {
-            return progress.ResolvePathCompiledFirst(piece, from, to);
-        }
-        finally { FeatureFlags.EnableSlidingFastPath = prev; }
+        return progress.ResolvePathCompiledFirst(piece, from, to);
     }
 
     private static void AssertDecoratorParity(System.Collections.Generic.IEnumerable<PieceSpec> specs, PieceSpec moving, string target)

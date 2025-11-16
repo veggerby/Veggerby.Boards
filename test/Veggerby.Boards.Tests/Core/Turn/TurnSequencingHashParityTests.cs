@@ -18,15 +18,11 @@ public class TurnSequencingHashParityTests
 {
     private sealed class FlagScope : IDisposable
     {
-        private readonly bool _original;
         public FlagScope(bool enable)
         {
-            _original = Boards.Internal.FeatureFlags.EnableTurnSequencing;
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = enable;
         }
         public void Dispose()
         {
-            Boards.Internal.FeatureFlags.EnableTurnSequencing = _original;
         }
     }
 

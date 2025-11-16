@@ -27,7 +27,6 @@ public class SegmentedBitboardMicroBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        FeatureFlags.EnableSegmentedBitboards = true;
         var rnd = new System.Random(12345);
         _indices = Enumerable.Range(0, SetBits).Select(_ => rnd.Next(0, 128)).Distinct().ToArray();
         // Build 64-bit baseline mask for indices <64

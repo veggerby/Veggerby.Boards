@@ -16,10 +16,6 @@ public sealed class TurnReplayStateMutator : IStateMutator<TurnReplayEvent>
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(gameEvent);
-        if (!Internal.FeatureFlags.EnableTurnSequencing)
-        {
-            return state; // inert when sequencing disabled
-        }
 
         // Locate existing TurnState; do nothing if absent (shadow emission may be disabled)
         TurnState? currentTurn = null;

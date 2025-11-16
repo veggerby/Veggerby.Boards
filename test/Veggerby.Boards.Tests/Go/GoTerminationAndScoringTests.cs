@@ -210,9 +210,73 @@ public class GoTerminationAndScoringTests
         // Each should have exactly 1 stone (the tile at 5-5 between them is neutral)
         scores["black"].Should().BeGreaterThanOrEqualTo(1, "black should have at least its stone");
         scores["white"].Should().BeGreaterThanOrEqualTo(1, "white should have at least its stone");
-        
+
         // The neutral territory (5-5) should not be counted for either player
         var totalScore = scores["black"] + scores["white"];
         totalScore.Should().BeLessThan(81, "neutral territory should not be counted");
+    }
+
+    [Fact]
+    public void GivenTurnSequencingEnabled_WhenTwoPassesOccur_ThenTurnStatePassStreakDrivesTermination()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        var initialTurnState = progress.State.GetStates<TurnState>().FirstOrDefault();
+        initialTurnState.Should().NotBeNull("TurnState should exist when turn sequencing is enabled");
+        initialTurnState!.PassStreak.Should().Be(0, "initial pass streak should be zero");
+
+        // act - first pass
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // assert - streak incremented, game continues
+        var afterFirstPass = progress.State;
+        var firstPassTurnState = afterFirstPass.GetStates<TurnState>().First();
+        firstPassTurnState.PassStreak.Should().Be(1, "first pass should increment streak");
+        firstPassTurnState.TurnNumber.Should().Be(initialTurnState.TurnNumber + 1, "turn number should increment on pass");
+        afterFirstPass.GetStates<GameEndedState>().Should().BeEmpty("game should not end after one pass");
+
+        // act - second pass
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // assert - streak at 2, game terminated
+        var afterSecondPass = progress.State;
+        var secondPassTurnState = afterSecondPass.GetStates<TurnState>().First();
+        secondPassTurnState.PassStreak.Should().Be(2, "second pass should increment streak to 2");
+        secondPassTurnState.TurnNumber.Should().Be(initialTurnState.TurnNumber + 2, "turn number should increment twice");
+        afterSecondPass.GetStates<GameEndedState>().Should().ContainSingle("game should terminate when PassStreak reaches 2");
+    }
+
+    [Fact]
+    public void GivenPassStreakActive_WhenStonePlaced_ThenPassStreakResetsInTurnState()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // First pass to establish streak
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        var afterPass = progress.State.GetStates<TurnState>().First();
+        afterPass.PassStreak.Should().Be(1, "pass streak should be 1 after one pass");
+
+        // act - place stone to break streak
+        var whiteStone1 = progress.Game.GetPiece("white-stone-1")!;
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone1, progress.Game.GetTile("tile-3-3")!));
+
+        // assert - streak reset
+        var afterPlacement = progress.State;
+        var placementTurnState = afterPlacement.GetStates<TurnState>().First();
+        placementTurnState.PassStreak.Should().Be(0, "pass streak should reset to zero after stone placement");
+        afterPlacement.GetStates<GameEndedState>().Should().BeEmpty("game should continue after placement");
+
+        // verify termination still requires two consecutive passes after reset
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        var afterThirdPass = progress.State;
+        afterThirdPass.GetStates<GameEndedState>().Should().BeEmpty("single pass after reset should not end game");
+
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        var afterFourthPass = progress.State;
+        afterFourthPass.GetStates<GameEndedState>().Should().ContainSingle("two consecutive passes should end game");
     }
 }

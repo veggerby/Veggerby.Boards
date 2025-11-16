@@ -1,10 +1,10 @@
 ---
 slug: workstreams
 name: "Workstreams Overview"
-last_updated: 2025-11-13
+last_updated: 2025-11-16
 status_index:
-  done: [1,2,3,4,10,11,17,18]
-  partial: [5,6,7,8,9]
+  done: [1,2,3,4,9,10,11,17,18]
+  partial: [5,6,7,8]
   planned: [12,13,14,16]
 ---
 
@@ -20,7 +20,7 @@ status_index:
 | 6 | Observability & Diagnostics | partial | EventResult taxonomy, grouping, kind filtering, trace prototype. |
 | 7 | Developer Experience & Quality Gates | partial | Style charter, doc overhaul, benchmark categorization, CHANGELOG condensation. |
 | 8 | Structural Refactors | partial | Timeline zipper + hashing scaffolding (flag-gated). |
-| 9 | Turn & Round Sequencing | partial | Default-on sequencing; mutators + rotation helper; docs helper guidance delivered; Go two-pass & hash parity pending. |
+| 9 | Turn & Round Sequencing | done | Default-on sequencing; mutators + rotation helper; docs comprehensive; Go two-pass integrated; hash parity validated. |
 | 10 | Chess Full Move Legality | done | Complete legal move generation, king safety filtering, checkmate/stalemate detection, full SAN notation. |
 | 11 | Go Game Module | done | Complete Go implementation: capture/ko/liberty rules, pass termination, area scoring. |
 | 12 | Ludo / Parcheesi Game Module | planned | Race track, entry on 6, capture reset, safe squares baseline. |

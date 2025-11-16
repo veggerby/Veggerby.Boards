@@ -45,6 +45,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Turn Sequencing Graduation (Workstream 9) - COMPLETE**: Turn sequencing is now fully graduated, default-enabled, and integrated across all modules.
+  - **Go Two-Pass Terminal Integration**: Go module now uses `TurnState.PassStreak` for two-pass termination detection instead of module-specific extras state.
+    - `PassTurnStateMutator` increments `TurnState.PassStreak` and checks for game end when streak reaches 2.
+    - `PlaceStoneStateMutator` resets `TurnState.PassStreak` when a stone is placed, breaking the pass sequence.
+    - Removed `ConsecutivePasses` field from `GoStateExtras` (migrated to core `TurnState`).
+  - **Active Player Projection Verification**: Comprehensive audit confirms all modules use centralized projection helpers (`GetActivePlayer` / `TryGetActivePlayer`) for consistent turn sequencing behavior.
+    - Chess: Uses `NextPlayerStateMutator` (legacy but valid) which relies on centralized projection.
+    - Backgammon: Uses `TryGetActivePlayer` in conditions and `GetActivePlayer` in mutators as recommended.
+    - Go: Pass handling now integrates with core turn sequencing rotation via `ApplyTurnAndRotatePlayer`.
+  - **Comprehensive Documentation**: Enhanced `docs/turn-sequencing.md` with:
+    - Complete lifecycle guide (initialization, segment flow, advancement variants)
+    - PassStreak management patterns with Go integration example
+    - Active player projection best practices (condition vs mutator usage)
+    - Module integration examples for Chess, Go, and future Ludo/Monopoly patterns
+    - Migration guide from legacy projection and manual rotation patterns
+    - Invariants, determinism guarantees, and hash parity notes
+  - **Test Coverage**: 796 tests passing including new Go regression tests:
+    - `GivenTurnSequencingEnabled_WhenTwoPassesOccur_ThenTurnStatePassStreakDrivesTermination`
+    - `GivenPassStreakActive_WhenStonePlaced_ThenPassStreakResetsInTurnState`
+  - **All Acceptance Criteria Met**: Go two-pass wiring complete, active player projection verified, documentation comprehensive, all module tests passing with turn sequencing enabled.
+
 - **State Hashing Graduation**: `EnableStateHashing` feature flag graduated from experimental to stable (default: ON).
   - Provides deterministic 64-bit (FNV-1a) and 128-bit (xxHash128) state fingerprints for replay validation and cross-platform determinism enforcement.
   - **Hash Parity Test Infrastructure**: New `HashParityTestFixture` base class with `AssertHashParity` helper methods for comparing state hashes across execution paths.

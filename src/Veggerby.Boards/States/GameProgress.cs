@@ -133,6 +133,12 @@ public partial class GameProgress
 
                     progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
 
+                    // Apply endgame detection if configured for this phase
+                    if (entry.Phase != null)
+                    {
+                        newState = entry.Phase.CheckAndApplyEndGame(progress.Engine, newState, evt);
+                    }
+
                     progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
 
                     handled = true;

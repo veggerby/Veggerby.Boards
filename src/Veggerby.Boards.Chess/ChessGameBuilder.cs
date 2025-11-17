@@ -404,6 +404,9 @@ public class ChessGameBuilder : GameBuilder
 
 
         AddGamePhase("move pieces")
+            .WithEndGameDetection(
+                game => new CheckmateOrStalemateCondition(game),
+                game => new ChessEndGameMutator(game))
             .If<GameNotEndedCondition>() // Only allow moves when game hasn't ended
                 .Then()
                     // Castling (must appear before generic king non-pawn movement so two-square king move is intercepted)
@@ -413,7 +416,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<CastlingKingSafetyGameEventCondition>()
                     .Then()
                         .Do<CastlingMoveMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     // Generic non-pawn capture (must appear before pawn specific branches)
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -422,7 +425,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationHasOpponentPieceGameEventCondition>()
                     .Then()
                         .Do<ChessCapturePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     // Generic non-pawn normal move
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -431,7 +434,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             // Capture: path unobstructed (intermediates) AND destination has opponent piece
@@ -441,7 +444,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationHasOpponentPieceGameEventCondition>()
                     .Then()
                         .Do<ChessCapturePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             // En-passant capture: special pawn diagonal onto empty en-passant target
@@ -450,7 +453,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DiagonalPawnDirectionGameEventCondition>()
                     .Then()
                         .Do<EnPassantCapturePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             // Double-step pawn advance (must precede normal move so destination empty branch does not swallow it)
@@ -460,7 +463,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<PawnInitialDoubleStepGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game))
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
                             // Normal move: path unobstructed AND destination empty
@@ -470,6 +473,6 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
-                        .Do(game => new EndgameCheckThenNextPlayerMutator(game));
+                        .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()));
     }
 }

@@ -1,7 +1,9 @@
 using System;
 
-
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Builder.Rules;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Builder.Phases;
@@ -83,4 +85,13 @@ public interface IGamePhaseDefinition
     /// <param name="group">Group identifier (non-empty).</param>
     /// <returns>The same phase definition for fluent chaining.</returns>
     IGamePhaseDefinition Exclusive(string group);
+
+    /// <summary>
+    /// Configures automatic endgame detection for this phase.
+    /// When the condition evaluates to valid after an event is processed, the mutator adds terminal states.
+    /// </summary>
+    /// <param name="conditionFactory">Factory producing the endgame condition.</param>
+    /// <param name="mutatorFactory">Factory producing the mutator that adds terminal states.</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    IGamePhaseDefinition WithEndGameDetection(GameStateConditionFactory conditionFactory, Func<Game, IStateMutator<IGameEvent>> mutatorFactory);
 }

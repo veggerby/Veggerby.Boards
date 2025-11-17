@@ -113,6 +113,13 @@ Console.WriteLine("════════════════════�
 var finalIsGameOver = progress.IsGameOver();
 var finalOutcome = progress.GetOutcome();
 
+// Debug: print all state types
+Console.WriteLine($"\n--- Debug: State Types ---");
+foreach (var state in progress.State.ChildStates)
+{
+    Console.WriteLine($"  {state.GetType().Name}: {state.Artifact.Id}");
+}
+
 Console.WriteLine($"\n--- NEW Unified API ---");
 Console.WriteLine($"Game Over: {finalIsGameOver}");
 if (finalOutcome != null)

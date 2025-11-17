@@ -13,3 +13,5 @@ Chess module instructions:
 8. All new algebraic/convenience parsing helpers must stay internal unless justified by multiple tests or cross-module reuse.
 9. No external dependencies; chess module shares dependency policy of core.
 10. Document any novel movement or rule extension in `/docs/chess/` if it broadens extension seams.
+11. Use phase-based endgame detection via `.WithEndGameDetection()` (see `docs/phase-based-design.md`); `ChessEndgameDetector` is deprecated but retained for backward compatibility.
+12. Implement game termination with `GameEndedState` and `ChessOutcomeState` (see `docs/game-termination.md`).

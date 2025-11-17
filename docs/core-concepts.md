@@ -27,6 +27,8 @@ Pure transformations implementing `IStateMutator<TEvent>` returning either a *ne
 
 Hierarchical (composite) conditional scopes. Phase resolution selects FIRST valid leaf (deterministic ordering). Pre-processors can expand an event into derived events before rule evaluation.
 
+Phases provide semantic structure for game flows (setup, play, endgame) and support automatic termination detection via `.WithEndGameDetection()`. See `phase-based-design.md` for canonical patterns and best practices.
+
 ## Active player projection
 
 Avoid direct scans for ActivePlayerState. Use the centralized helpers:
@@ -66,6 +68,12 @@ Examples:
 * `TurnProfile.Next` throws on unknown segment (invariant breach).
 * Builder ID lookups use dictionary access + explicit exception on miss.
 * Path resolution now prefers `TryResolvePath` with `out TilePath?` rather than nullable returns; legacy visitor samples retained only in README examples.
+
+## Game Termination & Outcomes
+
+`GameEndedState` is the universal marker for game termination (checked by `progress.IsGameOver()`). Game modules implement `IGameOutcome` on outcome states to provide standardized result information via `progress.GetOutcome()`.
+
+Termination is typically integrated via phase-level endgame detection (`.WithEndGameDetection()`). See `game-termination.md` for implementation patterns and module integration guidelines.
 
 ## Extension Surface
 

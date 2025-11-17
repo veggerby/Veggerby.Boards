@@ -13,3 +13,5 @@ Go module instructions (planned / developing):
 8. Document any added rule variants in `/docs/go/` including scoring method assumptions (territory vs area) if introduced.
 9. Keep module self-contained—no leaking Go-specific group terminology into core.
 10. All new abstractions must have a concrete test-driven scenario before introduction.
+11. Game termination already uses `GameEndedState` (added in `PassTurnStateMutator`); add `GoOutcomeState` implementing `IGameOutcome` for territory scoring results (see `docs/game-termination.md`).
+12. Consider adding explicit territory-scoring phase using phase-based patterns (see `docs/phase-based-design.md`).

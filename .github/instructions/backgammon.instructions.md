@@ -13,3 +13,5 @@ Backgammon module instructions:
 8. Stay within module boundary—no leaking Backgammon nomenclature into core.
 9. Public surface minimal—prefer internal for helper evaluators unless reused in >=2 rule tests.
 10. Update `/docs/backgammon/` if introducing new extension seams or variant mechanics.
+11. Use phase-first architecture (see `docs/phase-based-design.md`); consider explicit phases for bar-clearing, dice-rolling, and endgame detection.
+12. When adding game termination, use `GameEndedState` and implement `IGameOutcome` for outcome tracking (see `docs/game-termination.md`).

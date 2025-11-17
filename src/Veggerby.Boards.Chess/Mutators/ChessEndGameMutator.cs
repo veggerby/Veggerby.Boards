@@ -44,13 +44,15 @@ public sealed class ChessEndGameMutator : IStateMutator<IGameEvent>
             // Checkmate - the active player (who cannot move) loses
             var loser = state.GetActivePlayer();
             var winner = GetOpponent(loser);
-            var outcomeState = new ChessOutcomeState(EndgameStatus.Checkmate, winner);
+            var outcomeState = new ChessOutcomeState(EndgameStatus.Checkmate, winner, loser);
             return state.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
         }
         else if (detector.IsStalemate(state))
         {
             // Stalemate - draw
-            var outcomeState = new ChessOutcomeState(EndgameStatus.Stalemate, null);
+            var player1 = state.GetActivePlayer();
+            var player2 = GetOpponent(player1);
+            var outcomeState = new ChessOutcomeState(EndgameStatus.Stalemate, player1, player2);
             return state.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
         }
 

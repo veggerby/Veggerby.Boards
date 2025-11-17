@@ -13,3 +13,4 @@ Core engine instructions:
 8. Abstractions must have a concrete in-repo use; do not add speculative layers.
 9. Feature flags must be restored after tests using disposable helpers.
 10. If modifying bitboard structures, include microbench rationale or maintain parity tests proving no behavioral regression.
+11. Game termination must use the standardized `GameEndedState` marker; game modules should implement `IGameOutcome` for outcome tracking (see `docs/game-termination.md`).

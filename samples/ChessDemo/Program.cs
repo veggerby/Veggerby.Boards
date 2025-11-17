@@ -113,26 +113,24 @@ Console.WriteLine("════════════════════�
 var finalIsGameOver = progress.IsGameOver();
 var finalOutcome = progress.GetOutcome();
 
-// Debug: print all state types
-Console.WriteLine($"\n--- Debug: State Types ---");
-foreach (var state in progress.State.ChildStates)
-{
-    Console.WriteLine($"  {state.GetType().Name}: {state.Artifact.Id}");
-}
-
-Console.WriteLine($"\n--- NEW Unified API ---");
+Console.WriteLine($"\n--- Unified Game Termination API ---");
 Console.WriteLine($"Game Over: {finalIsGameOver}");
 if (finalOutcome != null)
 {
     Console.WriteLine($"Terminal Condition: {finalOutcome.TerminalCondition}");
-    foreach (var result in finalOutcome.PlayerResults)
+    Console.WriteLine($"Winner:");
+    foreach (var result in finalOutcome.PlayerResults.OrderBy(r => r.Rank))
     {
-        Console.WriteLine($"  {result.Player.Id}: {result.Outcome} (Rank {result.Rank})");
+        Console.WriteLine($"  {result.Rank}. {result.Player.Id}: {result.Outcome}");
     }
 }
+else
+{
+    Console.WriteLine("(No outcome available - game may still be in progress)");
+}
 
-// OLD detector API (for comparison during transition)
-Console.WriteLine($"\n--- Legacy Detector API ---");
+// Verification using legacy detector (for comparison)
+Console.WriteLine($"\n--- Legacy Detector Comparison ---");
 var finalStatus = endgameDetector.GetEndgameStatus(progress.State);
 Console.WriteLine($"Final Status: {finalStatus}");
 
@@ -147,7 +145,7 @@ Console.WriteLine("  ✓ Complex piece sacrifices (queen, both rooks)");
 Console.WriteLine("  ✓ All piece types in action");
 Console.WriteLine("  ✓ Castling (kingside for White)");
 Console.WriteLine("  ✓ Multiple captures and checks");
-Console.WriteLine("  ✓ Checkmate detection (NEW unified API)");
+Console.WriteLine("  ✓ Unified game termination API (IsGameOver, GetOutcome)");
+Console.WriteLine("  ✓ Automatic endgame detection via phase-level configuration");
 Console.WriteLine("  ✓ Full SAN notation parsing");
-Console.WriteLine("  ✓ Unified game outcome tracking");
 Console.WriteLine("\nChess implementation is complete and fully playable!");

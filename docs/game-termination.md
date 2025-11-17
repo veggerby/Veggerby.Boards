@@ -538,9 +538,9 @@ if (progress.IsGameOver())
 | Module | GameEndedState | Outcome State | Phase Detection | Unified API | Status |
 |--------|----------------|---------------|-----------------|-------------|--------|
 | **Chess** | ✅ Core | ✅ ChessOutcomeState | ✅ WithEndGameDetection | ✅ Implemented | **Complete** |
-| **Go** | ✅ Core | ❌ Missing | ⚠️ Manual (PassTurnStateMutator) | ⚠️ Partial | **Needs GoOutcomeState** |
-| **DeckBuilding** | ✅ Core | ⚠️ Has ScoreState | ⚠️ Manual (EndGameStateMutator) | ⚠️ Partial | **Needs outcome wrapper** |
-| **Backgammon** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | **Not implemented** |
+| **Go** | ✅ Core | ✅ GoOutcomeState | ⚠️ Manual (PassTurnStateMutator) | ✅ Implemented | **Complete** |
+| **DeckBuilding** | ✅ Core | ✅ DeckBuildingOutcomeState | ⚠️ Manual (EndGameStateMutator) | ✅ Implemented | **Complete** |
+| **Backgammon** | ✅ Core | ✅ BackgammonOutcomeState | ✅ WithEndGameDetection | ✅ Implemented | **Complete** |
 
 ## Migration Guide
 

@@ -31,7 +31,7 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
         }
 
         // Reject placement if ko rule forbids it
-        var extras = gameState.GetExtras<GoStateExtras>() ?? new GoStateExtras(null, 0, 19);
+        var extras = gameState.GetExtras<GoStateExtras>() ?? new GoStateExtras(null, 19);
         if (extras.KoTileId != null && extras.KoTileId == @event.Target.Id)
         {
             return gameState;
@@ -108,14 +108,29 @@ public sealed class PlaceStoneStateMutator : IStateMutator<PlaceStoneGameEvent>
             newKoTile = capturedTileIds[0];
         }
 
-        // Update extras: reset pass counter, set ko if applicable, clear ko otherwise
+        // Update extras: set ko if applicable, clear ko otherwise
         var updatedExtras = extras with
         {
-            KoTileId = newKoTile,
-            ConsecutivePasses = 0
+            KoTileId = newKoTile
         };
 
-        return finalState.ReplaceExtras(updatedExtras);
+        var stateWithExtras = finalState.ReplaceExtras(updatedExtras);
+
+        // Reset pass streak in TurnState when placing a stone
+        TurnState? turnState = null;
+        foreach (var ts in stateWithExtras.GetStates<TurnState>())
+        {
+            turnState = ts;
+            break;
+        }
+
+        if (turnState != null && turnState.PassStreak > 0)
+        {
+            var resetTurnState = new TurnState(turnState.Artifact, turnState.TurnNumber, turnState.Segment, 0);
+            return stateWithExtras.Next([resetTurnState]);
+        }
+
+        return stateWithExtras;
     }
 
     /// <summary>

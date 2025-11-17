@@ -32,6 +32,7 @@ public class PublicApiNullabilityTests
             // Explicitly modeled absence cases
             typeof(ConditionResponse).FullName + ".Reason",
             typeof(EventResultStruct).FullName + ".Message",
+            "Veggerby.Boards.States.PlayerResult.Metrics", // Optional game-specific metrics
             // Simulation trace removed from whitelist after normalization to non-null
         };
         var offenders = new List<string>();

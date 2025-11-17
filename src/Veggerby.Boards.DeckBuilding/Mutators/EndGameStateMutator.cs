@@ -1,10 +1,12 @@
+using System.Linq;
+
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>
-/// Appends a <see cref="GameEndedState"/> marker when an <see cref="EndGameEvent"/> is processed.
+/// Appends a <see cref="GameEndedState"/> marker and <see cref="DeckBuildingOutcomeState"/> when an <see cref="EndGameEvent"/> is processed.
 /// </summary>
 public sealed class EndGameStateMutator : IStateMutator<EndGameEvent>
 {
@@ -14,11 +16,19 @@ public sealed class EndGameStateMutator : IStateMutator<EndGameEvent>
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
+
         // Idempotent: if already ended, no change
         foreach (var _ in state.GetStates<GameEndedState>())
         {
             return state;
         }
-        return state.Next([new GameEndedState()]);
+
+        // Collect all score states
+        var scores = state.GetStates<ScoreState>().ToList();
+
+        // Create outcome state from scores
+        var outcomeState = new DeckBuildingOutcomeState(scores);
+
+        return state.Next([new GameEndedState(), outcomeState]);
     }
 }

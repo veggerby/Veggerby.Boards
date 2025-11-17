@@ -2,6 +2,7 @@ using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Chess.MoveGeneration;
+using Veggerby.Boards.States;
 
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
 Console.WriteLine("    Veggerby.Boards Chess Demo");
@@ -38,34 +39,12 @@ foreach (var san in immortalGame)
 {
     try
     {
-        // Generate legal moves for current position
-        var legalMoves = legalityFilter.GenerateLegalMoves(progress.State);
-        
-        if (legalMoves.Count == 0)
-        {
-            Console.WriteLine($"\nERROR: No legal moves available!");
-            var status = endgameDetector.GetEndgameStatus(progress.State);
-            Console.WriteLine($"Game status: {status}");
-            break;
-        }
-
-        // Find and execute the move matching the SAN notation
-        var matchingMove = FindMoveFromSan(san, legalMoves, progress.Game);
-        
-        if (matchingMove == null)
-        {
-            Console.WriteLine($"\nERROR: Could not find legal move for SAN '{san}'");
-            Console.WriteLine($"Position before move:");
-            ChessBoardRenderer.Write(progress.Game, progress.State, Console.Out);
-            Console.WriteLine($"\nAvailable legal moves: {legalMoves.Count}");
-            break;
-        }
-
-        progress = progress.Move(matchingMove.Piece.Id, matchingMove.To.Id);
+        // Execute the move using SAN notation
+        progress = progress.MoveSan(san);
 
         // Display move
         var moveText = isWhiteMove ? $"{moveNumber}. {san}" : $"{moveNumber}... {san}";
-        
+
         // Check game status
         var gameStatus = endgameDetector.GetEndgameStatus(progress.State);
         var statusText = gameStatus switch
@@ -140,104 +119,3 @@ Console.WriteLine("  ✓ Multiple captures and checks");
 Console.WriteLine("  ✓ Checkmate detection");
 Console.WriteLine("  ✓ Full SAN notation parsing");
 Console.WriteLine("\nChess implementation is complete and fully playable!");
-
-static PseudoMove? FindMoveFromSan(string san, IReadOnlyCollection<PseudoMove> legalMoves, Game game)
-{
-    // Strip check/checkmate symbols
-    san = san.TrimEnd('+', '#');
-    
-    // Handle castling
-    if (san == "O-O" || san == "O-O-O")
-    {
-        return legalMoves.FirstOrDefault(m => 
-            m.Kind == PseudoMoveKind.Castle && 
-            (san == "O-O" ? m.To.Id.EndsWith("g1") || m.To.Id.EndsWith("g8") 
-                          : m.To.Id.EndsWith("c1") || m.To.Id.EndsWith("c8")));
-    }
-    
-    // Parse SAN notation
-    bool isCapture = san.Contains('x');
-    string cleanSan = san.Replace("x", "");
-    
-    // Check for promotion
-    Role? promotionRole = null;
-    if (cleanSan.Contains('=') || (cleanSan.Length > 2 && char.IsUpper(cleanSan[^1])))
-    {
-        char promoPiece = cleanSan.Contains('=') ? cleanSan[^1] : cleanSan[^1];
-        string promoRoleStr = promoPiece switch
-        {
-            'Q' => "queen",
-            'R' => "rook",
-            'B' => "bishop",
-            'N' => "knight",
-            _ => null
-        };
-        if (promoRoleStr != null)
-        {
-            promotionRole = game.Roles.FirstOrDefault(r => r.Id == promoRoleStr);
-        }
-        cleanSan = cleanSan.Contains('=') ? cleanSan[..^2] : cleanSan[..^1];
-    }
-    
-    // Determine piece type
-    string roleId = "pawn";
-    int startIndex = 0;
-    if (char.IsUpper(cleanSan[0]))
-    {
-        roleId = cleanSan[0] switch
-        {
-            'K' => "king",
-            'Q' => "queen",
-            'R' => "rook",
-            'B' => "bishop",
-            'N' => "knight",
-            _ => "pawn"
-        };
-        startIndex = 1;
-    }
-    
-    // Extract destination square (last 2 characters)
-    string destSquare = cleanSan[^2..];
-    string? disambig = cleanSan.Length > startIndex + 2 ? cleanSan.Substring(startIndex, cleanSan.Length - startIndex - 2) : null;
-    
-    // Find matching moves
-    var candidates = legalMoves.Where(m => 
-        m.Piece.Identity.Role.Id == roleId &&
-        m.To.Id == $"tile-{destSquare}" &&
-        m.IsCapture == isCapture).ToList();
-    
-    if (candidates.Count == 0)
-    {
-        return null;
-    }
-    
-    if (candidates.Count == 1)
-    {
-        return candidates[0];
-    }
-    
-    // Apply disambiguation
-    if (disambig != null)
-    {
-        if (disambig.Length == 1)
-        {
-            if (char.IsDigit(disambig[0]))
-            {
-                // Rank disambiguation
-                candidates = candidates.Where(m => m.From.Id.EndsWith(disambig)).ToList();
-            }
-            else
-            {
-                // File disambiguation
-                candidates = candidates.Where(m => m.From.Id.Contains($"-{disambig}")).ToList();
-            }
-        }
-        else
-        {
-            // Full square disambiguation
-            candidates = candidates.Where(m => m.From.Id == $"tile-{disambig}").ToList();
-        }
-    }
-    
-    return candidates.FirstOrDefault();
-}

@@ -67,8 +67,8 @@ public sealed class GoGameBuilder(int size = 19) : GameBuilder
             AddPiece($"white-stone-{i}").WithOwner("white");
         }
 
-        // Initial extras (board size persisted)
-        WithState(new GoStateExtras(null, 0, _size));
+        // Initial extras (board size persisted, consecutive passes tracked in TurnState.PassStreak)
+        WithState(new GoStateExtras(null, _size));
 
         AddGamePhase("play")
             .If<NullGameStateCondition>()

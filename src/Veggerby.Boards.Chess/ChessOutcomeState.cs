@@ -37,11 +37,17 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
     public Player? Winner { get; }
 
     /// <summary>
+    /// Gets the player who lost (null for stalemate/draw).
+    /// </summary>
+    public Player? Loser { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ChessOutcomeState"/> class.
     /// </summary>
     /// <param name="status">The terminal condition.</param>
     /// <param name="winner">The winning player (null for stalemate).</param>
-    public ChessOutcomeState(EndgameStatus status, Player? winner)
+    /// <param name="loser">The losing player (null for stalemate).</param>
+    public ChessOutcomeState(EndgameStatus status, Player? winner, Player? loser = null)
     {
         if (status == EndgameStatus.InProgress || status == EndgameStatus.Check)
         {
@@ -50,6 +56,7 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
 
         Status = status;
         Winner = winner;
+        Loser = loser;
     }
 
     /// <inheritdoc />
@@ -58,7 +65,7 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
     /// <inheritdoc />
     public bool Equals(IArtifactState other)
     {
-        return other is ChessOutcomeState cos && cos.Status == Status && Equals(cos.Winner, Winner);
+        return other is ChessOutcomeState cos && cos.Status == Status && Equals(cos.Winner, Winner) && Equals(cos.Loser, Loser);
     }
 
     /// <inheritdoc />
@@ -73,18 +80,33 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
             {
                 // Stalemate is a draw - both players tied at rank 1
                 var players = new List<PlayerResult>();
-                
-                // We need to get both players from the winner reference
-                // For stalemate, we can only represent the outcome if we know both players
-                // Since we don't store all players here, we'll return minimal result
-                // This will be populated by the GetOutcome() helper which has access to the full game
+
+                if (Winner != null)
+                {
+                    players.Add(new PlayerResult
+                    {
+                        Player = Winner,
+                        Outcome = OutcomeType.Draw,
+                        Rank = 1
+                    });
+                }
+
+                if (Loser != null)
+                {
+                    players.Add(new PlayerResult
+                    {
+                        Player = Loser,
+                        Outcome = OutcomeType.Draw,
+                        Rank = 1
+                    });
+                }
+
                 return players;
             }
 
             if (Winner is not null)
             {
-                // Checkmate - winner at rank 1
-                return new[]
+                var results = new List<PlayerResult>
                 {
                     new PlayerResult
                     {
@@ -93,6 +115,18 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
                         Rank = 1
                     }
                 };
+
+                if (Loser is not null)
+                {
+                    results.Add(new PlayerResult
+                    {
+                        Player = Loser,
+                        Outcome = OutcomeType.Loss,
+                        Rank = 2
+                    });
+                }
+
+                return results;
             }
 
             return Array.Empty<PlayerResult>();

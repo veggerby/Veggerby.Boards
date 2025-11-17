@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
@@ -64,13 +67,74 @@ public sealed class PassTurnStateMutator : IStateMutator<PassTurnGameEvent>
             updatedState = updatedState.ReplaceExtras(clearedExtras);
         }
 
-        // If two consecutive passes, mark game as ended
+        // If two consecutive passes, mark game as ended and compute territory scores
         if (newPassStreak >= 2)
         {
-            return updatedState.Next([new GameEndedState()]);
+            var outcomeState = ComputeGoOutcome(engine.Game, updatedState);
+            return updatedState.Next([new GameEndedState(), outcomeState]);
         }
 
         return updatedState;
+    }
+
+    /// <summary>
+    /// Computes the final Go outcome by scoring territory using area scoring rules.
+    /// </summary>
+    private static GoOutcomeState ComputeGoOutcome(Game game, GameState state)
+    {
+        var scoring = new GoScoring(game);
+        var areaScores = scoring.ComputeAreaScores(state);
+
+        // Build player dictionaries
+        var playerScores = new Dictionary<Player, int>();
+        var territoryScores = new Dictionary<Player, int>();
+        var stoneCounts = new Dictionary<Player, int>();
+
+        foreach (var player in game.Players)
+        {
+            var totalScore = areaScores.TryGetValue(player.Id, out var score) ? score : 0;
+            playerScores[player] = totalScore;
+
+            // Count stones for this player
+            var stones = 0;
+            foreach (var ps in state.GetStates<PieceState>())
+            {
+                if (ps.Artifact.Owner != null && ps.Artifact.Owner.Id == player.Id)
+                {
+                    stones++;
+                }
+            }
+
+            stoneCounts[player] = stones;
+            territoryScores[player] = totalScore - stones; // Territory = total - stones
+        }
+
+        // Determine winner
+        Player? winner = null;
+        var maxScore = -1;
+        var isTie = false;
+
+        foreach (var kvp in playerScores)
+        {
+            if (kvp.Value > maxScore)
+            {
+                maxScore = kvp.Value;
+                winner = kvp.Key;
+                isTie = false;
+            }
+            else if (kvp.Value == maxScore)
+            {
+                isTie = true;
+            }
+        }
+
+        // If tie, no winner
+        if (isTie)
+        {
+            winner = null;
+        }
+
+        return new GoOutcomeState(territoryScores, stoneCounts, playerScores, winner);
     }
 
     /// <summary>

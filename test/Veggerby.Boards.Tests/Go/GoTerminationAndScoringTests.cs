@@ -279,4 +279,136 @@ public class GoTerminationAndScoringTests
         var afterFourthPass = progress.State;
         afterFourthPass.GetStates<GameEndedState>().Should().ContainSingle("two consecutive passes should end game");
     }
+
+    [Fact]
+    public void GivenGameInProgress_WhenIsGameOverCalled_ThenReturnsFalse()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // act
+        var isGameOver = progress.IsGameOver();
+
+        // assert
+        isGameOver.Should().BeFalse("game should not be over at start");
+    }
+
+    [Fact]
+    public void GivenGameEnded_WhenIsGameOverCalled_ThenReturnsTrue()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // End game with two passes
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // act
+        var isGameOver = progress.IsGameOver();
+
+        // assert
+        isGameOver.Should().BeTrue("game should be over after two consecutive passes");
+    }
+
+    [Fact]
+    public void GivenGameEnded_WhenGetOutcomeCalled_ThenReturnsGoOutcome()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // Place some stones for scoring
+        var blackStone1 = progress.Game.GetPiece("black-stone-1")!;
+        var blackStone2 = progress.Game.GetPiece("black-stone-2")!;
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone1, progress.Game.GetTile("tile-3-3")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone2, progress.Game.GetTile("tile-4-4")!));
+
+        // End game
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // act
+        var outcome = progress.GetOutcome();
+
+        // assert
+        outcome.Should().NotBeNull("outcome should be available after game ends");
+        outcome!.TerminalCondition.Should().Be("TerritoryScoring", "Go terminates via territory scoring");
+        outcome.PlayerResults.Should().HaveCount(2, "Go has two players");
+        
+        // Verify all results have required properties
+        foreach (var result in outcome.PlayerResults)
+        {
+            result.Player.Should().NotBeNull();
+            result.Rank.Should().BeGreaterThan(0);
+            result.Metrics.Should().NotBeNull();
+            result.Metrics!.Should().ContainKeys("Territory", "Stones", "TotalScore");
+        }
+    }
+
+    [Fact]
+    public void GivenGameEnded_WhenGetOutcome_ThenWinnerIsPlayerWithHighestScore()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // Create clear advantage for black
+        var blackStone1 = progress.Game.GetPiece("black-stone-1")!;
+        var blackStone2 = progress.Game.GetPiece("black-stone-2")!;
+        var blackStone3 = progress.Game.GetPiece("black-stone-3")!;
+        
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone1, progress.Game.GetTile("tile-3-3")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone2, progress.Game.GetTile("tile-4-4")!));
+        progress = progress.HandleEvent(new PlaceStoneGameEvent(blackStone3, progress.Game.GetTile("tile-5-5")!));
+
+        // End game
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // act
+        var outcome = progress.GetOutcome();
+
+        // assert
+        outcome.Should().NotBeNull();
+        var winner = outcome!.PlayerResults.FirstOrDefault(r => r.Rank == 1);
+        winner.Should().NotBeNull("there should be a rank-1 player");
+        winner!.Player.Id.Should().Be("black", "black should win with more stones/territory");
+        winner.Outcome.Should().Be(OutcomeType.Win);
+        
+        var loser = outcome.PlayerResults.FirstOrDefault(r => r.Rank == 2);
+        loser.Should().NotBeNull("there should be a rank-2 player");
+        loser!.Outcome.Should().Be(OutcomeType.Loss);
+    }
+
+    [Fact]
+    public void GivenEmptyBoard_WhenGetOutcome_ThenTieWithNullWinner()
+    {
+        // arrange
+        var builder = new GoGameBuilder(9);
+        var progress = builder.Compile();
+
+        // End game immediately (no stones placed)
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+        progress = progress.HandleEvent(new PassTurnGameEvent());
+
+        // act
+        var outcome = progress.GetOutcome();
+
+        // assert
+        outcome.Should().NotBeNull();
+        
+        // Both players should have same score (0) and be tied at rank 1
+        var results = outcome!.PlayerResults.OrderBy(r => r.Player.Id).ToList();
+        results.Should().HaveCount(2);
+        results[0].Rank.Should().Be(1);
+        results[1].Rank.Should().Be(1);
+        results[0].Outcome.Should().Be(OutcomeType.Draw);
+        results[1].Outcome.Should().Be(OutcomeType.Draw);
+        
+        var blackScore = (int)results.First(r => r.Player.Id == "black").Metrics!["TotalScore"];
+        var whiteScore = (int)results.First(r => r.Player.Id == "white").Metrics!["TotalScore"];
+        blackScore.Should().Be(whiteScore, "scores should be equal on empty board");
+    }
 }

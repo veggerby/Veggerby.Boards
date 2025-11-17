@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
@@ -71,6 +72,22 @@ public class GamePhase
     }
 
     /// <summary>
+    /// Gets the optional endgame detection condition. When present and valid, triggers endgame state addition.
+    /// </summary>
+    public IGameStateCondition? EndGameCondition
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the optional endgame state mutator. Produces terminal states when endgame condition is met.
+    /// </summary>
+    public IStateMutator<IGameEvent>? EndGameMutator
+    {
+        get;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GamePhase"/> class.
     /// </summary>
     /// <param name="number">Sequential phase number (must be positive).</param>
@@ -80,7 +97,9 @@ public class GamePhase
     /// <param name="parent">Optional parent composite phase.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
     /// <param name="exclusivityGroup">Optional exclusivity group identifier (phases sharing a non-null value are mutually exclusive candidates).</param>
-    protected GamePhase(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent, IEnumerable<IGameEventPreProcessor>? preProcessors, string? exclusivityGroup = null)
+    /// <param name="endGameCondition">Optional endgame detection condition.</param>
+    /// <param name="endGameMutator">Optional endgame state mutator.</param>
+    protected GamePhase(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent, IEnumerable<IGameEventPreProcessor>? preProcessors, string? exclusivityGroup = null, IGameStateCondition? endGameCondition = null, IStateMutator<IGameEvent>? endGameMutator = null)
     {
         if (number <= 0)
         {
@@ -97,6 +116,8 @@ public class GamePhase
         Rule = rule;
         PreProcessors = preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>();
         ExclusivityGroup = exclusivityGroup ?? string.Empty;
+        EndGameCondition = endGameCondition;
+        EndGameMutator = endGameMutator;
 
         Parent = parent;
         parent?.Add(this);
@@ -143,10 +164,12 @@ public class GamePhase
     /// <param name="parent">Optional parent composite.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
     /// <param name="exclusivityGroup">Optional exclusivity group identifier (mutually exclusive phase grouping hint).</param>
+    /// <param name="endGameCondition">Optional endgame detection condition.</param>
+    /// <param name="endGameMutator">Optional endgame state mutator.</param>
     /// <returns>New phase.</returns>
-    public static GamePhase New(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent = null, IEnumerable<IGameEventPreProcessor>? preProcessors = null, string? exclusivityGroup = null)
+    public static GamePhase New(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent = null, IEnumerable<IGameEventPreProcessor>? preProcessors = null, string? exclusivityGroup = null, IGameStateCondition? endGameCondition = null, IStateMutator<IGameEvent>? endGameMutator = null)
     {
-        return new GamePhase(number, label, condition, rule, parent, preProcessors, exclusivityGroup);
+        return new GamePhase(number, label, condition, rule, parent, preProcessors, exclusivityGroup, endGameCondition, endGameMutator);
     }
 
     /// <summary>
@@ -163,5 +186,28 @@ public class GamePhase
         var nonNullLabel = label ?? "n/a";
         var nonNullParent = parent ?? null; // parent may legitimately be null; CompositeGamePhase constructor currently requires non-null so we pass null only if signature allows
         return new CompositeGamePhase(number, nonNullLabel, condition ?? new NullGameStateCondition(), nonNullParent, preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>());
+    }
+
+    /// <summary>
+    /// Checks endgame condition and applies endgame mutator if applicable.
+    /// </summary>
+    /// <param name="engine">Game engine.</param>
+    /// <param name="state">Current state.</param>
+    /// <param name="event">Event that was processed.</param>
+    /// <returns>New state if endgame detected, otherwise original state.</returns>
+    public GameState CheckAndApplyEndGame(GameEngine engine, GameState state, IGameEvent @event)
+    {
+        if (EndGameCondition == null || EndGameMutator == null)
+        {
+            return state;
+        }
+
+        var conditionResult = EndGameCondition.Evaluate(state);
+        if (conditionResult.Result == ConditionResult.Valid)
+        {
+            return EndGameMutator.MutateState(engine, state, @event);
+        }
+
+        return state;
     }
 }

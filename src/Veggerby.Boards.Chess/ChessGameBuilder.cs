@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using Veggerby.Boards.Chess.Conditions;
+using Veggerby.Boards.Chess.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
@@ -402,7 +404,10 @@ public class ChessGameBuilder : GameBuilder
 
 
         AddGamePhase("move pieces")
-            .If<NullGameStateCondition>()
+            .WithEndGameDetection(
+                game => new CheckmateOrStalemateCondition(game),
+                game => new ChessEndGameMutator(game))
+            .If<GameNotEndedCondition>() // Only allow moves when game hasn't ended
                 .Then()
                     // Castling (must appear before generic king non-pawn movement so two-square king move is intercepted)
                     .ForEvent<MovePieceGameEvent>()

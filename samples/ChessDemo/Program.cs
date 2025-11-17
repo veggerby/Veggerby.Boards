@@ -13,6 +13,8 @@ Console.WriteLine("════════════════════�
 var builder = new ChessGameBuilder();
 var progress = builder.Compile();
 var legalityFilter = new ChessLegalityFilter(progress.Game);
+
+// Keep the old detector for backward compatibility demonstration
 var endgameDetector = new ChessEndgameDetector(progress.Game);
 
 Console.WriteLine("Starting Position:");
@@ -45,7 +47,11 @@ foreach (var san in immortalGame)
         // Display move
         var moveText = isWhiteMove ? $"{moveNumber}. {san}" : $"{moveNumber}... {san}";
 
-        // Check game status
+        // Check game status using NEW unified API
+        var isGameOver = progress.IsGameOver();
+        var outcome = progress.GetOutcome();
+        
+        // Also check using old detector for comparison (during transition)
         var gameStatus = endgameDetector.GetEndgameStatus(progress.State);
         var statusText = gameStatus switch
         {
@@ -82,8 +88,8 @@ foreach (var san in immortalGame)
         }
         isWhiteMove = !isWhiteMove;
 
-        // Check if game is over
-        if (gameStatus == EndgameStatus.Checkmate || gameStatus == EndgameStatus.Stalemate)
+        // Check if game is over using NEW unified API
+        if (isGameOver)
         {
             break;
         }
@@ -98,14 +104,37 @@ foreach (var san in immortalGame)
     }
 }
 
-// Final analysis
+// Final analysis using NEW unified API
 Console.WriteLine("\n═══════════════════════════════════════════════════════════════");
 Console.WriteLine("   Game Analysis: The Immortal Game Complete!");
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
 
-var finalStatus = endgameDetector.GetEndgameStatus(progress.State);
-Console.WriteLine($"\nFinal Status: {finalStatus}");
+// NEW unified API demonstration
+var finalIsGameOver = progress.IsGameOver();
+var finalOutcome = progress.GetOutcome();
 
+Console.WriteLine($"\n--- Unified Game Termination API ---");
+Console.WriteLine($"Game Over: {finalIsGameOver}");
+if (finalOutcome != null)
+{
+    Console.WriteLine($"Terminal Condition: {finalOutcome.TerminalCondition}");
+    Console.WriteLine($"Winner:");
+    foreach (var result in finalOutcome.PlayerResults.OrderBy(r => r.Rank))
+    {
+        Console.WriteLine($"  {result.Rank}. {result.Player.Id}: {result.Outcome}");
+    }
+}
+else
+{
+    Console.WriteLine("(No outcome available - game may still be in progress)");
+}
+
+// Verification using legacy detector (for comparison)
+Console.WriteLine($"\n--- Legacy Detector Comparison ---");
+var finalStatus = endgameDetector.GetEndgameStatus(progress.State);
+Console.WriteLine($"Final Status: {finalStatus}");
+
+Console.WriteLine("\n--- Verification ---");
 // Generate legal moves to prove it's checkmate (should be zero)
 var finalLegalMoves = legalityFilter.GenerateLegalMoves(progress.State);
 Console.WriteLine($"Legal Moves Available: {finalLegalMoves.Count}");
@@ -116,6 +145,7 @@ Console.WriteLine("  ✓ Complex piece sacrifices (queen, both rooks)");
 Console.WriteLine("  ✓ All piece types in action");
 Console.WriteLine("  ✓ Castling (kingside for White)");
 Console.WriteLine("  ✓ Multiple captures and checks");
-Console.WriteLine("  ✓ Checkmate detection");
+Console.WriteLine("  ✓ Unified game termination API (IsGameOver, GetOutcome)");
+Console.WriteLine("  ✓ Automatic endgame detection via phase-level configuration");
 Console.WriteLine("  ✓ Full SAN notation parsing");
 Console.WriteLine("\nChess implementation is complete and fully playable!");

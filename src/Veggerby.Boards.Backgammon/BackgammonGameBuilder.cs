@@ -1,5 +1,7 @@
 ﻿using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Backgammon.Conditions;
+using Veggerby.Boards.Backgammon.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
@@ -124,8 +126,12 @@ public class BackgammonGameBuilder : GameBuilder
                         .Do<SelectStartingPlayerStateMutator>();
 
         AddGamePhase("dice has been rolled")
+            .WithEndGameDetection(
+                game => new BackgammonEndgameCondition(game),
+                game => new BackgammonEndGameMutator(game))
             .If(game => new DiceGameStateCondition<int>(game.GetArtifacts<Dice>("dice-1", "dice-2"), CompositeMode.Any))
                 .And<SingleActivePlayerGameStateCondition>()
+                .And<GameNotEndedCondition>()
             .Then()
                 .PreProcessEvent(game => new SingleStepMovePieceGameEventPreProcessor(new TileBlockedGameEventCondition(2, PlayerOption.Opponent), game.GetArtifacts<Dice>("dice-1", "dice-2")))
                 .All()

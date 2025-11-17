@@ -540,7 +540,7 @@ if (progress.IsGameOver())
 | **Chess** | ✅ Core | ✅ ChessOutcomeState | ✅ WithEndGameDetection | ✅ Implemented | **Complete** |
 | **Go** | ✅ Core | ✅ GoOutcomeState | ⚠️ Manual (PassTurnStateMutator) | ✅ Implemented | **Complete** |
 | **DeckBuilding** | ✅ Core | ✅ DeckBuildingOutcomeState | ⚠️ Manual (EndGameStateMutator) | ✅ Implemented | **Complete** |
-| **Backgammon** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | **Not implemented** |
+| **Backgammon** | ✅ Core | ✅ BackgammonOutcomeState | ✅ WithEndGameDetection | ✅ Implemented | **Complete** |
 
 ## Migration Guide
 

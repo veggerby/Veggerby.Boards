@@ -115,6 +115,32 @@ Docs (`/docs`): conceptual explanations and extension guidance. Update when intr
 * Determinism: identical prior state + event => identical next state.
 * Errors: domain exceptions (`BoardException`, `InvalidGameEventException`) on invariant breach.
 
+## Phase-First Architecture (Authoritative)
+
+Game modules MUST use phase-based lifecycle patterns for:
+* **Turn sequencing** - Setup, play, scoring stages as distinct phases
+* **Game termination detection** - Use `.WithEndGameDetection()` to integrate endgame conditions
+* **Conditional rule scopes** - Model endgame variants, special conditions as phase transitions
+
+See `/docs/phase-based-design.md` for canonical patterns and best practices.
+
+### Termination Tracking (Mandatory for All Game Modules)
+
+Every game module must implement standardized termination and outcome tracking:
+
+1. **Add `GameEndedState` marker** when game concludes (universal termination signal)
+2. **Implement `IGameOutcome`** on outcome states for unified API access via `progress.GetOutcome()`
+3. **Use `GameNotEndedCondition`** in active phases to prevent moves after termination
+4. **Use `.WithEndGameDetection()`** for phase-level automatic endgame detection
+
+See `/docs/game-termination.md` for implementation patterns and module integration guidelines.
+
+### Deprecated Patterns
+
+- **External detector classes** (e.g., `ChessEndgameDetector`) - Use integrated phase detection instead
+- **Module-specific termination checks** - Use unified `progress.IsGameOver()` API
+- **Ad-hoc state markers** - Use core `GameEndedState` marker
+
 ## Testing Requirements
 
 * Frameworks: xUnit, AwesomeAssertions, NSubstitute (only these—no extra deps).

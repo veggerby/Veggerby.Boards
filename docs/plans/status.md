@@ -1,5 +1,7 @@
 # Work Status
 
+> **Note**: Completed workstreams have been archived to `/docs/plans/archive/` for reference. This status page focuses on active and partially completed work.
+
 ## Outstanding by Workstream
 
 ### 1. Rule Evaluation Engine
@@ -97,53 +99,13 @@
 
 ### 10. Chess Full Move Legality
 
-✅ **Done (2025-11-12).**
-
-* Complete pseudo-legal move generation for all piece types implemented
-* King safety legality filter with check/pin detection completed
-* Checkmate and stalemate detection via `ChessEndgameDetector`
-* Full SAN notation with all standard symbols (#, +, =Q, O-O, x, e.p.)
-* Comprehensive test coverage: 16+ unit tests + 4 integration tests
-* All capture types validated (pawn, knight, bishop, rook, queen, en passant)
-* Castling (kingside/queenside) with verification of both king and rook movement
-* Full game playability demonstrated (Scholar's Mate integration test)
-* Total: 786 tests (778 passing, 8 skipped)
-
-📦 Deferred (outside acceptance criteria):
-* Performance benchmarks and optimization
-* Draw rules (50-move rule, threefold repetition)
-* Multiple promotion piece selection UI/API
-* PGN import/export
+✅ **Done (2025-11-12).** Archived to `/docs/plans/archive/10-chess-full-move-legality.md`
 
 ---
 
 ### 11. Go Game Module
 
-✅ **Done (2025-11-13).**
-
-* Complete Go implementation with all core mechanics functional
-* `GroupScanner` - Iterative flood-fill for group and liberty detection
-* Capture mechanics - Zero-liberty group removal working correctly
-* Suicide rule - Placement validation (reject unless capturing)
-* Ko detection - Simple ko tracking in `KoTileId` with enforcement and clearing
-* Pass termination - Double-pass ends game with terminal state
-* Area scoring - Territory and stone counting algorithm
-* All board sizes supported (9x9, 13x13, 19x19)
-* Comprehensive test coverage: **29/29 tests passing (100% success rate)** ✅
-  * Single and multi-stone captures validated
-  * Suicide rule enforcement (with and without capture)
-  * Ko rule tests: immediate recapture blocking, ko clearing via pass, ko clearing via play elsewhere
-  * Snapback test: multi-stone captures don't trigger ko restriction
-  * Pass counting and game termination
-  * Area scoring with territory assignment
-* Total: 815 tests project-wide (806 passing, 8 skipped, 1 unrelated)
-
-📦 Deferred (outside acceptance criteria):
-* Superko (positional repetition) detection
-* Territory vs area scoring mode toggle
-* Handicap stone placement
-* Dead stone adjudication workflow
-* Performance benchmarks
+✅ **Done (2025-11-13).** Archived to `/docs/plans/archive/11-go-game-module.md`
 
 ---
 
@@ -224,48 +186,7 @@
 
 ### 17. Deck-building Core Module
 
-✅ **Done.** (Benchmarks partially captured; alternate end trigger delivered.)
-
-Delivered:
-
-* Project scaffolding with `DeckBuildingGameBuilder` and `CardDefinition` artifact.
-* Player zones over `Cards` piles with deterministic transitions backed by seeded RNG.
-* Events/Rules/Mutators implemented and wired:
-  * `RegisterCardDefinitionEvent` (register metadata definitions)
-  * `CreateDeckEvent` (initialize piles and optional supply snapshot)
-  * `GainFromSupplyEvent` (decrement supply, append to target pile)
-  * `DrawWithReshuffleEvent` (reshuffle Discard deterministically into Draw when needed, then draw to Hand)
-  * `TrashFromHandEvent` (remove specified cards from Hand)
-  * `CleanupToDiscardEvent` (move all cards from Hand and InPlay to Discard)
-  * `ComputeScoresEvent` (aggregate victory points -> `ScoreState` per player, idempotent)
-  * `EndGameEvent` (append terminal `GameEndedState` marker post-scoring)
-* Tests covering gain-from-supply acceptance/rejection, reshuffle determinism, trash validation, cleanup behavior, scoring aggregation/idempotency, termination gating (pre-score ignore, post-score success), and EndGame ordering invariant (ComputeScores precedes EndGame in cleanup phase).
-* Deterministic DecisionPlan baseline locked & updated (added scoring + termination) with guard test + diff; signature advanced.
-* Structural invariants + explicit ordering invariant ensure presence and sequencing (ComputeScores → EndGame) across phases.
-* Feature flag guard + sequential test collection removed flakiness from shared sequencing flag.
-* Action / Buy phase split completed (separate `db-action` and `db-buy`).
-* Scoring + termination integrated; baseline signature advanced & ordering invariant added.
-
-Next:
-
-* Supply configurator scaffold (`DeckBuildingSupplyConfigurator`) delivering fluent card definition + supply registration and deterministic startup event emission (definitions + single create) with ordering, duplicate, undefined supply, and integration tests.
-* Dedicated module docs page (`deck-building.md`) published (phases table, zones, shuffling determinism, supply usage, end-to-end flow, error modes, extension points).
-
-Deferred (not blocking completion):
-
-* Benchmarks (shuffle throughput, draw cycle, zone transition overhead, scoring cost) – partial capture now includes GainFromSupply (2.94µs) and condition gating (97.6ns) allocations/time.
-* Additional end-game trigger variants (beyond current supply depletion threshold + key pile set) and invariants.
-* Optional bulk definition batch helper (evaluate demand).
-
-Recent optimizations:
-
-* Alternate end trigger (supply depletion threshold and/or key supply pile emptiness) integrated into `EndGameEventCondition`.
-* `DeckSupplyStats` extras (O(1) empty pile tracking) + selective cloning in `GainFromSupplyStateMutator` reducing intermediate allocations.
-* New tests: structural sharing (pile content immutability scope) and supply stats decrement crossing-zero behavior.
-
-
-
-Risks: overbuilding effect system; maintain minimal primitives until card effects require expansion. Baseline regeneration discipline required for future phase additions.
+✅ **Done (2025-10-12).** Archived to `/docs/plans/archive/17-deck-building-core.md`
 
 ---
 

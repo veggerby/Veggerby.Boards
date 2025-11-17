@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
@@ -78,5 +80,42 @@ public static partial class GameExtensions
         var path = new TilePath(relations);
         var @event = new MovePieceGameEvent(king, path);
         return progress.HandleEvent(@event);
+    }
+
+    /// <summary>
+    /// Executes a chess move using Standard Algebraic Notation (SAN).
+    /// </summary>
+    /// <param name="progress">Current game progress.</param>
+    /// <param name="san">Standard Algebraic Notation string (e.g., "e4", "Nf3", "O-O", "exd5").</param>
+    /// <returns>Updated game progress with the move executed.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if progress or san is null.</exception>
+    /// <exception cref="BoardException">Thrown if the SAN does not correspond to any legal move in the current position.</exception>
+    /// <remarks>
+    /// This method generates legal moves for the current position, parses the SAN notation to find
+    /// a matching move, and executes it. If no legal move matches the SAN, an exception is thrown.
+    ///
+    /// Supported SAN notation includes:
+    /// - Basic moves: "e4", "Nf3", "Bc4"
+    /// - Captures: "exd5", "Nxf7", "Bxc6"
+    /// - Castling: "O-O" (kingside), "O-O-O" (queenside)
+    /// - Promotions: "e8=Q", "axb8=N"
+    /// - Disambiguation: "Nbd2", "R1e1", "Qh4e1"
+    /// - Check/checkmate symbols ("+", "#") are automatically stripped
+    /// </remarks>
+    public static GameProgress MoveSan(this GameProgress progress, string san)
+    {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(san);
+
+        var filter = new ChessLegalityFilter(progress.Game);
+        var legalMoves = filter.GenerateLegalMoves(progress.State);
+        var move = ChessSanParser.ParseSan(san, legalMoves, progress.Game, progress.State);
+
+        if (move is null)
+        {
+            throw new BoardException($"Invalid or illegal move in SAN notation: '{san}'");
+        }
+
+        return progress.Move(move.Piece.Id, move.To.Id);
     }
 }

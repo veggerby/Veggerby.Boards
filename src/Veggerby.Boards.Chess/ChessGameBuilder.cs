@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using Veggerby.Boards.Chess.Conditions;
+using Veggerby.Boards.Chess.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
@@ -402,7 +404,7 @@ public class ChessGameBuilder : GameBuilder
 
 
         AddGamePhase("move pieces")
-            .If<NullGameStateCondition>()
+            .If<GameNotEndedCondition>() // Only allow moves when game hasn't ended
                 .Then()
                     // Castling (must appear before generic king non-pawn movement so two-square king move is intercepted)
                     .ForEvent<MovePieceGameEvent>()
@@ -411,6 +413,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<CastlingKingSafetyGameEventCondition>()
                     .Then()
                         .Do<CastlingMoveMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     // Generic non-pawn capture (must appear before pawn specific branches)
                     .ForEvent<MovePieceGameEvent>()
@@ -420,6 +423,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationHasOpponentPieceGameEventCondition>()
                     .Then()
                         .Do<ChessCapturePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     // Generic non-pawn normal move
                     .ForEvent<MovePieceGameEvent>()
@@ -429,6 +433,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -439,6 +444,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationHasOpponentPieceGameEventCondition>()
                     .Then()
                         .Do<ChessCapturePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -448,6 +454,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DiagonalPawnDirectionGameEventCondition>()
                     .Then()
                         .Do<EnPassantCapturePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -458,6 +465,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<PawnInitialDoubleStepGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()))
                     .ForEvent<MovePieceGameEvent>()
                         .If<PieceIsActivePlayerGameEventCondition>()
@@ -468,6 +476,7 @@ public class ChessGameBuilder : GameBuilder
                             .And<DestinationIsEmptyGameEventCondition>()
                     .Then()
                         .Do<ChessMovePieceStateMutator>()
+                        .Do(game => new ChessEndgameDetectionMutator(game))
                         .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()));
     }
 }

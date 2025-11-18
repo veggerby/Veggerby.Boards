@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+
+- **Documentation Improvements**:
+  - **Comprehensive GameBuilder Guide** (`docs/gamebuilder-guide.md`): Step-by-step guide for creating new game modules covering:
+    - Complete API surface documentation
+    - Tile graph construction patterns (grid, ring, branching, graph)
+    - Movement patterns (directional, sliding, fixed)
+    - Phases and rules with examples
+    - Custom events, mutators, and conditions patterns
+    - Testing strategies with AAA pattern examples
+    - Common patterns by game type (racing, territory control, card games, abstract strategy)
+    - Common pitfalls and anti-patterns
+  - **Documentation Navigation** (`docs/README.md`): Central entry point for all documentation
+  - **Standardized Module READMEs**: All modules (Chess, Go, Backgammon, DeckBuilding) now follow consistent structure:
+    - Overview with feature list
+    - Quick start examples
+    - Key concepts tables
+    - Events & mutators reference
+    - Testing guidance
+    - Known limitations
+    - Extension scenarios
+    - Cross-references to core documentation
+  - **Archived Completed Workstreams**: Moved completed workstreams (WS-10 Chess, WS-11 Go, WS-17 DeckBuilding) to `docs/plans/archive/`
+  - **Samples README** (`samples/README.md`): Overview of all demonstration projects
+
+- **Go Demo** (`samples/GoDemo`): Complete demonstration showing:
+  - Stone placement on 9×9 board
+  - ASCII board rendering with Unicode stones (● ○) and star points
+  - Pass mechanics with two-consecutive-pass termination
+  - Area scoring calculation
+  - Clear documentation of working features and known limitations
+  - Example output with move-by-move progression
+
 ### Changed
 
 - **BREAKING: Feature Flags Eliminated**: All 18 feature flags have been removed from production code (#035)

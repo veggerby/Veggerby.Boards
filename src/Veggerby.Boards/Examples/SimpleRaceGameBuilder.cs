@@ -12,11 +12,11 @@ using Veggerby.Boards.States.Conditions;
 namespace Veggerby.Boards.Examples;
 
 /// <summary>
-/// Example game builder demonstrating the new fluent API extensions and helpers.
+/// Example game builder demonstrating the new fluent API.
 /// </summary>
 /// <remarks>
 /// This example shows:
-/// 1. Using BoardBuilderHelpers for grid and ring patterns
+/// 1. Using AddRingTiles for circular board patterns
 /// 2. Using DefineRules for lambda-scoped event handlers
 /// 3. Using ConditionGroup for reusable condition patterns
 /// 4. Using helper methods for better code organization
@@ -40,16 +40,13 @@ public class SimpleRaceGameBuilderExample : GameBuilder
         AddDirection("forward");
         AddDirection("backward");
 
-        // Create a circular track using the BoardBuilderHelpers
-        // This demonstrates how to use the helper for ring patterns
+        // Create a circular track using the fluent AddRingTiles method
         const int trackSize = 20;
-        foreach (var (position, tileId) in BoardBuilderHelpers.GenerateRingIds(trackSize, i => $"track-{i}"))
+        AddRingTiles(trackSize, i => $"track-{i}", (tile, position) =>
         {
-            var tile = AddTile(tileId);
-
             // Connect to next/previous tiles using helper functions
-            var nextPos = BoardBuilderHelpers.NextInRing(position, trackSize);
-            var prevPos = BoardBuilderHelpers.PreviousInRing(position, trackSize);
+            var nextPos = NextInRing(position, trackSize);
+            var prevPos = PreviousInRing(position, trackSize);
 
             tile
                 .WithRelationTo($"track-{nextPos}")
@@ -57,7 +54,7 @@ public class SimpleRaceGameBuilderExample : GameBuilder
                 .Done()
                 .WithRelationTo($"track-{prevPos}")
                 .InDirection("backward");
-        }
+        });
 
         // Create pieces
         AddPiece("red-piece")

@@ -45,10 +45,22 @@ public class FluentApiBuilderTests
     // Simple builder to test DefineRules
     private class TestFluentGameBuilder : GameBuilder
     {
-        public bool DefineRulesCalled { get; private set; }
-        public bool OnEventCalled { get; private set; }
-        public bool WhenConditionCalled { get; private set; }
-        public bool ExecuteMutatorsCalled { get; private set; }
+        public bool DefineRulesCalled
+        {
+            get; private set;
+        }
+        public bool OnEventCalled
+        {
+            get; private set;
+        }
+        public bool WhenConditionCalled
+        {
+            get; private set;
+        }
+        public bool ExecuteMutatorsCalled
+        {
+            get; private set;
+        }
 
         protected override void Build()
         {
@@ -188,7 +200,10 @@ public class FluentApiBuilderTests
         private class TestFluentWithConditionGroupGameBuilder : GameBuilder
         {
             private readonly ConditionGroup<TestGameEvent> _group;
-            public bool ConditionGroupApplied { get; private set; }
+            public bool ConditionGroupApplied
+            {
+                get; private set;
+            }
 
             public TestFluentWithConditionGroupGameBuilder(ConditionGroup<TestGameEvent> group)
             {
@@ -262,7 +277,10 @@ public class FluentApiBuilderTests
         private class TestFluentConditionalGameBuilder : GameBuilder
         {
             private readonly bool _includeRules;
-            public bool ConditionalRulesIncluded { get; private set; }
+            public bool ConditionalRulesIncluded
+            {
+                get; private set;
+            }
 
             public TestFluentConditionalGameBuilder(bool includeRules)
             {

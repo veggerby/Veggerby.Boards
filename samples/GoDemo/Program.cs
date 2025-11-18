@@ -40,23 +40,23 @@ foreach (var (colorId, x, y) in demoMoves)
 {
     var tileId = $"tile-{x}-{y}";
     var tile = progress.Game.GetTile(tileId);
-    
+
     // Get the next available stone for this player
     // Stones are pre-created as {color}-stone-1, {color}-stone-2, etc.
     var stoneId = $"{colorId}-stone-{moveNumber}";
     var stone = progress.Game.GetPiece(stoneId);
-    
+
     if (stone == null || tile == null)
     {
         Console.WriteLine($"ERROR: Could not find stone '{stoneId}' or tile '{tileId}'");
         break;
     }
-    
+
     try
     {
         progress = progress.HandleEvent(new PlaceStoneGameEvent(stone, tile));
         Console.WriteLine($"Move {moveNumber}: {colorId} plays {GetGoNotation(x, y)}");
-        
+
         // Render board after every few moves
         if (moveNumber % 5 == 0 || moveNumber == demoMoves.Length)
         {
@@ -64,7 +64,7 @@ foreach (var (colorId, x, y) in demoMoves)
             RenderGoBoard(progress);
             Console.WriteLine();
         }
-        
+
         moveNumber++;
     }
     catch (Exception ex)
@@ -86,16 +86,16 @@ try
     // Black passes
     progress = progress.HandleEvent(new PassTurnGameEvent());
     Console.WriteLine("Black passes.");
-    
+
     // White passes (second consecutive pass ends game)
     progress = progress.HandleEvent(new PassTurnGameEvent());
     Console.WriteLine("White passes.");
-    
+
     // Check game termination
     if (progress.IsGameOver())
     {
         Console.WriteLine("\n✓ Game ended after two consecutive passes.");
-        
+
         var outcome = progress.GetOutcome();
         if (outcome is GoOutcomeState goOutcome)
         {
@@ -103,7 +103,7 @@ try
             var whitePlayer = progress.Game.GetPlayer("white");
             var blackScore = goOutcome.TotalScores.TryGetValue(blackPlayer, out var bs) ? bs : 0;
             var whiteScore = goOutcome.TotalScores.TryGetValue(whitePlayer, out var ws) ? ws : 0;
-            
+
             Console.WriteLine($"\nFinal Score:");
             Console.WriteLine($"  Black: {blackScore} points");
             Console.WriteLine($"  White: {whiteScore} points");
@@ -157,7 +157,8 @@ static string GetGoNotation(int x, int y)
 {
     // Convert coordinates to Go notation (e.g., 3,3 -> C3)
     char file = (char)('A' + x - 1);
-    if (file >= 'I') file++; // Skip 'I' in Go notation
+    if (file >= 'I')
+        file++; // Skip 'I' in Go notation
     return $"{file}{y}";
 }
 
@@ -165,37 +166,38 @@ static void RenderGoBoard(GameProgress progress)
 {
     var game = progress.Game;
     var state = progress.State;
-    
+
     // Get board size from extras
     var extras = state.GetExtras<GoStateExtras>();
     var size = extras?.BoardSize ?? 19;
-    
+
     // Pre-index piece states by tile id for O(1) lookup
     var pieceStates = state.GetStates<PieceState>()
         .Where(ps => ps.CurrentTile != null)
         .ToDictionary(ps => ps.CurrentTile!.Id, ps => ps.Artifact);
-    
+
     // Header (column labels)
     Console.Write("   ");
     for (int x = 1; x <= size; x++)
     {
         char file = (char)('A' + x - 1);
-        if (file >= 'I') file++; // Skip 'I'
+        if (file >= 'I')
+            file++; // Skip 'I'
         Console.Write($"{file} ");
     }
     Console.WriteLine();
-    
+
     // Board rows (from top to bottom)
     for (int y = size; y >= 1; y--)
     {
         // Row label
         Console.Write($"{y,2} ");
-        
+
         // Tiles
         for (int x = 1; x <= size; x++)
         {
             var tileId = $"tile-{x}-{y}";
-            
+
             if (pieceStates.TryGetValue(tileId, out var piece))
             {
                 // Stone is placed here
@@ -209,7 +211,7 @@ static void RenderGoBoard(GameProgress progress)
                 Console.Write(isStarPoint ? "+ " : "· ");
             }
         }
-        
+
         Console.WriteLine();
     }
 }
@@ -232,6 +234,6 @@ static bool IsStarPoint(int x, int y, int size)
         // 19x19: traditional star points
         return (x == 4 || x == 10 || x == 16) && (y == 4 || y == 10 || y == 16);
     }
-    
+
     return false;
 }

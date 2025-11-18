@@ -53,9 +53,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines castling rules (must appear before generic king movement).
     /// </summary>
-    private void DefineCastlingRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefineCastlingRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .And<CastlingGameEventCondition>()
             .And<CastlingKingSafetyGameEventCondition>()
@@ -67,9 +67,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines generic non-pawn capture rules.
     /// </summary>
-    private void DefineNonPawnCaptureRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefineNonPawnCaptureRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .With(ChessConditions.NonPawn)
             .With(ChessConditions.UnobstructedToOpponentPiece)
@@ -81,9 +81,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines generic non-pawn normal move rules.
     /// </summary>
-    private void DefineNonPawnNormalMoveRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefineNonPawnNormalMoveRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .With(ChessConditions.NonPawn)
             .With(ChessConditions.UnobstructedToEmpty)
@@ -95,9 +95,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines pawn diagonal capture rules.
     /// </summary>
-    private void DefinePawnCaptureRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefinePawnCaptureRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .With(ChessConditions.PawnDiagonalCapture)
             .And<PathNotObstructedGameEventCondition>()
@@ -110,9 +110,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines pawn en-passant capture rules.
     /// </summary>
-    private void DefinePawnEnPassantRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefinePawnEnPassantRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .With(ChessConditions.PawnDiagonalCapture)
             .And<EnPassantCaptureGameEventCondition>()
@@ -124,9 +124,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines pawn double-step advance rules.
     /// </summary>
-    private void DefinePawnDoubleStepRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefinePawnDoubleStepRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .And<PathNotObstructedGameEventCondition>()
             .And<DestinationIsEmptyGameEventCondition>()
@@ -140,9 +140,9 @@ public partial class ChessGameBuilderFluentDemo : GameBuilder
     /// <summary>
     /// Defines pawn normal single-step forward move rules.
     /// </summary>
-    private void DefinePawnNormalMoveRules(IPhaseRuleBuilder phase)
+    private IPhaseRuleBuilder DefinePawnNormalMoveRules(IPhaseRuleBuilder phase)
     {
-        phase.On<MovePieceGameEvent>(evt => evt
+        return phase.On<MovePieceGameEvent>(evt => evt
             .With(ChessConditions.ActivePlayerMove)
             .With(ChessConditions.PawnNormalMove)
             .And<PathNotObstructedGameEventCondition>()

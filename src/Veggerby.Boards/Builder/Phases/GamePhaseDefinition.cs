@@ -102,10 +102,10 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         var condition = _conditionDefinition.Build(game);
         var rule = _ruleDefinitions.Build(game);
         var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game)).ToList();
-        
+
         var endGameCondition = _endGameConditionFactory?.Invoke(game);
         var endGameMutator = _endGameMutatorFactory?.Invoke(game);
-        
+
         return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors, _exclusivityGroup, endGameCondition, endGameMutator);
     }
 }

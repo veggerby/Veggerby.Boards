@@ -38,7 +38,7 @@ public sealed class ChessEndGameMutator : IStateMutator<IGameEvent>
 
         // Determine if checkmate or stalemate
         var detector = new ChessEndgameDetector(_game);
-        
+
         if (detector.IsCheckmate(state))
         {
             // Checkmate - the active player (who cannot move) loses

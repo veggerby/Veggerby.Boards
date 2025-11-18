@@ -29,17 +29,26 @@ public sealed class ChessOutcomeState : IArtifactState, IGameOutcome
     /// <summary>
     /// Gets the type of terminal condition that ended the game.
     /// </summary>
-    public EndgameStatus Status { get; }
+    public EndgameStatus Status
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the player who won (null for stalemate/draw).
     /// </summary>
-    public Player? Winner { get; }
+    public Player? Winner
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the player who lost (null for stalemate/draw).
     /// </summary>
-    public Player? Loser { get; }
+    public Player? Loser
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChessOutcomeState"/> class.

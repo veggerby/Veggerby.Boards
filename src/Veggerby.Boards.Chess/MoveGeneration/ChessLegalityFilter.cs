@@ -37,8 +37,10 @@ public sealed class ChessLegalityFilter
     /// <returns>Collection of legal moves (moves that don't leave own king in check).</returns>
     public IReadOnlyCollection<PseudoMove> FilterLegalMoves(GameState state, IReadOnlyCollection<PseudoMove> pseudoLegalMoves)
     {
-        if (state == null) throw new ArgumentNullException(nameof(state));
-        if (pseudoLegalMoves == null) throw new ArgumentNullException(nameof(pseudoLegalMoves));
+        if (state == null)
+            throw new ArgumentNullException(nameof(state));
+        if (pseudoLegalMoves == null)
+            throw new ArgumentNullException(nameof(pseudoLegalMoves));
 
         var legalMoves = new List<PseudoMove>();
 
@@ -73,7 +75,7 @@ public sealed class ChessLegalityFilter
     {
         // Simulate the move and check if king is in check
         var simulatedState = SimulateMove(state, move);
-        
+
         if (simulatedState == null)
         {
             return false;
@@ -89,7 +91,7 @@ public sealed class ChessLegalityFilter
         {
             // Create a new state with the piece moved
             var pieceState = state.GetState<PieceState>(move.Piece);
-            
+
             if (pieceState == null)
             {
                 return null;
@@ -103,7 +105,7 @@ public sealed class ChessLegalityFilter
             if (move.IsCapture)
             {
                 var capturedPieces = state.GetPiecesOnTile(move.To).Where(p => p.Owner?.Id != move.Piece.Owner?.Id);
-                
+
                 foreach (var capturedPiece in capturedPieces)
                 {
                     var capturedState = new CapturedPieceState(capturedPiece);
@@ -118,11 +120,11 @@ public sealed class ChessLegalityFilter
                 var isWhite = ChessPiece.IsWhite(state, move.Piece.Id);
                 var captureDirection = isWhite ? Constants.Directions.South : Constants.Directions.North;
                 var capturedPawnTile = GetRelatedTile(move.To, captureDirection);
-                
+
                 if (capturedPawnTile != null)
                 {
                     var capturedPawns = state.GetPiecesOnTile(capturedPawnTile).Where(p => p.Owner?.Id != move.Piece.Owner?.Id);
-                    
+
                     foreach (var capturedPawn in capturedPawns)
                     {
                         var capturedState = new CapturedPieceState(capturedPawn);
@@ -137,11 +139,11 @@ public sealed class ChessLegalityFilter
                 var isKingSide = IsEastOf(move.To, move.From);
                 var rookOrigin = GetCastleRookOrigin(move.From, isKingSide);
                 var rookTarget = GetRelatedTile(move.To, isKingSide ? Constants.Directions.West : Constants.Directions.East);
-                
+
                 if (rookOrigin != null && rookTarget != null)
                 {
                     var rooks = state.GetPiecesOnTile(rookOrigin).Where(p => ChessPiece.IsRook(state, p.Id));
-                    
+
                     foreach (var rook in rooks)
                     {
                         var rookState = new PieceState(rook, rookTarget);
@@ -162,14 +164,14 @@ public sealed class ChessLegalityFilter
     {
         // Find the king's position
         var kingPiece = FindKing(state, player);
-        
+
         if (kingPiece == null)
         {
             return false;
         }
 
         var kingState = state.GetState<PieceState>(kingPiece);
-        
+
         if (kingState == null || kingState.CurrentTile == null)
         {
             return false;
@@ -187,7 +189,7 @@ public sealed class ChessLegalityFilter
 
         foreach (var pieceState in pieceStates)
         {
-            if (pieceState.Artifact.Owner?.Id == player.Id && 
+            if (pieceState.Artifact.Owner?.Id == player.Id &&
                 ChessPiece.IsKing(state, pieceState.Artifact.Id) &&
                 !state.IsCaptured(pieceState.Artifact))
             {
@@ -273,7 +275,7 @@ public sealed class ChessLegalityFilter
         foreach (var diagDir in diagonalDirections)
         {
             var diagonal = GetRelatedTile(from, diagDir);
-            
+
             if (diagonal != null && diagonal.Equals(targetSquare))
             {
                 return true;
@@ -300,15 +302,17 @@ public sealed class ChessLegalityFilter
         foreach (var (first, second, third) in knightOffsets)
         {
             var intermediate1 = GetRelatedTile(from, first);
-            
-            if (intermediate1 == null) continue;
+
+            if (intermediate1 == null)
+                continue;
 
             var intermediate2 = GetRelatedTile(intermediate1, second);
-            
-            if (intermediate2 == null) continue;
+
+            if (intermediate2 == null)
+                continue;
 
             var target = GetRelatedTile(intermediate2, third);
-            
+
             if (target != null && target.Equals(targetSquare))
             {
                 return true;
@@ -345,7 +349,7 @@ public sealed class ChessLegalityFilter
             while (true)
             {
                 var next = GetRelatedTile(current, direction);
-                
+
                 if (next == null)
                 {
                     break;
@@ -386,7 +390,7 @@ public sealed class ChessLegalityFilter
         foreach (var direction in directions)
         {
             var target = GetRelatedTile(from, direction);
-            
+
             if (target != null && target.Equals(targetSquare))
             {
                 return true;
@@ -422,7 +426,7 @@ public sealed class ChessLegalityFilter
         while (true)
         {
             var next = GetRelatedTile(current, direction);
-            
+
             if (next == null)
             {
                 return current;
@@ -439,7 +443,7 @@ public sealed class ChessLegalityFilter
         while (true)
         {
             var next = GetRelatedTile(current, Constants.Directions.East);
-            
+
             if (next == null)
             {
                 return false;

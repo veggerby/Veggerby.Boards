@@ -29,12 +29,18 @@ public sealed class DeckBuildingOutcomeState : IArtifactState, IGameOutcome
     /// <summary>
     /// Gets the individual score states for each player.
     /// </summary>
-    public IReadOnlyList<ScoreState> Scores { get; }
+    public IReadOnlyList<ScoreState> Scores
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the player who won (null if tie).
     /// </summary>
-    public Player? Winner { get; }
+    public Player? Winner
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeckBuildingOutcomeState"/> class.

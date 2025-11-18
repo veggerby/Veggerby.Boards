@@ -58,7 +58,7 @@ public class ChessFullGamePlayabilityTests
         // assert
         detector.IsCheckmate(progress.State).Should().BeTrue("Black should be in checkmate");
         detector.IsGameOver(progress.State).Should().BeTrue("Game should be over");
-        
+
         var endgameStatus = detector.GetEndgameStatus(progress.State);
         endgameStatus.Should().Be(EndgameStatus.Checkmate, "Status should be checkmate");
 
@@ -121,7 +121,7 @@ public class ChessFullGamePlayabilityTests
         var isCheckmate = detector.IsCheckmate(state);
         var isStalemate = detector.IsStalemate(state);
         var status = detector.GetEndgameStatus(state);
-        
+
         isCheckmate.Should().BeFalse("Starting position is not checkmate");
         isStalemate.Should().BeFalse("Starting position is not stalemate");
         status.Should().Be(EndgameStatus.InProgress, "Game should be in progress");
@@ -139,7 +139,7 @@ public class ChessFullGamePlayabilityTests
         var nomenclature = new ChessNomenclature();
         var pawnName = nomenclature.GetPieceName(whitePawn);
         pawnName.Should().Be("P", "White pawn should have correct name");
-        
+
         var tileName = nomenclature.GetTileName(game.GetTile("e2").EnsureNotNull());
         tileName.Should().Be("e2", "Tile should have correct name");
     }

@@ -42,7 +42,10 @@ public sealed class PassTurnStateMutator : IStateMutator<PassTurnGameEvent>
             var extras = gameState.GetExtras<GoStateExtras>();
             if (extras != null && extras.KoTileId != null)
             {
-                var clearedExtras = extras with { KoTileId = null };
+                var clearedExtras = extras with
+                {
+                    KoTileId = null
+                };
                 return gameState.ReplaceExtras(clearedExtras);
             }
             return gameState;
@@ -63,7 +66,10 @@ public sealed class PassTurnStateMutator : IStateMutator<PassTurnGameEvent>
         var currentExtras = updatedState.GetExtras<GoStateExtras>();
         if (currentExtras != null && currentExtras.KoTileId != null)
         {
-            var clearedExtras = currentExtras with { KoTileId = null };
+            var clearedExtras = currentExtras with
+            {
+                KoTileId = null
+            };
             updatedState = updatedState.ReplaceExtras(clearedExtras);
         }
 

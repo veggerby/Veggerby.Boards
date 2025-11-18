@@ -17,13 +17,19 @@ public interface IGameOutcome
     /// <summary>
     /// Gets the terminal condition that ended the game (e.g., "Checkmate", "Stalemate", "Scoring", "TerritoryScoring").
     /// </summary>
-    string TerminalCondition { get; }
+    string TerminalCondition
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the ordered player results from winner to loser (or tied).
     /// Players with the same rank are considered tied.
     /// </summary>
-    IReadOnlyList<PlayerResult> PlayerResults { get; }
+    IReadOnlyList<PlayerResult> PlayerResults
+    {
+        get;
+    }
 }
 
 /// <summary>
@@ -34,23 +40,35 @@ public sealed record PlayerResult
     /// <summary>
     /// Gets the player this result applies to.
     /// </summary>
-    public required Player Player { get; init; }
+    public required Player Player
+    {
+        get; init;
+    }
 
     /// <summary>
     /// Gets the outcome type for this player.
     /// </summary>
-    public required OutcomeType Outcome { get; init; }
+    public required OutcomeType Outcome
+    {
+        get; init;
+    }
 
     /// <summary>
     /// Gets the final rank for this player (1 = winner, 2 = second place, etc.).
     /// Players with the same rank are considered tied.
     /// </summary>
-    public required int Rank { get; init; }
+    public required int Rank
+    {
+        get; init;
+    }
 
     /// <summary>
     /// Gets optional game-specific metrics (e.g., VictoryPoints, Territory, Armies).
     /// </summary>
-    public IReadOnlyDictionary<string, object>? Metrics { get; init; }
+    public IReadOnlyDictionary<string, object>? Metrics
+    {
+        get; init;
+    }
 }
 
 /// <summary>

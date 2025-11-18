@@ -37,12 +37,12 @@ public class ChessLegalityFilterTests
         // arrange
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
-        
+
         // Set up a simpler check position
         // Move some pieces to create a check scenario
         progress = progress.Move(WhitePawn5, "e4");
         progress = progress.Move(BlackPawn5, "e5");
-        
+
         var game = progress.Game;
         var state = progress.State;
         var filter = new ChessLegalityFilter(game);

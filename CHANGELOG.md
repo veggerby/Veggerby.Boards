@@ -21,6 +21,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
     - `ConditionGroup<TEvent>` with fluent `.Require<T>()` API
     - `.With(ConditionGroup)` method for applying predefined condition sets
     - `ChessConditions` helper class with 6 common chess patterns
+  - **Board Building Helpers**: Simplified board construction patterns
+    - `BoardBuilderHelpers.GenerateIds()` for sequential ID generation
+    - `BoardBuilderHelpers.GenerateGridIds()` for 2D grid layouts
+    - `BoardBuilderHelpers.GenerateRingIds()` for circular track patterns
+    - `BoardBuilderHelpers.NextInRing()` and `PreviousInRing()` for ring navigation
+  - **EndGame Detection Extensions**: Simplified endgame configuration
+    - `WithEndGame()` fluent wrapper for endgame detection
+    - Cleaner syntax consistent with new API naming conventions
+  - **Example Game Builder**: Complete working example (`SimpleRaceGameBuilderExample`)
+    - Demonstrates ring board pattern using helpers
+    - Shows DefineRules with lambda scoping
+    - Includes reusable condition groups
+    - Illustrates helper method extraction pattern
   - **Chess Fluent Demo**: `ChessGameBuilderFluentDemo` demonstrating:
     - 7 isolated helper methods for different rule types
     - 40% reduction in repetitive code using condition groups

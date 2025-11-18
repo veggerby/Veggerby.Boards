@@ -61,72 +61,51 @@ public class ChessGameBuilder : GameBuilder
          * (a,8) ----- (h,8)    BLACK
          *         S
          */
-        for (int x = 1; x <= 8; x++)
+        AddGridTiles(8, 8, (x, y) => $"tile-{GetChar(x + 1)}{y + 1}", (tile, x, y) =>
         {
-            for (int y = 1; y <= 8; y++)
+            // Cardinal directions
+            if (x > 0)
             {
-                var tile = AddTile($"tile-{GetChar(x)}{y}");
-
-                if (x > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x - 1)}{y}")
-                        .InDirection(Constants.Directions.West);
-                }
-
-                if (x < 8)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x + 1)}{y}")
-                        .InDirection(Constants.Directions.East);
-                }
-
-                // Canonical relation mapping: increasing rank = north
-                if (y < 8)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x)}{y + 1}")
-                        .InDirection(Constants.Directions.North);
-                }
-
-                if (y > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x)}{y - 1}")
-                        .InDirection(Constants.Directions.South);
-                }
-
-                // Diagonals
-                if (x < 8 && y < 8)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x + 1)}{y + 1}")
-                        .InDirection(Constants.Directions.NorthEast);
-                }
-
-                if (x > 1 && y < 8)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x - 1)}{y + 1}")
-                        .InDirection(Constants.Directions.NorthWest);
-                }
-
-                if (x < 8 && y > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x + 1)}{y - 1}")
-                        .InDirection(Constants.Directions.SouthEast);
-                }
-
-                if (x > 1 && y > 1)
-                {
-                    tile
-                        .WithRelationTo($"tile-{GetChar(x - 1)}{y - 1}")
-                        .InDirection(Constants.Directions.SouthWest);
-                }
-
+                tile.WithRelationTo($"tile-{GetChar(x)}{y + 1}").InDirection(Constants.Directions.West);
             }
-        }
+
+            if (x < 7)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 1}").InDirection(Constants.Directions.East);
+            }
+
+            // Canonical relation mapping: increasing rank = north
+            if (y < 7)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y + 2}").InDirection(Constants.Directions.North);
+            }
+
+            if (y > 0)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y}").InDirection(Constants.Directions.South);
+            }
+
+            // Diagonals
+            if (x < 7 && y < 7)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 2}").InDirection(Constants.Directions.NorthEast);
+            }
+
+            if (x > 0 && y < 7)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x)}{y + 2}").InDirection(Constants.Directions.NorthWest);
+            }
+
+            if (x < 7 && y > 0)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y}").InDirection(Constants.Directions.SouthEast);
+            }
+
+            if (x > 0 && y > 0)
+            {
+                tile.WithRelationTo($"tile-{GetChar(x)}{y}").InDirection(Constants.Directions.SouthWest);
+            }
+        });
 
         // NOTE: Previous design used a hidden sink tile for captures; replaced by explicit CapturedPieceState
         // markers to avoid distorting board topology / bitboard density. Comment retained for historical context.
@@ -175,9 +154,10 @@ public class ChessGameBuilder : GameBuilder
             .HasDirection(Constants.Directions.SouthEast).Done()
             .HasDirection(Constants.Directions.SouthWest).Done();
 
-        for (int i = 1; i <= 8; i++)
+        // White pawns
+        AddMultiplePieces(8, i => $"white-pawn-{i + 1}", (piece, _) =>
         {
-            AddPiece($"white-pawn-{i}")
+            piece
                 .WithOwner(ChessIds.Players.White)
                 // White forward = north (towards rank 8). Patterns are structural; legality gated by rule chain.
                 .HasDirection(Constants.Directions.North).Done()
@@ -185,8 +165,12 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern(Constants.Directions.North, Constants.Directions.North)
                 .HasDirection(Constants.Directions.NorthEast).Done()
                 .HasDirection(Constants.Directions.NorthWest).Done();
+        });
 
-            AddPiece($"black-pawn-{i}")
+        // Black pawns
+        AddMultiplePieces(8, i => $"black-pawn-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.Black)
                 // Black forward = south (towards rank 1).
                 .HasDirection(Constants.Directions.South).Done()
@@ -194,18 +178,23 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern(Constants.Directions.South, Constants.Directions.South)
                 .HasDirection(Constants.Directions.SouthEast).Done()
                 .HasDirection(Constants.Directions.SouthWest).Done();
-        }
+        });
 
-        for (int i = 1; i <= 8; i++)
+        // White rooks
+        AddMultiplePieces(8, i => $"white-rook-{i + 1}", (piece, _) =>
         {
-            AddPiece($"white-rook-{i}")
+            piece
                 .WithOwner(ChessIds.Players.White)
                 .HasDirection(Constants.Directions.North).CanRepeat()
                 .HasDirection(Constants.Directions.East).CanRepeat()
                 .HasDirection(Constants.Directions.South).CanRepeat()
                 .HasDirection(Constants.Directions.West).CanRepeat();
+        });
 
-            AddPiece($"white-knight-{i}")
+        // White knights
+        AddMultiplePieces(8, i => $"white-knight-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.White)
                 .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
                 .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
@@ -215,22 +204,34 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
                 .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
                 .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
+        });
 
-            AddPiece($"white-bishop-{i}")
+        // White bishops
+        AddMultiplePieces(8, i => $"white-bishop-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.White)
                 .HasDirection(Constants.Directions.NorthEast).CanRepeat()
                 .HasDirection(Constants.Directions.NorthWest).CanRepeat()
                 .HasDirection(Constants.Directions.SouthEast).CanRepeat()
                 .HasDirection(Constants.Directions.SouthWest).CanRepeat();
+        });
 
-            AddPiece($"black-rook-{i}")
+        // Black rooks
+        AddMultiplePieces(8, i => $"black-rook-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.Black)
                 .HasDirection(Constants.Directions.North).CanRepeat()
                 .HasDirection(Constants.Directions.East).CanRepeat()
                 .HasDirection(Constants.Directions.South).CanRepeat()
                 .HasDirection(Constants.Directions.West).CanRepeat();
+        });
 
-            AddPiece($"black-knight-{i}")
+        // Black knights
+        AddMultiplePieces(8, i => $"black-knight-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.Black)
                 .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
                 .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
@@ -240,14 +241,18 @@ public class ChessGameBuilder : GameBuilder
                 .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
                 .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
                 .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
+        });
 
-            AddPiece($"black-bishop-{i}")
+        // Black bishops
+        AddMultiplePieces(8, i => $"black-bishop-{i + 1}", (piece, _) =>
+        {
+            piece
                 .WithOwner(ChessIds.Players.Black)
                 .HasDirection(Constants.Directions.NorthEast).CanRepeat()
                 .HasDirection(Constants.Directions.NorthWest).CanRepeat()
                 .HasDirection(Constants.Directions.SouthEast).CanRepeat()
                 .HasDirection(Constants.Directions.SouthWest).CanRepeat();
-        }
+        });
 
         // State
         WithPiece(ChessIds.Pieces.WhiteRook1).OnTile(ChessIds.Tiles.A1);

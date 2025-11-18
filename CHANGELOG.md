@@ -21,16 +21,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
     - `ConditionGroup<TEvent>` with fluent `.Require<T>()` API
     - `.With(ConditionGroup)` method for applying predefined condition sets
     - `ChessConditions` helper class with 6 common chess patterns
-  - **Board Building Helpers**: Simplified board construction patterns
-    - `BoardBuilderHelpers.GenerateIds()` for sequential ID generation
-    - `BoardBuilderHelpers.GenerateGridIds()` for 2D grid layouts
-    - `BoardBuilderHelpers.GenerateRingIds()` for circular track patterns
-    - `BoardBuilderHelpers.NextInRing()` and `PreviousInRing()` for ring navigation
+  - **Integrated Board Building Methods**: Fluent instance methods in GameBuilder
+    - `AddGridTiles(width, height, factory, configure)` - Create 2D grid boards
+    - `AddRingTiles(count, factory, configure)` - Create circular track/ring boards
+    - `AddMultiplePieces(count, factory, configure)` - Bulk piece creation
+    - `NextInRing(position, size)` and `PreviousInRing(position, size)` - Ring navigation helpers
+    - Integrated directly into GameBuilder (no separate static helper classes)
+    - All methods return GameBuilder for fluent chaining
   - **EndGame Detection Extensions**: Simplified endgame configuration
     - `WithEndGame()` fluent wrapper for endgame detection
     - Cleaner syntax consistent with new API naming conventions
+  - **Module Migrations**: Existing game modules refactored to new API
+    - **Backgammon**: Migrated to use `AddRingTiles` and `AddMultiplePieces` (44% code reduction)
+    - **Chess**: Migrated to use `AddGridTiles` and `AddMultiplePieces` (cleaner, more readable)
+    - All module tests passing with zero regressions
   - **Example Game Builder**: Complete working example (`SimpleRaceGameBuilderExample`)
-    - Demonstrates ring board pattern using helpers
+    - Demonstrates AddRingTiles for circular board patterns
     - Shows DefineRules with lambda scoping
     - Includes reusable condition groups
     - Illustrates helper method extraction pattern

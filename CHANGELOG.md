@@ -48,6 +48,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - **Backward Compatible**: Existing `Then()` API remains fully functional
 
 - **Documentation Improvements**:
+  - **Benchmark Summary Dashboard** (`docs/performance/benchmark-summary.md`): Consolidated performance metrics and historical tracking
+    - At-a-glance performance baselines across all major benchmark categories
+    - Core performance, acceleration layers, module-specific metrics
+    - Historical milestone tracking (v0.1, v0.2, v0.3)
+    - Regression monitoring and improvement highlights
+    - Automated regeneration script (`scripts/benchmark-summary.sh`)
+    - Linked from README.md and performance.md for quick reference
   - **Comprehensive GameBuilder Guide** (`docs/gamebuilder-guide.md`): Step-by-step guide for creating new game modules covering:
     - Complete API surface documentation
     - Tile graph construction patterns (grid, ring, branching, graph)

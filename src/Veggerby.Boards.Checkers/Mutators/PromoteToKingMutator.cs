@@ -52,6 +52,9 @@ public sealed class PromoteToKingMutator : IStateMutator<MovePieceGameEvent>
     /// <returns>New state with promoted piece if applicable.</returns>
     public GameState MutateState(GameEngine engine, GameState state, MovePieceGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(state);
+
         var piece = @event.Piece;
         var destinationTile = @event.To;
 
@@ -95,7 +98,7 @@ public sealed class PromoteToKingMutator : IStateMutator<MovePieceGameEvent>
         // Add a promoted piece state marker
         var promotedState = new PromotedPieceState(piece);
 
-        return state.Next(promotedState);
+        return state.Next(new IArtifactState[] { promotedState });
     }
 }
 

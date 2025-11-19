@@ -2,6 +2,7 @@ using Veggerby.Boards.Checkers.Conditions;
 using Veggerby.Boards.Checkers.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
+using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States.Conditions;
 
 namespace Veggerby.Boards.Checkers;
@@ -134,12 +135,7 @@ public class CheckersGameBuilder : GameBuilder
         // Standard checkers uses dark squares only in a specific numbering pattern
         // Row 1 (bottom): 1, 2, 3, 4 (on dark squares)
         // Row 2: 5, 6, 7, 8
-        // Row 3: 9, 10, 11, 12
-        // Row 4: 13, 14, 15, 16
-        // Row 5: 17, 18, 19, 20
-        // Row 6: 21, 22, 23, 24
-        // Row 7: 25, 26, 27, 28
-        // Row 8 (top): 29, 30, 31, 32
+        // ... Row 8 (top): 29, 30, 31, 32
 
         // Create all 32 tiles
         for (int i = 1; i <= 32; i++)
@@ -153,7 +149,7 @@ public class CheckersGameBuilder : GameBuilder
         // Helper to add bidirectional diagonal connection
         void AddDiagonalConnection(int fromTile, int toTile, string direction)
         {
-            AddRelation($"tile-{fromTile}").To($"tile-{toTile}").InDirection(direction);
+            WithTile($"tile-{fromTile}").WithRelationTo($"tile-{toTile}").InDirection(direction);
         }
 
         // Row 1 connections (tiles 1-4)

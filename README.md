@@ -111,6 +111,8 @@ dotnet test -- RunConfiguration.TestSessionTimeout=600000
 
 Run all performance benchmarks (dynamic discovery). The script no longer generates the consolidated markdown report—use the harness for that.
 
+📊 **Performance Summary**: See [docs/performance/benchmark-summary.md](docs/performance/benchmark-summary.md) for key metrics and historical tracking.
+
 ```bash
 ./scripts/run-all-benchmarks.sh
 ```

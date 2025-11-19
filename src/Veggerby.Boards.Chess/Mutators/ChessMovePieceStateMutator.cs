@@ -51,8 +51,7 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
 
         // Reset en-passant by default; set only if this move is a double-step pawn advance (distance == 2)
         string? enPassantTarget = null;
-        var rolesExtras = gameState.GetExtras<ChessPieceRolesExtras>();
-        if (ChessPiece.IsPawn(gameState, @event.Piece.Id) && @event.Distance == 2)
+        if (ChessPiece.IsPawn(engine.Game, @event.Piece.Id) && @event.Distance == 2)
         {
             // Robust intermediate inference (supports either 2 single-step relations or a future potential single relation of distance 2)
             TileRelation[] relations = @event.Path is null ? Array.Empty<TileRelation>() : @event.Path.Relations.ToArray();
@@ -72,12 +71,12 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
             }
         }
 
-        var isPawnAdvance = ChessPiece.IsPawn(gameState, @event.Piece.Id);
+        var isPawnAdvance = ChessPiece.IsPawn(engine.Game, @event.Piece.Id);
         var halfmove = isPawnAdvance ? 0 : prevExtras.HalfmoveClock + 1;
         // Derive active player defensively: prefer ActivePlayerState when present, else infer from mover color sequence assumption (white starts)
         string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
-            : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
+            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
 
         // Castling rights revocation rules (movement):

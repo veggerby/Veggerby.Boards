@@ -31,18 +31,19 @@ public sealed class ChessEndgameDetector
     /// <returns>True if the active player is in checkmate.</returns>
     public bool IsCheckmate(GameState state)
     {
-        if (state == null) throw new ArgumentNullException(nameof(state));
+        if (state == null)
+            throw new ArgumentNullException(nameof(state));
 
         if (!state.TryGetActivePlayer(out var activePlayer) || activePlayer == null)
         {
             return false;
         }
 
-        // Checkmate requires: 
+        // Checkmate requires:
         // 1. The king is in check
         // 2. There are no legal moves
         var legalMoves = _legalityFilter.GenerateLegalMoves(state);
-        
+
         if (legalMoves.Count > 0)
         {
             return false;
@@ -59,7 +60,8 @@ public sealed class ChessEndgameDetector
     /// <returns>True if the active player is in stalemate.</returns>
     public bool IsStalemate(GameState state)
     {
-        if (state == null) throw new ArgumentNullException(nameof(state));
+        if (state == null)
+            throw new ArgumentNullException(nameof(state));
 
         if (!state.TryGetActivePlayer(out var activePlayer) || activePlayer == null)
         {
@@ -70,7 +72,7 @@ public sealed class ChessEndgameDetector
         // 1. The king is NOT in check
         // 2. There are no legal moves
         var legalMoves = _legalityFilter.GenerateLegalMoves(state);
-        
+
         if (legalMoves.Count > 0)
         {
             return false;
@@ -124,14 +126,14 @@ public sealed class ChessEndgameDetector
     {
         // Find the king
         var kingPiece = FindKing(state, player);
-        
+
         if (kingPiece == null)
         {
             return false;
         }
 
         var kingState = state.GetState<PieceState>(kingPiece);
-        
+
         if (kingState == null || kingState.CurrentTile == null)
         {
             return false;
@@ -154,7 +156,7 @@ public sealed class ChessEndgameDetector
 
             // Generate pseudo-legal moves for this opponent piece
             var moveGenerator = new ChessMoveGenerator(_game);
-            
+
             // Create a temporary state with the opponent as active player to generate their moves
             // We just need to check if any of their moves target the king's square
             if (CanAttackSquare(state, pieceState, kingState.CurrentTile))
@@ -178,42 +180,42 @@ public sealed class ChessEndgameDetector
 
         // Use the same attack logic as the legality filter
         var filter = new ChessLegalityFilter(_game);
-        
+
         // We need to check if the piece can attack the target square
         // For simplicity, we'll check if a pseudo-legal move to that square exists
         // Note: This is a simplified check - in reality we'd need to verify the attack pattern
-        
+
         return CheckAttackPattern(state, piece, from, targetSquare);
     }
 
     private bool CheckAttackPattern(GameState state, Piece piece, Tile from, Tile targetSquare)
     {
         // This is a simplified attack check - delegates to helper methods
-        if (ChessPiece.IsPawn(state, piece.Id))
+        if (ChessPiece.IsPawn(_game, piece.Id))
         {
             return CanPawnAttack(state, piece, from, targetSquare);
         }
-        else if (ChessPiece.IsKnight(state, piece.Id))
+        else if (ChessPiece.IsKnight(_game, piece.Id))
         {
             return CanKnightAttack(from, targetSquare);
         }
-        else if (ChessPiece.IsBishop(state, piece.Id) || ChessPiece.IsQueen(state, piece.Id))
+        else if (ChessPiece.IsBishop(_game, piece.Id) || ChessPiece.IsQueen(_game, piece.Id))
         {
             if (CanSlidingAttack(state, from, targetSquare, diagonal: true))
             {
                 return true;
             }
         }
-        
-        if (ChessPiece.IsRook(state, piece.Id) || ChessPiece.IsQueen(state, piece.Id))
+
+        if (ChessPiece.IsRook(_game, piece.Id) || ChessPiece.IsQueen(_game, piece.Id))
         {
             if (CanSlidingAttack(state, from, targetSquare, orthogonal: true))
             {
                 return true;
             }
         }
-        
-        if (ChessPiece.IsKing(state, piece.Id))
+
+        if (ChessPiece.IsKing(_game, piece.Id))
         {
             return CanKingAttack(from, targetSquare);
         }
@@ -223,7 +225,7 @@ public sealed class ChessEndgameDetector
 
     private bool CanPawnAttack(GameState state, Piece pawn, Tile from, Tile targetSquare)
     {
-        var isWhite = ChessPiece.IsWhite(state, pawn.Id);
+        var isWhite = ChessPiece.IsWhite(_game, pawn.Id);
         var diagonalDirections = isWhite
             ? new[] { Constants.Directions.NorthEast, Constants.Directions.NorthWest }
             : new[] { Constants.Directions.SouthEast, Constants.Directions.SouthWest };
@@ -231,7 +233,7 @@ public sealed class ChessEndgameDetector
         foreach (var diagDir in diagonalDirections)
         {
             var diagonal = GetRelatedTile(from, diagDir);
-            
+
             if (diagonal != null && diagonal.Equals(targetSquare))
             {
                 return true;
@@ -258,10 +260,12 @@ public sealed class ChessEndgameDetector
         foreach (var (first, second, third) in knightOffsets)
         {
             var intermediate1 = GetRelatedTile(from, first);
-            if (intermediate1 == null) continue;
+            if (intermediate1 == null)
+                continue;
 
             var intermediate2 = GetRelatedTile(intermediate1, second);
-            if (intermediate2 == null) continue;
+            if (intermediate2 == null)
+                continue;
 
             var target = GetRelatedTile(intermediate2, third);
             if (target != null && target.Equals(targetSquare))
@@ -300,7 +304,7 @@ public sealed class ChessEndgameDetector
             while (true)
             {
                 var next = GetRelatedTile(current, direction);
-                
+
                 if (next == null)
                 {
                     break;
@@ -340,7 +344,7 @@ public sealed class ChessEndgameDetector
         foreach (var direction in directions)
         {
             var target = GetRelatedTile(from, direction);
-            
+
             if (target != null && target.Equals(targetSquare))
             {
                 return true;
@@ -356,8 +360,8 @@ public sealed class ChessEndgameDetector
 
         foreach (var pieceState in pieceStates)
         {
-            if (pieceState.Artifact.Owner?.Id == player.Id && 
-                ChessPiece.IsKing(state, pieceState.Artifact.Id) &&
+            if (pieceState.Artifact.Owner?.Id == player.Id &&
+                ChessPiece.IsKing(_game, pieceState.Artifact.Id) &&
                 !state.IsCaptured(pieceState.Artifact))
             {
                 return pieceState.Artifact;

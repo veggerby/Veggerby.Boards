@@ -40,7 +40,7 @@ public class GoCaptureTests
         // assert
         var afterState = progress.State;
         afterState.IsCaptured(blackStone1).Should().BeTrue("black stone should be captured when surrounded");
-        
+
         var piecesOnCenter = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-5-5")!);
         piecesOnCenter.Should().BeEmpty("captured stone should be removed from board");
     }
@@ -83,7 +83,7 @@ public class GoCaptureTests
         var afterState = progress.State;
         afterState.IsCaptured(blackStone1).Should().BeTrue("first black stone should be captured");
         afterState.IsCaptured(blackStone2).Should().BeTrue("second black stone should be captured");
-        
+
         var piecesOnTile55 = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-5-5")!);
         var piecesOnTile56 = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-5-6")!);
         piecesOnTile55.Should().BeEmpty("first captured stone should be removed");
@@ -116,10 +116,10 @@ public class GoCaptureTests
         // assert
         var afterState = progress.State;
         var afterPieces = afterState.GetStates<PieceState>().Count();
-        
+
         afterPieces.Should().Be(beforePieces, "suicide move should be rejected, no new stones added");
         afterState.IsCaptured(blackStone1).Should().BeFalse("stone should not be placed or captured");
-        
+
         var piecesOnCorner = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-1-1")!);
         piecesOnCorner.Should().BeEmpty("suicide move should not place stone");
     }
@@ -154,10 +154,10 @@ public class GoCaptureTests
         var afterState = progress.State;
         afterState.IsCaptured(whiteStone1).Should().BeTrue("white stone should be captured");
         afterState.IsCaptured(blackStone3).Should().BeFalse("black stone should be placed successfully");
-        
+
         var piecesOnWhiteTile = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-1-1")!);
         piecesOnWhiteTile.Should().BeEmpty("captured white stone should be removed");
-        
+
         var piecesOnBlackTile = afterState.GetPiecesOnTile(progress.Game.GetTile("tile-2-1")!);
         piecesOnBlackTile.Should().ContainSingle().Which.Should().Be(blackStone3, "black stone should be placed");
     }
@@ -202,12 +202,12 @@ public class GoCaptureTests
         afterState.IsCaptured(whiteStone1).Should().BeTrue("white stone 1 should be captured");
         afterState.IsCaptured(whiteStone2).Should().BeTrue("white stone 2 should be captured");
         afterState.IsCaptured(blackStone6).Should().BeFalse("capturing black stone should be placed");
-        
+
         // Ko should not be set (multiple stones captured)
         var extras = afterState.GetExtras<GoStateExtras>();
         extras.Should().NotBeNull();
         extras!.KoTileId.Should().BeNull("ko should not be set when capturing multiple stones (this distinguishes snapback from ko)");
-        
+
         // Verify white could immediately place at one of the captured positions (no ko restriction)
         var whiteStone3 = progress.Game.GetPiece("white-stone-3")!;
         progress = progress.HandleEvent(new PlaceStoneGameEvent(whiteStone3, progress.Game.GetTile("tile-5-5")!));

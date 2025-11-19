@@ -33,26 +33,20 @@ public class BackgammonGameBuilder : GameBuilder
         AddDirection("clockwise");
         AddDirection("counterclockwise");
 
-        for (int i = 1; i <= 24; i++)
+        // Create the 24-point board as a ring-like structure
+        AddRingTiles(24, i => $"point-{i + 1}", (tile, position) =>
         {
-            var tile = AddTile($"point-{i}");
-
-            if (i > 1)
+            // Connect to adjacent points
+            if (position > 0) // points 2-24 connect backward
             {
-                // black movement direction
-                tile
-                    .WithRelationTo($"point-{i - 1}")
-                    .InDirection("counterclockwise");
+                tile.WithRelationTo($"point-{position}").InDirection("counterclockwise");
             }
 
-            if (i < 24)
+            if (position < 23) // points 1-23 connect forward
             {
-                // white movement direction
-                tile
-                    .WithRelationTo($"point-{i + 1}")
-                    .InDirection("clockwise");
+                tile.WithRelationTo($"point-{position + 2}").InDirection("clockwise");
             }
-        }
+        });
 
         AddTile("bar")
             .WithRelationTo("point-1").InDirection("clockwise").Done() // white off the bar
@@ -64,12 +58,17 @@ public class BackgammonGameBuilder : GameBuilder
         AddTile("home-black")
             .WithRelationFrom("point-1").InDirection("counterclockwise"); // black move home
 
-
-        for (int i = 1; i <= 15; i++)
+        // Create white pieces
+        AddMultiplePieces(15, i => $"white-{i + 1}", (piece, _) =>
         {
-            AddPiece($"white-{i}").WithOwner("white").HasDirection("clockwise").CanRepeat();
-            AddPiece($"black-{i}").WithOwner("black").HasDirection("counterclockwise").CanRepeat();
-        }
+            piece.WithOwner("white").HasDirection("clockwise").CanRepeat();
+        });
+
+        // Create black pieces
+        AddMultiplePieces(15, i => $"black-{i + 1}", (piece, _) =>
+        {
+            piece.WithOwner("black").HasDirection("counterclockwise").CanRepeat();
+        });
 
         AddDice("dice-1").HasNoValue();
         AddDice("dice-2").HasNoValue();

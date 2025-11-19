@@ -407,7 +407,7 @@ public sealed class ChessNomenclature : IGameNomenclature
         // Find opposing king
         var moverOwner = moveEvent.Piece.Owner;
         var opponentKingState = state.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(state, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
+            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(game, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
 
         if (opponentKingState is null)
         {
@@ -457,7 +457,7 @@ public sealed class ChessNomenclature : IGameNomenclature
             // Simulate the move to get the resulting state
             var destination = moveEvent.Path.To;
             var movedPiece = moveEvent.Piece;
-            
+
             // Create a simplified post-move state
             var updatedStates = state.GetStates<States.PieceState>()
                 .Where(ps => ps.Artifact != movedPiece && ps.CurrentTile != destination)
@@ -465,12 +465,12 @@ public sealed class ChessNomenclature : IGameNomenclature
                 .ToList();
 
             updatedStates.Add(new States.PieceState(movedPiece, destination));
-            
+
             // Switch active player for the resulting state
             var currentActivePlayer = movedPiece.Owner;
             var players = game.Players.ToList();
             var opponentPlayer = players.FirstOrDefault(p => p.Id != currentActivePlayer?.Id);
-            
+
             if (opponentPlayer != null)
             {
                 // Update active player states
@@ -479,9 +479,9 @@ public sealed class ChessNomenclature : IGameNomenclature
                     updatedStates.Add(new States.ActivePlayerState(player, player.Id == opponentPlayer.Id));
                 }
             }
-            
+
             var postState = States.GameState.New(updatedStates);
-            
+
             // Use the endgame detector to check for checkmate
             var detector = new ChessEndgameDetector(game);
             return detector.IsCheckmate(postState);

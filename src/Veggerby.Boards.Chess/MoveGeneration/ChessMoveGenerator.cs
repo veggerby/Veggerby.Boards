@@ -83,27 +83,27 @@ public sealed class ChessMoveGenerator
             return;
         }
 
-        if (ChessPiece.IsPawn(state, piece.Id))
+        if (ChessPiece.IsPawn(_game, piece.Id))
         {
             GeneratePawnMoves(state, pieceState, moves);
         }
-        else if (ChessPiece.IsKnight(state, piece.Id))
+        else if (ChessPiece.IsKnight(_game, piece.Id))
         {
             GenerateKnightMoves(state, pieceState, moves);
         }
-        else if (ChessPiece.IsBishop(state, piece.Id))
+        else if (ChessPiece.IsBishop(_game, piece.Id))
         {
             GenerateSlidingMoves(state, pieceState, moves, diagonal: true, orthogonal: false);
         }
-        else if (ChessPiece.IsRook(state, piece.Id))
+        else if (ChessPiece.IsRook(_game, piece.Id))
         {
             GenerateSlidingMoves(state, pieceState, moves, diagonal: false, orthogonal: true);
         }
-        else if (ChessPiece.IsQueen(state, piece.Id))
+        else if (ChessPiece.IsQueen(_game, piece.Id))
         {
             GenerateSlidingMoves(state, pieceState, moves, diagonal: true, orthogonal: true);
         }
-        else if (ChessPiece.IsKing(state, piece.Id))
+        else if (ChessPiece.IsKing(_game, piece.Id))
         {
             GenerateKingMoves(state, pieceState, moves);
         }
@@ -119,7 +119,7 @@ public sealed class ChessMoveGenerator
             return;
         }
 
-        var isWhite = ChessPiece.IsWhite(state, piece.Id);
+        var isWhite = ChessPiece.IsWhite(_game, piece.Id);
         var forwardDirection = isWhite ? Constants.Directions.North : Constants.Directions.South;
         var forward = GetRelatedTile(from, forwardDirection);
 
@@ -339,7 +339,7 @@ public sealed class ChessMoveGenerator
             return;
         }
 
-        var isWhite = ChessPiece.IsWhite(state, piece.Id);
+        var isWhite = ChessPiece.IsWhite(_game, piece.Id);
         var extras = state.GetExtras<ChessStateExtras>();
 
         if (extras is null)

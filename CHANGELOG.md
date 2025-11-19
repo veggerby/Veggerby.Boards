@@ -8,6 +8,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Fluent API Improvements**:
+  - **Lambda-Based Builder API**: New `DefineRules()` method with scoped sub-builders for improved ergonomics
+    - `IPhaseRuleBuilder` for phase-level event handler registration
+    - `IEventRuleBuilder<T>` for event-level condition configuration
+    - `IEventConditionBuilder<T>` for chaining conditions with AND/OR logic
+    - `IMutatorBuilder<T>` for scoped mutator application
+    - Better visual hierarchy through lambda scoping
+    - Easier extraction of rule groups into testable helper methods
+    - Smaller IntelliSense context for improved discoverability
+  - **ConditionGroup Abstraction**: Reusable condition patterns to reduce duplication
+    - `ConditionGroup<TEvent>` with fluent `.Require<T>()` API
+    - `.With(ConditionGroup)` method for applying predefined condition sets
+    - `ChessConditions` helper class with 6 common chess patterns
+  - **Integrated Board Building Methods**: Fluent instance methods in GameBuilder
+    - `AddGridTiles(width, height, factory, configure)` - Create 2D grid boards
+    - `AddRingTiles(count, factory, configure)` - Create circular track/ring boards
+    - `AddMultiplePieces(count, factory, configure)` - Bulk piece creation
+    - `NextInRing(position, size)` and `PreviousInRing(position, size)` - Ring navigation helpers
+    - Integrated directly into GameBuilder (no separate static helper classes)
+    - All methods return GameBuilder for fluent chaining
+  - **EndGame Detection Extensions**: Simplified endgame configuration
+    - `WithEndGame()` fluent wrapper for endgame detection
+    - Cleaner syntax consistent with new API naming conventions
+  - **Module Migrations**: Existing game modules refactored to new API
+    - **Backgammon**: Migrated to use `AddRingTiles` and `AddMultiplePieces` (44% code reduction)
+    - **Chess**: Migrated to use `AddGridTiles` and `AddMultiplePieces` (cleaner, more readable)
+    - All module tests passing with zero regressions
+  - **Example Game Builder**: Complete working example (`SimpleRaceGameBuilderExample`)
+    - Demonstrates AddRingTiles for circular board patterns
+    - Shows DefineRules with lambda scoping
+    - Includes reusable condition groups
+    - Illustrates helper method extraction pattern
+  - **Chess Fluent Demo**: `ChessGameBuilderFluentDemo` demonstrating:
+    - 7 isolated helper methods for different rule types
+    - 40% reduction in repetitive code using condition groups
+    - Side-by-side comparison with traditional API
+  - **Comprehensive Testing**: 8 new unit tests validating builder mechanics
+  - **Backward Compatible**: Existing `Then()` API remains fully functional
+
 - **Documentation Improvements**:
   - **Comprehensive GameBuilder Guide** (`docs/gamebuilder-guide.md`): Step-by-step guide for creating new game modules covering:
     - Complete API surface documentation

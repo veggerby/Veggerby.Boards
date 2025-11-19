@@ -40,7 +40,7 @@ public class ChessEndgameDetectorTests
         // arrange
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
-        
+
         // Scholar's mate: 1. e4 e5 2. Qh5 Nc6 3. Bc4 Nf6?? 4. Qxf7#
         progress = progress.Move(WhitePawn5, "e4");
         progress = progress.Move(BlackPawn5, "e5");
@@ -49,7 +49,7 @@ public class ChessEndgameDetectorTests
         progress = progress.Move(WhiteBishop2, "c4");
         progress = progress.Move(BlackKnight2, "f6");
         progress = progress.Move(WhiteQueen, "f7"); // Checkmate!
-        
+
         var game = progress.Game;
         var state = progress.State;
         var detector = new ChessEndgameDetector(game);

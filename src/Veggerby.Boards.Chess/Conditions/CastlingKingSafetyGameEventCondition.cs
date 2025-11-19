@@ -34,8 +34,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         ArgumentNullException.ThrowIfNull(state, nameof(state));
         ArgumentNullException.ThrowIfNull(@event, nameof(@event));
 
-        var rolesExtras = state.GetExtras<ChessPieceRolesExtras>();
-        if (!ChessPiece.IsKing(state, @event.Piece.Id))
+        if (!ChessPiece.IsKing(engine.Game, @event.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a king");
         }
@@ -77,18 +76,18 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
             }
             var id = ps.Artifact.Id;
             // Skip pieces whose role can't be resolved or isn't a sliding attacker/knight/pawn etc; rely on predicate helpers for clarity where possible.
-            if (ChessPiece.IsKing(state, id))
+            if (ChessPiece.IsKing(engine.Game, id))
             {
                 continue;
             }
             var (file, rank) = Parse(ps.CurrentTile.Id);
             // Determine role via predicates (avoid direct map usage for consistency with new style). Order common/cheap checks first.
-            bool isPawn = ChessPiece.IsPawn(state, id);
-            bool isKnight = !isPawn && ChessPiece.IsKnight(state, id);
-            bool isBishop = !isPawn && !isKnight && ChessPiece.IsBishop(state, id);
-            bool isRook = !isPawn && !isKnight && !isBishop && ChessPiece.IsRook(state, id);
-            bool isQueen = !isPawn && !isKnight && !isBishop && !isRook && ChessPiece.IsQueen(state, id);
-            bool isOppKing = !isPawn && !isKnight && !isBishop && !isRook && !isQueen && ChessPiece.IsKing(state, id);
+            bool isPawn = ChessPiece.IsPawn(engine.Game, id);
+            bool isKnight = !isPawn && ChessPiece.IsKnight(engine.Game, id);
+            bool isBishop = !isPawn && !isKnight && ChessPiece.IsBishop(engine.Game, id);
+            bool isRook = !isPawn && !isKnight && !isBishop && ChessPiece.IsRook(engine.Game, id);
+            bool isQueen = !isPawn && !isKnight && !isBishop && !isRook && ChessPiece.IsQueen(engine.Game, id);
+            bool isOppKing = !isPawn && !isKnight && !isBishop && !isRook && !isQueen && ChessPiece.IsKing(engine.Game, id);
 
             if (isPawn)
             {

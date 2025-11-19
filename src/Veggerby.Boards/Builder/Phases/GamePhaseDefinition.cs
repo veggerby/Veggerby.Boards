@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Builder.Fluent;
 using Veggerby.Boards.Builder.Rules;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -74,6 +75,23 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         return _ruleDefinitions;
     }
 
+    IGamePhaseDefinition IThenGameEventRule.DefineRules(Action<IPhaseRuleBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure, nameof(configure));
+
+        // Initialize rule definitions if not already done
+        if (_ruleDefinitions is null)
+        {
+            _ruleDefinitions = new GameEventRuleDefinitions(Builder, this);
+        }
+
+        // Create the scoped phase rule builder and let the lambda configure it
+        var phaseBuilder = new PhaseRuleBuilder(Builder, this, _ruleDefinitions);
+        configure(phaseBuilder);
+
+        return this;
+    }
+
     internal GamePhase Build(int number, Game game, CompositeGamePhase? parent = null)
     {
         if (_conditionDefinition is null || _ruleDefinitions is null)
@@ -84,10 +102,10 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         var condition = _conditionDefinition.Build(game);
         var rule = _ruleDefinitions.Build(game);
         var preprocessors = _preProcessorDefinitions.Select(x => x.Build(game)).ToList();
-        
+
         var endGameCondition = _endGameConditionFactory?.Invoke(game);
         var endGameMutator = _endGameMutatorFactory?.Invoke(game);
-        
+
         return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors, _exclusivityGroup, endGameCondition, endGameMutator);
     }
 }

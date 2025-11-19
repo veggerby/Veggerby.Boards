@@ -52,12 +52,18 @@ public sealed class BackgammonOutcomeState : IArtifactState, IGameOutcome
     /// <summary>
     /// Gets the player who won.
     /// </summary>
-    public Player Winner { get; }
+    public Player Winner
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the type of victory (Normal, Gammon, or Backgammon).
     /// </summary>
-    public BackgammonVictoryType VictoryType { get; }
+    public BackgammonVictoryType VictoryType
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the points awarded for this victory (1, 2, or 3).

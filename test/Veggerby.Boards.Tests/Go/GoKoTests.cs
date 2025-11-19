@@ -57,10 +57,10 @@ public class GoKoTests
         // assert - Ko rule should reject the move
         var afterKoAttempt = progress.State;
         var piecesAfterKoAttempt = afterKoAttempt.GetStates<PieceState>().Count();
-        
+
         piecesAfterKoAttempt.Should().Be(piecesBeforeKoAttempt, "ko recapture should be rejected");
         afterKoAttempt.IsCaptured(whiteStone4).Should().BeFalse("white stone should not be placed");
-        
+
         var piecesOnKoTile = afterKoAttempt.GetPiecesOnTile(progress.Game.GetTile("tile-5-5")!);
         piecesOnKoTile.Should().BeEmpty("ko recapture should not place stone");
     }
@@ -101,7 +101,7 @@ public class GoKoTests
 
         var afterFirstCapture = progress.State;
         afterFirstCapture.IsCaptured(whiteStone1).Should().BeTrue("white stone should be captured");
-        
+
         var extras = afterFirstCapture.GetExtras<GoStateExtras>()!;
         extras.KoTileId.Should().Be("tile-5-5", "ko should be set");
 
@@ -124,10 +124,10 @@ public class GoKoTests
 
         // assert - Recapture should succeed (ko cleared) and capture black stone 4
         var afterRecapture = progress.State;
-        
+
         afterRecapture.IsCaptured(blackStone4).Should().BeTrue("black stone 4 should be captured by recapture");
         afterRecapture.IsCaptured(whiteStone7).Should().BeFalse("white stone 7 should be placed successfully");
-        
+
         var piecesOnRecaptureTile = afterRecapture.GetPiecesOnTile(progress.Game.GetTile("tile-5-5")!);
         piecesOnRecaptureTile.Should().ContainSingle().Which.Should().Be(whiteStone7, "white stone 7 at former ko position after recapture");
     }

@@ -29,22 +29,34 @@ public sealed class GoOutcomeState : IArtifactState, IGameOutcome
     /// <summary>
     /// Gets the territory scores for each player (empty intersections controlled).
     /// </summary>
-    public IReadOnlyDictionary<Player, int> TerritoryScores { get; }
+    public IReadOnlyDictionary<Player, int> TerritoryScores
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the stone counts for each player (stones on the board).
     /// </summary>
-    public IReadOnlyDictionary<Player, int> StoneCounts { get; }
+    public IReadOnlyDictionary<Player, int> StoneCounts
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the total area scores for each player (territory + stones).
     /// </summary>
-    public IReadOnlyDictionary<Player, int> TotalScores { get; }
+    public IReadOnlyDictionary<Player, int> TotalScores
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the player who won (null if tie).
     /// </summary>
-    public Player? Winner { get; }
+    public Player? Winner
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GoOutcomeState"/> class.

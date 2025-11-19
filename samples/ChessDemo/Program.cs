@@ -50,7 +50,7 @@ foreach (var san in immortalGame)
         // Check game status using NEW unified API
         var isGameOver = progress.IsGameOver();
         var outcome = progress.GetOutcome();
-        
+
         // Also check using old detector for comparison (during transition)
         var gameStatus = endgameDetector.GetEndgameStatus(progress.State);
         var statusText = gameStatus switch

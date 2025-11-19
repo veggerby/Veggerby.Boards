@@ -1,6 +1,7 @@
 using System;
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Builder.Fluent;
 using Veggerby.Boards.Builder.Rules;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -16,7 +17,28 @@ public interface IThenGameEventRule
     /// <summary>
     /// Transition to event rule definition configuration.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the traditional API. For new code, consider using <see cref="DefineRules"/> which
+    /// provides better visual hierarchy through lambda scoping and enables easier extraction
+    /// of rule groups into helper methods.
+    /// </para>
+    /// <para>
+    /// This method will be deprecated in a future version in favor of DefineRules().
+    /// </para>
+    /// </remarks>
     IGameEventRuleDefinitionsWithOption Then();
+
+    /// <summary>
+    /// Configures event handlers and rules using a scoped lambda-based fluent API.
+    /// </summary>
+    /// <param name="configure">Lambda that configures event handlers within a scoped builder.</param>
+    /// <returns>The phase definition for further configuration.</returns>
+    /// <remarks>
+    /// This new API provides better visual hierarchy through lambda scoping and enables
+    /// easier extraction of rule groups into helper methods. Prefer this over Then() for new code.
+    /// </remarks>
+    IGamePhaseDefinition DefineRules(Action<IPhaseRuleBuilder> configure);
 }
 
 /// <summary>

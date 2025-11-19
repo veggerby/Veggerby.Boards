@@ -26,7 +26,7 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
         ArgumentNullException.ThrowIfNull(state, nameof(state));
         ArgumentNullException.ThrowIfNull(moveEvent, nameof(moveEvent));
 
-        if (!ChessPiece.IsPawn(state, moveEvent.Piece.Id))
+        if (!ChessPiece.IsPawn(engine.Game, moveEvent.Piece.Id))
         {
             return ConditionResponse.Ignore("Not a pawn");
         }
@@ -37,7 +37,7 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
         }
 
         var dir = moveEvent.Path.Directions.Single();
-        var isWhite = ChessPiece.IsWhite(state, moveEvent.Piece.Id);
+        var isWhite = ChessPiece.IsWhite(engine.Game, moveEvent.Piece.Id);
         if (isWhite)
         {
             if (dir.Id is Constants.Directions.NorthEast or Constants.Directions.NorthWest)

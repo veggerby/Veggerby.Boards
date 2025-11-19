@@ -1,29 +1,29 @@
-using System.Collections.Generic;
 using System.Linq;
 
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Chess;
 
 namespace Veggerby.Boards.Tests.Chess.Support;
 
 /// <summary>
-/// Helper to assert that all pieces added in a scenario builder have matching role & color metadata entries.
-/// Fail-fast to surface drift when adding new custom piece ids without updating metadata dictionaries.
+/// Helper to assert that all pieces added in a scenario builder have ChessPieceMetadata attached.
+/// Fail-fast to surface drift when adding new custom piece ids without metadata.
 /// </summary>
 internal static class MetadataCoverageGuard
 {
-    public static void AssertAllPiecesCovered(GameBuilder builder, IDictionary<string, ChessPieceRole> roles, IDictionary<string, ChessPieceColor> colors)
+    public static void AssertAllPiecesCovered(GameBuilder builder)
     {
-        // Collect piece ids added so far from builder (artifacts list public via reflection not exposed; rely on dictionaries passed for now)
-        // Approach: union of role/color keys must match each dictionary independently; find any asymmetry.
-        var roleKeys = roles.Keys.ToHashSet();
-        var colorKeys = colors.Keys.ToHashSet();
-        if (!roleKeys.SetEquals(colorKeys))
+        var compiled = builder.Compile();
+        var piecesWithoutMetadata = compiled.Game.Artifacts
+            .OfType<Piece>()
+            .Where(p => p.Metadata is not ChessPieceMetadata)
+            .Select(p => p.Id)
+            .ToArray();
+
+        if (piecesWithoutMetadata.Any())
         {
-            var missingRole = colorKeys.Except(roleKeys).ToArray();
-            var missingColor = roleKeys.Except(colorKeys).ToArray();
-            var message = $"Metadata coverage mismatch. Missing role for: [{string.Join(',', missingRole)}]; Missing color for: [{string.Join(',', missingColor)}]";
+            var message = $"Pieces missing ChessPieceMetadata: [{string.Join(", ", piecesWithoutMetadata)}]";
             throw new System.InvalidOperationException(message);
         }
-        // No-op if aligned.
     }
 }

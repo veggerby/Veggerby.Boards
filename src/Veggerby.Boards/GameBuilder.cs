@@ -159,7 +159,7 @@ public abstract class GameBuilder
             compiled.Add(CreatePattern(pd, directions));
         }
 
-        return new Piece(piece.PieceId, player, compiled);
+        return new Piece(piece.PieceId, player, compiled, piece.Metadata);
     }
 
     private static IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)
@@ -444,6 +444,136 @@ public abstract class GameBuilder
         _gamePhaseDefinitions.Add(gamePhase);
 
         return gamePhase;
+    }
+
+    /// <summary>
+    /// Adds multiple tiles in a grid pattern with automatic ID generation.
+    /// </summary>
+    /// <param name="width">Width of the grid (columns).</param>
+    /// <param name="height">Height of the grid (rows).</param>
+    /// <param name="tileIdFactory">Function to generate tile IDs from (x, y) coordinates.</param>
+    /// <param name="configureTile">Optional action to configure each tile with its coordinates.</param>
+    /// <returns>This builder for fluent chaining.</returns>
+    protected GameBuilder AddGridTiles(
+        int width,
+        int height,
+        Func<int, int, string> tileIdFactory,
+        Action<TileDefinition, int, int>? configureTile = null)
+    {
+        ArgumentNullException.ThrowIfNull(tileIdFactory, nameof(tileIdFactory));
+
+        if (width <= 0)
+        {
+            throw new ArgumentException("Width must be positive", nameof(width));
+        }
+
+        if (height <= 0)
+        {
+            throw new ArgumentException("Height must be positive", nameof(height));
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var tileId = tileIdFactory(x, y);
+                var tile = AddTile(tileId);
+                configureTile?.Invoke(tile, x, y);
+            }
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Adds multiple tiles in a ring pattern with automatic ID generation.
+    /// </summary>
+    /// <param name="count">Number of tiles in the ring.</param>
+    /// <param name="tileIdFactory">Function to generate tile IDs from position (0 to count-1).</param>
+    /// <param name="configureTile">Optional action to configure each tile with its position.</param>
+    /// <returns>This builder for fluent chaining.</returns>
+    protected GameBuilder AddRingTiles(
+        int count,
+        Func<int, string> tileIdFactory,
+        Action<TileDefinition, int>? configureTile = null)
+    {
+        ArgumentNullException.ThrowIfNull(tileIdFactory, nameof(tileIdFactory));
+
+        if (count <= 0)
+        {
+            throw new ArgumentException("Count must be positive", nameof(count));
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            var tileId = tileIdFactory(i);
+            var tile = AddTile(tileId);
+            configureTile?.Invoke(tile, i);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Adds multiple pieces with automatic ID generation.
+    /// </summary>
+    /// <param name="count">Number of pieces to create.</param>
+    /// <param name="pieceIdFactory">Function to generate piece IDs from index (0 to count-1).</param>
+    /// <param name="configurePiece">Action to configure each piece with its index.</param>
+    /// <returns>This builder for fluent chaining.</returns>
+    protected GameBuilder AddMultiplePieces(
+        int count,
+        Func<int, string> pieceIdFactory,
+        Action<PieceDefinition, int> configurePiece)
+    {
+        ArgumentNullException.ThrowIfNull(pieceIdFactory, nameof(pieceIdFactory));
+        ArgumentNullException.ThrowIfNull(configurePiece, nameof(configurePiece));
+
+        if (count <= 0)
+        {
+            throw new ArgumentException("Count must be positive", nameof(count));
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            var pieceId = pieceIdFactory(i);
+            var piece = AddPiece(pieceId);
+            configurePiece(piece, i);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Calculates the next position in a ring (wrapping around).
+    /// </summary>
+    /// <param name="current">Current position.</param>
+    /// <param name="ringSize">Total size of the ring.</param>
+    /// <returns>Next position (wraps to 0 if at end).</returns>
+    protected static int NextInRing(int current, int ringSize)
+    {
+        if (ringSize <= 0)
+        {
+            throw new ArgumentException("Ring size must be positive", nameof(ringSize));
+        }
+
+        return (current + 1) % ringSize;
+    }
+
+    /// <summary>
+    /// Calculates the previous position in a ring (wrapping around).
+    /// </summary>
+    /// <param name="current">Current position.</param>
+    /// <param name="ringSize">Total size of the ring.</param>
+    /// <returns>Previous position (wraps to ringSize-1 if at start).</returns>
+    protected static int PreviousInRing(int current, int ringSize)
+    {
+        if (ringSize <= 0)
+        {
+            throw new ArgumentException("Ring size must be positive", nameof(ringSize));
+        }
+
+        return (current - 1 + ringSize) % ringSize;
     }
 
     /// <summary>

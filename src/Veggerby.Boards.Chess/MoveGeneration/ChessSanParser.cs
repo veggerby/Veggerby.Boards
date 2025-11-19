@@ -107,7 +107,7 @@ public static class ChessSanParser
 
         // Find matching moves
         var candidates = legalMoves.Where(m =>
-            ChessPiece.IsRole(state, m.Piece.Id, role) &&
+            ChessPiece.IsRole(game, m.Piece.Id, role) &&
             m.To.Id == $"tile-{destSquare}" &&
             m.IsCapture == isCapture).ToList();
 

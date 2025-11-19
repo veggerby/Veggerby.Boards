@@ -4,6 +4,7 @@ using System.Linq;
 
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Builder.Fluent;
 using Veggerby.Boards.Builder.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
@@ -90,5 +91,10 @@ internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenG
     IGameEventRuleDefinitionsWithOption IThenGameEventRule.Then()
     {
         return Parent.Then();
+    }
+
+    IGamePhaseDefinition IThenGameEventRule.DefineRules(Action<IPhaseRuleBuilder> configure)
+    {
+        return Parent.DefineRules(configure);
     }
 }

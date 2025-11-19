@@ -159,7 +159,7 @@ public abstract class GameBuilder
             compiled.Add(CreatePattern(pd, directions));
         }
 
-        return new Piece(piece.PieceId, player, compiled);
+        return new Piece(piece.PieceId, player, compiled, piece.Metadata);
     }
 
     private static IPattern CreatePattern(PieceDirectionPatternDefinition piece, IEnumerable<Direction> directions)

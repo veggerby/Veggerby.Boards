@@ -33,7 +33,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             return gameState; // invalid target id pattern; defensive no-op
         }
 
-        var moverIsWhite = ChessPiece.IsWhite(gameState, @event.Piece.Id);
+        var moverIsWhite = ChessPiece.IsWhite(engine.Game, @event.Piece.Id);
         // White moves north; victim is the pawn that advanced two squares and sits one rank south of the target.
         var victimRank = moverIsWhite ? rank - 1 : rank + 1;
 
@@ -46,7 +46,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
         var victimTile = engine.Game.Board.GetTile(victimTileId);
         var victimPiece = victimTile is null ? null : gameState
             .GetPiecesOnTile(victimTile)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(gameState, p.Id));
+            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner) && ChessPiece.IsPawn(engine.Game, p.Id));
 
         if (victimPiece is null)
         {
@@ -64,7 +64,7 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
         string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
-            : (ChessPiece.IsWhite(gameState, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
+            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
         var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
         var newExtras = prevExtras with
         {

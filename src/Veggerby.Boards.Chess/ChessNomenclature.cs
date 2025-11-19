@@ -407,7 +407,7 @@ public sealed class ChessNomenclature : IGameNomenclature
         // Find opposing king
         var moverOwner = moveEvent.Piece.Owner;
         var opponentKingState = state.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(state, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
+            .FirstOrDefault(ps => ps.Artifact.Owner != moverOwner && (ChessPiece.IsKing(game, ps.Artifact.Id) || ps.Artifact.Id.Contains("-king")));
 
         if (opponentKingState is null)
         {

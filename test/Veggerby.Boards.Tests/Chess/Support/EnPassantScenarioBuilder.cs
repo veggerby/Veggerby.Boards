@@ -65,6 +65,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         // Structural pawn patterns (white north, black south)
         AddPiece("white-pawn-test")
             .WithOwner(ChessIds.Players.White)
+            .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.White))
             .HasDirection(Constants.Directions.North).Done()
             .HasPattern(Constants.Directions.North)
             .HasPattern(Constants.Directions.North, Constants.Directions.North)
@@ -73,6 +74,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
 
         AddPiece("black-pawn-test")
             .WithOwner(ChessIds.Players.Black)
+            .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.Black))
             .HasDirection(Constants.Directions.South).Done()
             .HasPattern(Constants.Directions.South)
             .HasPattern(Constants.Directions.South, Constants.Directions.South)
@@ -83,6 +85,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         {
             AddPiece("black-pawn-aux")
                 .WithOwner(ChessIds.Players.Black)
+                .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.Black))
                 .HasDirection(Constants.Directions.South).Done()
                 .HasPattern(Constants.Directions.South)
                 .HasPattern(Constants.Directions.South, Constants.Directions.South)
@@ -100,35 +103,6 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
 
         // Chess extras baseline
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
-
-        // Role metadata for test pieces
-        var roles = new System.Collections.Generic.Dictionary<string, ChessPieceRole>
-        {
-            { "white-pawn-test", ChessPieceRole.Pawn },
-            { "black-pawn-test", ChessPieceRole.Pawn }
-        };
-
-        if (_includeAuxiliaryBlackPawn)
-        {
-            roles.Add("black-pawn-aux", ChessPieceRole.Pawn);
-        }
-
-        WithState(new ChessPieceRolesExtras(roles));
-
-        // Color metadata for test pieces
-        var colors = new System.Collections.Generic.Dictionary<string, ChessPieceColor>
-        {
-            { "white-pawn-test", ChessPieceColor.White },
-            { "black-pawn-test", ChessPieceColor.Black }
-        };
-        if (_includeAuxiliaryBlackPawn)
-        {
-            colors.Add("black-pawn-aux", ChessPieceColor.Black);
-        }
-        WithState(new ChessPieceColorsExtras(colors));
-
-        // Guard: ensure every added piece has both role and color metadata (defensive for future edits)
-        MetadataCoverageGuard.AssertAllPiecesCovered(this, roles, colors);
 
         // Active player projection now explicit via WithActivePlayer declarations above.
 

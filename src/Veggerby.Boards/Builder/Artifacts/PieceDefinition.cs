@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Veggerby.Boards.Artifacts;
+
 namespace Veggerby.Boards.Builder.Artifacts;
 
 /// <summary>
@@ -11,10 +13,16 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// Gets the configured piece identifier.
     /// </summary>
     public string PieceId { get; private set; } = null!; // LIFECYCLE: set by WithId() before Build()
+
     /// <summary>
     /// Gets the owner player identifier if configured.
     /// </summary>
     public string PlayerId { get; private set; } = null!; // LIFECYCLE: set by WithOwner() before Build()
+
+    /// <summary>
+    /// Gets optional piece metadata if configured.
+    /// </summary>
+    public IPieceMetadata? Metadata { get; private set; }
 
     /// <summary>
     /// Sets the piece identifier.
@@ -37,6 +45,19 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
         ArgumentNullException.ThrowIfNullOrWhiteSpace(id, nameof(id));
 
         PlayerId = id;
+        return this;
+    }
+
+    /// <summary>
+    /// Attaches game-specific metadata to the piece.
+    /// </summary>
+    /// <param name="metadata">The metadata to attach.</param>
+    /// <returns>This definition for fluent chaining.</returns>
+    public PieceDefinition WithMetadata(IPieceMetadata metadata)
+    {
+        ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
+
+        Metadata = metadata;
         return this;
     }
 

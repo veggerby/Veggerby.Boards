@@ -117,7 +117,7 @@ public sealed class ChessLegalityFilter
             if (move.Kind == PseudoMoveKind.EnPassant)
             {
                 // The captured pawn is on the same rank as the moving pawn, not on the destination square
-                var isWhite = ChessPiece.IsWhite(state, move.Piece.Id);
+                var isWhite = ChessPiece.IsWhite(_game, move.Piece.Id);
                 var captureDirection = isWhite ? Constants.Directions.South : Constants.Directions.North;
                 var capturedPawnTile = GetRelatedTile(move.To, captureDirection);
 
@@ -142,7 +142,7 @@ public sealed class ChessLegalityFilter
 
                 if (rookOrigin != null && rookTarget != null)
                 {
-                    var rooks = state.GetPiecesOnTile(rookOrigin).Where(p => ChessPiece.IsRook(state, p.Id));
+                    var rooks = state.GetPiecesOnTile(rookOrigin).Where(p => ChessPiece.IsRook(_game, p.Id));
 
                     foreach (var rook in rooks)
                     {
@@ -190,7 +190,7 @@ public sealed class ChessLegalityFilter
         foreach (var pieceState in pieceStates)
         {
             if (pieceState.Artifact.Owner?.Id == player.Id &&
-                ChessPiece.IsKing(state, pieceState.Artifact.Id) &&
+                ChessPiece.IsKing(_game, pieceState.Artifact.Id) &&
                 !state.IsCaptured(pieceState.Artifact))
             {
                 return pieceState.Artifact;
@@ -237,27 +237,27 @@ public sealed class ChessLegalityFilter
             return false;
         }
 
-        if (ChessPiece.IsPawn(state, piece.Id))
+        if (ChessPiece.IsPawn(_game, piece.Id))
         {
             return CanPawnAttackSquare(state, piece, from, targetSquare);
         }
-        else if (ChessPiece.IsKnight(state, piece.Id))
+        else if (ChessPiece.IsKnight(_game, piece.Id))
         {
             return CanKnightAttackSquare(from, targetSquare);
         }
-        else if (ChessPiece.IsBishop(state, piece.Id))
+        else if (ChessPiece.IsBishop(_game, piece.Id))
         {
             return CanSlidingPieceAttackSquare(state, from, targetSquare, diagonal: true, orthogonal: false);
         }
-        else if (ChessPiece.IsRook(state, piece.Id))
+        else if (ChessPiece.IsRook(_game, piece.Id))
         {
             return CanSlidingPieceAttackSquare(state, from, targetSquare, diagonal: false, orthogonal: true);
         }
-        else if (ChessPiece.IsQueen(state, piece.Id))
+        else if (ChessPiece.IsQueen(_game, piece.Id))
         {
             return CanSlidingPieceAttackSquare(state, from, targetSquare, diagonal: true, orthogonal: true);
         }
-        else if (ChessPiece.IsKing(state, piece.Id))
+        else if (ChessPiece.IsKing(_game, piece.Id))
         {
             return CanKingAttackSquare(from, targetSquare);
         }
@@ -267,7 +267,7 @@ public sealed class ChessLegalityFilter
 
     private bool CanPawnAttackSquare(GameState state, Piece pawn, Tile from, Tile targetSquare)
     {
-        var isWhite = ChessPiece.IsWhite(state, pawn.Id);
+        var isWhite = ChessPiece.IsWhite(_game, pawn.Id);
         var diagonalDirections = isWhite
             ? new[] { Constants.Directions.NorthEast, Constants.Directions.NorthWest }
             : new[] { Constants.Directions.SouthEast, Constants.Directions.SouthWest };

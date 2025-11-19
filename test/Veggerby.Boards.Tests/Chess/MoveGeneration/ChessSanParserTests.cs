@@ -29,8 +29,8 @@ public class ChessSanParserTests
         // assert
         move.Should().NotBeNull();
         move!.To.Id.Should().Be("tile-e4");
-        move.From.Id.Should().Be("tile-e2");
-        ChessPiece.IsPawn(progress.State, move.Piece.Id).Should().BeTrue();
+        move.To.Id.Should().Be("tile-e4");
+        ChessPiece.IsPawn(progress.Game, move.Piece.Id).Should().BeTrue();
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class ChessSanParserTests
         move.Should().NotBeNull();
         move!.To.Id.Should().Be("tile-f3");
         move.From.Id.Should().Be("tile-g1");
-        ChessPiece.IsKnight(progress.State, move.Piece.Id).Should().BeTrue();
+        ChessPiece.IsKnight(progress.Game, move.Piece.Id).Should().BeTrue();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class ChessSanParserTests
 
         // Check which knights can actually move to d4
         var knightMovesToD4 = legalMoves
-            .Where(m => ChessPiece.IsKnight(progress.State, m.Piece.Id) && m.To.Id == "tile-d4")
+            .Where(m => ChessPiece.IsKnight(progress.Game, m.Piece.Id) && m.To.Id == "tile-d4")
             .ToList();
 
         // If both knights can reach d4, test disambiguation

@@ -39,7 +39,7 @@ public class ChessStartingPositionMoveGenerationTests
 
         // assert
         moves.Should().OnlyContain(m =>
-            ChessPiece.IsPawn(state, m.Piece.Id) ||
-            ChessPiece.IsKnight(state, m.Piece.Id));
+            ChessPiece.IsPawn(game, m.Piece.Id) ||
+            ChessPiece.IsKnight(game, m.Piece.Id));
     }
 }

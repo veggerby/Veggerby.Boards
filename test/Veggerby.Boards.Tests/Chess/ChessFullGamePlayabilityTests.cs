@@ -128,12 +128,12 @@ public class ChessFullGamePlayabilityTests
 
         // 4. Piece identification works
         var whitePawn = game.GetPiece(WhitePawn1).EnsureNotNull();
-        ChessPiece.IsPawn(state, whitePawn.Id).Should().BeTrue("White pawn should be identified as pawn");
-        ChessPiece.IsWhite(state, whitePawn.Id).Should().BeTrue("White pawn should be identified as white");
+        ChessPiece.IsPawn(game, whitePawn.Id).Should().BeTrue("White pawn should be identified as pawn");
+        ChessPiece.IsWhite(game, whitePawn.Id).Should().BeTrue("White pawn should be identified as white");
 
         var blackKing = game.GetPiece(BlackKing).EnsureNotNull();
-        ChessPiece.IsKing(state, blackKing.Id).Should().BeTrue("Black king should be identified as king");
-        ChessPiece.IsBlack(state, blackKing.Id).Should().BeTrue("Black king should be identified as black");
+        ChessPiece.IsKing(game, blackKing.Id).Should().BeTrue("Black king should be identified as king");
+        ChessPiece.IsBlack(game, blackKing.Id).Should().BeTrue("Black king should be identified as black");
 
         // 5. Notation works
         var nomenclature = new ChessNomenclature();

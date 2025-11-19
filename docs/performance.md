@@ -2,6 +2,8 @@
 
 Performance work follows “parity first, optimization second”. Benchmarks ensure accelerations do not regress correctness or inflate allocations.
 
+📊 **Quick Reference**: See [Benchmark Summary](./performance/benchmark-summary.md) for at-a-glance performance baselines and historical tracking.
+
 ## Benchmark Categories
 
 | Benchmark | Focus |

@@ -30,11 +30,13 @@ See [GoDemo/README.md](GoDemo/README.md) for details.
 
 ### CardGameDemo
 
-Shows deck-building mechanics using the DeckBuilding module:
-- Deck initialization and shuffling
-- Drawing cards with automatic reshuffle
-- Gaining cards from supply
-- Deterministic RNG
+Shows basic card operations using the Cards module:
+- Deck initialization and deterministic shuffling
+- Drawing and discarding cards
+- Peeking at cards without state change
+- Revealing cards to players
+- Automatic reshuffle when draw pile empties
+- Deterministic RNG for reproducible gameplay
 
 **Run:** `dotnet run --project CardGameDemo`
 

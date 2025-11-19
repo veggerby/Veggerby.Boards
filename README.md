@@ -1,6 +1,6 @@
 # Veggerby.Boards
 
-Composable .NET board game engine: define boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases for turn progression. Current example modules: Backgammon & Chess.
+Composable .NET board game engine: define boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases for turn progression. Current example modules: Backgammon, Chess, Go, Cards, and DeckBuilding.
 
 ## Highlights
 

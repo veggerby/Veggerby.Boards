@@ -39,12 +39,10 @@ public sealed class CheckersEndgameCondition : IGameStateCondition
             return ConditionResponse.Ignore("No active player");
         }
 
-        // Check if active player has any pieces remaining on board
+        // Check if active player has any pieces remaining on board (not captured)
         var activePieces = _game.Artifacts
             .OfType<Piece>()
-            .Where(p => p.Owner == activePlayer)
-            .Select(p => state.GetStates<PieceState>().FirstOrDefault(ps => ps.Artifact == p))
-            .Where(ps => ps != null && ps.CurrentTile != null)
+            .Where(p => p.Owner.Id == activePlayer.Id && !state.IsCaptured(p))
             .ToList();
 
         if (activePieces.Count == 0)

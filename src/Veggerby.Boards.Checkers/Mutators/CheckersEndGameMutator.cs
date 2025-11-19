@@ -49,12 +49,10 @@ public sealed class CheckersEndGameMutator : IStateMutator<IGameEvent>
             return state;
         }
 
-        // Check if active player has any pieces remaining
+        // Check if active player has any pieces remaining on board (not captured)
         var activePieces = _game.Artifacts
             .OfType<Piece>()
-            .Where(p => p.Owner == activePlayer)
-            .Select(p => state.GetStates<PieceState>().FirstOrDefault(ps => ps.Artifact == p))
-            .Where(ps => ps != null && ps.CurrentTile != null)
+            .Where(p => p.Owner.Id == activePlayer.Id && !state.IsCaptured(p))
             .ToList();
 
         // Determine winner (opponent of active player who cannot move)

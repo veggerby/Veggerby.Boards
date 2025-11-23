@@ -63,19 +63,15 @@ CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 
 Console.WriteLine("\n=== Mid-Game - First Capture! ===\n");
 
-// Set up a capture scenario
-PlayMove("black-piece-13", "tile-17", true, "- advancing");
-PlayMove("white-piece-1", "tile-17", false, "- moving into position");
+// Set up a capture scenario similar to the working test
+PlayMove("black-piece-9", "tile-14", true, "- advancing to setup");
+PlayMove("white-piece-2", "tile-18", false, "- white in position");
 
-// Now white can capture black-piece-13 by jumping
-PlayMove("black-piece-6", "tile-10", true);
-PlayMove("white-piece-2", "tile-18", false);
+PlayMove("black-piece-10", "tile-15", true, "- second black piece");
 
-PlayMove("black-piece-7", "tile-11", true);
-
-// White captures! Jump from 21 over 17 to 13
+// Now white can jump: 18 over 14 to 10
 Console.WriteLine("\n🎯 WHITE CAPTURES BLACK PIECE!");
-PlayMove("white-piece-5", "tile-13", false, "⚡ JUMP CAPTURE! (over tile-17)");
+PlayMove("white-piece-2", "tile-10", false, "⚡ JUMP CAPTURE! (over tile-14)");
 
 Console.WriteLine("\n--- Board after capture ---");
 CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);

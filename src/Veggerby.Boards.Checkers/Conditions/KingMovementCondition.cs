@@ -50,10 +50,33 @@ public sealed class KingMovementCondition : IGameEventCondition<MovePieceGameEve
             return ConditionResponse.Valid;
         }
 
-        // Regular pieces can only move in their defined forward directions
-        // The piece's relations already define this, so if the move is being attempted,
-        // it means the engine has validated the direction through the piece's HasDirection rules
-        // This condition is mainly here to explicitly document the rule
+        // For regular pieces, check movement direction restrictions
+        // Regular pieces can only move forward (black: SE/SW, white: NE/NW)
+        // This applies to both normal moves AND capture jumps
+        if (path.Directions.Any())
+        {
+            var direction = path.Directions[0]; // First direction in the path
+            var isBlackPiece = piece.Owner.Id == CheckersIds.Players.Black;
+
+            if (isBlackPiece)
+            {
+                // Black moves south (SE or SW only) for both moves and captures
+                if (!direction.Equals(Constants.Directions.SouthEast) && 
+                    !direction.Equals(Constants.Directions.SouthWest))
+                {
+                    return ConditionResponse.Fail("Regular black pieces can only move forward (SE/SW)");
+                }
+            }
+            else
+            {
+                // White moves north (NE or NW only) for both moves and captures
+                if (!direction.Equals(Constants.Directions.NorthEast) && 
+                    !direction.Equals(Constants.Directions.NorthWest))
+                {
+                    return ConditionResponse.Fail("Regular white pieces can only move forward (NE/NW)");
+                }
+            }
+        }
 
         return ConditionResponse.Valid;
     }

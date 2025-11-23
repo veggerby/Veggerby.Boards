@@ -63,13 +63,17 @@ public class CheckersGameBuilder : GameBuilder
             piece
                 .WithOwner(CheckersIds.Players.Black)
                 .WithMetadata(new CheckersPieceMetadata(CheckersPieceRole.Regular, CheckersPieceColor.Black))
-                // Regular black pieces move forward (toward higher tile numbers = south from black's perspective)
-                // Single-step normal moves
+                // All diagonal moves defined (KingMovementCondition restricts regular pieces to forward only)
+                // Single-step normal moves (all diagonals)
                 .HasDirection(Constants.Directions.SouthEast).Done()
                 .HasDirection(Constants.Directions.SouthWest).Done()
-                // Two-step jump moves (for captures)
+                .HasDirection(Constants.Directions.NorthEast).Done()
+                .HasDirection(Constants.Directions.NorthWest).Done()
+                // Two-step jump moves (for captures - all diagonals)
                 .HasPattern(Constants.Directions.SouthEast, Constants.Directions.SouthEast)
-                .HasPattern(Constants.Directions.SouthWest, Constants.Directions.SouthWest);
+                .HasPattern(Constants.Directions.SouthWest, Constants.Directions.SouthWest)
+                .HasPattern(Constants.Directions.NorthEast, Constants.Directions.NorthEast)
+                .HasPattern(Constants.Directions.NorthWest, Constants.Directions.NorthWest);
         });
 
         // White pieces (regular pieces, can be promoted to kings)
@@ -78,13 +82,17 @@ public class CheckersGameBuilder : GameBuilder
             piece
                 .WithOwner(CheckersIds.Players.White)
                 .WithMetadata(new CheckersPieceMetadata(CheckersPieceRole.Regular, CheckersPieceColor.White))
-                // Regular white pieces move forward (toward lower tile numbers = north from white's perspective)
-                // Single-step normal moves
+                // All diagonal moves defined (KingMovementCondition restricts regular pieces to forward only)
+                // Single-step normal moves (all diagonals)
                 .HasDirection(Constants.Directions.NorthEast).Done()
                 .HasDirection(Constants.Directions.NorthWest).Done()
-                // Two-step jump moves (for captures)
+                .HasDirection(Constants.Directions.SouthEast).Done()
+                .HasDirection(Constants.Directions.SouthWest).Done()
+                // Two-step jump moves (for captures - all diagonals)
                 .HasPattern(Constants.Directions.NorthEast, Constants.Directions.NorthEast)
-                .HasPattern(Constants.Directions.NorthWest, Constants.Directions.NorthWest);
+                .HasPattern(Constants.Directions.NorthWest, Constants.Directions.NorthWest)
+                .HasPattern(Constants.Directions.SouthEast, Constants.Directions.SouthEast)
+                .HasPattern(Constants.Directions.SouthWest, Constants.Directions.SouthWest);
         });
 
         // Initial piece positions
@@ -126,6 +134,7 @@ public class CheckersGameBuilder : GameBuilder
                 // Move piece (validates mandatory capture, handles king promotion and captures)
                 .ForEvent<MovePieceGameEvent>()
                     .If<PieceIsActivePlayerGameEventCondition>()
+                        .And(game => new KingMovementCondition(game))
                         .And(game => new MandatoryCaptureCondition(game))
                         .And<DestinationIsEmptyGameEventCondition>()
                 .Then()

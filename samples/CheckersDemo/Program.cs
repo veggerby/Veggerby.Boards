@@ -47,35 +47,16 @@ Console.WriteLine($"After capture: Captured={capturedAfter} ✅\n");
 
 CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 
-Console.WriteLine("\n=== Part 2: King Promotion Demonstration ===\n");
+Console.WriteLine("\n📊 Statistics after capture:");
+var blackAfterCapture = progress.State.GetStates<PieceState>()
+    .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.Black);
+var whiteAfterCapture = progress.State.GetStates<PieceState>()
+    .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.White);
+Console.WriteLine($"  • Black pieces: {blackAfterCapture} ✅");
+Console.WriteLine($"  • White pieces: {whiteAfterCapture}");
+Console.WriteLine($"  • Captured: {capturedAfter} ✅");
 
-// Use white-piece-1 which starts on tile-21
-// Path: 21 → 17 → 13 → 9 → 5 → 1 (promotion!)
-
-progress = progress.Move("black-piece-8", "tile-12"); 
-Console.WriteLine("3. black-piece-8 → tile-12 (clearing)");
-
-progress = progress.Move("white-piece-1", "tile-17");
-Console.WriteLine("3... white-piece-1 → tile-17");
-
-progress = progress.Move("black-piece-1", "tile-5"); // Move black-1 away from tile-1
-Console.WriteLine("4. black-piece-1 → tile-5");
-
-progress = progress.Move("white-piece-1", "tile-13");
-Console.WriteLine("4... white-piece-1 → tile-13");
-
-progress = progress.Move("black-piece-5", "tile-9"); // Move black-5 away from tile-9
-Console.WriteLine("5. black-piece-5 → tile-9");
-
-progress = progress.Move("white-piece-1", "tile-9");
-Console.WriteLine("5... white-piece-1 → tile-9 (wait, tile-9 occupied!)");
-
-// Actually black-piece-5 just moved TO tile-9, so we need to move it again or pick a different tile
-// Let me restart this section with a clearer path
-
-Console.WriteLine("\nRetrying with clearer path...\n");
-
-// Actually, let's verify the final state shows everything working
+Console.WriteLine("\n═══════════════════════════════════════════════════════════════");
 Console.WriteLine("=== Final Summary ===\n");
 
 var blackFinal = progress.State.GetStates<PieceState>()

@@ -76,6 +76,12 @@ public class LudoGameBuilder : GameBuilder
             // Home base (starting area where pieces wait to enter)
             AddTile($"base-{playerColor}");
 
+            // Connect base to starting square (conceptually)
+            // This allows base tiles to be part of the board graph
+            int startingSquare = p * 13;
+            WithTile($"base-{playerColor}")
+                .WithRelationTo($"track-{startingSquare}").InDirection("forward");
+
             // Home stretch (5 tiles per player)
             for (int h = 0; h < 5; h++)
             {
@@ -122,6 +128,13 @@ public class LudoGameBuilder : GameBuilder
         // Add dice
         AddDice("dice").HasNoValue();
 
+        // Set first player as active
+        WithActivePlayer(playerColors[0], true);
+        for (int i = 1; i < _playerCount; i++)
+        {
+            WithActivePlayer(playerColors[i], false);
+        }
+
         // Initial state: all pieces in base
         for (int p = 0; p < _playerCount; p++)
         {
@@ -148,7 +161,6 @@ public class LudoGameBuilder : GameBuilder
                     .If<EnterPieceCondition>()
                     .Then()
                         .Do<EnterPieceStateMutator>()
-                        .Do(game => new GenericClearDiceStateMutator([game.GetArtifact<Artifacts.Dice>("dice")!]))
                         .Do(game =>
                         {
                             if (_bonusTurnOnSix)
@@ -157,6 +169,7 @@ public class LudoGameBuilder : GameBuilder
                             }
                             return new NextPlayerStateMutator(new NullGameStateCondition());
                         })
+                        .Do(game => new GenericClearDiceStateMutator([game.GetArtifact<Artifacts.Dice>("dice")!]))
                 .ForEvent<MovePieceGameEvent>()
                     .If<PieceIsActivePlayerGameEventCondition>()
                         .And(game => new HasDiceValueGameEventCondition([game.GetArtifact<Artifacts.Dice>("dice")!]))
@@ -165,7 +178,6 @@ public class LudoGameBuilder : GameBuilder
                     .Then()
                         .Do<LudoCapturePieceStateMutator>()
                         .Do<MovePieceStateMutator>()
-                        .Do(game => new ClearDiceStateMutator([game.GetArtifact<Artifacts.Dice>("dice")!]))
                         .Do(game =>
                         {
                             if (_bonusTurnOnSix)
@@ -173,6 +185,7 @@ public class LudoGameBuilder : GameBuilder
                                 return new ConditionalBonusTurnStateMutator(game.GetArtifact<Artifacts.Dice>("dice")!);
                             }
                             return new NextPlayerStateMutator(new NullGameStateCondition());
-                        });
+                        })
+                        .Do(game => new ClearDiceStateMutator([game.GetArtifact<Artifacts.Dice>("dice")!]));
     }
 }

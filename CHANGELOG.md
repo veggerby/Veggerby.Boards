@@ -8,6 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Ludo/Parcheesi Game Module** (Workstream 12):
+  - Complete implementation of classic race-to-finish board game
+  - Circular track topology with 52 squares (13 per player)
+  - Player-specific home stretches (5 squares each)
+  - Entry mechanics requiring roll of 6 to enter from base
+  - Dice-driven movement with exact count finishing rules
+  - Capture mechanics with safe square immunity on starting positions
+  - Bonus turn on rolling 6 (configurable)
+  - Win condition detection (first to get all 4 pieces home)
+  - Turn sequencing integration with player rotation
+  - Support for 2-4 players (configurable)
+  - Deterministic gameplay for AI development and testing
+  - Demo application with pre-defined dice sequences
+  - Comprehensive documentation in `/docs/ludo/index.md`
+  - Custom events: `EnterPieceGameEvent`
+  - Custom conditions: `EnterPieceCondition`, `PieceNotInBaseCondition`, `ExactFinishCondition`, `AllPiecesHomeCondition`
+  - Custom mutators: `EnterPieceStateMutator`, `LudoCapturePieceStateMutator`, `ConditionalBonusTurnStateMutator`, `LudoEndGameMutator`
+  - Outcome tracking via `LudoOutcomeState` implementing `IGameOutcome`
+
 - **Fluent API Improvements**:
   - **Lambda-Based Builder API**: New `DefineRules()` method with scoped sub-builders for improved ergonomics
     - `IPhaseRuleBuilder` for phase-level event handler registration

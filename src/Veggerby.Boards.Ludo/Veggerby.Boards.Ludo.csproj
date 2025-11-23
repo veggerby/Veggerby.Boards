@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Package Metadata -->
+  <PropertyGroup>
+    <Description>Ludo/Parcheesi implementation components for Veggerby.Boards built atop the core engine.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;ludo;parcheesi</PackageTags>
+    <PackageId>Veggerby.Boards.Ludo</PackageId>
+  </PropertyGroup>
+
+  <!-- References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
+  </ItemGroup>
+
+</Project>

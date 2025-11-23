@@ -11,7 +11,9 @@ namespace Veggerby.Boards.Ludo;
 /// </summary>
 internal sealed class LudoSafeSquaresMarker : Artifact
 {
-    public LudoSafeSquaresMarker() : base("ludo-safe-squares-marker") { }
+    public static readonly LudoSafeSquaresMarker Instance = new();
+
+    private LudoSafeSquaresMarker() : base("ludo-safe-squares-marker") { }
 }
 
 /// <summary>
@@ -19,7 +21,6 @@ internal sealed class LudoSafeSquaresMarker : Artifact
 /// </summary>
 public class LudoSafeSquaresState : IArtifactState
 {
-    private static readonly LudoSafeSquaresMarker Marker = new();
     private readonly HashSet<string> _safeSquares;
 
     /// <summary>
@@ -49,7 +50,7 @@ public class LudoSafeSquaresState : IArtifactState
     }
 
     /// <inheritdoc />
-    public Artifact Artifact => Marker;
+    public Artifact Artifact => LudoSafeSquaresMarker.Instance;
 
     /// <inheritdoc />
     public bool Equals(IArtifactState other)

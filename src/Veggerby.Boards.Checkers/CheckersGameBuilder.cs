@@ -115,13 +115,14 @@ public class CheckersGameBuilder : GameBuilder
                 game => new CheckersEndGameMutator(game))
             .If<GameNotEndedCondition>()
             .Then()
-                // Move piece (validates mandatory capture, handles king promotion)
+                // Move piece (validates mandatory capture, handles king promotion and captures)
                 .ForEvent<MovePieceGameEvent>()
                     .If<PieceIsActivePlayerGameEventCondition>()
                         .And(game => new MandatoryCaptureCondition(game))
                         .And<DestinationIsEmptyGameEventCondition>()
                 .Then()
                     .Do<MovePieceStateMutator>()
+                    .Do(game => new CheckersCapturePieceStateMutator(game))
                     .Do(game => new PromoteToKingMutator(game))
                     .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()));
     }

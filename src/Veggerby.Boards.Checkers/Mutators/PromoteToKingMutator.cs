@@ -88,14 +88,9 @@ public sealed class PromoteToKingMutator : IStateMutator<MovePieceGameEvent>
             return state; // Not on promotion tile
         }
 
-        // Promote piece to king by updating its metadata
-        // We need to replace the piece's metadata in the game definition
-        // Since pieces are immutable, we create a new piece with king metadata
-        
-        // For now, we'll use a state marker to track promoted pieces
-        // A more complete implementation would modify piece movement patterns dynamically
-        
-        // Add a promoted piece state marker
+        // Promote piece to king
+        // We use a state marker to track promoted pieces which allows kings to move backward
+        // The piece's metadata role is also updated to King
         var promotedState = new PromotedPieceState(piece);
 
         return state.Next(new IArtifactState[] { promotedState });

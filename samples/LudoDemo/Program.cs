@@ -132,24 +132,32 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns)
         // Follow the "forward" direction for the dice value number of steps
         for (int step = 0; step < rollValue && currentTile != null; step++)
         {
-            var nextRelations = game.Board.TileRelations
-                .Where(r => r.From.Equals(currentTile) && r.Direction.Id == "forward")
+            // Check for home entry first
+            var homeEntryRelations = game.Board.TileRelations
+                .Where(r => r.From.Equals(currentTile) && r.Direction.Id == "home-entry")
                 .ToList();
 
-            // Check if we should enter home stretch
-            if (nextRelations.Any(r => r.Direction.Id == "home-entry"))
+            if (homeEntryRelations.Any())
             {
-                var homeRelation = nextRelations.First(r => r.Direction.Id == "home-entry");
-                currentTile = homeRelation.To;
-            }
-            else if (nextRelations.Any())
-            {
-                currentTile = nextRelations.First().To;
+                // Entering home stretch
+                currentTile = homeEntryRelations.First().To;
             }
             else
             {
-                currentTile = null;
-                break;
+                // Normal forward movement
+                var nextRelations = game.Board.TileRelations
+                    .Where(r => r.From.Equals(currentTile) && r.Direction.Id == "forward")
+                    .ToList();
+
+                if (nextRelations.Any())
+                {
+                    currentTile = nextRelations.First().To;
+                }
+                else
+                {
+                    currentTile = null;
+                    break;
+                }
             }
         }
 

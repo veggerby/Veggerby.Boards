@@ -11,6 +11,7 @@ namespace Veggerby.Boards.Ludo.Mutators;
 
 /// <summary>
 /// Generic mutator that clears dice (sets them to null state) after any game event.
+/// Used for events where the standard ClearDiceStateMutator (which only works with MovePieceGameEvent) cannot be used.
 /// </summary>
 public class GenericClearDiceStateMutator : IStateMutator<IGameEvent>
 {

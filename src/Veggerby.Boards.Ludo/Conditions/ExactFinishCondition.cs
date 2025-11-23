@@ -60,11 +60,10 @@ public class ExactFinishCondition : IGameEventCondition<MovePieceGameEvent>
         var currentTileId = @event.From.Id;
         if (currentTileId.StartsWith($"home-{owner.Id}-", StringComparison.Ordinal))
         {
-            // Extract position in home stretch
+            // Extract current position in home stretch
             var currentPos = int.Parse(currentTileId.AsSpan(currentTileId.LastIndexOf('-') + 1));
-            var destPos = int.Parse(destinationTileId.AsSpan(destinationTileId.LastIndexOf('-') + 1));
 
-            // If would overshoot (position 4 is final)
+            // If would overshoot final square (position 4)
             if (currentPos + diceValue > 4)
             {
                 return ConditionResponse.Fail($"Cannot overshoot final square: need exact count");

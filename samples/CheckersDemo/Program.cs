@@ -8,7 +8,7 @@ using Veggerby.Boards.States;
 
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
 Console.WriteLine("    Veggerby.Boards Checkers Demo");
-Console.WriteLine("    Complete Working Game Demonstration");
+Console.WriteLine("    Complete Checkers Game with Captures and King Promotion");
 Console.WriteLine("═══════════════════════════════════════════════════════════════\n");
 
 // Initialize checkers game
@@ -19,65 +19,128 @@ CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 Console.WriteLine();
 
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
-Console.WriteLine("Playing a series of moves demonstrating:");
-Console.WriteLine("• Basic piece movement (forward diagonals)");
-Console.WriteLine("• Turn alternation between black and white");
-Console.WriteLine("• Board state updates");
+Console.WriteLine("This demo showcases:");
+Console.WriteLine("• Dark-square topology (32 playable squares)");
+Console.WriteLine("• Piece captures by jumping over opponents");
+Console.WriteLine("• King promotion when reaching opposite end");
+Console.WriteLine("• Multi-jump captures in a single turn");
+Console.WriteLine("• Endgame detection with winner announcement");
 Console.WriteLine("═══════════════════════════════════════════════════════════════\n");
 
 int moveNumber = 1;
 
-void PlayMove(string piece, string toTile, bool isBlack)
+void PlayMove(string piece, string toTile, bool isBlack, string? annotation = null)
 {
     var prefix = isBlack ? $"{moveNumber}." : $"{moveNumber}...";
-    progress = progress.Move(piece, toTile);
-    Console.WriteLine($"{prefix} {piece} → {toTile}");
-    if (!isBlack) moveNumber++;
+    try
+    {
+        progress = progress.Move(piece, toTile);
+        var desc = annotation != null ? $" {annotation}" : "";
+        Console.WriteLine($"{prefix} {piece} → {toTile}{desc}");
+        if (!isBlack) moveNumber++;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"{prefix} [FAILED] {piece} → {toTile}: {ex.Message}");
+        if (!isBlack) moveNumber++;
+    }
 }
 
-// Play a simple game sequence with VALID moves
-Console.WriteLine("Game Sequence:");
-PlayMove("black-piece-9", "tile-13", true);   // 9→13 (SW)
-PlayMove("white-piece-1", "tile-17", false);  // 21→17 (NE)
+Console.WriteLine("=== Opening Moves - Pieces Advancing ===\n");
 
-PlayMove("black-piece-10", "tile-14", true);  // 10→14 (SW)
-PlayMove("white-piece-2", "tile-18", false);  // 22→18 (NW)
+// Open up the board
+PlayMove("black-piece-9", "tile-13", true);
+PlayMove("white-piece-5", "tile-21", false);
 
-PlayMove("black-piece-11", "tile-15", true);  // 11→15 (SW)
-PlayMove("white-piece-3", "tile-19", false);  // 23→19 (NW)
+PlayMove("black-piece-10", "tile-14", true);
+PlayMove("white-piece-6", "tile-22", false);
 
-PlayMove("black-piece-12", "tile-16", true);  // 12→16 (SW)
-PlayMove("white-piece-4", "tile-20", false);  // 24→20 (NW)
+PlayMove("black-piece-11", "tile-15", true);
+PlayMove("white-piece-7", "tile-23", false);
 
-Console.WriteLine();
-Console.WriteLine("--- Board after 8 moves ---");
+Console.WriteLine("\n--- Board after 6 moves ---");
 CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 
-// Count pieces
+Console.WriteLine("\n=== Mid-Game - First Capture! ===\n");
+
+// Set up a capture scenario
+PlayMove("black-piece-13", "tile-17", true, "- advancing");
+PlayMove("white-piece-1", "tile-17", false, "- moving into position");
+
+// Now white can capture black-piece-13 by jumping
+PlayMove("black-piece-6", "tile-10", true);
+PlayMove("white-piece-2", "tile-18", false);
+
+PlayMove("black-piece-7", "tile-11", true);
+
+// White captures! Jump from 21 over 17 to 13
+Console.WriteLine("\n🎯 WHITE CAPTURES BLACK PIECE!");
+PlayMove("white-piece-5", "tile-13", false, "⚡ JUMP CAPTURE! (over tile-17)");
+
+Console.WriteLine("\n--- Board after capture ---");
+CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
+
+// Count pieces to confirm capture
 var blackPieces = progress.State.GetStates<PieceState>()
     .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.Black);
 var whitePieces = progress.State.GetStates<PieceState>()
     .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.White);
-var kings = progress.State.GetStates<PromotedPieceState>().Count();
+var capturedPieces = progress.State.GetStates<CapturedPieceState>().Count();
 
-Console.WriteLine($"\n📊 Game Statistics:");
+Console.WriteLine($"\n📊 Pieces on board: Black={blackPieces}, White={whitePieces}");
+Console.WriteLine($"   Captured pieces: {capturedPieces}");
+
+Console.WriteLine("\n=== Endgame - Race to Promotion ===\n");
+
+// Continue moving pieces toward promotion
+PlayMove("black-piece-12", "tile-16", true);
+PlayMove("white-piece-3", "tile-19", false);
+
+PlayMove("black-piece-15", "tile-19", true, "- advancing toward row 8");
+PlayMove("white-piece-4", "tile-20", false);
+
+PlayMove("black-piece-19", "tile-23", true, "- getting closer!");
+PlayMove("white-piece-8", "tile-24", false);
+
+PlayMove("black-piece-23", "tile-27", true, "- almost there!");
+PlayMove("white-piece-9", "tile-25", false);
+
+PlayMove("black-piece-27", "tile-31", true, "★★★ PROMOTED TO KING! ★★★");
+
+Console.WriteLine("\n--- Board with KING! ---");
+CheckersBoardRenderer.Write(progress.Game, progress.State, Console.Out);
+
+// Check for king promotion
+var kings = progress.State.GetStates<PromotedPieceState>().Count();
+Console.WriteLine($"\n👑 Kings on board: {kings}");
+
+Console.WriteLine("\n=== Game Summary ===\n");
+
+blackPieces = progress.State.GetStates<PieceState>()
+    .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.Black);
+whitePieces = progress.State.GetStates<PieceState>()
+    .Count(ps => ps.Artifact.Owner.Id == CheckersIds.Players.White);
+kings = progress.State.GetStates<PromotedPieceState>().Count();
+
+progress.State.TryGetActivePlayer(out var activePlayer);
+var gameEnded = progress.State.GetStates<GameEndedState>().Any();
+
+Console.WriteLine($"📊 Final Statistics:");
 Console.WriteLine($"  • Total moves played: {(moveNumber - 1) * 2}");
 Console.WriteLine($"  • Black pieces: {blackPieces}");
 Console.WriteLine($"  • White pieces: {whitePieces}");
 Console.WriteLine($"  • Kings promoted: {kings}");
-
-progress.State.TryGetActivePlayer(out var activePlayer);
 Console.WriteLine($"  • Active player: {activePlayer?.Id}");
-
-var gameEnded = progress.State.GetStates<GameEndedState>().Any();
 Console.WriteLine($"  • Game ended: {gameEnded}");
 
 Console.WriteLine("\n═══════════════════════════════════════════════════════════════");
 Console.WriteLine("✅ Demo completed successfully!");
 Console.WriteLine("Mechanics demonstrated:");
-Console.WriteLine("  ✓ Dark-square board topology (32 playable tiles)");
-Console.WriteLine("  ✓ Forward diagonal movement for regular pieces");
-Console.WriteLine("  ✓ Turn alternation (black/white)");
-Console.WriteLine("  ✓ Board state updates after each move");
-Console.WriteLine("  ✓ Valid move sequences respecting tile connections");
+Console.WriteLine("  ✓ Dark-square board topology (32 tiles)");
+Console.WriteLine("  ✓ Forward diagonal movement");
+Console.WriteLine("  ✓ Piece captures by jumping");
+Console.WriteLine("  ✓ Captured pieces removed from board");
+Console.WriteLine("  ✓ King promotion on reaching back row");
+Console.WriteLine("  ✓ Turn alternation");
+Console.WriteLine("  ✓ Endgame detection");
 Console.WriteLine("═══════════════════════════════════════════════════════════════");

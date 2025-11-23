@@ -49,24 +49,25 @@ public sealed class CheckersCapturePieceStateMutator : IStateMutator<MovePieceGa
 
         var capturedPieces = new List<CapturedPieceState>();
 
-        // For each segment in the path, check if a piece was jumped over
-        // In checkers, if the distance is 2 (jumping), there's a piece in between
-        for (int i = 0; i < path.Relations.Count; i++)
+        // Check if this is a jump move (2 or more tiles in path = jumped over middle tile(s))
+        // In checkers, a jump is indicated by a path with more than 2 tiles (start + intermediate + end)
+        // Or a path with 2 relations in the same direction (indicates a 2-step jump)
+        
+        if (path.Relations.Count == 2 &&  path.Directions.Count == 2 &&
+            path.Directions[0].Equals(path.Directions[1]))
         {
-            var relation = path.Relations[i];
+            // This is a 2-step jump in the same direction - capture the piece on the intermediate tile
+            var intermediateTile = path.Tiles[1]; // The middle tile
+            var piecesOnTile = gameState.GetPiecesOnTile(intermediateTile);
+            var jumpedPiece = piecesOnTile.FirstOrDefault();
             
-            // Check if this is a jump (distance > 1 means jumping over a tile)
-            if (relation.Distance > 1)
+            if (jumpedPiece != null && jumpedPiece.Owner != null && !jumpedPiece.Owner.Equals(@event.Piece.Owner))
             {
-                // Find the jumped tile (intermediate tile between from and to)
-                var jumpedPiece = FindJumpedPiece(gameState, relation.From, relation.To, relation.Direction);
-                if (jumpedPiece != null && jumpedPiece.Owner != null && !jumpedPiece.Owner.Equals(@event.Piece.Owner))
-                {
-                    // This is an opponent piece that was jumped over
-                    capturedPieces.Add(new CapturedPieceState(jumpedPiece));
-                }
+                // This is an opponent piece that was jumped over
+                capturedPieces.Add(new CapturedPieceState(jumpedPiece));
             }
         }
+        // TODO: Handle multi-jump sequences (more than 2 relations)
 
         if (capturedPieces.Count == 0)
         {
@@ -75,37 +76,5 @@ public sealed class CheckersCapturePieceStateMutator : IStateMutator<MovePieceGa
 
         // Apply all captures to the game state
         return gameState.Next(capturedPieces.ToArray());
-    }
-
-    /// <summary>
-    /// Finds the piece that was jumped over between two tiles.
-    /// </summary>
-    /// <param name="gameState">Current game state.</param>
-    /// <param name="from">The tile the piece jumped from.</param>
-    /// <param name="to">The tile the piece landed on.</param>
-    /// <param name="direction">The direction of the jump.</param>
-    /// <returns>The piece that was jumped over, or null if no piece was jumped.</returns>
-    private Piece? FindJumpedPiece(GameState gameState, Tile from, Tile to, Direction direction)
-    {
-        // In checkers, when jumping, the jumped piece is on the tile directly between from and to
-        // Get the intermediate tile by following the direction once from 'from'
-        var intermediateRelation = _game.Board.GetTileRelation(from, direction);
-        if (intermediateRelation == null)
-        {
-            return null; // No intermediate tile found
-        }
-
-        var intermediateTile = intermediateRelation.To;
-        
-        // Verify that this intermediate tile connects to our destination in the same direction
-        var nextRelation = _game.Board.GetTileRelation(intermediateTile, direction);
-        if (nextRelation == null || !nextRelation.To.Equals(to))
-        {
-            return null; // Path doesn't match expected jump geometry
-        }
-
-        // Get the piece on the intermediate tile
-        var piecesOnTile = gameState.GetPiecesOnTile(intermediateTile);
-        return piecesOnTile.FirstOrDefault();
     }
 }

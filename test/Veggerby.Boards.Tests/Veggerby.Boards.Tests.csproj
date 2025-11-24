@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\Veggerby.Boards\Veggerby.Boards.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Backgammon\Veggerby.Boards.Backgammon.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Chess\Veggerby.Boards.Chess.csproj" />
+    <ProjectReference Include="..\..\src\Veggerby.Boards.Checkers\Veggerby.Boards.Checkers.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Go\Veggerby.Boards.Go.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Cards\Veggerby.Boards.Cards.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.DeckBuilding\Veggerby.Boards.DeckBuilding.csproj" />

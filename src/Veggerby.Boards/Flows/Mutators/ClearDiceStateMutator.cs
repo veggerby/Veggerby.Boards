@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
@@ -21,7 +20,15 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
     {
         ArgumentNullException.ThrowIfNull(dice);
 
-        if (!dice.Any())
+        // Check if empty using explicit iteration
+        var hasDice = false;
+        foreach (var _ in dice)
+        {
+            hasDice = true;
+            break;
+        }
+
+        if (!hasDice)
         {
             throw new ArgumentException(ExceptionMessages.AtLeastOneDiceRequired, nameof(dice));
         }
@@ -43,9 +50,18 @@ public class ClearDiceStateMutator : IStateMutator<MovePieceGameEvent>
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
-        var diceState = Dice
-            .Select(dice => state.GetState<DiceState<int>>(dice))
-            .FirstOrDefault(x => x is not null && x.CurrentValue.Equals(@event.Path.Distance));
+
+        // Search for matching dice state
+        DiceState<int>? diceState = null;
+        foreach (var dice in Dice)
+        {
+            var currentState = state.GetState<DiceState<int>>(dice);
+            if (currentState is not null && currentState.CurrentValue.Equals(@event.Path.Distance))
+            {
+                diceState = currentState;
+                break;
+            }
+        }
 
         if (diceState is null)
         {

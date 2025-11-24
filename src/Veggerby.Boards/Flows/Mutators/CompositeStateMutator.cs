@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
@@ -20,7 +19,15 @@ public class CompositeStateMutator<T> : IStateMutator<T> where T : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(childMutators);
 
-        if (!childMutators.Any())
+        // Check if empty using explicit iteration
+        var hasChildren = false;
+        foreach (var _ in childMutators)
+        {
+            hasChildren = true;
+            break;
+        }
+
+        if (!hasChildren)
         {
             throw new ArgumentException(ExceptionMessages.AtLeastOneChildRequired, nameof(childMutators));
         }

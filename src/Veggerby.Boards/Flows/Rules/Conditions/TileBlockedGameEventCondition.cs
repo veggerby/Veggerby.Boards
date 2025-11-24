@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-
+using System.Collections.Generic;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
@@ -55,13 +54,23 @@ public class TileBlockedGameEventCondition : IGameEventCondition<MovePieceGameEv
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
-        var pieceStates = state
-            .GetPiecesOnTile(@event.To)
-            .GroupBy(x => x.Owner.Equals(@event.Piece.Owner) ? PlayerOption.Self : PlayerOption.Opponent)
-            .ToDictionary(x => x.Key, x => x.ToList());
 
-        var selfCount = pieceStates.ContainsKey(PlayerOption.Self) ? pieceStates[PlayerOption.Self].Count() : 0;
-        var opponentCount = pieceStates.ContainsKey(PlayerOption.Opponent) ? pieceStates[PlayerOption.Opponent].Count() : 0;
+        // Group pieces by ownership and count
+        var selfCount = 0;
+        var opponentCount = 0;
+        var piecesOnTile = state.GetPiecesOnTile(@event.To);
+
+        foreach (var piece in piecesOnTile)
+        {
+            if (piece.Owner.Equals(@event.Piece.Owner))
+            {
+                selfCount++;
+            }
+            else
+            {
+                opponentCount++;
+            }
+        }
 
         if ((OccupiedBy & PlayerOption.Any) == PlayerOption.Any)
         {

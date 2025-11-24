@@ -1,3 +1,5 @@
+using System.Linq;
+
 using Veggerby.Boards;
 using Veggerby.Boards.Checkers;
 using Veggerby.Boards.Checkers.Mutators;
@@ -31,16 +33,15 @@ public class CheckersPromotionIntegrationTest
         progress = progress.Move("white-piece-5", "tile-1");   // White 5→1 - PROMOTION!
 
         // assert
-        var finalState = progress.Current;
-
         // Check that white-piece-5 is now on tile-1
-        var whitePiece5 = finalState.Get<PieceState>(x => x.Piece.Id == "white-piece-5").Single();
+        var whitePiece5 = progress.State.GetStates<PieceState>()
+            .Single(x => x.Artifact.Id == "white-piece-5");
         whitePiece5.CurrentTile.Id.Should().Be("tile-1");
 
         // Check that piece was promoted
-        var promotedStates = finalState.GetAll<PromotedPieceState>().ToList();
+        var promotedStates = progress.State.GetStates<PromotedPieceState>().ToList();
         promotedStates.Should().HaveCount(1);
-        promotedStates.First().Piece.Id.Should().Be("white-piece-5");
+        promotedStates.First().PromotedPiece.Id.Should().Be("white-piece-5");
 
         // Verify the piece is now considered a king
         var promoted = promotedStates.First();

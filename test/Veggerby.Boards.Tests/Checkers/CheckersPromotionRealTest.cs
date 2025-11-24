@@ -1,5 +1,8 @@
+using System.Linq;
+
 using Veggerby.Boards;
 using Veggerby.Boards.Checkers;
+using Veggerby.Boards.Checkers.Mutators;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Tests.Checkers;
@@ -38,8 +41,8 @@ public class CheckersPromotionRealTest
         piece5State!.CurrentTile.Id.Should().Be("tile-1");
 
         // Verify piece was promoted
-        var promotedStates = progress.State.GetAll<PromotedPieceState>().ToList();
+        var promotedStates = progress.State.GetStates<PromotedPieceState>().ToList();
         promotedStates.Should().HaveCount(1);
-        promotedStates.First().Piece.Id.Should().Be("white-piece-5");
+        promotedStates.First().PromotedPiece.Id.Should().Be("white-piece-5");
     }
 }

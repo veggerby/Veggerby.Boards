@@ -4,7 +4,6 @@ using Veggerby.Boards.States;
 using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
 using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
-using Veggerby.Boards.Chess.Extensions;
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>

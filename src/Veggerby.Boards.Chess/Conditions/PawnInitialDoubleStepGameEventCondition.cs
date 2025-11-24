@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 
+using Veggerby.Boards.Chess.Helpers;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
-
-using Veggerby.Boards.Chess.Helpers;
 namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>

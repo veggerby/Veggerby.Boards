@@ -1,12 +1,11 @@
 using System;
 
 using Veggerby.Boards.Cards;
-using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.States;
-
-using Veggerby.Boards.DeckBuilding.Events;
 using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>

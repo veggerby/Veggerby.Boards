@@ -48,7 +48,7 @@ public static class CheckersBoardRenderer
         // ...
         // Row 2:  5  6  7  8
         // Row 1:  1  2  3  4 (bottom, WHITE side in standard orientation but BLACK pieces here)
-        
+
         // We'll render from top (row 8) to bottom (row 1)
         // Tile mapping by row:
         var tilesByRow = new[]
@@ -84,7 +84,7 @@ public static class CheckersBoardRenderer
 
                 var tileId = $"tile-{tilesInRow[tileIdx]}";
                 tileIdx++;
-                
+
                 if (!pieceStates.TryGetValue(tileId, out var piece))
                 {
                     writer.Write(". ");

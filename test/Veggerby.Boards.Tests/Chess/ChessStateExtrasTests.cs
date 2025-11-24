@@ -1,7 +1,6 @@
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 
-using Veggerby.Boards.Chess.Extensions;
 namespace Veggerby.Boards.Tests.Chess;
 
 public class ChessStateExtrasTests

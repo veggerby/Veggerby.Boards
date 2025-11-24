@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-using Veggerby.Boards.DeckBuilding.States;
-using Veggerby.Boards.Cards.Events;
-using Veggerby.Boards.Cards.Artifacts;
-using Veggerby.Boards.Cards.States;
 namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>

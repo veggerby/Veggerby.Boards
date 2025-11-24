@@ -1,7 +1,6 @@
 using Veggerby.Boards;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Chess;
-using Veggerby.Boards.Chess.Extensions;
 using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.States;
 

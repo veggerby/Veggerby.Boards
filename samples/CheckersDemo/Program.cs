@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+
 using Veggerby.Boards;
 using Veggerby.Boards.Checkers;
 using Veggerby.Boards.States;

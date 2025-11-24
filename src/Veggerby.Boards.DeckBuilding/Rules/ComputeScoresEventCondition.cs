@@ -1,8 +1,7 @@
-using Veggerby.Boards.Flows.Rules.Conditions;
-using Veggerby.Boards.States;
-
 using Veggerby.Boards.DeckBuilding.Events;
 using Veggerby.Boards.DeckBuilding.States;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
 namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>

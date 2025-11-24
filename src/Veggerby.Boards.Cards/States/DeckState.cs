@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Veggerby.Boards.States;
-
 using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.States;
 namespace Veggerby.Boards.Cards.States;
 
 /// <summary>

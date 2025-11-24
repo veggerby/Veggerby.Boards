@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-using Veggerby.Boards.Flows.Events;
-
 using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Flows.Events;
 namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>

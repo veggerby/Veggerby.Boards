@@ -19,13 +19,13 @@ public class CheckersGameBuilderTests
 
         // assert - verify dark square topology
         actual.Game.Board.Tiles.Should().HaveCount(32);
-        
+
         // Verify some key diagonal connections
-        actual.Game.ShouldHaveTileWithRelations("tile-1", 
-            Direction("southeast", "tile-6"), 
+        actual.Game.ShouldHaveTileWithRelations("tile-1",
+            Direction("southeast", "tile-6"),
             Direction("southwest", "tile-5"));
-        
-        actual.Game.ShouldHaveTileWithRelations("tile-9", 
+
+        actual.Game.ShouldHaveTileWithRelations("tile-9",
             Direction("northeast", "tile-5"),
             Direction("northwest", "tile-6"),
             Direction("southeast", "tile-14"),

@@ -1,12 +1,10 @@
 using System.Linq;
 
 using Veggerby.Boards.Artifacts.Relations;
-
+using Veggerby.Boards.Chess.Helpers;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-using Veggerby.Boards.Chess.Helpers;
 namespace Veggerby.Boards.Chess.Mutators;
 
 /// <summary>

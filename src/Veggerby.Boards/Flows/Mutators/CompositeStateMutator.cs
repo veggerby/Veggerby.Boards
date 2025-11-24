@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.States;
-
 using Veggerby.Boards.Internal;
+using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Flows.Mutators;
 

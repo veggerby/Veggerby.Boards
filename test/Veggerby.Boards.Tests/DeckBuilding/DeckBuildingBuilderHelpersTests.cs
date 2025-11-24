@@ -1,6 +1,5 @@
-using Veggerby.Boards.DeckBuilding;
-
 using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.DeckBuilding;
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 public class DeckBuildingBuilderHelpersTests

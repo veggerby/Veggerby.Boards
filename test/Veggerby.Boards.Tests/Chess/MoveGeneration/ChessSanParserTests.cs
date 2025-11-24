@@ -7,7 +7,6 @@ using Veggerby.Boards.Chess.MoveGeneration;
 
 using Xunit;
 
-using Veggerby.Boards.Chess.Extensions;
 namespace Veggerby.Boards.Tests.Chess.MoveGeneration;
 
 /// <summary>

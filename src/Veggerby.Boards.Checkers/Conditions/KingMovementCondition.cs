@@ -62,7 +62,7 @@ public sealed class KingMovementCondition : IGameEventCondition<MovePieceGameEve
             if (isBlackPiece)
             {
                 // Black moves south (SE or SW only) for both moves and captures
-                if (!direction.Equals(Direction.SouthEast) && 
+                if (!direction.Equals(Direction.SouthEast) &&
                     !direction.Equals(Direction.SouthWest))
                 {
                     return ConditionResponse.Fail("Regular black pieces can only move forward (SE/SW)");
@@ -71,7 +71,7 @@ public sealed class KingMovementCondition : IGameEventCondition<MovePieceGameEve
             else
             {
                 // White moves north (NE or NW only) for both moves and captures
-                if (!direction.Equals(Direction.NorthEast) && 
+                if (!direction.Equals(Direction.NorthEast) &&
                     !direction.Equals(Direction.NorthWest))
                 {
                     return ConditionResponse.Fail("Regular white pieces can only move forward (NE/NW)");

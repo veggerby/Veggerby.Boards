@@ -2,7 +2,6 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
-using Veggerby.Boards.Chess.Extensions;
 namespace Veggerby.Boards.Tests.Chess;
 
 /// <summary>
@@ -131,7 +130,7 @@ public class ChessRuleParityTests
         var (engine, progress) = BuildStandard();
         var pawnD2 = engine.Game.GetPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn4).EnsureNotNull(); // d2
         var pawnE2 = engine.Game.GetPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5).EnsureNotNull(); // e2
-                                                                                       // move e2 -> e3
+                                                                                                                       // move e2 -> e3
         var e3 = engine.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3).EnsureNotNull();
         progress = progress.Move(pawnE2.Id, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3);
         // black reply arbitrary (skip by moving a7->a6)

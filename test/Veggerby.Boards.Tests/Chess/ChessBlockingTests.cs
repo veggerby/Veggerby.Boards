@@ -5,7 +5,7 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
 
 namespace Veggerby.Boards.Tests.Chess;
 
@@ -23,7 +23,7 @@ public class ChessBlockingTests
         var progress = new ChessGameBuilder().Compile();
         var queen = progress.Game.GetPiece(WhiteQueen);
         queen.Should().NotBeNull();
-        var target = progress.Game.GetTile(ChessIds.Tiles.D4);
+        var target = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4);
         target.Should().NotBeNull();
         var state = progress.State.GetState<PieceState>(queen!);
         state.Should().NotBeNull();

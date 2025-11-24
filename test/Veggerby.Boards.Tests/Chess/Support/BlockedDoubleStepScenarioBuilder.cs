@@ -1,9 +1,10 @@
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Conditions;
+using Veggerby.Boards.Chess.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States.Conditions;
-
 namespace Veggerby.Boards.Tests.Chess.Support;
 
 /// <summary>
@@ -16,12 +17,12 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
     {
         BoardId = "chess-blocked-double-step";
 
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
 
         // Active player: white to move.
-        WithActivePlayer(ChessIds.Players.White, true);
-        WithActivePlayer(ChessIds.Players.Black, false);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, true);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black, false);
 
         // Directions
         AddDirection(Constants.Directions.North);
@@ -78,7 +79,7 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
 
         // White test pawn with standard patterns
         AddPiece("white-pawn-test")
-            .WithOwner(ChessIds.Players.White)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
             .HasDirection(Constants.Directions.North).Done()
             .HasPattern(Constants.Directions.North)
             .HasPattern(Constants.Directions.North, Constants.Directions.North)
@@ -87,11 +88,11 @@ internal sealed class BlockedDoubleStepScenarioBuilder : GameBuilder
 
         // Blocking piece (use a black knight to ensure NonPawnGameEventCondition for any incidental filtering) placed on intermediate square e3
         AddPiece("black-knight-blocker")
-            .WithOwner(ChessIds.Players.Black)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
             .HasDirection(Constants.Directions.North).Done(); // minimal direction to satisfy construction
 
-        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
-        WithPiece("black-knight-blocker").OnTile(ChessIds.Tiles.E3);
+        WithPiece("white-pawn-test").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+        WithPiece("black-knight-blocker").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3);
 
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 

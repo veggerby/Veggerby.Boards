@@ -163,7 +163,7 @@ public class CheckersGameBuilder : GameBuilder
 
         // Add diagonal connections based on checkers geometry
         // Each tile connects to up to 4 diagonal neighbors (NE, NW, SE, SW)
-        
+
         // Helper to add bidirectional diagonal connection
         void AddDiagonalConnection(int fromTile, int toTile, string direction)
         {

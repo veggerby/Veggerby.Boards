@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 
+using Veggerby.Boards.Chess.Conditions;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Mutators;
 
 /// <summary>
 /// Applies castling: moves king to target (g-file or c-file) and relocates rook; updates castling rights and chess extras bookkeeping.
@@ -31,31 +31,31 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
         {
             return gameState;
         }
-        var isWhite = ownerId == ChessIds.Players.White;
+        var isWhite = ownerId == Veggerby.Boards.Chess.Constants.ChessIds.Players.White;
         var toId = @event.Path?.To?.Id;
         if (toId is null)
         {
             return gameState;
         }
-        var isKingSide = toId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
-        var isQueenSide = toId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
+        var isKingSide = toId == (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8);
+        var isQueenSide = toId == (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8);
         if (!isKingSide && !isQueenSide)
         {
             return gameState; // not a castling move
         }
 
         var rookSourceId = isWhite
-            ? (isKingSide ? ChessIds.Tiles.H1 : ChessIds.Tiles.A1)
-            : (isKingSide ? ChessIds.Tiles.H8 : ChessIds.Tiles.A8);
+            ? (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1)
+            : (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H8 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A8);
         var rookDestId = isWhite
-            ? (isKingSide ? ChessIds.Tiles.F1 : ChessIds.Tiles.D1)
-            : (isKingSide ? ChessIds.Tiles.F8 : ChessIds.Tiles.D8);
+            ? (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D1)
+            : (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F8 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
 
         // Resolve rook piece via piece states
         var rookPiece = gameState
             .GetStates<PieceState>()
             .Select(s => s.Artifact)
-            .FirstOrDefault(p => p.Id == (isWhite ? (isKingSide ? ChessIds.Pieces.WhiteRook2 : ChessIds.Pieces.WhiteRook1) : (isKingSide ? ChessIds.Pieces.BlackRook2 : ChessIds.Pieces.BlackRook1)));
+            .FirstOrDefault(p => p.Id == (isWhite ? (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook2 : Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook1) : (isKingSide ? Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook2 : Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook1)));
         if (rookPiece is null)
         {
             return gameState; // inconsistent setup
@@ -89,7 +89,7 @@ public sealed class CastlingMoveMutator : IStateMutator<MovePieceGameEvent>
             movedSet.Add(rookPiece.Id);
         }
 
-        var fullmove = extras.FullmoveNumber + (ownerId == ChessIds.Players.Black ? 1 : 0);
+        var fullmove = extras.FullmoveNumber + (ownerId == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black ? 1 : 0);
         var newExtras = extras with
         {
             EnPassantTargetTileId = null,

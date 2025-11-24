@@ -99,8 +99,8 @@ try
         var outcome = progress.GetOutcome();
         if (outcome is GoOutcomeState goOutcome)
         {
-            var blackPlayer = progress.Game.GetPlayer("black");
-            var whitePlayer = progress.Game.GetPlayer("white");
+            var blackPlayer = progress.Game.GetPlayer("black")!;
+            var whitePlayer = progress.Game.GetPlayer("white")!;
             var blackScore = goOutcome.TotalScores.TryGetValue(blackPlayer, out var bs) ? bs : 0;
             var whiteScore = goOutcome.TotalScores.TryGetValue(whitePlayer, out var ws) ? ws : 0;
 

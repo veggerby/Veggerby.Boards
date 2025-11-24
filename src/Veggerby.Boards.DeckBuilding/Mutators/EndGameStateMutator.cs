@@ -1,9 +1,10 @@
 using System.Linq;
 
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Appends a <see cref="GameEndedState"/> marker and <see cref="DeckBuildingOutcomeState"/> when an <see cref="EndGameEvent"/> is processed.

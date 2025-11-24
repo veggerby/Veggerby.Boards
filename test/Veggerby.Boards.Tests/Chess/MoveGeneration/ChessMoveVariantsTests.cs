@@ -5,8 +5,8 @@ using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
-using static Veggerby.Boards.Chess.ChessIds.Tiles;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
 namespace Veggerby.Boards.Tests.Chess.MoveGeneration;
 
@@ -308,7 +308,7 @@ public class ChessMoveVariantsTests
         rookStateBefore!.CurrentTile.Id.Should().Be("tile-h1");
 
         // act - castle kingside
-        progress = progress.Castle(ChessIds.Players.White, kingSide: true);
+        progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: true);
 
         // assert
         var afterState = progress.State;
@@ -356,7 +356,7 @@ public class ChessMoveVariantsTests
         rookStateBefore!.CurrentTile.Id.Should().Be("tile-a1");
 
         // act - castle queenside
-        progress = progress.Castle(ChessIds.Players.White, kingSide: false);
+        progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: false);
 
         // assert
         var afterState = progress.State;

@@ -2,10 +2,17 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
 using Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Artifacts;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Tests.Support; // TurnStateAssertions
+using Veggerby.Boards.Tests.Support;
+// TurnStateAssertions
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.States;
 
 /// <summary>
 /// Immutable state representing ordered piles for a <see cref="Deck"/> and optional supply counts.

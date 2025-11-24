@@ -1,6 +1,8 @@
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Constants;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Observers;
 using Veggerby.Boards.Internal;
@@ -51,21 +53,21 @@ public class ObserverOverheadBenchmark
     public void Setup()
     {
         // legacy: toggled decision plan path removed; keep compile to warm caches
-        var builder1 = new Chess.ChessGameBuilder();
+        var builder1 = new ChessGameBuilder();
         _baseline = builder1.Compile();
 
         // simulate alternative path via grouping/event filtering toggles for relative observer overhead context
         _observer = new CountingObserver();
-        var builder2 = new Chess.ChessGameBuilder().WithObserver(_observer);
+        var builder2 = new ChessGameBuilder().WithObserver(_observer);
         _observed = builder2.Compile();
 
         _batchedObserver = new CountingObserver();
-        var builder3 = new Chess.ChessGameBuilder().WithObserver(_batchedObserver);
+        var builder3 = new ChessGameBuilder().WithObserver(_batchedObserver);
         _batched = builder3.Compile();
 
-        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("ObserverOverhead: pawn2 missing");
-        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2) ?? throw new InvalidOperationException("ObserverOverhead: tile e2 missing");
-        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4) ?? throw new InvalidOperationException("ObserverOverhead: tile e4 missing");
+        var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("ObserverOverhead: pawn2 missing");
+        var from = _baseline.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("ObserverOverhead: tile e2 missing");
+        var to = _baseline.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("ObserverOverhead: tile e4 missing");
         var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
         _event = new MovePieceGameEvent(piece, path);
     }

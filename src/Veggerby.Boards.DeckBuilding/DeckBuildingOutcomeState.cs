@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.States;
-
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>

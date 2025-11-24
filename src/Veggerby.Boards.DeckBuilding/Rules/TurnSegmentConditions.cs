@@ -1,6 +1,6 @@
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Condition requiring the turn segment to be Start (used for setup events).

@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.States;
@@ -20,16 +18,23 @@ internal sealed class SimplePatternPathResolver(Board board) : IPathResolver
             return null;
         }
 
-        return piece.Patterns
-            .Select(pattern =>
+        // Find shortest valid path among all patterns
+        TilePath? shortestPath = null;
+        int shortestDistance = int.MaxValue;
+
+        foreach (var pattern in piece.Patterns)
+        {
+            var visitor = new ResolveTilePathPatternVisitor(_board, from, to);
+            pattern.Accept(visitor);
+            var path = visitor.ResultPath;
+
+            if (path is not null && path.Distance < shortestDistance)
             {
-                var visitor = new ResolveTilePathPatternVisitor(_board, from, to);
-                pattern.Accept(visitor);
-                return visitor.ResultPath;
-            })
-            .Where(p => p is not null)
-            .Cast<TilePath>()
-            .OrderBy(p => p.Distance)
-            .FirstOrDefault();
+                shortestPath = path;
+                shortestDistance = path.Distance;
+            }
+        }
+
+        return shortestPath;
     }
 }

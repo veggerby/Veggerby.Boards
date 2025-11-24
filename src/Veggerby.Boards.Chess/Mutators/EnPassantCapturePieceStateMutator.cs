@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 
+using Veggerby.Boards.Chess.Helpers;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Mutators;
 
 /// <summary>
 /// Performs an en-passant capture: move capturing pawn onto target square and mark victim pawn captured from adjacent square.
@@ -64,8 +64,8 @@ public sealed class EnPassantCapturePieceStateMutator : IStateMutator<MovePieceG
             : prevExtras.MovedPieceIds.Concat(new[] { @event.Piece.Id }).ToArray();
         string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
-            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
-        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
+            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? Veggerby.Boards.Chess.Constants.ChessIds.Players.White : Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black ? 1 : 0);
         var newExtras = prevExtras with
         {
             EnPassantTargetTileId = null,

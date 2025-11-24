@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
+using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.Flows.Events;
-
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event requesting to make specific cards visible to all players.

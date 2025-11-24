@@ -53,7 +53,7 @@ public sealed class CheckersEndgameCondition : IGameStateCondition
 
         // TODO: Check if active player has any valid moves
         // For now, simplified - game only ends when all pieces captured
-        
+
         // Game still in progress
         return ConditionResponse.Ignore("Game not ended");
     }

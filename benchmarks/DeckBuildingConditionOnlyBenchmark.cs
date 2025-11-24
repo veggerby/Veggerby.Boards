@@ -1,10 +1,13 @@
 using BenchmarkDotNet.Attributes;
 
-using Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
 using Veggerby.Boards.DeckBuilding;
-using Veggerby.Boards.Events; // EndTurnSegmentEvent
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.Rules;
+using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
-
 namespace Veggerby.Boards.Benchmarks;
 
 /// <summary>

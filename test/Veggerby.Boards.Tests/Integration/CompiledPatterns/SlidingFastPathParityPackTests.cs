@@ -180,21 +180,21 @@ public class SlidingFastPathParityPackTests
     public static IEnumerable<object[]> PackScenarios()
     {
         // id, type, from, owner definitions inside scenarios for clarity
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
-        var immobile = new PieceSpec("stone", "immobile", ChessIds.Tiles.D4, "white");
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var queen = new PieceSpec("queen", "queen", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "black");
+        var immobile = new PieceSpec("stone", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
 
         // Each object[]: specs collection, moving piece, target tile, descriptive label (xUnit display)
-        yield return new object[] { new[] { rook }, rook, ChessIds.Tiles.H4, "Rook long empty horizontal" };
-        yield return new object[] { new[] { rook, enemy }, rook, ChessIds.Tiles.D6, "Rook capture enemy mid ray" };
-        yield return new object[] { new[] { rook, friendly }, rook, ChessIds.Tiles.D8, "Rook friendly mid blocks beyond" };
-        yield return new object[] { new[] { bishop, friendly }, bishop, ChessIds.Tiles.G5, "Bishop friendly mid ray blocks" };
-        yield return new object[] { new[] { queen, friendly }, queen, ChessIds.Tiles.D6, "Queen friendly at target invalid" };
-        yield return new object[] { new[] { rook }, rook, ChessIds.Tiles.D4, "Rook zero length" };
-        yield return new object[] { new[] { immobile }, immobile, ChessIds.Tiles.D5, "Immobile cannot move" };
+        yield return new object[] { new[] { rook }, rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H4, "Rook long empty horizontal" };
+        yield return new object[] { new[] { rook, enemy }, rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "Rook capture enemy mid ray" };
+        yield return new object[] { new[] { rook, friendly }, rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8, "Rook friendly mid blocks beyond" };
+        yield return new object[] { new[] { bishop, friendly }, bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G5, "Bishop friendly mid ray blocks" };
+        yield return new object[] { new[] { queen, friendly }, queen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "Queen friendly at target invalid" };
+        yield return new object[] { new[] { rook }, rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "Rook zero length" };
+        yield return new object[] { new[] { immobile }, immobile, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5, "Immobile cannot move" };
     }
 
     [Theory(DisplayName = "Sliding Fast-Path Parity Pack")]

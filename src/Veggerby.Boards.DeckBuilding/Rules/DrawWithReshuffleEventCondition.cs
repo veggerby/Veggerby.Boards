@@ -1,8 +1,9 @@
 using Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Validates that a draw can be performed possibly after reshuffling the discard into draw.

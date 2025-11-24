@@ -177,8 +177,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        AssertParity([rook], rook, ChessIds.Tiles.H4);
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H4);
     }
 
     [Fact]
@@ -190,8 +190,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        AssertParity([bishop], bishop, ChessIds.Tiles.G5);
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        AssertParity([bishop], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G5);
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
-        AssertParity([queen], queen, ChessIds.Tiles.D8);
+        var queen = new PieceSpec("queen", "queen", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertParity([queen], queen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
     }
 
     [Fact]
@@ -216,9 +216,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
-        AssertParity([rook, friendly], rook, ChessIds.Tiles.D8); // null
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "white");
+        AssertParity([rook, friendly], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8); // null
     }
 
     [Fact]
@@ -230,9 +230,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
-        AssertParity([rook, friendly], rook, ChessIds.Tiles.D6); // null
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "white");
+        AssertParity([rook, friendly], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6); // null
     }
 
     [Fact]
@@ -244,9 +244,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
-        AssertParity([rook, enemy], rook, ChessIds.Tiles.D6); // capture
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "black");
+        AssertParity([rook, enemy], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6); // capture
     }
 
     [Fact]
@@ -258,10 +258,10 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D6, "black");
-        AssertParity([rook, enemy], rook, ChessIds.Tiles.D7);
-        AssertParity([rook, enemy], rook, ChessIds.Tiles.D8);
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "black");
+        AssertParity([rook, enemy], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D7);
+        AssertParity([rook, enemy], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
     }
 
     [Fact]
@@ -273,10 +273,10 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D7, "black");
-        AssertParity([rook, friendly, enemy], rook, ChessIds.Tiles.D7);
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D7, "black");
+        AssertParity([rook, friendly, enemy], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D7);
     }
 
     [Fact]
@@ -288,8 +288,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        AssertParity([rook], rook, ChessIds.Tiles.D5);
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5);
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var stone = new PieceSpec("stone", "immobile", ChessIds.Tiles.D4, "white");
-        AssertParity([stone], stone, ChessIds.Tiles.D5);
+        var stone = new PieceSpec("stone", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertParity([stone], stone, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5);
     }
 
     // ---------------- Parity V2 Extended Scenarios (from movement-semantics charter) ----------------
@@ -316,9 +316,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D5, "white");
-        AssertParity([rook, friendly], rook, ChessIds.Tiles.D5); // null
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5, "white");
+        AssertParity([rook, friendly], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5); // null
     }
 
     [Fact]
@@ -330,9 +330,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.D5, "black");
-        AssertParity([rook, enemy], rook, ChessIds.Tiles.D5); // capture single-step
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5, "black");
+        AssertParity([rook, enemy], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D5); // capture single-step
     }
 
     [Fact]
@@ -344,9 +344,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
-        AssertParity([bishop, friendly], bishop, ChessIds.Tiles.G5); // null beyond friendly
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "white");
+        AssertParity([bishop, friendly], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G5); // null beyond friendly
     }
 
     [Fact]
@@ -358,9 +358,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
-        AssertParity([bishop, friendly], bishop, ChessIds.Tiles.E3); // null (occupied by friendly)
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "white");
+        AssertParity([bishop, friendly], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3); // null (occupied by friendly)
     }
 
     [Fact]
@@ -372,9 +372,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
-        AssertParity([bishop, enemy], bishop, ChessIds.Tiles.E3); // capture
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "black");
+        AssertParity([bishop, enemy], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3); // capture
     }
 
     [Fact]
@@ -386,9 +386,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
-        AssertParity([bishop, enemy], bishop, ChessIds.Tiles.G5); // null beyond enemy blocker
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "black");
+        AssertParity([bishop, enemy], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G5); // null beyond enemy blocker
     }
 
     [Fact]
@@ -400,10 +400,10 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.E3, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.F4, "black");
-        AssertParity([bishop, friendly, enemy], bishop, ChessIds.Tiles.F4); // null (friendly earlier)
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F4, "black");
+        AssertParity([bishop, friendly, enemy], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F4); // null (friendly earlier)
     }
 
     [Fact]
@@ -415,10 +415,10 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.F4, "white");
-        AssertParity([bishop, enemy, friendly], bishop, ChessIds.Tiles.F4); // null beyond enemy blocker
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "black");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F4, "white");
+        AssertParity([bishop, enemy, friendly], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F4); // null beyond enemy blocker
     }
 
     [Fact]
@@ -430,8 +430,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        AssertParity([rook], rook, ChessIds.Tiles.D4); // from == to => null
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertParity([rook], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4); // from == to => null
     }
 
     // ---------------- Decorator Direct Parity (fast-path vs compiled only) ----------------
@@ -481,8 +481,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var rook = new PieceSpec("rook", "rook", ChessIds.Tiles.D4, "white");
-        AssertDecoratorParity([rook], rook, ChessIds.Tiles.H4);
+        var rook = new PieceSpec("rook", "rook", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        AssertDecoratorParity([rook], rook, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H4);
     }
 
     [Fact]
@@ -494,9 +494,9 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var bishop = new PieceSpec("bishop", "bishop", ChessIds.Tiles.C1, "white");
-        var enemy = new PieceSpec("enemy", "immobile", ChessIds.Tiles.E3, "black");
-        AssertDecoratorParity([bishop, enemy], bishop, ChessIds.Tiles.E3);
+        var bishop = new PieceSpec("bishop", "bishop", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, "white");
+        var enemy = new PieceSpec("enemy", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, "black");
+        AssertDecoratorParity([bishop, enemy], bishop, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3);
     }
 
     [Fact]
@@ -508,8 +508,8 @@ public class SlidingFastPathParityTests
 
         // assert
 
-        var queen = new PieceSpec("queen", "queen", ChessIds.Tiles.D4, "white");
-        var friendly = new PieceSpec("ally", "immobile", ChessIds.Tiles.D6, "white");
-        AssertDecoratorParity([queen, friendly], queen, ChessIds.Tiles.D8);
+        var queen = new PieceSpec("queen", "queen", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4, "white");
+        var friendly = new PieceSpec("ally", "immobile", Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D6, "white");
+        AssertDecoratorParity([queen, friendly], queen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
     }
 }

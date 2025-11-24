@@ -4,6 +4,7 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Patterns;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Constants;
 using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Flows.Phases;

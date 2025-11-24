@@ -4,8 +4,8 @@ using System.Linq;
 using Veggerby.Boards.Chess;
 using Veggerby.Boards.Tests.Utils;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
-using static Veggerby.Boards.Chess.ChessIds.Tiles;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
 namespace Veggerby.Boards.Tests.Chess;
 

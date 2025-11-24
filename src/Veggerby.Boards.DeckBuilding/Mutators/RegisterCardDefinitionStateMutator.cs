@@ -1,7 +1,9 @@
+using Veggerby.Boards.DeckBuilding.Artifacts;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Creates a <see cref="CardDefinitionState"/> for a registered definition artifact.

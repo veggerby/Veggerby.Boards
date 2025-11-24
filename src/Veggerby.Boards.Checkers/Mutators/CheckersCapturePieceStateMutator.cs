@@ -52,15 +52,15 @@ public sealed class CheckersCapturePieceStateMutator : IStateMutator<MovePieceGa
         // Check if this is a jump move (2 or more tiles in path = jumped over middle tile(s))
         // In checkers, a jump is indicated by a path with more than 2 tiles (start + intermediate + end)
         // Or a path with 2 relations in the same direction (indicates a 2-step jump)
-        
-        if (path.Relations.Count == 2 &&  path.Directions.Count == 2 &&
+
+        if (path.Relations.Count == 2 && path.Directions.Count == 2 &&
             path.Directions[0].Equals(path.Directions[1]))
         {
             // This is a 2-step jump in the same direction - capture the piece on the intermediate tile
             var intermediateTile = path.Tiles[1]; // The middle tile
             var piecesOnTile = gameState.GetPiecesOnTile(intermediateTile);
             var jumpedPiece = piecesOnTile.FirstOrDefault();
-            
+
             if (jumpedPiece != null && jumpedPiece.Owner != null && !jumpedPiece.Owner.Equals(@event.Piece.Owner))
             {
                 // This is an opponent piece that was jumped over

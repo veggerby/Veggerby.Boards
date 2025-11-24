@@ -5,7 +5,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Mutators;
 
 /// <summary>
 /// Wraps capture mutator adding chess extras bookkeeping (reset halfmove, clear en-passant, advance fullmove, mark mover).
@@ -50,8 +50,8 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
 
         string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
-            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
-        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
+            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? Veggerby.Boards.Chess.Constants.ChessIds.Players.White : Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black ? 1 : 0);
         // Determine captured piece (present in updated state as a CapturedPieceState newly added by inner mutator)
         // We inspect difference between previous and updated piece states to infer captured artifact & its last tile.
         var previousPieceStates = gameState.GetStates<PieceState>().ToDictionary(s => s.Artifact.Id);
@@ -66,12 +66,12 @@ public sealed class ChessCapturePieceStateMutator : IStateMutator<MovePieceGameE
             }
         }
 
-        bool whiteKingCaptured = capturedPieceId == ChessIds.Pieces.WhiteKing; // extreme edge, typically game over
-        bool blackKingCaptured = capturedPieceId == ChessIds.Pieces.BlackKing;
-        bool whiteRookA1Captured = capturedPieceId == ChessIds.Pieces.WhiteRook1; // only original squares matter; if rook moved then rights already revoked
-        bool whiteRookH1Captured = capturedPieceId == ChessIds.Pieces.WhiteRook2;
-        bool blackRookA8Captured = capturedPieceId == ChessIds.Pieces.BlackRook1;
-        bool blackRookH8Captured = capturedPieceId == ChessIds.Pieces.BlackRook2;
+        bool whiteKingCaptured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKing; // extreme edge, typically game over
+        bool blackKingCaptured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKing;
+        bool whiteRookA1Captured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook1; // only original squares matter; if rook moved then rights already revoked
+        bool whiteRookH1Captured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook2;
+        bool blackRookA8Captured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook1;
+        bool blackRookH8Captured = capturedPieceId == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook2;
 
         var rightsAdjusted = RevokeRights(prevExtras, false, false, false, false, false, false,
             whiteRookA1Captured, whiteRookH1Captured, blackRookA8Captured, blackRookH8Captured, whiteKingCaptured, blackKingCaptured);

@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
@@ -60,31 +60,64 @@ public class ClearToTileStateMutator : IStateMutator<MovePieceGameEvent>
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(@event);
-        var pieces = gameState.GetPiecesOnTile(@event.To);
 
-        if (!pieces.Any())
+        var allPieces = gameState.GetPiecesOnTile(@event.To);
+
+        // Check if empty using explicit iteration
+        var hasAny = false;
+        foreach (var _ in allPieces)
+        {
+            hasAny = true;
+            break;
+        }
+
+        if (!hasAny)
         {
             return gameState;
         }
 
+        // Filter pieces by player ownership
+        var pieces = new List<Piece>();
         if ((Player & PlayerOption.Any) == PlayerOption.Any)
         {
+            foreach (var piece in allPieces)
+            {
+                pieces.Add(piece);
+            }
         }
         else if ((Player & PlayerOption.Self) != 0)
         {
-            pieces = [.. pieces.Where(x => x.Owner.Equals(@event.Piece.Owner))];
+            foreach (var piece in allPieces)
+            {
+                if (piece.Owner.Equals(@event.Piece.Owner))
+                {
+                    pieces.Add(piece);
+                }
+            }
         }
         else if ((Player & PlayerOption.Opponent) != 0)
         {
-            pieces = [.. pieces.Where(x => !x.Owner.Equals(@event.Piece.Owner))];
+            foreach (var piece in allPieces)
+            {
+                if (!piece.Owner.Equals(@event.Piece.Owner))
+                {
+                    pieces.Add(piece);
+                }
+            }
         }
 
-        if (MaxPieceCount is not null && pieces.Count() > MaxPieceCount.Value)
+        // Check max count constraint
+        if (MaxPieceCount is not null && pieces.Count > MaxPieceCount.Value)
         {
             throw new BoardException($"Cannot clear more than {MaxPieceCount} pieces from To tile");
         }
 
-        var newStates = pieces.Select(piece => new PieceState(piece, NewTile));
+        // Build new states
+        var newStates = new List<PieceState>(pieces.Count);
+        foreach (var piece in pieces)
+        {
+            newStates.Add(new PieceState(piece, NewTile));
+        }
 
         return gameState.Next(newStates);
     }

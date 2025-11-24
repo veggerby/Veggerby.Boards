@@ -1,5 +1,6 @@
-using System.Linq;
+using System.Collections.Generic;
 
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
@@ -19,9 +20,18 @@ public sealed class CapturePieceStateMutator : IStateMutator<MovePieceGameEvent>
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(@event);
-        var opponentPiece = gameState
-            .GetPiecesOnTile(@event.To)
-            .FirstOrDefault(p => p.Owner is not null && !p.Owner.Equals(@event.Piece.Owner));
+
+        // Find opponent piece on destination tile
+        var piecesOnTile = gameState.GetPiecesOnTile(@event.To);
+        Piece? opponentPiece = null;
+        foreach (var piece in piecesOnTile)
+        {
+            if (piece.Owner is not null && !piece.Owner.Equals(@event.Piece.Owner))
+            {
+                opponentPiece = piece;
+                break;
+            }
+        }
 
         if (opponentPiece is null)
         {

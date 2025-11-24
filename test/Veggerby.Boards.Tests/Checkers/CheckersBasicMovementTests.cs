@@ -19,7 +19,7 @@ public class CheckersBasicMovementTests
         var pieceState = result.State.GetStates<PieceState>()
             .Should().ContainSingle(ps => ps.Artifact.Id == "black-piece-9")
             .Which;
-        
+
         pieceState.CurrentTile.Id.Should().Be("tile-13");
     }
 
@@ -36,7 +36,7 @@ public class CheckersBasicMovementTests
         var pieceState = result.State.GetStates<PieceState>()
             .Should().ContainSingle(ps => ps.Artifact.Id == "black-piece-9")
             .Which;
-        
+
         pieceState.CurrentTile.Id.Should().Be("tile-14");
     }
 
@@ -45,7 +45,7 @@ public class CheckersBasicMovementTests
     {
         // arrange
         var progress = new CheckersGameBuilder().Compile();
-        
+
         // Move black first to switch to white
         progress = progress.Move("black-piece-9", "tile-13");
 
@@ -56,7 +56,7 @@ public class CheckersBasicMovementTests
         var pieceState = result.State.GetStates<PieceState>()
             .Should().ContainSingle(ps => ps.Artifact.Id == "white-piece-1")
             .Which;
-        
+
         pieceState.CurrentTile.Id.Should().Be("tile-17");
     }
 
@@ -65,7 +65,7 @@ public class CheckersBasicMovementTests
     {
         // arrange
         var progress = new CheckersGameBuilder().Compile();
-        
+
         // Move black first to switch to white
         progress = progress.Move("black-piece-9", "tile-13");
 
@@ -76,7 +76,7 @@ public class CheckersBasicMovementTests
         var pieceState = result.State.GetStates<PieceState>()
             .Should().ContainSingle(ps => ps.Artifact.Id == "white-piece-2")
             .Which;
-        
+
         pieceState.CurrentTile.Id.Should().Be("tile-18");
     }
 
@@ -85,21 +85,21 @@ public class CheckersBasicMovementTests
     {
         // arrange
         var progress = new CheckersGameBuilder().Compile();
-        
+
         // assert initial - black is active
         progress.State.TryGetActivePlayer(out var player1);
         player1!.Id.Should().Be(CheckersIds.Players.Black);
 
         // act - black moves
         progress = progress.Move("black-piece-9", "tile-13");
-        
+
         // assert - white is now active
         progress.State.TryGetActivePlayer(out var player2);
         player2!.Id.Should().Be(CheckersIds.Players.White);
 
         // act - white moves
         progress = progress.Move("white-piece-1", "tile-17");
-        
+
         // assert - black is active again
         progress.State.TryGetActivePlayer(out var player3);
         player3!.Id.Should().Be(CheckersIds.Players.Black);

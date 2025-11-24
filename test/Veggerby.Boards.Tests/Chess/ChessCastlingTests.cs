@@ -2,8 +2,8 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
-using static Veggerby.Boards.Chess.ChessIds.Tiles;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
 namespace Veggerby.Boards.Tests.Chess;
 
@@ -33,7 +33,7 @@ public class ChessCastlingTests
         progress = progress.Move(WhiteBishop2, E2);
         progress = progress.Move(BlackPawn3, C6);
         // Attempt castling using explicit helper
-        progress = progress.Castle(ChessIds.Players.White, kingSide: true);
+        progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: true);
         // assert
         var king = progress.Game.GetPiece(WhiteKing).EnsureNotNull();
         var rook = progress.Game.GetPiece(WhiteRook2).EnsureNotNull();
@@ -57,7 +57,7 @@ public class ChessCastlingTests
         var progress = new ChessGameBuilder().Compile();
         var before = progress.State;
         // act & assert (malformed castling attempt should raise invalid event exception due to path blockage)
-        var ex = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: false));
+        var ex = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: false));
         ex.Should().NotBeNull();
         ex.Should().BeOfType<InvalidGameEventException>();
         // state unchanged

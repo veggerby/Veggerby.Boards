@@ -7,6 +7,7 @@ using Veggerby.Boards.Tests.TestHelpers;
 
 using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
 
+using Veggerby.Boards.Chess.Extensions;
 namespace Veggerby.Boards.Tests.Chess.MoveGeneration;
 
 public class ChessEndgameDetectorTests

@@ -3,7 +3,8 @@ using BenchmarkDotNet.Attributes;
 using Veggerby.Boards.Cards; // Deck & Card artifacts
 using Veggerby.Boards.DeckBuilding; // Deck-building builders & events
 using Veggerby.Boards.Events; // EndTurnSegmentEvent, EndGameEvent, ComputeScoresEvent
-using Veggerby.Boards.States; // TurnSegment enum
+using Veggerby.Boards.States; using Veggerby.Boards.DeckBuilding.Events;
+// TurnSegment enum
 
 namespace Veggerby.Boards.Benchmarks;
 

@@ -1,5 +1,6 @@
 using Veggerby.Boards.DeckBuilding;
 
+using Veggerby.Boards.Cards.Artifacts;
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 public class DeckBuildingBuilderHelpersTests
@@ -20,7 +21,7 @@ public class DeckBuildingBuilderHelpersTests
         var progress = builder.Compile();
 
         // assert
-        var deck = progress.Game.GetArtifact<Veggerby.Boards.Cards.Deck>("p1-deck");
+        var deck = progress.Game.GetArtifact<Veggerby.Boards.Cards.Artifacts.Deck>("p1-deck");
         deck.Should().NotBeNull();
     }
 }

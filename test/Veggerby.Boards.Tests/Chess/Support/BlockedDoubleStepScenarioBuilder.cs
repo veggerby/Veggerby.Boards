@@ -4,6 +4,8 @@ using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States.Conditions;
 
+using Veggerby.Boards.Chess.Conditions;
+using Veggerby.Boards.Chess.Mutators;
 namespace Veggerby.Boards.Tests.Chess.Support;
 
 /// <summary>

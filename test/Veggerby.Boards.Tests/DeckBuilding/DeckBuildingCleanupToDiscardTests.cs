@@ -7,6 +7,7 @@ using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Support; using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.Cards.Events;
 using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.Events;
 // TurnStateAssertions
 
 namespace Veggerby.Boards.Tests.DeckBuilding;

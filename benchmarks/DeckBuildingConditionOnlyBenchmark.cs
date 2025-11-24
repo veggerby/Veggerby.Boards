@@ -5,6 +5,8 @@ using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events; // EndTurnSegmentEvent
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.Rules;
 namespace Veggerby.Boards.Benchmarks;
 
 /// <summary>

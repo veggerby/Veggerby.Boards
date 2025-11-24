@@ -1,9 +1,10 @@
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Conditions;
+using Veggerby.Boards.Chess.Mutators;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States.Conditions;
-
 namespace Veggerby.Boards.Tests.Chess.Support;
 
 /// <summary>
@@ -18,12 +19,12 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
     {
         BoardId = "chess-en-passant-scenario";
 
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
 
         // Active player projections: white starts, black inactive.
-        WithActivePlayer(ChessIds.Players.White, true);
-        WithActivePlayer(ChessIds.Players.Black, false);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, true);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black, false);
 
         // Reuse canonical directions
         AddDirection(Constants.Directions.North);
@@ -64,7 +65,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
 
         // Structural pawn patterns (white north, black south)
         AddPiece("white-pawn-test")
-            .WithOwner(ChessIds.Players.White)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.White))
             .HasDirection(Constants.Directions.North).Done()
             .HasPattern(Constants.Directions.North)
@@ -73,7 +74,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
             .HasDirection(Constants.Directions.NorthWest).Done();
 
         AddPiece("black-pawn-test")
-            .WithOwner(ChessIds.Players.Black)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.Black))
             .HasDirection(Constants.Directions.South).Done()
             .HasPattern(Constants.Directions.South)
@@ -84,7 +85,7 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         if (_includeAuxiliaryBlackPawn)
         {
             AddPiece("black-pawn-aux")
-                .WithOwner(ChessIds.Players.Black)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.Black))
                 .HasDirection(Constants.Directions.South).Done()
                 .HasPattern(Constants.Directions.South)
@@ -94,11 +95,11 @@ internal sealed class EnPassantScenarioBuilder(bool includeAuxiliaryBlackPawn = 
         }
 
         // Initial placement: white pawn on e2, black pawn on d4 (ready to capture e3 after double-step)
-        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
-        WithPiece("black-pawn-test").OnTile(ChessIds.Tiles.D4);
+        WithPiece("white-pawn-test").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+        WithPiece("black-pawn-test").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D4);
         if (_includeAuxiliaryBlackPawn)
         {
-            WithPiece("black-pawn-aux").OnTile(ChessIds.Tiles.H7);
+            WithPiece("black-pawn-aux").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H7);
         }
 
         // Chess extras baseline

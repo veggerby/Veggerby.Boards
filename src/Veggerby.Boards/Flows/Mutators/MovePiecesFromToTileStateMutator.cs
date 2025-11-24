@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
@@ -62,23 +62,51 @@ public class MovePiecesFromToTileStateMutator : IStateMutator<MovePieceGameEvent
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(@event);
-        var pieces = gameState.GetPiecesOnTile(@event.To);
 
+        var allPieces = gameState.GetPiecesOnTile(@event.To);
+        var pieces = new List<Piece>();
+
+        // Filter pieces by player ownership
         if (Player == PlayerOption.Self)
         {
-            pieces = [.. pieces.Where(x => x.Owner.Equals(@event.Piece.Owner))];
+            foreach (var piece in allPieces)
+            {
+                if (piece.Owner.Equals(@event.Piece.Owner))
+                {
+                    pieces.Add(piece);
+                }
+            }
         }
         else if (Player == PlayerOption.Opponent)
         {
-            pieces = [.. pieces.Where(x => !x.Owner.Equals(@event.Piece.Owner))];
+            foreach (var piece in allPieces)
+            {
+                if (!piece.Owner.Equals(@event.Piece.Owner))
+                {
+                    pieces.Add(piece);
+                }
+            }
+        }
+        else
+        {
+            foreach (var piece in allPieces)
+            {
+                pieces.Add(piece);
+            }
         }
 
-        if (MaxNumber is not null && pieces.Count() > MaxNumber.Value)
+        // Check max count constraint
+        if (MaxNumber is not null && pieces.Count > MaxNumber.Value)
         {
             return gameState;
         }
 
-        var newStates = pieces.Select(x => new PieceState(x, To));
+        // Build new states
+        var newStates = new List<PieceState>(pieces.Count);
+        foreach (var piece in pieces)
+        {
+            newStates.Add(new PieceState(piece, To));
+        }
 
         return gameState.Next(newStates);
     }

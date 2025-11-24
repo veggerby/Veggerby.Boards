@@ -4,7 +4,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Condition valid only when the move path length is exactly two relations.

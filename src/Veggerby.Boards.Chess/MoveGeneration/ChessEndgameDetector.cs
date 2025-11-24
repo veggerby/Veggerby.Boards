@@ -227,8 +227,8 @@ public sealed class ChessEndgameDetector
     {
         var isWhite = ChessPiece.IsWhite(_game, pawn.Id);
         var diagonalDirections = isWhite
-            ? new[] { Constants.Directions.NorthEast, Constants.Directions.NorthWest }
-            : new[] { Constants.Directions.SouthEast, Constants.Directions.SouthWest };
+            ? new[] { Veggerby.Boards.Constants.Directions.NorthEast, Veggerby.Boards.Constants.Directions.NorthWest }
+            : new[] { Veggerby.Boards.Constants.Directions.SouthEast, Veggerby.Boards.Constants.Directions.SouthWest };
 
         foreach (var diagDir in diagonalDirections)
         {
@@ -247,14 +247,14 @@ public sealed class ChessEndgameDetector
     {
         var knightOffsets = new[]
         {
-            (Constants.Directions.North, Constants.Directions.North, Constants.Directions.East),
-            (Constants.Directions.North, Constants.Directions.North, Constants.Directions.West),
-            (Constants.Directions.South, Constants.Directions.South, Constants.Directions.East),
-            (Constants.Directions.South, Constants.Directions.South, Constants.Directions.West),
-            (Constants.Directions.East, Constants.Directions.East, Constants.Directions.North),
-            (Constants.Directions.East, Constants.Directions.East, Constants.Directions.South),
-            (Constants.Directions.West, Constants.Directions.West, Constants.Directions.North),
-            (Constants.Directions.West, Constants.Directions.West, Constants.Directions.South)
+            (Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.East),
+            (Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.West),
+            (Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.East),
+            (Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.West),
+            (Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.North),
+            (Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.South),
+            (Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.North),
+            (Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.South)
         };
 
         foreach (var (first, second, third) in knightOffsets)
@@ -283,18 +283,18 @@ public sealed class ChessEndgameDetector
 
         if (diagonal)
         {
-            directions.Add(Constants.Directions.NorthEast);
-            directions.Add(Constants.Directions.NorthWest);
-            directions.Add(Constants.Directions.SouthEast);
-            directions.Add(Constants.Directions.SouthWest);
+            directions.Add(Veggerby.Boards.Constants.Directions.NorthEast);
+            directions.Add(Veggerby.Boards.Constants.Directions.NorthWest);
+            directions.Add(Veggerby.Boards.Constants.Directions.SouthEast);
+            directions.Add(Veggerby.Boards.Constants.Directions.SouthWest);
         }
 
         if (orthogonal)
         {
-            directions.Add(Constants.Directions.North);
-            directions.Add(Constants.Directions.South);
-            directions.Add(Constants.Directions.East);
-            directions.Add(Constants.Directions.West);
+            directions.Add(Veggerby.Boards.Constants.Directions.North);
+            directions.Add(Veggerby.Boards.Constants.Directions.South);
+            directions.Add(Veggerby.Boards.Constants.Directions.East);
+            directions.Add(Veggerby.Boards.Constants.Directions.West);
         }
 
         foreach (var direction in directions)
@@ -331,14 +331,14 @@ public sealed class ChessEndgameDetector
     {
         var directions = new[]
         {
-            Constants.Directions.North,
-            Constants.Directions.South,
-            Constants.Directions.East,
-            Constants.Directions.West,
-            Constants.Directions.NorthEast,
-            Constants.Directions.NorthWest,
-            Constants.Directions.SouthEast,
-            Constants.Directions.SouthWest
+            Veggerby.Boards.Constants.Directions.North,
+            Veggerby.Boards.Constants.Directions.South,
+            Veggerby.Boards.Constants.Directions.East,
+            Veggerby.Boards.Constants.Directions.West,
+            Veggerby.Boards.Constants.Directions.NorthEast,
+            Veggerby.Boards.Constants.Directions.NorthWest,
+            Veggerby.Boards.Constants.Directions.SouthEast,
+            Veggerby.Boards.Constants.Directions.SouthWest
         };
 
         foreach (var direction in directions)

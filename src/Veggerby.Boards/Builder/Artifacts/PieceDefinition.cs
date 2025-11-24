@@ -22,7 +22,10 @@ public class PieceDefinition(GameBuilder builder) : DefinitionBase(builder)
     /// <summary>
     /// Gets optional piece metadata if configured.
     /// </summary>
-    public IPieceMetadata? Metadata { get; private set; }
+    public IPieceMetadata? Metadata
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Sets the piece identifier.

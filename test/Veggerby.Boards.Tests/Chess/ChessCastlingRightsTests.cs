@@ -2,8 +2,8 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
-using static Veggerby.Boards.Chess.ChessIds.Tiles;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
 namespace Veggerby.Boards.Tests.Chess;
 
@@ -81,8 +81,8 @@ public class ChessCastlingRightsTests
         progress = progress.Move(BlackPawn6, F6); // ensure turn returns to white for castle attempt
 
         // act
-        var exKingSide = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: true));
-        var exQueenSide = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: false));
+        var exKingSide = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: true));
+        var exQueenSide = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: false));
 
         // assert
         exKingSide.Should().NotBeNull();

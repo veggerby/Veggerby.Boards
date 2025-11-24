@@ -5,7 +5,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Determines whether a king move attempt is a valid castling invocation.
@@ -59,8 +59,8 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         {
             return ConditionResponse.Ignore("Piece owner missing");
         }
-        var isWhite = owner.Id == ChessIds.Players.White;
-        var startTileId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
+        var isWhite = owner.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.White;
+        var startTileId = isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E8;
         if (from.Id != startTileId)
         {
             return ConditionResponse.Ignore("King not on initial square");
@@ -69,8 +69,8 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         // Supported destinations relative to e-file king start:
         // Kingside: e -> g (two squares toward h rook)
         // Queenside: e -> c (two squares toward a rook)
-        var kingSideTarget = isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8;
-        var queenSideTarget = isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8;
+        var kingSideTarget = isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8;
+        var queenSideTarget = isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8;
 
         var isKingSide = to.Id == kingSideTarget;
         var isQueenSide = to.Id == queenSideTarget;
@@ -103,14 +103,14 @@ public sealed class CastlingGameEventCondition : IGameEventCondition<MovePieceGa
         if (isKingSide)
         {
             pathCheckTiles = isWhite
-                ? new[] { ChessIds.Tiles.F1 } // only f1 between e1 and g1 (exclude rook h1)
-                : new[] { ChessIds.Tiles.F8 };
+                ? new[] { Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F1 } // only f1 between e1 and g1 (exclude rook h1)
+                : new[] { Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F8 };
         }
         else // queen side
         {
             pathCheckTiles = isWhite
-                ? new[] { ChessIds.Tiles.D1, ChessIds.Tiles.C1, ChessIds.Tiles.B1 } // exclude rook a1
-                : new[] { ChessIds.Tiles.D8, ChessIds.Tiles.C8, ChessIds.Tiles.B8 };
+                ? new[] { Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D1, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B1 } // exclude rook a1
+                : new[] { Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B8 };
         }
 
         foreach (var tileConst in pathCheckTiles)

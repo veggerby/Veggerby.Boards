@@ -7,8 +7,8 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
-using static Veggerby.Boards.Chess.ChessIds.Tiles;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Tiles;
 
 namespace Veggerby.Boards.Benchmarks;
 

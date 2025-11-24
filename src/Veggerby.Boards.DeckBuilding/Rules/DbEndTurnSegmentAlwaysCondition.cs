@@ -2,7 +2,7 @@ using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Permissive condition allowing any EndTurnSegmentEvent to advance during deck-building (future: restrict by active player, segment order).

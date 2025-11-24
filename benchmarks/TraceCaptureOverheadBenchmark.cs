@@ -2,8 +2,8 @@ using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Constants;
 using Veggerby.Boards.Flows.Events;
-using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Benchmarks;

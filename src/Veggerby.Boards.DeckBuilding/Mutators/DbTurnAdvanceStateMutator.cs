@@ -2,7 +2,7 @@ using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Minimal public wrapper applying turn advancement semantics for deck-building by delegating to internal logic pattern.

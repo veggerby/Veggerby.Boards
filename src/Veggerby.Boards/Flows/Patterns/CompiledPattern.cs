@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts.Relations;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Flows.Patterns;
 
 /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
@@ -31,9 +30,13 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
 
     private CompositeGameEventCondition(IEnumerable<IGameEventCondition<T>> childConditions, CompositeMode compositeMode)
     {
-        if (!childConditions.All(x => x is not null))
+        // Validate: no null conditions
+        foreach (var condition in childConditions)
         {
-            throw new ArgumentException("Conditions cannot contain null", nameof(childConditions));
+            if (condition is null)
+            {
+                throw new ArgumentException("Conditions cannot contain null", nameof(childConditions));
+            }
         }
 
         ChildConditions = [.. childConditions];
@@ -43,10 +46,25 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, T @event)
     {
-        var results = ChildConditions.Select(x => x.Evaluate(engine, state, @event)).ToList();
+        // Evaluate all child conditions
+        var results = new List<ConditionResponse>();
+        foreach (var condition in ChildConditions)
+        {
+            results.Add(condition.Evaluate(engine, state, @event));
+        }
 
         // Short-circuit: if all ignore, propagate ignore (rule not applicable for this event).
-        if (results.All(x => x.Result == ConditionResult.Ignore))
+        var allIgnore = true;
+        foreach (var result in results)
+        {
+            if (result.Result != ConditionResult.Ignore)
+            {
+                allIgnore = false;
+                break;
+            }
+        }
+
+        if (allIgnore)
         {
             return ConditionResponse.NotApplicable;
         }
@@ -56,12 +74,29 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
             // In ALL mode we now require every condition to be explicitly Valid.
             // Any Invalid fails. Any Ignore (with at least one Valid present, since all-ignore handled above)
             // yields a NotApplicable to suppress the rule (treat as silently ignored move attempt).
-            if (results.Any(x => x.Result == ConditionResult.Invalid))
+            var hasInvalid = false;
+            var hasIgnore = false;
+            var failures = new List<ConditionResponse>();
+
+            foreach (var result in results)
             {
-                return ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
+                if (result.Result == ConditionResult.Invalid)
+                {
+                    hasInvalid = true;
+                    failures.Add(result);
+                }
+                else if (result.Result == ConditionResult.Ignore)
+                {
+                    hasIgnore = true;
+                }
             }
 
-            if (results.Any(x => x.Result == ConditionResult.Ignore))
+            if (hasInvalid)
+            {
+                return ConditionResponse.Fail(failures);
+            }
+
+            if (hasIgnore)
             {
                 return ConditionResponse.NotApplicable;
             }
@@ -70,16 +105,32 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
         }
 
         // ANY mode (legacy semantics retained): at least one valid => valid, otherwise if all ignore => not applicable, else fail.
-        var anyValid = results.Any(x => x.Result == ConditionResult.Valid);
+        var anyValid = false;
+        var failures2 = new List<ConditionResponse>();
+
+        foreach (var result in results)
+        {
+            if (result.Result == ConditionResult.Valid)
+            {
+                anyValid = true;
+            }
+            else if (result.Result == ConditionResult.Invalid)
+            {
+                failures2.Add(result);
+            }
+        }
+
         if (anyValid)
         {
             return ConditionResponse.Valid;
         }
-        if (results.All(x => x.Result == ConditionResult.Ignore))
+
+        if (allIgnore)
         {
             return ConditionResponse.NotApplicable;
         }
-        return ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
+
+        return ConditionResponse.Fail(failures2);
     }
 
     /// <summary>
@@ -90,9 +141,24 @@ public class CompositeGameEventCondition<T> : IGameEventCondition<T> where T : I
     /// <returns>Composite condition.</returns>
     internal static IGameEventCondition<T> CreateCompositeCondition(CompositeMode mode, params IGameEventCondition<T>[] conditions)
     {
-        return new CompositeGameEventCondition<T>(
-            conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameEventCondition<T>)x).ChildConditions : [x]),
-            mode
-        );
+        // Flatten: expand any composites of the same mode
+        var flattened = new List<IGameEventCondition<T>>();
+        foreach (var condition in conditions)
+        {
+            if (condition.IsCompositeCondition(mode))
+            {
+                var composite = (CompositeGameEventCondition<T>)condition;
+                foreach (var child in composite.ChildConditions)
+                {
+                    flattened.Add(child);
+                }
+            }
+            else
+            {
+                flattened.Add(condition);
+            }
+        }
+
+        return new CompositeGameEventCondition<T>(flattened, mode);
     }
 }

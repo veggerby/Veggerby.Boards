@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 
 using Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.DeckBuilding.Events;
 using Veggerby.Boards.Flows.Events;
-
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>

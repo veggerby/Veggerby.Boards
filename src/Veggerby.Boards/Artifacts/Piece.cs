@@ -29,17 +29,26 @@ public class Piece : Artifact, IEquatable<Piece>
     /// <summary>
     /// Gets the owning player.
     /// </summary>
-    public Player Owner { get; }
+    public Player Owner
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the movement patterns associated with the piece.
     /// </summary>
-    public IEnumerable<IPattern> Patterns { get; }
+    public IEnumerable<IPattern> Patterns
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets optional game-specific metadata attached to this piece (e.g., chess role/color).
     /// </summary>
-    public IPieceMetadata? Metadata { get; }
+    public IPieceMetadata? Metadata
+    {
+        get;
+    }
 
     /// <inheritdoc />
     public bool Equals(Piece? other) => base.Equals(other);

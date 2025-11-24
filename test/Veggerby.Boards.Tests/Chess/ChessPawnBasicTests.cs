@@ -2,7 +2,7 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.TestHelpers;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
 
 namespace Veggerby.Boards.Tests.Chess;
 
@@ -22,7 +22,7 @@ public class ChessPawnBasicTests
         progress = progress.Move(WhitePawn5, "e3");
         // assert
         var pawn = progress.Game.GetPiece(WhitePawn5).EnsureNotNull();
-        progress.State.GetRequiredPieceState(pawn).CurrentTile.Id.Should().Be(ChessIds.Tiles.E3);
+        progress.State.GetRequiredPieceState(pawn).CurrentTile.Id.Should().Be(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3);
     }
 
     [Fact]

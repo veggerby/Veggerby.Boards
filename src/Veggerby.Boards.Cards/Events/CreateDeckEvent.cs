@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
+using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.Flows.Events;
-
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event declaring the initial deck state with piles and optional supply.

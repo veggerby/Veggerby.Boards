@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
-
 namespace Veggerby.Boards.Cards.Mutators;
 
 internal sealed class PeekCardsStateMutator : IStateMutator<PeekCardsEvent>

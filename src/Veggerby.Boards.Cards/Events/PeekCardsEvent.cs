@@ -1,8 +1,8 @@
 using System;
 
+using Veggerby.Boards.Cards.Artifacts;
 using Veggerby.Boards.Flows.Events;
-
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event requesting to view top N cards from a pile without removing them.

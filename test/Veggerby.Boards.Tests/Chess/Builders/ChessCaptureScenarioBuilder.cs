@@ -15,8 +15,8 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
     protected override void Build()
     {
         BoardId = "chess-capture-mini";
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
         AddDirection(Constants.Directions.North); // increasing rank toward black side
         AddDirection(Constants.Directions.South); // toward white side
 
@@ -36,17 +36,17 @@ internal sealed class ChessCaptureScenarioBuilder : GameBuilder
         }
 
         // Pieces (queen sliding north/south; target pawn stationary facing south for consistency though direction irrelevant here)
-        AddPiece(ChessIds.Pieces.WhiteQueen)
-                .WithOwner(ChessIds.Players.White)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
                 .HasDirection(Constants.Directions.North).CanRepeat()
                 .HasDirection(Constants.Directions.South).CanRepeat();
 
-        AddPiece(ChessIds.Pieces.BlackPawn5)
-                .WithOwner(ChessIds.Players.Black)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .HasDirection(Constants.Directions.South);
 
-        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile(ChessIds.Tiles.E1);
-        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile(ChessIds.Tiles.E7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E7);
 
         AddGamePhase("move")
             .If<NullGameStateCondition>()

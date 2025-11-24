@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.States;
 
 /// <summary>
 /// Aggregated supply statistics to avoid repeated dictionary scans for depletion checks.

@@ -1,6 +1,8 @@
 using BenchmarkDotNet.Attributes;
 
 using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Constants;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
@@ -26,14 +28,14 @@ public class DebugParityOverheadBenchmark
 
         // Build baseline (parity disabled)
         // parity flag removed – treat baseline identical
-        _baseline = new Chess.ChessGameBuilder().Compile();
+        _baseline = new ChessGameBuilder().Compile();
 
         // Build parity-enabled
-        _parity = new Chess.ChessGameBuilder().Compile();
+        _parity = new ChessGameBuilder().Compile();
 
-        var piece = _baseline.Game.GetPiece(Chess.ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("Benchmark setup: white pawn not found");
-        var from = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E2) ?? throw new InvalidOperationException("Benchmark setup: from tile e2 not found");
-        var to = _baseline.Game.GetTile(Chess.ChessIds.Tiles.E4) ?? throw new InvalidOperationException("Benchmark setup: to tile e4 not found");
+        var piece = _baseline.Game.GetPiece(ChessIds.Pieces.WhitePawn2) ?? throw new InvalidOperationException("Benchmark setup: white pawn not found");
+        var from = _baseline.Game.GetTile(ChessIds.Tiles.E2) ?? throw new InvalidOperationException("Benchmark setup: from tile e2 not found");
+        var to = _baseline.Game.GetTile(ChessIds.Tiles.E4) ?? throw new InvalidOperationException("Benchmark setup: to tile e4 not found");
         var path = new ResolveTilePathPatternVisitor(_baseline.Game.Board, from, to).ResultPath!;
         _event = new MovePieceGameEvent(piece, path);
     }

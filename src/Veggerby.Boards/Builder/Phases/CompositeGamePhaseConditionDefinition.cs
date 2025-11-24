@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Builder.Fluent;
 using Veggerby.Boards.Builder.Rules;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 

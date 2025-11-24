@@ -1,6 +1,6 @@
+using Veggerby.Boards.DeckBuilding.Artifacts;
 using Veggerby.Boards.States;
-
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.States;
 
 /// <summary>
 /// Passive state wrapper for a <see cref="CardDefinition"/> enabling deterministic lookup during scoring.

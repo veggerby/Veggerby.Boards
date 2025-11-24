@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Internal;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Simulation;

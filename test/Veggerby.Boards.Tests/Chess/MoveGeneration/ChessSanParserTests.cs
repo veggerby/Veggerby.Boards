@@ -61,10 +61,10 @@ public class ChessSanParserTests
 
         // Set up a position where file disambiguation is needed
         // Move knights to positions where both can reach the same square
-        progress = progress.Move(ChessIds.Pieces.WhiteKnight1, "c3"); // b1 -> c3
-        progress = progress.Move(ChessIds.Pieces.BlackPawn5, "e5");
-        progress = progress.Move(ChessIds.Pieces.WhiteKnight2, "e2"); // g1 -> e2
-        progress = progress.Move(ChessIds.Pieces.BlackKnight2, "f6");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight1, "c3"); // b1 -> c3
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5, "e5");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight2, "e2"); // g1 -> e2
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight2, "f6");
 
         var filter = new ChessLegalityFilter(progress.Game);
         var legalMoves = filter.GenerateLegalMoves(progress.State);
@@ -90,8 +90,8 @@ public class ChessSanParserTests
             // If the position doesn't create the ambiguity we expected, just verify basic disambiguation works
             // Try a simpler case - knights can be disambiguated by file in starting position
             var startingProgress = builder.Compile();
-            startingProgress = startingProgress.Move(ChessIds.Pieces.WhitePawn5, "e4");
-            startingProgress = startingProgress.Move(ChessIds.Pieces.BlackPawn5, "e5");
+            startingProgress = startingProgress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5, "e4");
+            startingProgress = startingProgress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5, "e5");
 
             var startFilter = new ChessLegalityFilter(startingProgress.Game);
             var startLegalMoves = startFilter.GenerateLegalMoves(startingProgress.State);
@@ -110,8 +110,8 @@ public class ChessSanParserTests
         var builder = new ChessGameBuilder();
         var progress = builder.Compile();
 
-        progress = progress.Move(ChessIds.Pieces.WhitePawn5, "e4");
-        progress = progress.Move(ChessIds.Pieces.BlackPawn4, "d5");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5, "e4");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn4, "d5");
 
         var filter = new ChessLegalityFilter(progress.Game);
         var legalMoves = filter.GenerateLegalMoves(progress.State);
@@ -134,12 +134,12 @@ public class ChessSanParserTests
         var progress = builder.Compile();
 
         // Clear path for castling
-        progress = progress.Move(ChessIds.Pieces.WhitePawn5, "e4");
-        progress = progress.Move(ChessIds.Pieces.BlackPawn5, "e5");
-        progress = progress.Move(ChessIds.Pieces.WhiteKnight2, "f3");
-        progress = progress.Move(ChessIds.Pieces.BlackKnight2, "f6");
-        progress = progress.Move(ChessIds.Pieces.WhiteBishop2, "e2");
-        progress = progress.Move(ChessIds.Pieces.BlackBishop2, "e7");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5, "e4");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5, "e5");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight2, "f3");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight2, "f6");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteBishop2, "e2");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackBishop2, "e7");
 
         var filter = new ChessLegalityFilter(progress.Game);
         var legalMoves = filter.GenerateLegalMoves(progress.State);
@@ -161,14 +161,14 @@ public class ChessSanParserTests
         var progress = builder.Compile();
 
         // Clear path for queenside castling
-        progress = progress.Move(ChessIds.Pieces.WhitePawn4, "d4");
-        progress = progress.Move(ChessIds.Pieces.BlackPawn4, "d5");
-        progress = progress.Move(ChessIds.Pieces.WhiteKnight1, "c3");
-        progress = progress.Move(ChessIds.Pieces.BlackKnight1, "c6");
-        progress = progress.Move(ChessIds.Pieces.WhiteBishop1, "e3");
-        progress = progress.Move(ChessIds.Pieces.BlackBishop1, "e6");
-        progress = progress.Move(ChessIds.Pieces.WhiteQueen, "d2");
-        progress = progress.Move(ChessIds.Pieces.BlackQueen, "d7");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn4, "d4");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn4, "d5");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight1, "c3");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight1, "c6");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteBishop1, "e3");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackBishop1, "e6");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen, "d2");
+        progress = progress.Move(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackQueen, "d7");
 
         var filter = new ChessLegalityFilter(progress.Game);
         var legalMoves = filter.GenerateLegalMoves(progress.State);
@@ -275,7 +275,7 @@ public class ChessSanParserTests
         progress = progress.MoveSan("e4");
 
         // assert
-        var pawn = progress.Game.GetPiece(ChessIds.Pieces.WhitePawn5);
+        var pawn = progress.Game.GetPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5);
         var pawnState = progress.State.GetState<Veggerby.Boards.States.PieceState>(pawn!);
         pawnState!.CurrentTile.Id.Should().Be("tile-e4");
     }
@@ -324,7 +324,7 @@ public class ChessSanParserTests
                           .MoveSan("Nf3");
 
         // assert
-        var knight = progress.Game.GetPiece(ChessIds.Pieces.WhiteKnight2);
+        var knight = progress.Game.GetPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight2);
         var knightState = progress.State.GetState<Veggerby.Boards.States.PieceState>(knight!);
         knightState!.CurrentTile.Id.Should().Be("tile-f3");
     }

@@ -1,5 +1,7 @@
 using System;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.States;
 
 /// <summary>

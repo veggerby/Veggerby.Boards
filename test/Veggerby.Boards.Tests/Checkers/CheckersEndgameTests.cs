@@ -11,7 +11,7 @@ public class CheckersEndgameTests
     {
         // arrange
         var progress = new CheckersGameBuilder().Compile();
-        
+
         // act - initial state should not be game over
         var isGameOver = progress.IsGameOver();
 
@@ -25,7 +25,7 @@ public class CheckersEndgameTests
         // arrange & act & assert
         // When all of one player's pieces are captured, the other player wins
         // This test will be implemented once capture mechanics are complete
-        
+
         true.Should().BeTrue(); // Placeholder
     }
 
@@ -35,7 +35,7 @@ public class CheckersEndgameTests
         // arrange & act & assert
         // If a player has pieces but cannot make any legal moves, they lose
         // This is similar to stalemate in chess but results in a loss, not a draw
-        
+
         true.Should().BeTrue(); // Placeholder
     }
 

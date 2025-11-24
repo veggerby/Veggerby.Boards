@@ -103,11 +103,11 @@ public class BitboardParityRegressionTests
             occ.Mask.Should().Be(naiveGlobal, $"global mask diverged after step {i} ({piece}->{to})");
 
             // per-player masks
-            var whiteMask = ComputeNaivePlayerMask(progress, ChessIds.Players.White);
-            var blackMask = ComputeNaivePlayerMask(progress, ChessIds.Players.Black);
+            var whiteMask = ComputeNaivePlayerMask(progress, Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+            var blackMask = ComputeNaivePlayerMask(progress, Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
             perPlayer.Should().NotBeNull();
-            var whiteEntry = perPlayer.Single(p => p.Key.Id == ChessIds.Players.White);
-            var blackEntry = perPlayer.Single(p => p.Key.Id == ChessIds.Players.Black);
+            var whiteEntry = perPlayer.Single(p => p.Key.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+            var blackEntry = perPlayer.Single(p => p.Key.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
             whiteEntry.Value.Should().NotBeNull();
             blackEntry.Value.Should().NotBeNull();
             var white = whiteEntry.Value.Mask;

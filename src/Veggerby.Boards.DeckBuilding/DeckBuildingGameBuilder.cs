@@ -8,6 +8,9 @@ using Veggerby.Boards.DeckBuilding.Mutators;
 using Veggerby.Boards.DeckBuilding.Rules;
 using Veggerby.Boards.DeckBuilding.States;
 using Veggerby.Boards.DeckBuilding.Artifacts;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.Cards.Events;
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>

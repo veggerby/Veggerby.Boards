@@ -2,6 +2,7 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.Cards.Events;
 namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>

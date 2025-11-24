@@ -5,7 +5,7 @@ using Veggerby.Boards.Chess;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
-using static Veggerby.Boards.Chess.ChessIds.Pieces;
+using static Veggerby.Boards.Chess.Constants.ChessIds.Pieces;
 
 namespace Veggerby.Boards.Tests.Chess;
 

@@ -4,7 +4,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Condition gating gain-from-supply operations: requires DeckState present, target pile exists, and supply contains the card id.

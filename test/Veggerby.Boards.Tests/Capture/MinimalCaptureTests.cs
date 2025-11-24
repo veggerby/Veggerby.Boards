@@ -23,9 +23,9 @@ public class MinimalCaptureTests
         var progress = new MinimalCaptureGameBuilder().Compile();
         var white = progress.Game.GetPiece("white-slider");
         var black = progress.Game.GetPiece("black-block");
-        var a1 = progress.Game.GetTile(ChessIds.Tiles.A1);
-        var a2 = progress.Game.GetTile(ChessIds.Tiles.A2);
-        var a3 = progress.Game.GetTile(ChessIds.Tiles.A3);
+        var a1 = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
+        var a2 = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A2);
+        var a3 = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A3);
         white.Should().NotBeNull();
         black.Should().NotBeNull();
         a1.Should().NotBeNull();

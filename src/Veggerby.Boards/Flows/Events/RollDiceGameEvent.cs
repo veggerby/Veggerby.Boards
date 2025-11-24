@@ -5,6 +5,8 @@ using System.Linq;
 
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Flows.Events;
 
 /// <summary>

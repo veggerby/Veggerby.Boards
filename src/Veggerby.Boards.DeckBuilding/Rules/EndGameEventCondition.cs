@@ -7,7 +7,9 @@ using Veggerby.Boards.Cards; // DeckState
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Allows <see cref="EndGameEvent"/> when a <see cref="ScoreState"/> has been produced (scoring completed) and no prior <see cref="GameEndedState"/> exists.

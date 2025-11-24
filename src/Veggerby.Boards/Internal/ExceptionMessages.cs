@@ -1,6 +1,6 @@
 using System;
 
-namespace Veggerby.Boards;
+namespace Veggerby.Boards.Internal;
 
 /// <summary>
 /// Central repository of standardized exception message text to ensure consistency across modules.

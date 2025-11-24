@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// Event registering a <see cref="CardDefinition"/> (metadata + victory points) for later scoring lookups.

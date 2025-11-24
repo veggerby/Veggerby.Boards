@@ -1,4 +1,4 @@
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Constants;
 
 /// <summary>
 /// Provides constant identifiers for chess tiles (board squares) and players.

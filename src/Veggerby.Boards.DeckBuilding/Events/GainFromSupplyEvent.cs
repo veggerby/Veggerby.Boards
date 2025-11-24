@@ -4,7 +4,7 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// Event representing a player gaining a specific card by id from the shared supply to a target pile in a deck.

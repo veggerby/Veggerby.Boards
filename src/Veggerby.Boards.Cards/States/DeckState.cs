@@ -4,7 +4,8 @@ using System.Linq;
 
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+namespace Veggerby.Boards.Cards.States;
 
 /// <summary>
 /// Immutable state representing ordered piles for a <see cref="Deck"/> and optional supply counts.

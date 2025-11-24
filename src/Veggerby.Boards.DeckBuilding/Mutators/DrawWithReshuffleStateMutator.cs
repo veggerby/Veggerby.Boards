@@ -5,7 +5,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Performs a draw from the draw pile into the hand, reshuffling discard into draw if needed using deterministic RNG.

@@ -27,20 +27,20 @@ internal sealed class MinimalCaptureGameBuilder : GameBuilder
     protected override void Build()
     {
         BoardId = "mini-capture";
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
         AddDirection(Constants.Directions.East);
 
         // Minimal forward-only chain a1 -> a2 -> a3 (single direction sufficient for path resolution)
-        AddTile(ChessIds.Tiles.A1).WithRelationTo(ChessIds.Tiles.A2).InDirection(Constants.Directions.East);
-        AddTile(ChessIds.Tiles.A2).WithRelationTo(ChessIds.Tiles.A3).InDirection(Constants.Directions.East);
-        AddTile(ChessIds.Tiles.A3);
+        AddTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1).WithRelationTo(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A2).InDirection(Constants.Directions.East);
+        AddTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A2).WithRelationTo(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A3).InDirection(Constants.Directions.East);
+        AddTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A3);
 
-        AddPiece("white-slider").WithOwner(ChessIds.Players.White).HasDirection(Constants.Directions.East).CanRepeat();
-        AddPiece("black-block").WithOwner(ChessIds.Players.Black).HasDirection(Constants.Directions.East);
+        AddPiece("white-slider").WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White).HasDirection(Constants.Directions.East).CanRepeat();
+        AddPiece("black-block").WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black).HasDirection(Constants.Directions.East);
 
-        WithPiece("white-slider").OnTile(ChessIds.Tiles.A1);
-        WithPiece("black-block").OnTile(ChessIds.Tiles.A3);
+        WithPiece("white-slider").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
+        WithPiece("black-block").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A3);
 
         AddGamePhase("move")
             .If<NullGameStateCondition>()

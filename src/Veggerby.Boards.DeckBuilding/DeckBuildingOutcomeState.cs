@@ -5,6 +5,7 @@ using System.Linq;
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.DeckBuilding.States;
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>

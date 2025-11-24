@@ -16,8 +16,8 @@ public class PathResolverParityTests
 
         var progress = new ChessGameBuilder().Compile();
         var rook = progress.Game.GetPiece("white-rook-1");
-        var from = progress.Game.GetTile(ChessIds.Tiles.A1);
-        var to = progress.Game.GetTile(ChessIds.Tiles.A4); // a1->a2->a3->a4 (geometric; occupancy not enforced at path layer)
+        var from = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
+        var to = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A4); // a1->a2->a3->a4 (geometric; occupancy not enforced at path layer)
         var resolver = progress.Engine.Capabilities?.PathResolver;
 
         // assert (setup)
@@ -46,8 +46,8 @@ public class PathResolverParityTests
 
         var progress = new ChessGameBuilder().Compile();
         var knight = progress.Game.GetPiece("white-knight-1");
-        var from = progress.Game.GetTile(ChessIds.Tiles.B1);
-        var to = progress.Game.GetTile(ChessIds.Tiles.C3);
+        var from = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B1);
+        var to = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C3);
         var resolver = progress.Engine.Capabilities?.PathResolver;
 
         // assert (setup)

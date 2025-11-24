@@ -27,7 +27,7 @@ public class OccupancyBehaviorTests
         fromState.Should().NotBeNull(); // sanity
         var from = fromState!.CurrentTile;
         // Target tile one rank forward.
-        var to = game.GetTile(ChessIds.Tiles.B3);
+        var to = game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B3);
         to.Should().NotBeNull();
         // Pre condition (ground truth via state): source occupied by piece, destination unoccupied.
         var allPieceStates = progress.State.GetStates<PieceState>().ToArray();

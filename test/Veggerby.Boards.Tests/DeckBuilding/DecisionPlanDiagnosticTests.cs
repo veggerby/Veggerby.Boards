@@ -9,6 +9,12 @@ using Veggerby.Boards.Flows.DecisionPlan;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules;
 
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.Artifacts;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
 namespace Veggerby.Boards.Tests.DeckBuilding;
 
 /// <summary>

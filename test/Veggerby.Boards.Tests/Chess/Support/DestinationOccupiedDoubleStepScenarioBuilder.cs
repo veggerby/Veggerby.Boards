@@ -15,11 +15,11 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
     {
         BoardId = "chess-destination-occupied-double-step";
 
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
 
-        WithActivePlayer(ChessIds.Players.White, true);
-        WithActivePlayer(ChessIds.Players.Black, false);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, true);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black, false);
 
         AddDirection(Constants.Directions.North);
         AddDirection(Constants.Directions.East);
@@ -73,7 +73,7 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
         }
 
         AddPiece("white-pawn-test")
-            .WithOwner(ChessIds.Players.White)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
             .HasDirection(Constants.Directions.North).Done()
             .HasPattern(Constants.Directions.North)
             .HasPattern(Constants.Directions.North, Constants.Directions.North)
@@ -82,11 +82,11 @@ internal sealed class DestinationOccupiedDoubleStepScenarioBuilder : GameBuilder
 
         // Opponent piece placed on e4 (double-step destination from e2)
         AddPiece("black-bishop-blocker")
-            .WithOwner(ChessIds.Players.Black)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
             .HasDirection(Constants.Directions.North).Done();
 
-        WithPiece("white-pawn-test").OnTile(ChessIds.Tiles.E2);
-        WithPiece("black-bishop-blocker").OnTile(ChessIds.Tiles.E4);
+        WithPiece("white-pawn-test").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+        WithPiece("black-bishop-blocker").OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E4);
 
         WithState(new ChessStateExtras(true, true, true, true, null, 0, 1, Array.Empty<string>()));
 

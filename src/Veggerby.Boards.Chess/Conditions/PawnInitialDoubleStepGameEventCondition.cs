@@ -5,7 +5,8 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Helpers;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Valid only if the move event represents a pawn attempting its initial two-square advance from the starting rank
@@ -49,12 +50,12 @@ public sealed class PawnInitialDoubleStepGameEventCondition : IGameEventConditio
 
         var dirId = dirs[0].Id;
         var isWhite = ChessPiece.IsWhite(engine.Game, @event.Piece.Id);
-        if (isWhite && dirId != Constants.Directions.North)
+        if (isWhite && dirId != Veggerby.Boards.Constants.Directions.North)
         {
             return ConditionResponse.Ignore("White double-step must be north");
         }
 
-        if (!isWhite && dirId != Constants.Directions.South)
+        if (!isWhite && dirId != Veggerby.Boards.Constants.Directions.South)
         {
             return ConditionResponse.Ignore("Black double-step must be south");
         }

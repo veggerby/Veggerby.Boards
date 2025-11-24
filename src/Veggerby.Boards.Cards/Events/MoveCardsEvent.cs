@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event moving cards from a source pile to a destination pile by count or explicit identities.

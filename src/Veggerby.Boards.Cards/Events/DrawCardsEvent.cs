@@ -2,7 +2,8 @@ using System;
 
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event requesting to draw a number of cards from a source pile into a destination pile.

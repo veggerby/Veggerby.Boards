@@ -5,7 +5,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Appends Hand and InPlay piles to Discard and empties the sources.

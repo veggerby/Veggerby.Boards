@@ -2,7 +2,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Ensures all specified cards are present in the Hand pile for trashing.

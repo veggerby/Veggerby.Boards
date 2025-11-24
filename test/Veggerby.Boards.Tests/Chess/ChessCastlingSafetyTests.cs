@@ -35,7 +35,7 @@ public class ChessCastlingSafetyTests
         extrasBefore.WhiteCanCastleQueenSide.Should().BeTrue();
 
         // act
-        var ex = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: true));
+        var ex = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: true));
 
         // assert
         ex.Should().NotBeNull();
@@ -80,7 +80,7 @@ public class ChessCastlingSafetyTests
         extrasBefore.WhiteCanCastleKingSide.Should().BeTrue();
 
         // act
-        var ex = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: false));
+        var ex = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: false));
 
         // assert
         ex.Should().NotBeNull();

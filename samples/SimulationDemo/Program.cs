@@ -26,20 +26,20 @@ static void RunChessDemo()
 
     // Opening sequence adapted to current engine (pawns = single step only): 1. e3 e6 2. Nf3 Nf6
     var nomenclature = ResolveNomenclature(progress.Game);
-    progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.WhitePawn5, ChessIds.Tiles.E2, ChessIds.Tiles.E3);
-    progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.BlackPawn5, ChessIds.Tiles.E7, ChessIds.Tiles.E6);
-    progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.WhiteKnight2, ChessIds.Tiles.G1, ChessIds.Tiles.F3);
-    progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.BlackKnight2, ChessIds.Tiles.G8, ChessIds.Tiles.F6);
+    progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3);
+    progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E7, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E6);
+    progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight2, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F3);
+    progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight2, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F6);
 
     // Simple capture demonstration: clear e-file then queen captures a pawn
     // Preconditions: white pawn on e3 blocks queen; move it further to e4 to free e3, then advance black pawn to e5 for capture scenario.
     // (Engine currently supports single-step pawn movement only.)
     try
     {
-        progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.WhitePawn5, ChessIds.Tiles.E3, ChessIds.Tiles.E4);
-        progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.BlackPawn5, ChessIds.Tiles.E6, ChessIds.Tiles.E5);
+        progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E3, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E4);
+        progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E6, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E5);
         // Queen path e1->e5 (multi-step) to capture black pawn
-        progress = ApplyMove(progress, nomenclature, ChessIds.Pieces.WhiteQueen, ChessIds.Tiles.E1, ChessIds.Tiles.E5);
+        progress = ApplyMove(progress, nomenclature, Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E5);
         // Show board after capture
         Console.WriteLine("Position after queen captures pawn on e5:");
         ChessBoardRenderer.Write(progress.Game, progress.State, Console.Out);

@@ -4,7 +4,7 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.Artifacts;
 
 /// <summary>
 /// Immutable deck artifact representing a collection of ordered piles of cards (e.g., draw, discard, hand, in-play).

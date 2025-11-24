@@ -5,7 +5,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Ensures a pawn single-step move is strictly forward (no diagonal). White forward = north, black forward = south.
@@ -33,12 +33,12 @@ public sealed class ForwardPawnDirectionGameEventCondition : IGameEventCondition
 
         var dir = moveEvent.Path.Directions.Single();
         var isWhite = ChessPiece.IsWhite(engine.Game, moveEvent.Piece.Id);
-        if (isWhite && dir.Id == Constants.Directions.North)
+        if (isWhite && dir.Id == Veggerby.Boards.Constants.Directions.North)
         {
             return ConditionResponse.Valid;
         }
 
-        if (!isWhite && dir.Id == Constants.Directions.South)
+        if (!isWhite && dir.Id == Veggerby.Boards.Constants.Directions.South)
         {
             return ConditionResponse.Valid;
         }

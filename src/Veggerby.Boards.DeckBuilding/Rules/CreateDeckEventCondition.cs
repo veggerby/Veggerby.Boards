@@ -2,7 +2,7 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Validates CreateDeckEvent payload for a deck: all declared piles must be present.

@@ -3,7 +3,7 @@ using System;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// End-of-turn cleanup event: moves all cards from Hand and InPlay into Discard.

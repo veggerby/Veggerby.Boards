@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Events;
 
+using Veggerby.Boards.DeckBuilding.Events;
 namespace Veggerby.Boards.DeckBuilding;
 
 /// <summary>

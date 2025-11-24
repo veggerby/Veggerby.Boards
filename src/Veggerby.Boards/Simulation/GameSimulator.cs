@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Simulation;
 
 /// <summary>

@@ -80,8 +80,8 @@ public class CompiledPatternAdjacencyCacheParityTests
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
-            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
+            var from = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E4);
             piece.Should().NotBeNull();
             from.Should().NotBeNull();
             to.Should().NotBeNull();
@@ -91,8 +91,8 @@ public class CompiledPatternAdjacencyCacheParityTests
         {
             var progress = builder.Compile();
             var piece = progress.Game.GetPiece("white-pawn-5");
-            var from = progress.Game.GetTile(ChessIds.Tiles.E2);
-            var to = progress.Game.GetTile(ChessIds.Tiles.E4);
+            var from = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+            var to = progress.Game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E4);
             piece.Should().NotBeNull();
             from.Should().NotBeNull();
             to.Should().NotBeNull();

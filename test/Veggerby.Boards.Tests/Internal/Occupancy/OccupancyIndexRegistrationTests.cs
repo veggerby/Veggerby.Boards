@@ -45,7 +45,7 @@ public class OccupancyIndexRegistrationTests
         // assert
 
         var (progress, occ) = Build(bitboards: true);
-        var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
+        var tile = progress.Game.Board.Tiles.First(t => t.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();
     }
 
@@ -59,7 +59,7 @@ public class OccupancyIndexRegistrationTests
         // assert
 
         var (progress, occ) = Build(bitboards: false);
-        var tile = progress.Game.Board.Tiles.First(t => t.Id == ChessIds.Tiles.A1);
+        var tile = progress.Game.Board.Tiles.First(t => t.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
         occ.IsEmpty(tile).Should().BeFalse();
     }
 }

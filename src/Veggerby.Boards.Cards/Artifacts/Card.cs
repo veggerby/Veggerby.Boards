@@ -1,6 +1,6 @@
 using Veggerby.Boards.Artifacts;
 
-namespace Veggerby.Boards.Cards;
+namespace Veggerby.Boards.Cards.Artifacts;
 
 /// <summary>
 /// Immutable card artifact representing a single card identity.

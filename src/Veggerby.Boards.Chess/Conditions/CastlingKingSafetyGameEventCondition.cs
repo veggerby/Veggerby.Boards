@@ -5,7 +5,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Validates that a castling king move is not performed while the king is in check, nor passes through or lands on an attacked square.
@@ -38,8 +38,8 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         {
             return ConditionResponse.Ignore("Not a king");
         }
-        var isWhite = @event.Piece.Owner?.Id == ChessIds.Players.White;
-        var startId = isWhite ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
+        var isWhite = @event.Piece.Owner?.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.White;
+        var startId = isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E8;
         if (@event.From?.Id != startId)
         {
             return ConditionResponse.Ignore("Not from initial square");
@@ -49,15 +49,15 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
             return ConditionResponse.Ignore("Missing destination");
         }
         var destId = @event.To.Id;
-        bool kingSide = destId == (isWhite ? ChessIds.Tiles.G1 : ChessIds.Tiles.G8);
-        bool queenSide = destId == (isWhite ? ChessIds.Tiles.C1 : ChessIds.Tiles.C8);
+        bool kingSide = destId == (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8);
+        bool queenSide = destId == (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8);
         if (!kingSide && !queenSide)
         {
             return ConditionResponse.Ignore("Not a castling target");
         }
 
         // define the three squares to validate
-        var middle = kingSide ? (isWhite ? ChessIds.Tiles.F1 : ChessIds.Tiles.F8) : (isWhite ? ChessIds.Tiles.D1 : ChessIds.Tiles.D8);
+        var middle = kingSide ? (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F8) : (isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
         var targets = new string[3];
         targets[0] = startId;
         targets[1] = middle;
@@ -67,7 +67,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
         bool IsTarget(string id) => id == targets[0] || id == targets[1] || id == targets[2];
 
         // Early exit search: iterate opponent pieces and return as soon as any target is attacked.
-        var opponent = isWhite ? ChessIds.Players.Black : ChessIds.Players.White;
+        var opponent = isWhite ? Veggerby.Boards.Chess.Constants.ChessIds.Players.Black : Veggerby.Boards.Chess.Constants.ChessIds.Players.White;
         foreach (var ps in state.GetStates<PieceState>())
         {
             if (ps.Artifact.Owner?.Id != opponent)
@@ -91,7 +91,7 @@ public sealed class CastlingKingSafetyGameEventCondition : IGameEventCondition<M
 
             if (isPawn)
             {
-                int dir = opponent == ChessIds.Players.White ? 1 : -1;
+                int dir = opponent == Veggerby.Boards.Chess.Constants.ChessIds.Players.White ? 1 : -1;
                 var pawnHit = CheckPawnAttack(file, rank, (char)(file + 1), rank + dir) ?? CheckPawnAttack(file, rank, (char)(file - 1), rank + dir);
                 if (pawnHit is not null)
                 {

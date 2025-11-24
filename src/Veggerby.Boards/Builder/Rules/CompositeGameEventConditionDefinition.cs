@@ -7,6 +7,8 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Builder.Rules;
 
 internal class CompositeGameEventConditionDefinition<T>(GameBuilder builder, IThenStateMutator<T> parent) : GameEventConditionDefinitionBase<T>(builder, parent), IGameEventConditionDefinitionAndOr<T> where T : IGameEvent

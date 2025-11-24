@@ -1,6 +1,6 @@
 using System;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Helpers;
 
 /// <summary>
 /// Utility helpers for parsing and constructing chess tile identifiers (tile-e4 etc.).

@@ -33,23 +33,23 @@ public class ChessGameBuilder : GameBuilder
         // Game
         BoardId = "chess";
 
-        AddPlayer(ChessIds.Players.White);
-        AddPlayer(ChessIds.Players.Black);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        AddPlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
 
         // Explicit active player projection: white begins.
-        WithActivePlayer(ChessIds.Players.White, true);
-        WithActivePlayer(ChessIds.Players.Black, false);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, true);
+        WithActivePlayer(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black, false);
 
         // Canonical orientation: white pieces move toward increasing rank numbers (north), black toward decreasing (south).
         // Directions are declared once; semantics in conditions/mutators use this canonical mapping.
-        AddDirection(Constants.Directions.North);
-        AddDirection(Constants.Directions.East);
-        AddDirection(Constants.Directions.South);
-        AddDirection(Constants.Directions.West);
-        AddDirection(Constants.Directions.NorthEast);
-        AddDirection(Constants.Directions.NorthWest);
-        AddDirection(Constants.Directions.SouthEast);
-        AddDirection(Constants.Directions.SouthWest);
+        AddDirection(Veggerby.Boards.Constants.Directions.North);
+        AddDirection(Veggerby.Boards.Constants.Directions.East);
+        AddDirection(Veggerby.Boards.Constants.Directions.South);
+        AddDirection(Veggerby.Boards.Constants.Directions.West);
+        AddDirection(Veggerby.Boards.Constants.Directions.NorthEast);
+        AddDirection(Veggerby.Boards.Constants.Directions.NorthWest);
+        AddDirection(Veggerby.Boards.Constants.Directions.SouthEast);
+        AddDirection(Veggerby.Boards.Constants.Directions.SouthWest);
 
         /*         N
          * (a,1) ----- (h,1)    WHITE
@@ -66,244 +66,244 @@ public class ChessGameBuilder : GameBuilder
             // Cardinal directions
             if (x > 0)
             {
-                tile.WithRelationTo($"tile-{GetChar(x)}{y + 1}").InDirection(Constants.Directions.West);
+                tile.WithRelationTo($"tile-{GetChar(x)}{y + 1}").InDirection(Veggerby.Boards.Constants.Directions.West);
             }
 
             if (x < 7)
             {
-                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 1}").InDirection(Constants.Directions.East);
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 1}").InDirection(Veggerby.Boards.Constants.Directions.East);
             }
 
             // Canonical relation mapping: increasing rank = north
             if (y < 7)
             {
-                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y + 2}").InDirection(Constants.Directions.North);
+                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y + 2}").InDirection(Veggerby.Boards.Constants.Directions.North);
             }
 
             if (y > 0)
             {
-                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y}").InDirection(Constants.Directions.South);
+                tile.WithRelationTo($"tile-{GetChar(x + 1)}{y}").InDirection(Veggerby.Boards.Constants.Directions.South);
             }
 
             // Diagonals
             if (x < 7 && y < 7)
             {
-                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 2}").InDirection(Constants.Directions.NorthEast);
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y + 2}").InDirection(Veggerby.Boards.Constants.Directions.NorthEast);
             }
 
             if (x > 0 && y < 7)
             {
-                tile.WithRelationTo($"tile-{GetChar(x)}{y + 2}").InDirection(Constants.Directions.NorthWest);
+                tile.WithRelationTo($"tile-{GetChar(x)}{y + 2}").InDirection(Veggerby.Boards.Constants.Directions.NorthWest);
             }
 
             if (x < 7 && y > 0)
             {
-                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y}").InDirection(Constants.Directions.SouthEast);
+                tile.WithRelationTo($"tile-{GetChar(x + 2)}{y}").InDirection(Veggerby.Boards.Constants.Directions.SouthEast);
             }
 
             if (x > 0 && y > 0)
             {
-                tile.WithRelationTo($"tile-{GetChar(x)}{y}").InDirection(Constants.Directions.SouthWest);
+                tile.WithRelationTo($"tile-{GetChar(x)}{y}").InDirection(Veggerby.Boards.Constants.Directions.SouthWest);
             }
         });
 
         // NOTE: Previous design used a hidden sink tile for captures; replaced by explicit CapturedPieceState
         // markers to avoid distorting board topology / bitboard density. Comment retained for historical context.
 
-        AddPiece(ChessIds.Pieces.WhiteQueen)
-            .WithOwner(ChessIds.Players.White)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Queen, ChessPieceColor.White))
-            .HasDirection(Constants.Directions.North).CanRepeat()
-            .HasDirection(Constants.Directions.East).CanRepeat()
-            .HasDirection(Constants.Directions.West).CanRepeat()
-            .HasDirection(Constants.Directions.South).CanRepeat()
-            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
-            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
-            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
-            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
+            .HasDirection(Veggerby.Boards.Constants.Directions.North).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.East).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.West).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.South).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).CanRepeat();
 
-        AddPiece(ChessIds.Pieces.WhiteKing)
-            .WithOwner(ChessIds.Players.White)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKing)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.King, ChessPieceColor.White))
-            .HasDirection(Constants.Directions.North).Done()
-            .HasDirection(Constants.Directions.East).Done()
-            .HasDirection(Constants.Directions.West).Done()
-            .HasDirection(Constants.Directions.South).Done()
-            .HasDirection(Constants.Directions.NorthEast).Done()
-            .HasDirection(Constants.Directions.NorthWest).Done()
-            .HasDirection(Constants.Directions.SouthEast).Done()
-            .HasDirection(Constants.Directions.SouthWest).Done();
+            .HasDirection(Veggerby.Boards.Constants.Directions.North).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.East).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.West).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.South).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).Done();
 
-        AddPiece(ChessIds.Pieces.BlackQueen)
-            .WithOwner(ChessIds.Players.Black)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackQueen)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Queen, ChessPieceColor.Black))
-            .HasDirection(Constants.Directions.North).CanRepeat()
-            .HasDirection(Constants.Directions.East).CanRepeat()
-            .HasDirection(Constants.Directions.West).CanRepeat()
-            .HasDirection(Constants.Directions.South).CanRepeat()
-            .HasDirection(Constants.Directions.NorthEast).CanRepeat()
-            .HasDirection(Constants.Directions.NorthWest).CanRepeat()
-            .HasDirection(Constants.Directions.SouthEast).CanRepeat()
-            .HasDirection(Constants.Directions.SouthWest).CanRepeat();
+            .HasDirection(Veggerby.Boards.Constants.Directions.North).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.East).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.West).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.South).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).CanRepeat()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).CanRepeat();
 
-        AddPiece(ChessIds.Pieces.BlackKing)
-            .WithOwner(ChessIds.Players.Black)
+        AddPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKing)
+            .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
             .WithMetadata(new ChessPieceMetadata(ChessPieceRole.King, ChessPieceColor.Black))
-            .HasDirection(Constants.Directions.North).Done()
-            .HasDirection(Constants.Directions.East).Done()
-            .HasDirection(Constants.Directions.West).Done()
-            .HasDirection(Constants.Directions.South).Done()
-            .HasDirection(Constants.Directions.NorthEast).Done()
-            .HasDirection(Constants.Directions.NorthWest).Done()
-            .HasDirection(Constants.Directions.SouthEast).Done()
-            .HasDirection(Constants.Directions.SouthWest).Done();
+            .HasDirection(Veggerby.Boards.Constants.Directions.North).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.East).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.West).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.South).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).Done()
+            .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).Done();
 
         // White pawns
         AddMultiplePieces(8, i => $"white-pawn-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.White)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.White))
                 // White forward = north (towards rank 8). Patterns are structural; legality gated by rule chain.
-                .HasDirection(Constants.Directions.North).Done()
-                .HasPattern(Constants.Directions.North)
-                .HasPattern(Constants.Directions.North, Constants.Directions.North)
-                .HasDirection(Constants.Directions.NorthEast).Done()
-                .HasDirection(Constants.Directions.NorthWest).Done();
+                .HasDirection(Veggerby.Boards.Constants.Directions.North).Done()
+                .HasPattern(Veggerby.Boards.Constants.Directions.North)
+                .HasPattern(Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North)
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).Done()
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).Done();
         });
 
         // Black pawns
         AddMultiplePieces(8, i => $"black-pawn-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.Black)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Pawn, ChessPieceColor.Black))
                 // Black forward = south (towards rank 1).
-                .HasDirection(Constants.Directions.South).Done()
-                .HasPattern(Constants.Directions.South)
-                .HasPattern(Constants.Directions.South, Constants.Directions.South)
-                .HasDirection(Constants.Directions.SouthEast).Done()
-                .HasDirection(Constants.Directions.SouthWest).Done();
+                .HasDirection(Veggerby.Boards.Constants.Directions.South).Done()
+                .HasPattern(Veggerby.Boards.Constants.Directions.South)
+                .HasPattern(Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South)
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).Done()
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).Done();
         });
 
         // White rooks
         AddMultiplePieces(2, i => $"white-rook-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.White)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Rook, ChessPieceColor.White))
-                .HasDirection(Constants.Directions.North).CanRepeat()
-                .HasDirection(Constants.Directions.East).CanRepeat()
-                .HasDirection(Constants.Directions.South).CanRepeat()
-                .HasDirection(Constants.Directions.West).CanRepeat();
+                .HasDirection(Veggerby.Boards.Constants.Directions.North).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.East).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.South).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.West).CanRepeat();
         });
 
         // White knights
         AddMultiplePieces(2, i => $"white-knight-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.White)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Knight, ChessPieceColor.White))
-                .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
-                .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
-                .HasPattern(Constants.Directions.East, Constants.Directions.North, Constants.Directions.North)
-                .HasPattern(Constants.Directions.East, Constants.Directions.South, Constants.Directions.South)
-                .HasPattern(Constants.Directions.North, Constants.Directions.East, Constants.Directions.East)
-                .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
-                .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
-                .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
+                .HasPattern(Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North)
+                .HasPattern(Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South)
+                .HasPattern(Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North)
+                .HasPattern(Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South)
+                .HasPattern(Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East)
+                .HasPattern(Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West)
+                .HasPattern(Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East)
+                .HasPattern(Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West);
         });
 
         // White bishops
         AddMultiplePieces(2, i => $"white-bishop-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.White)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.White)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Bishop, ChessPieceColor.White))
-                .HasDirection(Constants.Directions.NorthEast).CanRepeat()
-                .HasDirection(Constants.Directions.NorthWest).CanRepeat()
-                .HasDirection(Constants.Directions.SouthEast).CanRepeat()
-                .HasDirection(Constants.Directions.SouthWest).CanRepeat();
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).CanRepeat();
         });
 
         // Black rooks
         AddMultiplePieces(2, i => $"black-rook-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.Black)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Rook, ChessPieceColor.Black))
-                .HasDirection(Constants.Directions.North).CanRepeat()
-                .HasDirection(Constants.Directions.East).CanRepeat()
-                .HasDirection(Constants.Directions.South).CanRepeat()
-                .HasDirection(Constants.Directions.West).CanRepeat();
+                .HasDirection(Veggerby.Boards.Constants.Directions.North).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.East).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.South).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.West).CanRepeat();
         });
 
         // Black knights
         AddMultiplePieces(2, i => $"black-knight-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.Black)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Knight, ChessPieceColor.Black))
-                .HasPattern(Constants.Directions.West, Constants.Directions.North, Constants.Directions.North)
-                .HasPattern(Constants.Directions.West, Constants.Directions.South, Constants.Directions.South)
-                .HasPattern(Constants.Directions.East, Constants.Directions.North, Constants.Directions.North)
-                .HasPattern(Constants.Directions.East, Constants.Directions.South, Constants.Directions.South)
-                .HasPattern(Constants.Directions.North, Constants.Directions.East, Constants.Directions.East)
-                .HasPattern(Constants.Directions.North, Constants.Directions.West, Constants.Directions.West)
-                .HasPattern(Constants.Directions.South, Constants.Directions.East, Constants.Directions.East)
-                .HasPattern(Constants.Directions.South, Constants.Directions.West, Constants.Directions.West);
+                .HasPattern(Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North)
+                .HasPattern(Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South)
+                .HasPattern(Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North)
+                .HasPattern(Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South)
+                .HasPattern(Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East)
+                .HasPattern(Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West)
+                .HasPattern(Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East)
+                .HasPattern(Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West);
         });
 
         // Black bishops
         AddMultiplePieces(2, i => $"black-bishop-{i + 1}", (piece, _) =>
         {
             piece
-                .WithOwner(ChessIds.Players.Black)
+                .WithOwner(Veggerby.Boards.Chess.Constants.ChessIds.Players.Black)
                 .WithMetadata(new ChessPieceMetadata(ChessPieceRole.Bishop, ChessPieceColor.Black))
-                .HasDirection(Constants.Directions.NorthEast).CanRepeat()
-                .HasDirection(Constants.Directions.NorthWest).CanRepeat()
-                .HasDirection(Constants.Directions.SouthEast).CanRepeat()
-                .HasDirection(Constants.Directions.SouthWest).CanRepeat();
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthEast).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.NorthWest).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthEast).CanRepeat()
+                .HasDirection(Veggerby.Boards.Constants.Directions.SouthWest).CanRepeat();
         });
 
         // State
-        WithPiece(ChessIds.Pieces.WhiteRook1).OnTile(ChessIds.Tiles.A1);
-        WithPiece(ChessIds.Pieces.WhiteKnight1).OnTile(ChessIds.Tiles.B1);
-        WithPiece(ChessIds.Pieces.WhiteBishop1).OnTile(ChessIds.Tiles.C1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteBishop1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1);
         // Standard placement: queen on d-file, king on e-file
-        WithPiece(ChessIds.Pieces.WhiteQueen).OnTile(ChessIds.Tiles.D1);
-        WithPiece(ChessIds.Pieces.WhiteKing).OnTile(ChessIds.Tiles.E1);
-        WithPiece(ChessIds.Pieces.WhiteBishop2).OnTile(ChessIds.Tiles.F1);
-        WithPiece(ChessIds.Pieces.WhiteKnight2).OnTile(ChessIds.Tiles.G1);
-        WithPiece(ChessIds.Pieces.WhiteRook2).OnTile(ChessIds.Tiles.H1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteQueen).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKing).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteBishop2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKnight2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H1);
 
-        WithPiece(ChessIds.Pieces.WhitePawn1).OnTile(ChessIds.Tiles.A2);
-        WithPiece(ChessIds.Pieces.WhitePawn2).OnTile(ChessIds.Tiles.B2);
-        WithPiece(ChessIds.Pieces.WhitePawn3).OnTile(ChessIds.Tiles.C2);
-        WithPiece(ChessIds.Pieces.WhitePawn4).OnTile(ChessIds.Tiles.D2);
-        WithPiece(ChessIds.Pieces.WhitePawn5).OnTile(ChessIds.Tiles.E2);
-        WithPiece(ChessIds.Pieces.WhitePawn6).OnTile(ChessIds.Tiles.F2);
-        WithPiece(ChessIds.Pieces.WhitePawn7).OnTile(ChessIds.Tiles.G2);
-        WithPiece(ChessIds.Pieces.WhitePawn8).OnTile(ChessIds.Tiles.H2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn3).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn4).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn6).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn7).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G2);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn8).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H2);
 
-        WithPiece(ChessIds.Pieces.BlackPawn1).OnTile(ChessIds.Tiles.A7);
-        WithPiece(ChessIds.Pieces.BlackPawn2).OnTile(ChessIds.Tiles.B7);
-        WithPiece(ChessIds.Pieces.BlackPawn3).OnTile(ChessIds.Tiles.C7);
-        WithPiece(ChessIds.Pieces.BlackPawn4).OnTile(ChessIds.Tiles.D7);
-        WithPiece(ChessIds.Pieces.BlackPawn5).OnTile(ChessIds.Tiles.E7);
-        WithPiece(ChessIds.Pieces.BlackPawn6).OnTile(ChessIds.Tiles.F7);
-        WithPiece(ChessIds.Pieces.BlackPawn7).OnTile(ChessIds.Tiles.G7);
-        WithPiece(ChessIds.Pieces.BlackPawn8).OnTile(ChessIds.Tiles.H7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn3).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn4).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn5).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn6).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn7).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G7);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackPawn8).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H7);
 
-        WithPiece(ChessIds.Pieces.BlackRook1).OnTile(ChessIds.Tiles.A8);
-        WithPiece(ChessIds.Pieces.BlackKnight1).OnTile(ChessIds.Tiles.B8);
-        WithPiece(ChessIds.Pieces.BlackBishop1).OnTile(ChessIds.Tiles.C8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.B8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackBishop1).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8);
         // Standard placement: queen on d-file, king on e-file
-        WithPiece(ChessIds.Pieces.BlackQueen).OnTile(ChessIds.Tiles.D8);
-        WithPiece(ChessIds.Pieces.BlackKing).OnTile(ChessIds.Tiles.E8);
-        WithPiece(ChessIds.Pieces.BlackBishop2).OnTile(ChessIds.Tiles.F8);
-        WithPiece(ChessIds.Pieces.BlackKnight2).OnTile(ChessIds.Tiles.G8);
-        WithPiece(ChessIds.Pieces.BlackRook2).OnTile(ChessIds.Tiles.H8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackQueen).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKing).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackBishop2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.F8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKnight2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8);
+        WithPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook2).OnTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H8);
 
         // Chess specific extras (initial castling rights all true, no en-passant target, clocks reset)
         WithState(new ChessStateExtras(

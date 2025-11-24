@@ -2,7 +2,8 @@ using System;
 
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.Cards;
+using Veggerby.Boards.Cards.Artifacts;
+namespace Veggerby.Boards.Cards.Events;
 
 /// <summary>
 /// Event requesting to move discard pile to draw pile and shuffle.

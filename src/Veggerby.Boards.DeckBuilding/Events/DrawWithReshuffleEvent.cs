@@ -3,7 +3,7 @@ using System;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// Draws a specified number of cards from the draw pile into the hand pile.

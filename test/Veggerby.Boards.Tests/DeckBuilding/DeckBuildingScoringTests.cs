@@ -4,7 +4,13 @@ using Veggerby.Boards.Artifacts; // Player
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
-using Veggerby.Boards.States; // GameProgress
+using Veggerby.Boards.States; using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
+using Veggerby.Boards.DeckBuilding.Artifacts;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
+// GameProgress
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

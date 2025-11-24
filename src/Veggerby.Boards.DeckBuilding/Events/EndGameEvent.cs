@@ -1,6 +1,6 @@
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// Intentional event signaling the game should terminate (triggered after scoring in cleanup when max turns reached).

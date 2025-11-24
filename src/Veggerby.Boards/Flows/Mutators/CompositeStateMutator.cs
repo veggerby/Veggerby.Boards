@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Flows.Mutators;
 
 /// <summary>

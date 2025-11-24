@@ -6,7 +6,8 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+using Veggerby.Boards.Chess.Helpers;
+namespace Veggerby.Boards.Chess.Mutators;
 
 /// <summary>
 /// Extends normal movement mutator with chess extras bookkeeping (halfmove clock, fullmove number, moved piece ids, en-passant target management).
@@ -76,18 +77,18 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         // Derive active player defensively: prefer ActivePlayerState when present, else infer from mover color sequence assumption (white starts)
         string activeId = gameState.TryGetActivePlayer(out var ap) && ap is not null
             ? ap.Id
-            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? ChessIds.Players.White : ChessIds.Players.Black);
-        var fullmove = prevExtras.FullmoveNumber + (activeId == ChessIds.Players.Black ? 1 : 0);
+            : (ChessPiece.IsWhite(engine.Game, @event.Piece.Id) ? Veggerby.Boards.Chess.Constants.ChessIds.Players.White : Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
+        var fullmove = prevExtras.FullmoveNumber + (activeId == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black ? 1 : 0);
 
         // Castling rights revocation rules (movement):
         //  * Moving a king removes both rights for that color.
         //  * Moving a rook from its original starting square removes that side's right only.
-        bool whiteKingMoved = @event.Piece.Id == ChessIds.Pieces.WhiteKing;
-        bool blackKingMoved = @event.Piece.Id == ChessIds.Pieces.BlackKing;
-        bool whiteRookFromA1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook1 && originalFromTile?.Id == ChessIds.Tiles.A1;
-        bool whiteRookFromH1 = @event.Piece.Id == ChessIds.Pieces.WhiteRook2 && originalFromTile?.Id == ChessIds.Tiles.H1;
-        bool blackRookFromA8 = @event.Piece.Id == ChessIds.Pieces.BlackRook1 && originalFromTile?.Id == ChessIds.Tiles.A8;
-        bool blackRookFromH8 = @event.Piece.Id == ChessIds.Pieces.BlackRook2 && originalFromTile?.Id == ChessIds.Tiles.H8;
+        bool whiteKingMoved = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteKing;
+        bool blackKingMoved = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackKing;
+        bool whiteRookFromA1 = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook1 && originalFromTile?.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A1;
+        bool whiteRookFromH1 = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhiteRook2 && originalFromTile?.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H1;
+        bool blackRookFromA8 = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook1 && originalFromTile?.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.A8;
+        bool blackRookFromH8 = @event.Piece.Id == Veggerby.Boards.Chess.Constants.ChessIds.Pieces.BlackRook2 && originalFromTile?.Id == Veggerby.Boards.Chess.Constants.ChessIds.Tiles.H8;
 
         var rightsAdjusted = RevokeRights(prevExtras, whiteKingMoved, blackKingMoved, whiteRookFromA1, whiteRookFromH1, blackRookFromA8, blackRookFromH8);
         var newExtras = rightsAdjusted with

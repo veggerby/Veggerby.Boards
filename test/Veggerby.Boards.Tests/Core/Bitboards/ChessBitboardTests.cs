@@ -28,8 +28,8 @@ public class ChessBitboardTests
         perPlayer.Should().NotBeNull();
         perPlayer!.Count.Should().Be(2);
         perPlayer.Should().NotBeNull();
-        var whitePair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.White);
-        var blackPair = perPlayer.Single(k => k.Key.Id == ChessIds.Players.Black);
+        var whitePair = perPlayer.Single(k => k.Key.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.White);
+        var blackPair = perPlayer.Single(k => k.Key.Id == Veggerby.Boards.Chess.Constants.ChessIds.Players.Black);
         whitePair.Value.Should().NotBeNull();
         blackPair.Value.Should().NotBeNull();
         var white = whitePair.Value.PopCount();

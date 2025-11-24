@@ -8,6 +8,8 @@ using Veggerby.Boards.Builder.Phases;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Builder.Rules;
 
 internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition parent) : DefinitionBase(builder), IGameEventRuleDefinitionsWithOption

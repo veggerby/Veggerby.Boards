@@ -4,7 +4,10 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.DeckBuilding;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.States;
-using Veggerby.Boards.Tests.Support; // TurnStateAssertions
+using Veggerby.Boards.Tests.Support; using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.States;
+// TurnStateAssertions
 
 namespace Veggerby.Boards.Tests.DeckBuilding;
 

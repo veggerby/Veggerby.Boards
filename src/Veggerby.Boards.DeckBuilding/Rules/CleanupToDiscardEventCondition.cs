@@ -2,7 +2,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Rules;
 
 /// <summary>
 /// Validates cleanup prerequisites: deck exists and required piles are present.

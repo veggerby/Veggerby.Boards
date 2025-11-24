@@ -9,6 +9,8 @@ using Veggerby.Boards.Builder.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.Builder.Phases;
 
 internal class CompositeGamePhaseConditionDefinition(GameBuilder builder, IThenGameEventRule parent) : GamePhaseConditionDefinitionBase(builder, parent), IGamePhaseConditionDefinition

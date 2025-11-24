@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Events;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Events;
 
 /// <summary>
 /// Event representing trashing (removing from the game) specific cards from the Hand pile.

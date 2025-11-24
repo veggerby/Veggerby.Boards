@@ -5,7 +5,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Removes specified cards from the Hand pile and returns a new DeckState.

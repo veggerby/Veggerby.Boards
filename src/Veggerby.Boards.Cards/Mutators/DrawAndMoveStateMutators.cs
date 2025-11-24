@@ -5,6 +5,9 @@ using System.Linq;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.Artifacts;
+using Veggerby.Boards.Cards.States;
 namespace Veggerby.Boards.Cards.Mutators;
 
 internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>

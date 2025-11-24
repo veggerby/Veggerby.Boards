@@ -5,7 +5,9 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.Events;
+using Veggerby.Boards.DeckBuilding.States;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Mutator applying a gain-from-supply by decrementing the supply and appending the card to the target pile.

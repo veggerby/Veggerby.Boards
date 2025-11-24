@@ -5,6 +5,8 @@ using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 
+using Veggerby.Boards.Internal;
+
 namespace Veggerby.Boards.States.Conditions;
 
 /// <summary>

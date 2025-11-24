@@ -5,6 +5,8 @@ using Veggerby.Boards.Cards.Mutators;
 using Veggerby.Boards.Cards.Rules;
 using Veggerby.Boards.States.Conditions;
 
+using Veggerby.Boards.Cards.Events;
+using Veggerby.Boards.Cards.Artifacts;
 namespace Veggerby.Boards.Cards;
 
 /// <summary>

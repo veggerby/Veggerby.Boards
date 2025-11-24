@@ -81,8 +81,8 @@ public class ChessCastlingRightsTests
         progress = progress.Move(BlackPawn6, F6); // ensure turn returns to white for castle attempt
 
         // act
-        var exKingSide = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: true));
-        var exQueenSide = Record.Exception(() => progress = progress.Castle(ChessIds.Players.White, kingSide: false));
+        var exKingSide = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: true));
+        var exQueenSide = Record.Exception(() => progress = progress.Castle(Veggerby.Boards.Chess.Constants.ChessIds.Players.White, kingSide: false));
 
         // assert
         exKingSide.Should().NotBeNull();

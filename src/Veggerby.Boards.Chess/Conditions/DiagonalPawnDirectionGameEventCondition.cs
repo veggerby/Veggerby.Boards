@@ -5,7 +5,7 @@ using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Conditions;
 
 /// <summary>
 /// Valid when a pawn move is a single-step diagonal forward (relative to its color).
@@ -40,14 +40,14 @@ public sealed class DiagonalPawnDirectionGameEventCondition : IGameEventConditio
         var isWhite = ChessPiece.IsWhite(engine.Game, moveEvent.Piece.Id);
         if (isWhite)
         {
-            if (dir.Id is Constants.Directions.NorthEast or Constants.Directions.NorthWest)
+            if (dir.Id is Veggerby.Boards.Constants.Directions.NorthEast or Veggerby.Boards.Constants.Directions.NorthWest)
             {
                 return ConditionResponse.Valid;
             }
         }
         else
         {
-            if (dir.Id is Constants.Directions.SouthEast or Constants.Directions.SouthWest)
+            if (dir.Id is Veggerby.Boards.Constants.Directions.SouthEast or Veggerby.Boards.Constants.Directions.SouthWest)
             {
                 return ConditionResponse.Valid;
             }

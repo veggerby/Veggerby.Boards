@@ -1,7 +1,7 @@
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.States;
 
 /// <summary>
 /// Immutable score snapshot for a player produced exactly once at scoring time.

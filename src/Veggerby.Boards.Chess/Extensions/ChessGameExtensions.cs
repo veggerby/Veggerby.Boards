@@ -6,7 +6,7 @@ using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.Chess;
+namespace Veggerby.Boards.Chess.Extensions;
 
 /// <summary>
 /// Chess-specific <see cref="GameProgress"/> extension methods.
@@ -17,13 +17,13 @@ public static partial class GameExtensions
     /// Explicit chess castling helper (king side or queen side) removing reliance on synthetic path inside generic Move.
     /// </summary>
     /// <param name="progress">Game progress.</param>
-    /// <param name="color">ChessIds.Players.White or ChessIds.Players.Black.</param>
+    /// <param name="color">Veggerby.Boards.Chess.Constants.ChessIds.Players.White or Veggerby.Boards.Chess.Constants.ChessIds.Players.Black.</param>
     /// <param name="kingSide">True for king-side, false for queen-side.</param>
     public static GameProgress Castle(this GameProgress progress, string color, bool kingSide)
     {
         ArgumentNullException.ThrowIfNull(progress);
         ArgumentNullException.ThrowIfNull(color);
-        var kingId = color + ChessIds.PieceSuffixes.King;
+        var kingId = color + Veggerby.Boards.Chess.Constants.ChessIds.PieceSuffixes.King;
         var game = progress.Game;
         var king = game.GetPiece(kingId);
         if (king is null)
@@ -36,16 +36,16 @@ public static partial class GameExtensions
             return progress;
         }
         var start = kingState.CurrentTile.Id;
-        var expectedStart = color == ChessIds.Players.White ? ChessIds.Tiles.E1 : ChessIds.Tiles.E8;
+        var expectedStart = color == Veggerby.Boards.Chess.Constants.ChessIds.Players.White ? Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E1 : Veggerby.Boards.Chess.Constants.ChessIds.Tiles.E8;
 
         if (start != expectedStart)
         {
             return progress;
         }
 
-        var destination = color == ChessIds.Players.White
-            ? (kingSide ? game.GetTile(ChessIds.Tiles.G1) : game.GetTile(ChessIds.Tiles.C1))
-            : (kingSide ? game.GetTile(ChessIds.Tiles.G8) : game.GetTile(ChessIds.Tiles.C8));
+        var destination = color == Veggerby.Boards.Chess.Constants.ChessIds.Players.White
+            ? (kingSide ? game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G1) : game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C1))
+            : (kingSide ? game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.G8) : game.GetTile(Veggerby.Boards.Chess.Constants.ChessIds.Tiles.C8));
         if (destination is null)
         {
             return progress;
@@ -57,7 +57,7 @@ public static partial class GameExtensions
         int step = fromFile < toFile ? 1 : -1;
         var rank = start[6];
         var relations = new List<TileRelation>();
-        var dirId = step == 1 ? Constants.Directions.East : Constants.Directions.West;
+        var dirId = step == 1 ? Veggerby.Boards.Constants.Directions.East : Veggerby.Boards.Constants.Directions.West;
         var direction = new Direction(dirId);
         var current = kingState.CurrentTile;
 

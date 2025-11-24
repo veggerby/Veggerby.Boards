@@ -5,7 +5,8 @@ using Veggerby.Boards.Cards;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
 
-namespace Veggerby.Boards.DeckBuilding;
+using Veggerby.Boards.DeckBuilding.States;
+namespace Veggerby.Boards.DeckBuilding.Mutators;
 
 /// <summary>
 /// Creates or replaces the DeckState for a deck using the provided piles and optional supply.

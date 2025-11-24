@@ -39,7 +39,7 @@ public class ChessCaptureConditionTests
 
         // assert
 
-        var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D7);
+        var (state, evt) = BuildEvent(WhiteQueen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D7);
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationHasOpponentPieceGameEventCondition();
         state.GetPiecesOnTile(evt.To!).Any(p => !p.Owner.Equals(evt.Piece.Owner)).Should().BeTrue();
@@ -60,7 +60,7 @@ public class ChessCaptureConditionTests
 
         // assert
 
-        var (state, evt) = BuildEvent(WhiteQueen, ChessIds.Tiles.D2); // friendly occupied -> not opponent
+        var (state, evt) = BuildEvent(WhiteQueen, Veggerby.Boards.Chess.Constants.ChessIds.Tiles.D2); // friendly occupied -> not opponent
         var engine = new ChessGameBuilder().Compile().Engine;
         var condition = new DestinationHasOpponentPieceGameEventCondition();
 

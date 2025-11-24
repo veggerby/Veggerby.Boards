@@ -120,7 +120,7 @@ public sealed class ChessMoveGenerator
         }
 
         var isWhite = ChessPiece.IsWhite(_game, piece.Id);
-        var forwardDirection = isWhite ? Constants.Directions.North : Constants.Directions.South;
+        var forwardDirection = isWhite ? Veggerby.Boards.Constants.Directions.North : Veggerby.Boards.Constants.Directions.South;
         var forward = GetRelatedTile(from, forwardDirection);
 
         if (forward is not null && !IsOccupied(state, forward))
@@ -146,8 +146,8 @@ public sealed class ChessMoveGenerator
         }
 
         var diagonalDirections = isWhite
-            ? new[] { Constants.Directions.NorthEast, Constants.Directions.NorthWest }
-            : new[] { Constants.Directions.SouthEast, Constants.Directions.SouthWest };
+            ? new[] { Veggerby.Boards.Constants.Directions.NorthEast, Veggerby.Boards.Constants.Directions.NorthWest }
+            : new[] { Veggerby.Boards.Constants.Directions.SouthEast, Veggerby.Boards.Constants.Directions.SouthWest };
 
         foreach (var diagDir in diagonalDirections)
         {
@@ -188,14 +188,14 @@ public sealed class ChessMoveGenerator
 
         var knightOffsets = new[]
         {
-            (Constants.Directions.North, Constants.Directions.North, Constants.Directions.East),
-            (Constants.Directions.North, Constants.Directions.North, Constants.Directions.West),
-            (Constants.Directions.South, Constants.Directions.South, Constants.Directions.East),
-            (Constants.Directions.South, Constants.Directions.South, Constants.Directions.West),
-            (Constants.Directions.East, Constants.Directions.East, Constants.Directions.North),
-            (Constants.Directions.East, Constants.Directions.East, Constants.Directions.South),
-            (Constants.Directions.West, Constants.Directions.West, Constants.Directions.North),
-            (Constants.Directions.West, Constants.Directions.West, Constants.Directions.South)
+            (Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.East),
+            (Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.North, Veggerby.Boards.Constants.Directions.West),
+            (Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.East),
+            (Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.South, Veggerby.Boards.Constants.Directions.West),
+            (Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.North),
+            (Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.East, Veggerby.Boards.Constants.Directions.South),
+            (Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.North),
+            (Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.West, Veggerby.Boards.Constants.Directions.South)
         };
 
         foreach (var (first, second, third) in knightOffsets)
@@ -243,18 +243,18 @@ public sealed class ChessMoveGenerator
 
         if (diagonal)
         {
-            directions.Add(Constants.Directions.NorthEast);
-            directions.Add(Constants.Directions.NorthWest);
-            directions.Add(Constants.Directions.SouthEast);
-            directions.Add(Constants.Directions.SouthWest);
+            directions.Add(Veggerby.Boards.Constants.Directions.NorthEast);
+            directions.Add(Veggerby.Boards.Constants.Directions.NorthWest);
+            directions.Add(Veggerby.Boards.Constants.Directions.SouthEast);
+            directions.Add(Veggerby.Boards.Constants.Directions.SouthWest);
         }
 
         if (orthogonal)
         {
-            directions.Add(Constants.Directions.North);
-            directions.Add(Constants.Directions.South);
-            directions.Add(Constants.Directions.East);
-            directions.Add(Constants.Directions.West);
+            directions.Add(Veggerby.Boards.Constants.Directions.North);
+            directions.Add(Veggerby.Boards.Constants.Directions.South);
+            directions.Add(Veggerby.Boards.Constants.Directions.East);
+            directions.Add(Veggerby.Boards.Constants.Directions.West);
         }
 
         foreach (var direction in directions)
@@ -300,14 +300,14 @@ public sealed class ChessMoveGenerator
 
         var directions = new[]
         {
-            Constants.Directions.North,
-            Constants.Directions.South,
-            Constants.Directions.East,
-            Constants.Directions.West,
-            Constants.Directions.NorthEast,
-            Constants.Directions.NorthWest,
-            Constants.Directions.SouthEast,
-            Constants.Directions.SouthWest
+            Veggerby.Boards.Constants.Directions.North,
+            Veggerby.Boards.Constants.Directions.South,
+            Veggerby.Boards.Constants.Directions.East,
+            Veggerby.Boards.Constants.Directions.West,
+            Veggerby.Boards.Constants.Directions.NorthEast,
+            Veggerby.Boards.Constants.Directions.NorthWest,
+            Veggerby.Boards.Constants.Directions.SouthEast,
+            Veggerby.Boards.Constants.Directions.SouthWest
         };
 
         foreach (var direction in directions)
@@ -372,7 +372,7 @@ public sealed class ChessMoveGenerator
 
     private Tile? GetCastleKingTarget(Tile from, bool kingSide)
     {
-        var direction = kingSide ? Constants.Directions.East : Constants.Directions.West;
+        var direction = kingSide ? Veggerby.Boards.Constants.Directions.East : Veggerby.Boards.Constants.Directions.West;
         var first = GetRelatedTile(from, direction);
 
         if (first is null)
@@ -385,7 +385,7 @@ public sealed class ChessMoveGenerator
 
     private Tile? GetCastleRookOrigin(Tile from, bool kingSide)
     {
-        var direction = kingSide ? Constants.Directions.East : Constants.Directions.West;
+        var direction = kingSide ? Veggerby.Boards.Constants.Directions.East : Veggerby.Boards.Constants.Directions.West;
         var current = from;
 
         while (true)
@@ -404,7 +404,7 @@ public sealed class ChessMoveGenerator
     private bool IsCastlingPathClear(GameState state, Tile kingOrigin, Tile kingTarget, Tile rookOrigin)
     {
         var kingSide = IsEastOf(kingTarget, kingOrigin);
-        var direction = kingSide ? Constants.Directions.East : Constants.Directions.West;
+        var direction = kingSide ? Veggerby.Boards.Constants.Directions.East : Veggerby.Boards.Constants.Directions.West;
         var current = kingOrigin;
 
         while (current != kingTarget)
@@ -424,7 +424,7 @@ public sealed class ChessMoveGenerator
             current = next;
         }
 
-        var rookTarget = GetRelatedTile(kingTarget, kingSide ? Constants.Directions.West : Constants.Directions.East);
+        var rookTarget = GetRelatedTile(kingTarget, kingSide ? Veggerby.Boards.Constants.Directions.West : Veggerby.Boards.Constants.Directions.East);
 
         if (rookTarget is null)
         {
@@ -435,7 +435,7 @@ public sealed class ChessMoveGenerator
 
         while (current != rookTarget)
         {
-            var next = GetRelatedTile(current, kingSide ? Constants.Directions.West : Constants.Directions.East);
+            var next = GetRelatedTile(current, kingSide ? Veggerby.Boards.Constants.Directions.West : Veggerby.Boards.Constants.Directions.East);
 
             if (next is null)
             {
@@ -459,7 +459,7 @@ public sealed class ChessMoveGenerator
 
         while (true)
         {
-            var next = GetRelatedTile(current, Constants.Directions.East);
+            var next = GetRelatedTile(current, Veggerby.Boards.Constants.Directions.East);
 
             if (next is null)
             {

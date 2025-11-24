@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Veggerby.Boards.Artifacts;
 
-namespace Veggerby.Boards.DeckBuilding;
+namespace Veggerby.Boards.DeckBuilding.Artifacts;
 
 /// <summary>
 /// Immutable definition of a card used by the deck-building module.

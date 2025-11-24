@@ -70,7 +70,7 @@ public static class ChessBoardRenderer
 
                 var parts = piece.Id.Split('-'); // e.g. white-pawn-5 or white-king
                 var role = parts.Length > 1 ? parts[1] : string.Empty;
-                var isWhite = parts[0] == ChessIds.Players.White;
+                var isWhite = parts[0] == Veggerby.Boards.Chess.Constants.ChessIds.Players.White;
                 char glyph;
 
                 if (useUnicode)

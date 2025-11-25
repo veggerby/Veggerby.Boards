@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Package Metadata -->
+  <PropertyGroup>
+    <Description>Monopoly implementation components for Veggerby.Boards built atop the core engine.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;monopoly;economic</PackageTags>
+    <PackageId>Veggerby.Boards.Monopoly</PackageId>
+  </PropertyGroup>
+
+  <!-- References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
+    <ProjectReference Include="..\Veggerby.Boards.Cards\Veggerby.Boards.Cards.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -22,7 +22,7 @@ public class MonopolyEndGameMutator : IStateMutator<IGameEvent>
         ArgumentNullException.ThrowIfNull(@event);
 
         var playerStates = gameState.GetStates<MonopolyPlayerState>().ToList();
-        var ownership = gameState.GetStates<PropertyOwnershipState>().FirstOrDefault();
+        var ownership = gameState.GetExtras<PropertyOwnershipState>();
 
         // Find the winner (last non-bankrupt player)
         var activePlayers = playerStates.Where(ps => !ps.IsBankrupt).ToList();

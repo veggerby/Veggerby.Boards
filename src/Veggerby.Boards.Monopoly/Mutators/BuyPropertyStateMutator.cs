@@ -24,7 +24,7 @@ public class BuyPropertyStateMutator : IStateMutator<BuyPropertyGameEvent>
         var squareInfo = MonopolyBoardConfiguration.GetSquare(@event.PropertyPosition);
 
         // Get current ownership state
-        var ownership = gameState.GetStates<PropertyOwnershipState>().FirstOrDefault()
+        var ownership = gameState.GetExtras<PropertyOwnershipState>()
             ?? new PropertyOwnershipState();
 
         // Update ownership
@@ -41,6 +41,9 @@ public class BuyPropertyStateMutator : IStateMutator<BuyPropertyGameEvent>
 
         var newPlayerState = playerState.AdjustCash(-squareInfo.Price);
 
-        return gameState.Next([newOwnership, newPlayerState]);
+        // Update ownership via ReplaceExtras and player state via Next
+        var stateWithOwnership = gameState.ReplaceExtras(newOwnership);
+
+        return stateWithOwnership.Next([newPlayerState]);
     }
 }

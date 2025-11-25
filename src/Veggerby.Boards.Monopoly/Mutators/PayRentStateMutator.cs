@@ -22,7 +22,7 @@ public class PayRentStateMutator : IStateMutator<PayRentGameEvent>
         ArgumentNullException.ThrowIfNull(@event);
 
         var squareInfo = MonopolyBoardConfiguration.GetSquare(@event.PropertyPosition);
-        var ownership = gameState.GetStates<PropertyOwnershipState>().FirstOrDefault();
+        var ownership = gameState.GetExtras<PropertyOwnershipState>();
 
         if (ownership is null)
         {

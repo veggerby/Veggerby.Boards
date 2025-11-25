@@ -36,12 +36,15 @@ public class EliminatePlayerStateMutator : IStateMutator<EliminatePlayerGameEven
         var bankruptPlayerState = playerState.MarkBankrupt();
         newStates.Add(bankruptPlayerState);
 
+        // Track if we need to update ownership
+        PropertyOwnershipState? newOwnership = null;
+
         // Transfer properties to the creditor (if any) or release to bank
-        var ownership = gameState.GetStates<PropertyOwnershipState>().FirstOrDefault();
+        var ownership = gameState.GetExtras<PropertyOwnershipState>();
         if (ownership is not null)
         {
             var playerProperties = ownership.GetPropertiesOwnedBy(@event.Player.Id).ToList();
-            var newOwnership = ownership;
+            newOwnership = ownership;
 
             foreach (var position in playerProperties)
             {
@@ -50,9 +53,10 @@ public class EliminatePlayerStateMutator : IStateMutator<EliminatePlayerGameEven
                 newOwnership = newOwnership.SetOwner(position, @event.BankruptedBy?.Id);
             }
 
-            if (playerProperties.Count > 0)
+            // Only track if we actually changed properties
+            if (playerProperties.Count == 0)
             {
-                newStates.Add(newOwnership);
+                newOwnership = null;
             }
         }
 
@@ -69,6 +73,15 @@ public class EliminatePlayerStateMutator : IStateMutator<EliminatePlayerGameEven
             }
         }
 
-        return gameState.Next(newStates);
+        // First apply player state changes
+        var result = gameState.Next(newStates);
+
+        // Then apply ownership changes if any
+        if (newOwnership is not null)
+        {
+            result = result.ReplaceExtras(newOwnership);
+        }
+
+        return result;
     }
 }

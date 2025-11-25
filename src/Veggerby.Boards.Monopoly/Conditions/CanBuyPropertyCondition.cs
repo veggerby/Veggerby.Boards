@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.Monopoly.Events;
@@ -41,15 +42,12 @@ public class CanBuyPropertyCondition : IGameEventCondition<BuyPropertyGameEvent>
         }
 
         // Check if player has enough cash
-        var playerState = state.GetExtras<MonopolyPlayerState>();
+        var playerState = state.GetStates<MonopolyPlayerState>()
+            .FirstOrDefault(ps => string.Equals(ps.Player.Id, @event.Player.Id, StringComparison.Ordinal));
+
         if (playerState is null)
         {
             return ConditionResponse.Ignore($"Player state not found for {@event.Player.Id}");
-        }
-
-        if (!string.Equals(playerState.Player.Id, @event.Player.Id, StringComparison.Ordinal))
-        {
-            return ConditionResponse.Ignore($"Player state mismatch for {@event.Player.Id}");
         }
 
         if (playerState.Cash < squareInfo.Price)

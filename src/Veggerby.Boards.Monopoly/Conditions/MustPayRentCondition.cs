@@ -30,7 +30,7 @@ public class MustPayRentCondition : IGameEventCondition<PayRentGameEvent>
         }
 
         // Check if property is owned
-        var ownership = state.GetStates<PropertyOwnershipState>().FirstOrDefault();
+        var ownership = state.GetExtras<PropertyOwnershipState>();
         if (ownership is null)
         {
             return ConditionResponse.Ignore("Property ownership state not found");

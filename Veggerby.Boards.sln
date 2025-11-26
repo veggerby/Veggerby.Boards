@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudoDemo", "samples\LudoDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veggerby.Boards.Monopoly", "src\Veggerby.Boards.Monopoly\Veggerby.Boards.Monopoly.csproj", "{660047AF-1DF1-4684-B0BC-7DFD58159653}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonopolyDemo", "samples\MonopolyDemo\MonopolyDemo.csproj", "{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -273,6 +275,18 @@ Global
 		{660047AF-1DF1-4684-B0BC-7DFD58159653}.Release|x64.Build.0 = Release|Any CPU
 		{660047AF-1DF1-4684-B0BC-7DFD58159653}.Release|x86.ActiveCfg = Release|Any CPU
 		{660047AF-1DF1-4684-B0BC-7DFD58159653}.Release|x86.Build.0 = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|x64.Build.0 = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Debug|x86.Build.0 = Debug|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|x64.ActiveCfg = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|x64.Build.0 = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|x86.ActiveCfg = Release|Any CPU
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -296,5 +310,6 @@ Global
 		{C15FD806-2065-4274-AEFA-962A40672CEA} = {BC741A71-537D-4C6E-8A36-00F6B6DC9DEF}
 		{9E57672A-A906-45AD-B481-9424A7AABC56} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 		{660047AF-1DF1-4684-B0BC-7DFD58159653} = {BC741A71-537D-4C6E-8A36-00F6B6DC9DEF}
+		{CF7EEBB4-18A6-4071-AA7C-A6D95CE3DC8D} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.Monopoly.Cards;
 using Veggerby.Boards.Monopoly.Conditions;
 using Veggerby.Boards.Monopoly.Events;
 using Veggerby.Boards.Monopoly.Mutators;
@@ -25,6 +27,7 @@ public class MonopolyGameBuilder : GameBuilder
     private readonly int _playerCount;
     private readonly int _startingCash;
     private readonly string[] _playerNames;
+    private readonly int _cardShuffleSeed;
 
     /// <summary>
     /// Default starting cash amount.
@@ -37,7 +40,8 @@ public class MonopolyGameBuilder : GameBuilder
     /// <param name="playerCount">Number of players (2-8). Default is 4.</param>
     /// <param name="startingCash">Starting cash per player. Default is $1500.</param>
     /// <param name="playerNames">Custom player names (optional).</param>
-    public MonopolyGameBuilder(int playerCount = 4, int startingCash = DefaultStartingCash, string[]? playerNames = null)
+    /// <param name="cardShuffleSeed">Seed for deterministic card shuffling. Default is 42.</param>
+    public MonopolyGameBuilder(int playerCount = 4, int startingCash = DefaultStartingCash, string[]? playerNames = null, int cardShuffleSeed = 42)
     {
         if (playerCount < 2 || playerCount > 8)
         {
@@ -52,6 +56,7 @@ public class MonopolyGameBuilder : GameBuilder
         _playerCount = playerCount;
         _startingCash = startingCash;
         _playerNames = playerNames ?? GetDefaultPlayerNames(playerCount);
+        _cardShuffleSeed = cardShuffleSeed;
 
         if (_playerNames.Length != playerCount)
         {
@@ -134,6 +139,17 @@ public class MonopolyGameBuilder : GameBuilder
         // Register empty property ownership state
         WithState(new PropertyOwnershipState());
 
+        // Register card deck states
+        var chanceDeck = new MonopolyCardDeckState(
+            MonopolyCardDecks.ChanceDeckId,
+            ShuffleCards(MonopolyCardDecks.ChanceCards, _cardShuffleSeed));
+
+        var communityChestDeck = new MonopolyCardDeckState(
+            MonopolyCardDecks.CommunityChestDeckId,
+            ShuffleCards(MonopolyCardDecks.CommunityChestCards, _cardShuffleSeed + 1));
+
+        WithState(new MonopolyCardsState(chanceDeck, communityChestDeck));
+
         // Game phases with endgame detection
         AddGamePhase("monopoly gameplay")
             .WithEndGameDetection(
@@ -190,7 +206,30 @@ public class MonopolyGameBuilder : GameBuilder
                     .If(game => new AlwaysValidCondition<EliminatePlayerGameEvent>())
                     .Then()
                         .Do<EliminatePlayerStateMutator>()
-                        .Do(game => new NextPlayerStateMutator(new NullGameStateCondition()));
+                        .Do(game => new NextPlayerStateMutator(new NullGameStateCondition()))
+                // Draw card
+                .ForEvent<DrawCardGameEvent>()
+                    .If<CanDrawCardCondition>()
+                    .Then()
+                        .Do(game => new DrawCardStateMutator(_cardShuffleSeed));
+    }
+
+    private static List<MonopolyCardDefinition> ShuffleCards(IReadOnlyList<MonopolyCardDefinition> cards, int seed)
+    {
+        var list = cards.ToList();
+
+        // Deterministic seeded shuffle using linear congruential generator
+        // This avoids using System.Random which is banned
+        uint state = (uint)seed;
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            // Linear congruential generator step
+            state = state * 1664525u + 1013904223u;
+            int j = (int)(state % (uint)(i + 1));
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+
+        return list;
     }
 
     /// <summary>

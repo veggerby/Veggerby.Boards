@@ -178,15 +178,33 @@ The following features are intentionally deferred to keep the initial implementa
 - **Trading**: Player-to-player property/cash trades
 - **Mortgages**: Property mortgaging for cash
 - **House Rules**: Free Parking pot, exact landing on Go
-- **Card Effects**: Full Chance/Community Chest deck implementation
+- **Card Movement Effects**: Movement-based card effects (Advance to Go, etc.) require additional game flow integration
 
 ### Future Enhancements
 These features may be added in future versions:
-- Full card deck integration (depends on Cards module)
 - Property improvement system (houses/hotels)
 - Auction mechanics
 - Trading interface
 - Mortgage/unmortgage operations
+
+## Card System
+
+### Implemented Card Effects
+- **CollectFromBank**: Player collects money from the bank
+- **PayToBank**: Player pays money to the bank
+- **CollectFromPlayers**: Player collects money from all other players
+- **PayToPlayers**: Player pays money to all other players
+- **GoToJail**: Player goes directly to jail
+- **GetOutOfJailFree**: Player keeps the card for later use
+
+### Card Decks
+Both Chance (16 cards) and Community Chest (16 cards) are fully defined with standard Monopoly card effects.
+
+### Deferred Card Effects
+- **AdvanceToPosition**: Move to a specific position
+- **AdvanceToNearestRailroad**: Move to nearest railroad, pay double rent
+- **AdvanceToNearestUtility**: Move to nearest utility, pay 10x dice
+- **PropertyRepairs**: Pay based on houses/hotels owned
 
 ## Module Structure
 
@@ -199,15 +217,21 @@ Veggerby.Boards.Monopoly/
 ├── RentCalculator.cs           # Rent calculation logic
 ├── SquareType.cs               # Square type enumeration
 ├── PropertyColorGroup.cs       # Color group enumeration
+├── Cards/                      # Card system
+│   ├── MonopolyCardDecks.cs    # Standard card definitions
+│   ├── MonopolyCardDefinition.cs # Card record type
+│   └── MonopolyCardEffect.cs   # Card effect enumeration
 ├── Conditions/                 # Validation conditions
 │   ├── AlwaysValidCondition.cs
 │   ├── CanBuyPropertyCondition.cs
+│   ├── CanDrawCardCondition.cs
 │   ├── CanGetOutOfJailCondition.cs
 │   ├── MonopolyGameEndedCondition.cs
 │   ├── MonopolyGameNotEndedCondition.cs
 │   └── MustPayRentCondition.cs
 ├── Events/                     # Game events
 │   ├── BuyPropertyGameEvent.cs
+│   ├── DrawCardGameEvent.cs
 │   ├── EliminatePlayerGameEvent.cs
 │   ├── GetOutOfJailGameEvent.cs
 │   ├── GoToJailGameEvent.cs
@@ -217,6 +241,7 @@ Veggerby.Boards.Monopoly/
 │   └── PayTaxGameEvent.cs
 ├── Mutators/                   # State mutators
 │   ├── BuyPropertyStateMutator.cs
+│   ├── DrawCardStateMutator.cs
 │   ├── EliminatePlayerStateMutator.cs
 │   ├── GetOutOfJailStateMutator.cs
 │   ├── GoToJailStateMutator.cs
@@ -227,6 +252,8 @@ Veggerby.Boards.Monopoly/
 │   └── PayTaxStateMutator.cs
 └── States/                     # State types
     ├── MonopolyBoardConfigState.cs
+    ├── MonopolyCardDeckState.cs
+    ├── MonopolyCardsState.cs
     ├── MonopolyPlayerState.cs
     └── PropertyOwnershipState.cs
 ```
@@ -239,6 +266,7 @@ The module includes comprehensive tests for:
 - Player state management
 - Property ownership operations
 - Game builder functionality
+- Card deck operations (draw, reshuffle, determinism)
 
 Run tests with:
 ```bash

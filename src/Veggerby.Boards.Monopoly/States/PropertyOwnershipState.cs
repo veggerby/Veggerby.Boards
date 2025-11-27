@@ -301,12 +301,10 @@ public sealed class PropertyOwnershipState : IArtifactState
         foreach (var square in groupSquares)
         {
             if (_ownership.TryGetValue(square.Position, out var data) &&
-                string.Equals(data.OwnerId, playerId, StringComparison.Ordinal))
+                string.Equals(data.OwnerId, playerId, StringComparison.Ordinal) &&
+                data.HouseCount > maxCount)
             {
-                if (data.HouseCount > maxCount)
-                {
-                    maxCount = data.HouseCount;
-                }
+                maxCount = data.HouseCount;
             }
         }
 

@@ -100,7 +100,7 @@ public sealed class AttackCondition : IGameEventCondition<AttackGameEvent>
 
         if (@event.AttackerDiceCount > maxDice)
         {
-            return ConditionResponse.Fail($"Insufficient armies to attack with {Math.Max(0, @event.AttackerDiceCount)} dice. Maximum: {maxDice}");
+            return ConditionResponse.Fail($"Insufficient armies to attack with {@event.AttackerDiceCount} dice. Maximum: {maxDice}");
         }
 
         return ConditionResponse.Valid;

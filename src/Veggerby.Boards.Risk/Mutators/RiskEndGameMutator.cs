@@ -64,7 +64,7 @@ public sealed class RiskEndGameMutator : IStateMutator<IGameEvent>
             var eliminationOrder = new List<Artifacts.Player>();
 
             // TODO: Track elimination order during game (for now, empty)
-            var outcomeState = new RiskOutcomeState(firstOwner, eliminationOrder);
+            var outcomeState = new RiskOutcomeState(firstOwner, territoryStates.Count, eliminationOrder);
 
             return gameState.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
         }

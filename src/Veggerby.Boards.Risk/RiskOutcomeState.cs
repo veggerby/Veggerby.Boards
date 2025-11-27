@@ -27,6 +27,7 @@ public sealed class RiskOutcomeState : IArtifactState, IGameOutcome
 
     private readonly Player _winner;
     private readonly IReadOnlyList<Player> _eliminationOrder;
+    private readonly int _totalTerritories;
 
     /// <summary>
     /// Gets the player who won (conquered all territories).
@@ -39,13 +40,20 @@ public sealed class RiskOutcomeState : IArtifactState, IGameOutcome
     public IReadOnlyList<Player> EliminationOrder => _eliminationOrder;
 
     /// <summary>
+    /// Gets the total number of territories controlled by the winner.
+    /// </summary>
+    public int TotalTerritories => _totalTerritories;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="RiskOutcomeState"/> class.
     /// </summary>
     /// <param name="winner">The winning player.</param>
+    /// <param name="totalTerritories">The total number of territories controlled.</param>
     /// <param name="eliminationOrder">The order players were eliminated (first eliminated first).</param>
-    public RiskOutcomeState(Player winner, IReadOnlyList<Player>? eliminationOrder = null)
+    public RiskOutcomeState(Player winner, int totalTerritories, IReadOnlyList<Player>? eliminationOrder = null)
     {
         _winner = winner ?? throw new ArgumentNullException(nameof(winner));
+        _totalTerritories = totalTerritories;
         _eliminationOrder = eliminationOrder ?? Array.Empty<Player>();
     }
 
@@ -76,7 +84,7 @@ public sealed class RiskOutcomeState : IArtifactState, IGameOutcome
                     Rank = 1,
                     Metrics = new Dictionary<string, object>
                     {
-                        ["TotalTerritories"] = 42 // Will be updated with actual count
+                        ["TotalTerritories"] = _totalTerritories
                     }
                 }
             };

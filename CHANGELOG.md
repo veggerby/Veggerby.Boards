@@ -8,6 +8,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- **Risk Game Module** (Workstream 16):
+  - Complete implementation of Risk-style territory conquest game
+  - Simplified world map with 24 territories across 4 continents
+  - Territory graph topology with border adjacency connections
+  - Cross-continent connections (Alaska-Siberia, Greenland-Iceland, etc.)
+  - Reinforcement mechanics: territories/3 (minimum 3) + continent bonuses
+  - Multi-dice combat resolution with deterministic `IRandomSource` support
+  - Combat algorithm: attacker (1-3 dice) vs defender (1-2 dice), defender wins ties
+  - Conquest mechanics with minimum army movement requirement
+  - Fortification: end-of-turn army movement between connected owned territories
+  - BFS-based connectivity verification for fortification paths
+  - Phase-based turn structure: Reinforce → Attack → Fortify
+  - Win condition: World domination (single player controls all territories)
+  - Player elimination tracking
+  - Turn sequencing integration with player rotation
+  - Support for 2+ players (configurable)
+  - Deterministic combat for replay and AI development
+  - Custom events: `PlaceArmiesGameEvent`, `AttackGameEvent`, `ConquerTerritoryGameEvent`, `FortifyGameEvent`
+  - Phase transition events: `EndAttackPhaseGameEvent`, `EndFortifyPhaseGameEvent`, `SkipFortifyPhaseGameEvent`
+  - Custom conditions: `PlaceArmiesCondition`, `AttackCondition`, `ConquerCondition`, `FortifyCondition`, `WorldDominationCondition`
+  - Custom mutators: `PlaceArmiesStateMutator`, `CombatResolutionStateMutator`, `ConquerTerritoryStateMutator`, `FortifyStateMutator`
+  - Phase transition mutators: `EndAttackPhaseStateMutator`, `EndFortifyPhaseStateMutator`, `SkipFortifyPhaseStateMutator`
+  - Outcome tracking via `RiskOutcomeState` implementing `IGameOutcome`
+  - State types: `TerritoryState`, `ConqueredTerritoryState`, `RiskStateExtras`
+  - Helper classes: `ReinforcementCalculator`, `CombatResolver`, `Continent`
+  - Comprehensive documentation in `/docs/risk/index.md`
+  - Unit tests for reinforcement calculation, combat resolution, game builder
+
 - **Ludo/Parcheesi Game Module** (Workstream 12):
   - Complete implementation of classic race-to-finish board game
   - Circular track topology with 52 squares (13 per player)

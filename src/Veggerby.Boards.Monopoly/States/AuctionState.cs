@@ -156,10 +156,13 @@ public sealed class AuctionState : IArtifactState
         var remainingBidders = EligiblePlayers.Where(p => !newPassedPlayers.Contains(p)).ToList();
 
         // Auction ends when:
-        // 1. All players have passed (no bids made)
-        // 2. Only the highest bidder remains (all others passed)
-        var auctionEnding = remainingBidders.Count == 0 ||
-                            (remainingBidders.Count == 1 && string.Equals(remainingBidders[0], HighestBidderId, StringComparison.Ordinal));
+        // 1. All players have passed (no bids made - property goes unsold)
+        // 2. Only the highest bidder remains and there was a bid (winner determined)
+        var allPassed = remainingBidders.Count == 0;
+        var winnerDetermined = remainingBidders.Count == 1 &&
+                               HighestBidderId is not null &&
+                               string.Equals(remainingBidders[0], HighestBidderId, StringComparison.Ordinal);
+        var auctionEnding = allPassed || winnerDetermined;
 
         return new AuctionState(
             PropertyPosition,

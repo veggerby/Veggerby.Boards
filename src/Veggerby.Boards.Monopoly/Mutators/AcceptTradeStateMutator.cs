@@ -45,6 +45,7 @@ public class AcceptTradeStateMutator : IStateMutator<AcceptTradeGameEvent>
             ?? new PropertyOwnershipState();
 
         // Execute trade: Transfer cash
+        // Note: Cash sufficiency was validated when the trade was proposed in CanProposeTradeCondition
         var netCashToProposer = tradeState.TargetOffer.Cash - tradeState.ProposerOffer.Cash;
         var newProposerState = proposerState.AdjustCash(netCashToProposer);
         var newTargetState = targetState.AdjustCash(-netCashToProposer);

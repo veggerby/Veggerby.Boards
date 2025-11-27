@@ -42,6 +42,7 @@ public class PassAuctionStateMutator : IStateMutator<PassAuctionGameEvent>
                 var newOwnership = ownership.SetOwner(newAuctionState.PropertyPosition, newAuctionState.HighestBidderId);
 
                 // Deduct cash from winner
+                // Note: Cash sufficiency was validated when the bid was placed in CanBidInAuctionCondition
                 var winnerState = gameState.GetStates<MonopolyPlayerState>()
                     .FirstOrDefault(ps => string.Equals(ps.Player.Id, newAuctionState.HighestBidderId, StringComparison.Ordinal));
 

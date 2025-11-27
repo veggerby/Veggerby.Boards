@@ -150,8 +150,11 @@ public class TradeTests
     [Fact]
     public void TradeOffer_NullPlayerId_ThrowsException()
     {
-        // arrange, act & assert
-        Action act = () => new TradeOffer(null!, cash: 100);
+        // arrange
+        string? nullPlayerId = null;
+
+        // act & assert
+        Action act = () => new TradeOffer(nullPlayerId!, cash: 100);
         act.Should().Throw<ArgumentNullException>();
     }
 

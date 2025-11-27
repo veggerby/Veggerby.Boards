@@ -33,9 +33,9 @@ public class BidInAuctionGameEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(player);
 
-        if (bidAmount < 0)
+        if (bidAmount <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(bidAmount), "Bid amount cannot be negative");
+            throw new ArgumentOutOfRangeException(nameof(bidAmount), "Bid amount must be positive");
         }
 
         Player = player;

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Package Metadata -->
+  <PropertyGroup>
+    <Description>Risk-style territory conquest implementation for Veggerby.Boards demonstrating multi-dice combat resolution.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;risk;territory;combat</PackageTags>
+    <PackageId>Veggerby.Boards.Risk</PackageId>
+  </PropertyGroup>
+
+  <!-- References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
+  </ItemGroup>
+
+</Project>

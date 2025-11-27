@@ -11,7 +11,7 @@ namespace Veggerby.Boards.Risk.Conditions;
 /// </summary>
 /// <remarks>
 /// Conditions:
-/// - Defender armies must be 0 (already eliminated by combat)
+/// - Territory must be in conquered state (ConqueredTerritoryState marker present)
 /// - Moving armies must be ≥ minimum conquest armies (attacker dice count)
 /// - Source territory must have enough armies to leave at least 1 behind
 /// </remarks>
@@ -35,16 +35,15 @@ public sealed class ConquerCondition : IGameEventCondition<ConquerTerritoryGameE
             return ConditionResponse.Fail("Player is not the active player.");
         }
 
-        // Check territory state - defender should have 0 armies (captured via prior CombatResolutionMutator marking)
-        var targetState = state.GetState<TerritoryState>(@event.Territory);
+        // Check territory state - should be ConqueredTerritoryState (set by CombatResolutionMutator)
+        var conqueredState = state.GetState<ConqueredTerritoryState>(@event.Territory);
 
-        if (targetState is null)
+        if (conqueredState is null)
         {
-            return ConditionResponse.Fail("Target territory state not found.");
+            return ConditionResponse.Fail("Territory is not in conquered state.");
         }
 
-        // Note: After combat, if defender has 0 armies, we use a special marker
-        // The actual conquest validation happens through the MinimumConquestArmies in RiskStateExtras
+        // Check MinimumConquestArmies in RiskStateExtras
         var riskExtras = state.GetExtras<RiskStateExtras>();
 
         if (riskExtras is null)

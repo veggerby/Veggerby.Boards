@@ -117,29 +117,261 @@ public class DrawCardStateMutator : IStateMutator<DrawCardGameEvent>
                 return ApplyPayToPlayers(state, player, playerState, card.Value);
 
             case MonopolyCardEffect.GoToJail:
-                return state.Next([playerState.GoToJail()]);
+                return ApplyGoToJail(engine, state, player, playerState);
 
             case MonopolyCardEffect.GetOutOfJailFree:
                 return state.Next([playerState.WithGetOutOfJailCard(true)]);
 
             case MonopolyCardEffect.AdvanceToPosition:
+                return ApplyMoveToPosition(engine, state, player, playerState, card.Value, collectGo: true);
+
             case MonopolyCardEffect.MoveToPosition:
+                return ApplyMoveToPosition(engine, state, player, playerState, card.Value, collectGo: false);
+
             case MonopolyCardEffect.AdvanceToNearestRailroad:
+                return ApplyAdvanceToNearestRailroad(engine, state, player, playerState);
+
             case MonopolyCardEffect.AdvanceToNearestUtility:
+                return ApplyAdvanceToNearestUtility(engine, state, player, playerState);
+
             case MonopolyCardEffect.MoveForward:
+                return ApplyMoveRelative(engine, state, player, playerState, card.Value);
+
             case MonopolyCardEffect.MoveBackward:
-                // Movement effects require additional game logic
-                // and are handled by the game flow (not the mutator directly)
-                // For now, store the pending movement in a separate state
-                return state;
+                return ApplyMoveRelative(engine, state, player, playerState, -card.Value);
 
             case MonopolyCardEffect.PropertyRepairs:
-                // Deferred - no houses/hotels implemented yet
-                return state;
+                return ApplyPropertyRepairs(state, player, playerState, card.Value, card.SecondaryValue);
 
             default:
                 return state;
         }
+    }
+
+    private GameState ApplyGoToJail(
+        GameEngine engine,
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState)
+    {
+        // Move piece to jail (position 10)
+        var piece = engine.Game.Artifacts.OfType<Piece>()
+            .FirstOrDefault(p => string.Equals(p.Owner?.Id, player.Id, StringComparison.Ordinal));
+
+        if (piece is null)
+        {
+            return state.Next([playerState.GoToJail()]);
+        }
+
+        var jailTileId = MonopolyBoardConfiguration.GetTileId(10);
+        var jailTile = engine.Game.Board.GetTile(jailTileId);
+
+        if (jailTile is null)
+        {
+            return state.Next([playerState.GoToJail()]);
+        }
+
+        var newPieceState = new PieceState(piece, jailTile);
+
+        return state.Next([playerState.GoToJail(), newPieceState]);
+    }
+
+    private GameState ApplyMoveToPosition(
+        GameEngine engine,
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState,
+        int targetPosition,
+        bool collectGo)
+    {
+        var piece = engine.Game.Artifacts.OfType<Piece>()
+            .FirstOrDefault(p => string.Equals(p.Owner?.Id, player.Id, StringComparison.Ordinal));
+
+        if (piece is null)
+        {
+            return state;
+        }
+
+        var currentPieceState = state.GetState<PieceState>(piece);
+        if (currentPieceState?.CurrentTile is null)
+        {
+            return state;
+        }
+
+        var currentPosition = MonopolyBoardConfiguration.GetPosition(currentPieceState.CurrentTile.Id);
+
+        // Check if passing Go (target position is less than current, or moving to Go from any position)
+        var passesGo = collectGo && (targetPosition < currentPosition || (targetPosition == 0 && currentPosition > 0));
+
+        var targetTileId = MonopolyBoardConfiguration.GetTileId(targetPosition);
+        var targetTile = engine.Game.Board.GetTile(targetTileId);
+
+        if (targetTile is null)
+        {
+            return state;
+        }
+
+        var newPieceState = new PieceState(piece, targetTile);
+        var updates = new List<IArtifactState> { newPieceState };
+
+        if (passesGo)
+        {
+            updates.Add(playerState.AdjustCash(200));
+        }
+
+        return state.Next(updates);
+    }
+
+    private GameState ApplyAdvanceToNearestRailroad(
+        GameEngine engine,
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState)
+    {
+        var piece = engine.Game.Artifacts.OfType<Piece>()
+            .FirstOrDefault(p => string.Equals(p.Owner?.Id, player.Id, StringComparison.Ordinal));
+
+        if (piece is null)
+        {
+            return state;
+        }
+
+        var currentPieceState = state.GetState<PieceState>(piece);
+        if (currentPieceState?.CurrentTile is null)
+        {
+            return state;
+        }
+
+        var currentPosition = MonopolyBoardConfiguration.GetPosition(currentPieceState.CurrentTile.Id);
+
+        // Railroad positions: 5 (Reading), 15 (Pennsylvania), 25 (B&O), 35 (Short Line)
+        var railroadPositions = new[] { 5, 15, 25, 35 };
+        var nearestRailroad = FindNearestPosition(currentPosition, railroadPositions);
+
+        return ApplyMoveToPosition(engine, state, player, playerState, nearestRailroad, collectGo: true);
+    }
+
+    private GameState ApplyAdvanceToNearestUtility(
+        GameEngine engine,
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState)
+    {
+        var piece = engine.Game.Artifacts.OfType<Piece>()
+            .FirstOrDefault(p => string.Equals(p.Owner?.Id, player.Id, StringComparison.Ordinal));
+
+        if (piece is null)
+        {
+            return state;
+        }
+
+        var currentPieceState = state.GetState<PieceState>(piece);
+        if (currentPieceState?.CurrentTile is null)
+        {
+            return state;
+        }
+
+        var currentPosition = MonopolyBoardConfiguration.GetPosition(currentPieceState.CurrentTile.Id);
+
+        // Utility positions: 12 (Electric Company), 28 (Water Works)
+        var utilityPositions = new[] { 12, 28 };
+        var nearestUtility = FindNearestPosition(currentPosition, utilityPositions);
+
+        return ApplyMoveToPosition(engine, state, player, playerState, nearestUtility, collectGo: true);
+    }
+
+    private static int FindNearestPosition(int currentPosition, int[] targetPositions)
+    {
+        // Find the next position forward from current position
+        foreach (var pos in targetPositions)
+        {
+            if (pos > currentPosition)
+            {
+                return pos;
+            }
+        }
+
+        // Wrap around to the first position
+        return targetPositions[0];
+    }
+
+    private GameState ApplyMoveRelative(
+        GameEngine engine,
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState,
+        int spaces)
+    {
+        var piece = engine.Game.Artifacts.OfType<Piece>()
+            .FirstOrDefault(p => string.Equals(p.Owner?.Id, player.Id, StringComparison.Ordinal));
+
+        if (piece is null)
+        {
+            return state;
+        }
+
+        var currentPieceState = state.GetState<PieceState>(piece);
+        if (currentPieceState?.CurrentTile is null)
+        {
+            return state;
+        }
+
+        var currentPosition = MonopolyBoardConfiguration.GetPosition(currentPieceState.CurrentTile.Id);
+        var newPosition = (currentPosition + spaces + 40) % 40; // Handle negative values
+
+        // Do not collect Go when moving backward
+        var collectGo = spaces > 0 && newPosition < currentPosition;
+
+        var targetTileId = MonopolyBoardConfiguration.GetTileId(newPosition);
+        var targetTile = engine.Game.Board.GetTile(targetTileId);
+
+        if (targetTile is null)
+        {
+            return state;
+        }
+
+        var newPieceState = new PieceState(piece, targetTile);
+        var updates = new List<IArtifactState> { newPieceState };
+
+        if (collectGo)
+        {
+            updates.Add(playerState.AdjustCash(200));
+        }
+
+        return state.Next(updates);
+    }
+
+    private GameState ApplyPropertyRepairs(
+        GameState state,
+        Player player,
+        MonopolyPlayerState playerState,
+        int houseCost,
+        int hotelCost)
+    {
+        var ownership = state.GetExtras<PropertyOwnershipState>();
+        if (ownership is null)
+        {
+            return state;
+        }
+
+        int totalCost = 0;
+
+        // Count houses and hotels owned by the player
+        foreach (var position in ownership.GetPropertiesOwnedBy(player.Id))
+        {
+            var houseCount = ownership.GetHouseCount(position);
+
+            if (houseCount == PropertyOwnershipState.HotelValue)
+            {
+                totalCost += hotelCost;
+            }
+            else if (houseCount > 0)
+            {
+                totalCost += houseCount * houseCost;
+            }
+        }
+
+        return state.Next([playerState.AdjustCash(-totalCost)]);
     }
 
     private GameState ApplyCollectFromPlayers(

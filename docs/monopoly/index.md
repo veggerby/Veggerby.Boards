@@ -74,7 +74,7 @@ Example rent values for Mediterranean Avenue ($60):
 
 ### Railroads
 ```
-Rent = $25 × 2^(RailroadsOwned - 1)
+Rent = $25 × 2^(UnmortgagedRailroadsOwned - 1)
 ```
 | Railroads Owned | Rent |
 |-----------------|------|
@@ -83,14 +83,49 @@ Rent = $25 × 2^(RailroadsOwned - 1)
 | 3 | $100 |
 | 4 | $200 |
 
+*Note: Mortgaged railroads don't count toward rent calculation.*
+
 ### Utilities
 ```
-Rent = DiceRoll × (UtilitiesOwned == 1 ? 4 : 10)
+Rent = DiceRoll × (UnmortgagedUtilitiesOwned == 1 ? 4 : 10)
 ```
 | Utilities Owned | Multiplier |
 |-----------------|------------|
 | 1 | 4× dice roll |
 | 2 | 10× dice roll |
+
+*Note: Mortgaged utilities don't count toward rent calculation.*
+
+## Mortgages
+
+### Mortgage Rules
+- Only property owner can mortgage
+- Cannot mortgage properties with houses/hotels
+- Must sell all houses in color group before mortgaging any property in that group
+- Mortgage value = 50% of property price
+- Mortgaged properties collect no rent
+
+### Unmortgage Rules
+- Unmortgage cost = Mortgage value + 10% interest
+- All properties in a color group must be unmortgaged before building houses
+
+### Mortgage API
+```csharp
+// Check if can mortgage
+ownership.CanMortgage(position, playerId);
+
+// Mortgage a property
+var newState = ownership.Mortgage(position);
+
+// Check if can unmortgage
+ownership.CanUnmortgage(position, playerId);
+
+// Unmortgage a property
+var newState = ownership.Unmortgage(position);
+
+// Check if mortgaged
+ownership.IsMortgaged(position);
+```
 
 ## Player State
 
@@ -206,9 +241,7 @@ The following features are intentionally deferred to keep the implementation foc
 ### Not Implemented
 - **Auctions**: Property auctions when purchase declined
 - **Trading**: Player-to-player property/cash trades
-- **Mortgages**: Property mortgaging for cash
 - **House Rules**: Free Parking pot, exact landing on Go
-- **Card Movement Effects**: Movement-based card effects (Advance to Go, etc.) require additional game flow integration
 - **Selling Houses**: Selling houses back to the bank at half price
 - **Housing Shortage**: Limited supply of houses/hotels
 
@@ -216,7 +249,6 @@ The following features are intentionally deferred to keep the implementation foc
 These features may be added in future versions:
 - Auction mechanics
 - Trading interface
-- Mortgage/unmortgage operations
 - House selling and shortage mechanics
 
 ## Card System
@@ -228,15 +260,31 @@ These features may be added in future versions:
 - **PayToPlayers**: Player pays money to all other players
 - **GoToJail**: Player goes directly to jail
 - **GetOutOfJailFree**: Player keeps the card for later use
+- **AdvanceToPosition**: Move to a specific position (collect $200 if passing Go)
+- **MoveToPosition**: Move to a specific position (do not collect Go)
+- **AdvanceToNearestRailroad**: Move to nearest railroad
+- **AdvanceToNearestUtility**: Move to nearest utility
+- **MoveForward**: Move forward a number of spaces
+- **MoveBackward**: Move backward a number of spaces
+- **PropertyRepairs**: Pay based on houses/hotels owned ($25/house, $100/hotel)
 
 ### Card Decks
 Both Chance (16 cards) and Community Chest (16 cards) are fully defined with standard Monopoly card effects.
 
-### Deferred Card Effects
-- **AdvanceToPosition**: Move to a specific position
-- **AdvanceToNearestRailroad**: Move to nearest railroad, pay double rent
-- **AdvanceToNearestUtility**: Move to nearest utility, pay 10x dice
-- **PropertyRepairs**: Pay based on houses/hotels owned
+### Movement Card Examples
+```csharp
+// Advance to Go (collect $200)
+new MonopolyCardDefinition("advance-go", "Advance to Go. Collect $200.", 
+    MonopolyCardEffect.AdvanceToPosition, 0);
+
+// Go back 3 spaces
+new MonopolyCardDefinition("go-back-3", "Go back 3 spaces.", 
+    MonopolyCardEffect.MoveBackward, 3);
+
+// Property repairs
+new MonopolyCardDefinition("repairs", "Make general repairs on all your property.", 
+    MonopolyCardEffect.PropertyRepairs, 25, 100); // $25/house, $100/hotel
+```
 
 ## Module Structure
 
@@ -255,33 +303,44 @@ Veggerby.Boards.Monopoly/
 │   └── MonopolyCardEffect.cs   # Card effect enumeration
 ├── Conditions/                 # Validation conditions
 │   ├── AlwaysValidCondition.cs
+│   ├── CanBuyHouseCondition.cs
 │   ├── CanBuyPropertyCondition.cs
 │   ├── CanDrawCardCondition.cs
 │   ├── CanGetOutOfJailCondition.cs
+│   ├── CanMortgagePropertyCondition.cs
+│   ├── CanUnmortgagePropertyCondition.cs
 │   ├── MonopolyGameEndedCondition.cs
 │   ├── MonopolyGameNotEndedCondition.cs
 │   └── MustPayRentCondition.cs
 ├── Events/                     # Game events
+│   ├── BuyHouseGameEvent.cs
 │   ├── BuyPropertyGameEvent.cs
 │   ├── DrawCardGameEvent.cs
 │   ├── EliminatePlayerGameEvent.cs
 │   ├── GetOutOfJailGameEvent.cs
 │   ├── GoToJailGameEvent.cs
+│   ├── MortgagePropertyGameEvent.cs
 │   ├── MovePlayerGameEvent.cs
+│   ├── MoveToPositionGameEvent.cs
 │   ├── PassGoGameEvent.cs
 │   ├── PayRentGameEvent.cs
-│   └── PayTaxGameEvent.cs
+│   ├── PayTaxGameEvent.cs
+│   └── UnmortgagePropertyGameEvent.cs
 ├── Mutators/                   # State mutators
+│   ├── BuyHouseStateMutator.cs
 │   ├── BuyPropertyStateMutator.cs
 │   ├── DrawCardStateMutator.cs
 │   ├── EliminatePlayerStateMutator.cs
 │   ├── GetOutOfJailStateMutator.cs
 │   ├── GoToJailStateMutator.cs
 │   ├── MonopolyEndGameMutator.cs
+│   ├── MortgagePropertyStateMutator.cs
 │   ├── MovePlayerStateMutator.cs
+│   ├── MoveToPositionStateMutator.cs
 │   ├── PassGoStateMutator.cs
 │   ├── PayRentStateMutator.cs
-│   └── PayTaxStateMutator.cs
+│   ├── PayTaxStateMutator.cs
+│   └── UnmortgagePropertyStateMutator.cs
 └── States/                     # State types
     ├── MonopolyBoardConfigState.cs
     ├── MonopolyCardDeckState.cs
@@ -294,9 +353,11 @@ Veggerby.Boards.Monopoly/
 
 The module includes comprehensive tests for:
 - Board configuration and layout
-- Rent calculation (all property types)
+- Rent calculation (all property types, with mortgages)
 - Player state management
 - Property ownership operations
+- Mortgage and unmortgage operations
+- House/hotel building rules
 - Game builder functionality
 - Card deck operations (draw, reshuffle, determinism)
 
@@ -304,6 +365,8 @@ Run tests with:
 ```bash
 dotnet test --filter "FullyQualifiedName~Monopoly"
 ```
+
+Test count: 120+ unit tests
 
 ## Dependencies
 

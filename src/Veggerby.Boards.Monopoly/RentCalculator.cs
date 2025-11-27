@@ -27,10 +27,16 @@ public static class RentCalculator
         ArgumentNullException.ThrowIfNull(ownerId);
         ArgumentNullException.ThrowIfNull(ownership);
 
+        // No rent for mortgaged properties
+        if (ownership.IsMortgaged(squareInfo.Position))
+        {
+            return 0;
+        }
+
         return squareInfo.SquareType switch
         {
             SquareType.Property => CalculatePropertyRent(squareInfo, ownerId, ownership),
-            SquareType.Railroad => CalculateRailroadRent(ownerId, ownership),
+            SquareType.Railroad => CalculateRailroadRent(squareInfo, ownerId, ownership),
             SquareType.Utility => CalculateUtilityRent(ownerId, ownership, diceRoll),
             _ => 0
         };
@@ -61,9 +67,10 @@ public static class RentCalculator
         return baseRent;
     }
 
-    private static int CalculateRailroadRent(string ownerId, PropertyOwnershipState ownership)
+    private static int CalculateRailroadRent(MonopolySquareInfo railroad, string ownerId, PropertyOwnershipState ownership)
     {
-        var railroadsOwned = ownership.CountOwnedInColorGroup(ownerId, PropertyColorGroup.Railroad);
+        // Count unmortgaged railroads owned
+        var railroadsOwned = ownership.CountUnmortgagedInColorGroup(ownerId, PropertyColorGroup.Railroad);
 
         // $25 for 1, $50 for 2, $100 for 3, $200 for 4 (25 * 2^(n-1))
         return railroadsOwned > 0 ? 25 * (1 << (railroadsOwned - 1)) : 0;
@@ -71,7 +78,8 @@ public static class RentCalculator
 
     private static int CalculateUtilityRent(string ownerId, PropertyOwnershipState ownership, int diceRoll)
     {
-        var utilitiesOwned = ownership.CountOwnedInColorGroup(ownerId, PropertyColorGroup.Utility);
+        // Count unmortgaged utilities owned
+        var utilitiesOwned = ownership.CountUnmortgagedInColorGroup(ownerId, PropertyColorGroup.Utility);
 
         // 4x dice roll for 1 utility, 10x for 2 utilities
         var multiplier = utilitiesOwned switch

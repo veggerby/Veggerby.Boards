@@ -267,9 +267,122 @@ else
     Console.WriteLine($"\n*** Demo ended after {turnNumber} turns ***");
 }
 
+// Demonstrate house building concept
+Console.WriteLine("\n=== House Building Demo (Conceptual) ===\n");
+DemonstrateHouseBuildingConcept();
+
 Console.WriteLine("\n╔═══════════════════════════════════════════════════════════════╗");
 Console.WriteLine("║                      Demo Complete!                            ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════════════╝");
+
+// House building demonstration - shows the mechanics without modifying actual game state
+static void DemonstrateHouseBuildingConcept()
+{
+    Console.WriteLine("House/Hotel building requires a complete monopoly (all properties in a color group).");
+    Console.WriteLine("\nExample: Brown Color Group (Mediterranean + Baltic)");
+    Console.WriteLine("═══════════════════════════════════════════════════\n");
+
+    // Create a simulated ownership state to demonstrate
+    var ownership = new PropertyOwnershipState()
+        .SetOwner(1, "Alice")  // Mediterranean Avenue
+        .SetOwner(3, "Alice"); // Baltic Avenue
+
+    var mediterranean = MonopolyBoardConfiguration.GetSquare(1);
+    var baltic = MonopolyBoardConfiguration.GetSquare(3);
+
+    Console.WriteLine($"Initial state:");
+    Console.WriteLine($"  [{1}] {mediterranean.Name,-25} - Base rent: ${mediterranean.BaseRent}");
+    Console.WriteLine($"  [{3}] {baltic.Name,-25} - Base rent: ${baltic.BaseRent}");
+    Console.WriteLine($"\n  With monopoly (2× rent): ${mediterranean.BaseRent * 2} and ${baltic.BaseRent * 2}");
+    Console.WriteLine($"  House cost per property: ${mediterranean.HouseCost}");
+
+    Console.WriteLine("\nRent progression with houses:");
+    Console.WriteLine("┌────────────────────────────┬──────────────────────────┐");
+    Console.WriteLine("│ Mediterranean Avenue       │ Baltic Avenue            │");
+    Console.WriteLine("├────────────────────────────┼──────────────────────────┤");
+
+    for (int houses = 0; houses <= 5; houses++)
+    {
+        var medRent = mediterranean.GetRentForHouseCount(houses);
+        var balRent = baltic.GetRentForHouseCount(houses);
+        var label = houses switch
+        {
+            0 => "No houses (monopoly)",
+            5 => "Hotel",
+            _ => $"{houses} house(s)"
+        };
+
+        // Adjust for monopoly bonus at 0 houses
+        if (houses == 0)
+        {
+            medRent = mediterranean.BaseRent * 2;
+            balRent = baltic.BaseRent * 2;
+        }
+
+        Console.WriteLine($"│ {label,-17} ${medRent,-6} │ {label,-17} ${balRent,-4} │");
+    }
+
+    Console.WriteLine("└────────────────────────────┴──────────────────────────┘");
+
+    // Show even building rule
+    Console.WriteLine("\n=== Even Building Rule ===");
+    Console.WriteLine("Houses must be built evenly across all properties in a color group.");
+    Console.WriteLine("\nExample build sequence for Brown:");
+    Console.WriteLine("  1. Build on Mediterranean (0→1 house)");
+    Console.WriteLine("  2. Build on Baltic (0→1 house)  ← Must build here before second on Mediterranean");
+    Console.WriteLine("  3. Build on Mediterranean (1→2 houses)");
+    Console.WriteLine("  4. Build on Baltic (1→2 houses)");
+    Console.WriteLine("  ... continue until all have 4 houses");
+    Console.WriteLine("  9. Upgrade Mediterranean to hotel (4 houses → hotel)");
+    Console.WriteLine("  10. Upgrade Baltic to hotel");
+
+    // Demonstrate the building logic
+    Console.WriteLine("\n=== Simulating House Building ===");
+    var simOwnership = new PropertyOwnershipState()
+        .SetOwner(1, "Alice")
+        .SetOwner(3, "Alice");
+
+    int totalCost = 0;
+    for (int round = 1; round <= 5; round++)
+    {
+        var roundLabel = round < 5 ? $"Round {round}" : "Hotel round";
+        Console.WriteLine($"\n{roundLabel}:");
+
+        foreach (var pos in new[] { 1, 3 })
+        {
+            var square = MonopolyBoardConfiguration.GetSquare(pos);
+            var currentHouses = simOwnership.GetHouseCount(pos);
+
+            bool canBuild;
+            if (currentHouses < 4)
+            {
+                canBuild = simOwnership.CanBuildHouse(pos, "Alice", PropertyColorGroup.Brown);
+            }
+            else
+            {
+                canBuild = simOwnership.CanBuildHotel(pos, "Alice", PropertyColorGroup.Brown);
+            }
+
+            if (canBuild)
+            {
+                simOwnership = simOwnership.AddHouse(pos);
+                totalCost += square.HouseCost;
+                var newHouses = simOwnership.GetHouseCount(pos);
+                var rent = square.GetRentForHouseCount(newHouses);
+                var improvement = newHouses == 5 ? "HOTEL" : $"{newHouses} house(s)";
+                Console.WriteLine($"  ✓ [{pos}] {square.Name}: Built → {improvement}, Rent: ${rent}");
+            }
+            else
+            {
+                Console.WriteLine($"  ✗ [{pos}] {square.Name}: Cannot build (even building rule)");
+            }
+        }
+    }
+
+    Console.WriteLine($"\nTotal investment: ${totalCost} (${totalCost / 2} per property)");
+    Console.WriteLine($"Final rent if someone lands on Mediterranean with hotel: ${mediterranean.GetRentForHouseCount(5)}");
+    Console.WriteLine($"Final rent if someone lands on Baltic with hotel: ${baltic.GetRentForHouseCount(5)}");
+}
 
 // Helper methods
 static bool IsGameEnded(GameState state)
@@ -337,24 +450,31 @@ static void PrintPropertyOwnership(GameState state)
         return;
     }
 
-    var ownedProperties = new List<(int Position, string Owner)>();
+    var ownedProperties = new List<(int Position, string Owner, int Houses)>();
 
     for (int i = 0; i < 40; i++)
     {
         var owner = ownership.GetOwner(i);
         if (owner is not null)
         {
-            ownedProperties.Add((i, owner));
+            var houses = ownership.GetHouseCount(i);
+            ownedProperties.Add((i, owner, houses));
         }
     }
 
     if (ownedProperties.Count > 0)
     {
         Console.WriteLine("┌─ Property Ownership ─────────────────────────────────────────");
-        foreach (var (position, owner) in ownedProperties)
+        foreach (var (position, owner, houses) in ownedProperties)
         {
             var square = MonopolyBoardConfiguration.GetSquare(position);
-            Console.WriteLine($"│  [{position,2}] {square.Name,-25} → {owner}");
+            var houseStr = houses switch
+            {
+                0 => "",
+                5 => " [HOTEL]",
+                _ => $" [{houses}H]"
+            };
+            Console.WriteLine($"│  [{position,2}] {square.Name,-25} → {owner}{houseStr}");
         }
 
         Console.WriteLine("└───────────────────────────────────────────────────────────────");

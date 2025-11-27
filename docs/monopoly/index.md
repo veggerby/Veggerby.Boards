@@ -36,11 +36,41 @@ The Monopoly module implements a simplified version of the classic Monopoly boar
 
 ### Colored Properties
 ```
-Rent = BaseRent × (HasMonopoly ? 2 : 1)
+Rent = BaseRent × (HasMonopoly ? 2 : 1)  // Without houses
+Rent = RentSchedule[HouseCount - 1]       // With houses (1-4) or hotel (5)
 ```
 - Base rent varies by property ($2 - $50)
-- Monopoly bonus doubles rent when owner owns all properties in color group
-- Houses/hotels deferred to future implementation
+- Monopoly bonus doubles rent when owner owns all properties in color group (without houses)
+- Houses/hotels use the rent schedule specific to each property
+
+### House/Hotel Rent Schedule
+Example rent values for Mediterranean Avenue ($60):
+| Improvement | Rent |
+|-------------|------|
+| No houses (no monopoly) | $2 |
+| No houses (monopoly) | $4 |
+| 1 House | $10 |
+| 2 Houses | $30 |
+| 3 Houses | $90 |
+| 4 Houses | $160 |
+| Hotel | $250 |
+
+### House Building Costs
+| Color Group | House Cost | Hotel Cost |
+|-------------|-----------|------------|
+| Brown | $50 | $50 + 4 houses |
+| Light Blue | $50 | $50 + 4 houses |
+| Pink | $100 | $100 + 4 houses |
+| Orange | $100 | $100 + 4 houses |
+| Red | $150 | $150 + 4 houses |
+| Yellow | $150 | $150 + 4 houses |
+| Green | $200 | $200 + 4 houses |
+| Dark Blue | $200 | $200 + 4 houses |
+
+### Even Building Rule
+- Houses must be built evenly across properties in a color group
+- Cannot build a second house on one property until all properties have at least one house
+- Hotels require 4 houses on all properties in the color group
 
 ### Railroads
 ```
@@ -70,6 +100,7 @@ Rent = DiceRoll × (UtilitiesOwned == 1 ? 4 : 10)
 - **Income Tax**: -$200
 - **Luxury Tax**: -$75
 - **Property purchase**: -Price
+- **House purchase**: -House cost (varies by color group)
 - **Rent payment**: -Rent (transferred to property owner)
 
 ### Jail Mechanics
@@ -170,22 +201,23 @@ Legend:
 
 ## Deferred Complexity
 
-The following features are intentionally deferred to keep the initial implementation focused:
+The following features are intentionally deferred to keep the implementation focused:
 
 ### Not Implemented
-- **Houses and Hotels**: Property improvements and tiered rent
 - **Auctions**: Property auctions when purchase declined
 - **Trading**: Player-to-player property/cash trades
 - **Mortgages**: Property mortgaging for cash
 - **House Rules**: Free Parking pot, exact landing on Go
 - **Card Movement Effects**: Movement-based card effects (Advance to Go, etc.) require additional game flow integration
+- **Selling Houses**: Selling houses back to the bank at half price
+- **Housing Shortage**: Limited supply of houses/hotels
 
 ### Future Enhancements
 These features may be added in future versions:
-- Property improvement system (houses/hotels)
 - Auction mechanics
 - Trading interface
 - Mortgage/unmortgage operations
+- House selling and shortage mechanics
 
 ## Card System
 

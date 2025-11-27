@@ -41,12 +41,20 @@ public static class RentCalculator
         string ownerId,
         PropertyOwnershipState ownership)
     {
+        var houseCount = ownership.GetHouseCount(property.Position);
+
+        // If property has houses/hotel, use the rent schedule
+        if (houseCount > 0)
+        {
+            return property.GetRentForHouseCount(houseCount);
+        }
+
         var baseRent = property.BaseRent;
 
         // Check monopoly: owner owns all properties in color group
         if (ownership.HasMonopoly(ownerId, property.ColorGroup))
         {
-            // Double rent for monopoly (without houses - houses deferred)
+            // Double rent for monopoly (without houses)
             return baseRent * 2;
         }
 

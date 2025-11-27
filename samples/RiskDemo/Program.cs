@@ -134,7 +134,7 @@ if (northWestState != null && !northWestState.Owner.Equals(redPlayer))
 
             // Move armies into conquered territory (must leave at least 1 in source)
             var sourceArmies = progress.State.GetState<TerritoryState>(alaska)!.ArmyCount;
-            var minRequired = conqueredState is not null ? 2 : 1; // Minimum per Risk rules
+            const int minRequired = 2; // Minimum per Risk rules (attacker dice)
             var armiesToMove = Math.Max(minRequired, Math.Min(sourceArmies - 1, 3)); // Move up to 3 but leave at least 1
             Console.WriteLine($"│ Moving {armiesToMove} armies into NorthWest (leaving 1 in Alaska)...");
 
@@ -176,7 +176,11 @@ if (northWestState != null && !northWestState.Owner.Equals(redPlayer))
                 .FirstOrDefault(cs => cs.Territory.Equals(northWestTile));
 
             var attackerLosses = currentAlaska.ArmyCount - resultAlaska.ArmyCount;
-            var defenderLosses = (currentNorthWest?.ArmyCount ?? 0) - (conqueredAfter != null ? 0 : resultNorthWest?.ArmyCount ?? 0);
+
+            // Calculate defender losses: previous army count minus current (0 if conquered)
+            var previousDefenderArmies = currentNorthWest?.ArmyCount ?? 0;
+            var currentDefenderArmies = conqueredAfter != null ? 0 : (resultNorthWest?.ArmyCount ?? 0);
+            var defenderLosses = previousDefenderArmies - currentDefenderArmies;
 
             Console.WriteLine($"│   → Attacker lost: {attackerLosses}");
             Console.WriteLine($"│   → Defender lost: {defenderLosses}");

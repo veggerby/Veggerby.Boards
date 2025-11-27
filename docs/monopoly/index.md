@@ -234,22 +234,83 @@ Legend:
 - EC = Electric Company
 - WW = Water Works
 
+## Auctions
+
+When a player lands on an unowned property and declines to purchase it, an auction may be started.
+
+### Auction Mechanics
+- Any player can participate in the auction
+- Bids must be higher than the current bid
+- Players can pass (decline to bid further)
+- Auction ends when all players except the highest bidder have passed
+- Winner pays their bid amount and receives the property
+- If all players pass without bidding, property remains unowned
+
+### Auction API
+```csharp
+// Start an auction
+var startEvent = new StartAuctionGameEvent(propertyPosition, eligiblePlayers);
+
+// Place a bid
+var bidEvent = new BidInAuctionGameEvent(player, bidAmount);
+
+// Pass on the auction
+var passEvent = new PassAuctionGameEvent(player);
+```
+
+## Trading
+
+Players can trade properties, cash, and Get Out of Jail Free cards with each other.
+
+### Trade Rules
+- Cannot trade properties with houses (must sell houses first)
+- Trade must include something from at least one side
+- Both players must have sufficient assets to complete the trade
+- Mortgaged properties can be traded (buyer inherits mortgage)
+
+### Trade API
+```csharp
+// Propose a trade
+var proposeEvent = new ProposeTradeGameEvent(
+    proposer: player1,
+    target: player2,
+    offeredCash: 200,
+    offeredProperties: new[] { 1, 3 },
+    requestedCash: 0,
+    requestedProperties: new[] { 6 });
+
+// Accept or decline
+var acceptEvent = new AcceptTradeGameEvent(player2);
+var declineEvent = new DeclineTradeGameEvent(player2);
+```
+
+## Selling Houses
+
+Players can sell houses back to the bank at half the purchase price.
+
+### Sell House Rules
+- Houses sell for 50% of purchase price
+- Must follow even selling rule (sell from properties with most houses first)
+- All houses must be sold from a color group before mortgaging any property
+
+### Sell House API
+```csharp
+// Sell a house
+var sellEvent = new SellHouseGameEvent(player, propertyPosition);
+```
+
 ## Deferred Complexity
 
 The following features are intentionally deferred to keep the implementation focused:
 
 ### Not Implemented
-- **Auctions**: Property auctions when purchase declined
-- **Trading**: Player-to-player property/cash trades
 - **House Rules**: Free Parking pot, exact landing on Go
-- **Selling Houses**: Selling houses back to the bank at half price
 - **Housing Shortage**: Limited supply of houses/hotels
 
 ### Future Enhancements
 These features may be added in future versions:
-- Auction mechanics
-- Trading interface
-- House selling and shortage mechanics
+- Housing shortage mechanics
+- Additional house rules variants
 
 ## Card System
 
@@ -341,12 +402,38 @@ Veggerby.Boards.Monopoly/
 │   ├── PayRentStateMutator.cs
 │   ├── PayTaxStateMutator.cs
 │   └── UnmortgagePropertyStateMutator.cs
+├── Conditions/                 # Additional conditions
+│   ├── CanAcceptTradeCondition.cs
+│   ├── CanBidInAuctionCondition.cs
+│   ├── CanDeclineTradeCondition.cs
+│   ├── CanPassAuctionCondition.cs
+│   ├── CanProposeTradeCondition.cs
+│   ├── CanSellHouseCondition.cs
+│   └── CanStartAuctionCondition.cs
+├── Events/                     # Additional events
+│   ├── AcceptTradeGameEvent.cs
+│   ├── BidInAuctionGameEvent.cs
+│   ├── DeclineTradeGameEvent.cs
+│   ├── PassAuctionGameEvent.cs
+│   ├── ProposeTradeGameEvent.cs
+│   ├── SellHouseGameEvent.cs
+│   └── StartAuctionGameEvent.cs
+├── Mutators/                   # Additional mutators
+│   ├── AcceptTradeStateMutator.cs
+│   ├── BidInAuctionStateMutator.cs
+│   ├── DeclineTradeStateMutator.cs
+│   ├── PassAuctionStateMutator.cs
+│   ├── ProposeTradeStateMutator.cs
+│   ├── SellHouseStateMutator.cs
+│   └── StartAuctionStateMutator.cs
 └── States/                     # State types
+    ├── AuctionState.cs
     ├── MonopolyBoardConfigState.cs
     ├── MonopolyCardDeckState.cs
     ├── MonopolyCardsState.cs
     ├── MonopolyPlayerState.cs
-    └── PropertyOwnershipState.cs
+    ├── PropertyOwnershipState.cs
+    └── TradeProposalState.cs
 ```
 
 ## Testing
@@ -358,6 +445,9 @@ The module includes comprehensive tests for:
 - Property ownership operations
 - Mortgage and unmortgage operations
 - House/hotel building rules
+- Selling houses with even selling rule
+- Auction mechanics (bidding, passing, ending)
+- Trading (proposing, accepting, declining)
 - Game builder functionality
 - Card deck operations (draw, reshuffle, determinism)
 
@@ -366,7 +456,7 @@ Run tests with:
 dotnet test --filter "FullyQualifiedName~Monopoly"
 ```
 
-Test count: 120+ unit tests
+Test count: 150+ unit tests
 
 ## Dependencies
 

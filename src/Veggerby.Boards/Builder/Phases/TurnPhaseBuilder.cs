@@ -43,46 +43,6 @@ public sealed class TurnPhaseBuilder
     }
 
     /// <summary>
-    /// Creates a builder with predefined Risk-style phases.
-    /// </summary>
-    /// <returns>A builder configured with Reinforce → Attack → Fortify phases.</returns>
-    public static TurnPhaseBuilder Risk()
-    {
-        return Create()
-            .WithTurnLabel("risk-turn")
-            .AddPhase("reinforce")
-            .AddPhase("attack", optional: true)
-            .AddPhase("fortify", optional: true)
-            .WithPlayerRotation();
-    }
-
-    /// <summary>
-    /// Creates a builder with predefined Monopoly-style phases.
-    /// </summary>
-    /// <returns>A builder configured with Roll → Move → Action phases.</returns>
-    public static TurnPhaseBuilder Monopoly()
-    {
-        return Create()
-            .WithTurnLabel("monopoly-turn")
-            .AddPhase("roll")
-            .AddPhase("move")
-            .AddPhase("action", optional: true)
-            .WithPlayerRotation();
-    }
-
-    /// <summary>
-    /// Creates a builder with predefined Chess-style phases (simple alternating turns).
-    /// </summary>
-    /// <returns>A builder configured with a single Move phase.</returns>
-    public static TurnPhaseBuilder Chess()
-    {
-        return Create()
-            .WithTurnLabel("chess-turn")
-            .AddPhase("move")
-            .WithPlayerRotation();
-    }
-
-    /// <summary>
     /// Sets the label for the turn structure.
     /// </summary>
     /// <param name="label">Human-readable label.</param>

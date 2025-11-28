@@ -130,53 +130,14 @@ public class TurnPhaseBuilderTests
     }
 
     [Fact]
-    public void Risk_Should_Create_Risk_Phases()
-    {
-        // arrange & act
-        var config = TurnPhaseBuilder.Risk().Build();
-
-        // assert
-        config.TurnLabel.Should().Be("risk-turn");
-        config.Phases.Should().HaveCount(3);
-        config.Phases[0].Name.Should().Be("reinforce");
-        config.Phases[0].Optional.Should().BeFalse();
-        config.Phases[1].Name.Should().Be("attack");
-        config.Phases[1].Optional.Should().BeTrue();
-        config.Phases[2].Name.Should().Be("fortify");
-        config.Phases[2].Optional.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Monopoly_Should_Create_Monopoly_Phases()
-    {
-        // arrange & act
-        var config = TurnPhaseBuilder.Monopoly().Build();
-
-        // assert
-        config.TurnLabel.Should().Be("monopoly-turn");
-        config.Phases.Should().HaveCount(3);
-        config.Phases[0].Name.Should().Be("roll");
-        config.Phases[1].Name.Should().Be("move");
-        config.Phases[2].Name.Should().Be("action");
-    }
-
-    [Fact]
-    public void Chess_Should_Create_Simple_Move_Phase()
-    {
-        // arrange & act
-        var config = TurnPhaseBuilder.Chess().Build();
-
-        // assert
-        config.TurnLabel.Should().Be("chess-turn");
-        config.Phases.Should().ContainSingle();
-        config.Phases[0].Name.Should().Be("move");
-    }
-
-    [Fact]
     public void GetPhaseIndex_Should_Return_Correct_Index()
     {
         // arrange
-        var config = TurnPhaseBuilder.Risk().Build();
+        var config = TurnPhaseBuilder.Create()
+            .AddPhase("reinforce")
+            .AddPhase("attack", optional: true)
+            .AddPhase("fortify", optional: true)
+            .Build();
 
         // act & assert
         config.GetPhaseIndex("reinforce").Should().Be(0);
@@ -189,7 +150,11 @@ public class TurnPhaseBuilderTests
     public void GetNextPhase_Should_Return_Next_Phase()
     {
         // arrange
-        var config = TurnPhaseBuilder.Risk().Build();
+        var config = TurnPhaseBuilder.Create()
+            .AddPhase("reinforce")
+            .AddPhase("attack", optional: true)
+            .AddPhase("fortify", optional: true)
+            .Build();
 
         // act & assert
         config.GetNextPhase("reinforce").Should().Be("attack");
@@ -201,7 +166,11 @@ public class TurnPhaseBuilderTests
     public void IsOptional_Should_Return_Correct_Value()
     {
         // arrange
-        var config = TurnPhaseBuilder.Risk().Build();
+        var config = TurnPhaseBuilder.Create()
+            .AddPhase("reinforce")
+            .AddPhase("attack", optional: true)
+            .AddPhase("fortify", optional: true)
+            .Build();
 
         // act & assert
         config.IsOptional("reinforce").Should().BeFalse();

@@ -54,6 +54,18 @@ Demonstrates Monte Carlo simulation capabilities:
 
 See [SimulationDemo/README.md](SimulationDemo/README.md) for details.
 
+### RiskDemo
+
+Demonstrates Risk-style territory conquest gameplay with:
+- Territory graph with 24 territories across 4 continents
+- Reinforcement calculation (territories/3 + continent bonuses)
+- Multi-dice combat resolution (attacker 1-3 dice vs defender 1-2 dice)
+- Conquest mechanics with army movement
+- Fortification between connected territories
+- Phase-based turn structure (Reinforce → Attack → Fortify)
+
+**Run:** `dotnet run --project RiskDemo`
+
 ## Running All Demos
 
 From the repository root:
@@ -64,6 +76,7 @@ dotnet run --project samples/ChessDemo
 dotnet run --project samples/GoDemo
 dotnet run --project samples/CardGameDemo
 dotnet run --project samples/SimulationDemo
+dotnet run --project samples/RiskDemo
 ```
 
 ## Creating Your Own Demo

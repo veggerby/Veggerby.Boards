@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\src\Veggerby.Boards.Cards\Veggerby.Boards.Cards.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.DeckBuilding\Veggerby.Boards.DeckBuilding.csproj" />
     <ProjectReference Include="..\..\src\Veggerby.Boards.Monopoly\Veggerby.Boards.Monopoly.csproj" />
+    <ProjectReference Include="..\..\src\Veggerby.Boards.Risk\Veggerby.Boards.Risk.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
 
     private void SetCompositeMode(CompositeMode mode)
     {
-        if (_ruleDefinitions.Any())
+        if (_ruleDefinitions.Count > 0)
         {
             throw new ArgumentException(ExceptionMessages.CompositeModeSetAfterRules);
         }
@@ -30,12 +30,12 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
 
     public IGameEventRule Build(Game game)
     {
-        if (!(_ruleDefinitions?.Any() ?? false))
+        if (_ruleDefinitions is null || _ruleDefinitions.Count == 0)
         {
             return GameEventRule<IGameEvent>.Null;
         }
 
-        if (_ruleDefinitions.Count() == 1)
+        if (_ruleDefinitions.Count == 1)
         {
             return _ruleDefinitions.Single().Build(game) ?? GameEventRule<IGameEvent>.Null;
         }

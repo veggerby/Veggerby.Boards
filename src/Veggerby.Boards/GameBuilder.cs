@@ -709,7 +709,7 @@ public abstract class GameBuilder
         baseStates.AddRange(diceStates);
 
         // Materialize ActivePlayerState projections when declared.
-        if (_activePlayerAssignments.Any())
+        if (_activePlayerAssignments.Count > 0)
         {
             foreach (var (PlayerId, IsActive) in _activePlayerAssignments)
             {
@@ -723,7 +723,15 @@ public abstract class GameBuilder
             }
 
             // Validate exactly one active when any declarations exist.
-            var activeCount = _activePlayerAssignments.Count(a => a.IsActive);
+            var activeCount = 0;
+            foreach (var assignment in _activePlayerAssignments)
+            {
+                if (assignment.IsActive)
+                {
+                    activeCount++;
+                }
+            }
+
             if (activeCount != 1)
             {
                 throw new InvalidOperationException($"Exactly one active player must be declared; found {activeCount}.");
@@ -756,7 +764,7 @@ public abstract class GameBuilder
 
         GamePhase? gamePhaseRoot = null;
 
-        if (_gamePhaseDefinitions.Any())
+        if (_gamePhaseDefinitions.Count > 0)
         {
             var parent = GamePhase.NewParent(1, null, null);
 

@@ -723,7 +723,15 @@ public abstract class GameBuilder
             }
 
             // Validate exactly one active when any declarations exist.
-            var activeCount = _activePlayerAssignments.Count(a => a.IsActive);
+            var activeCount = 0;
+            foreach (var assignment in _activePlayerAssignments)
+            {
+                if (assignment.IsActive)
+                {
+                    activeCount++;
+                }
+            }
+
             if (activeCount != 1)
             {
                 throw new InvalidOperationException($"Exactly one active player must be declared; found {activeCount}.");

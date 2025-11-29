@@ -64,18 +64,28 @@ public class Game
         Players = playerList.AsReadOnly();
         Artifacts = artifactList.AsReadOnly();
 
-        // Build O(1) lookup dictionaries for frequent ID-based access
-        // Note: Duplicate IDs are intentionally allowed - last occurrence wins. This preserves
-        // backward compatibility with existing behavior where duplicate IDs would not throw.
+        // Build O(1) lookup dictionaries for frequent ID-based access.
+        // Validate uniqueness: duplicate IDs would have thrown InvalidOperationException
+        // via SingleOrDefault in the original implementation.
         _playerLookup = new Dictionary<string, Player>(playerList.Count, StringComparer.Ordinal);
         foreach (var player in playerList)
         {
+            if (_playerLookup.ContainsKey(player.Id))
+            {
+                throw new InvalidOperationException($"Sequence contains more than one element with player ID '{player.Id}'");
+            }
+
             _playerLookup[player.Id] = player;
         }
 
         _artifactLookup = new Dictionary<string, Artifact>(artifactList.Count, StringComparer.Ordinal);
         foreach (var artifact in artifactList)
         {
+            if (_artifactLookup.ContainsKey(artifact.Id))
+            {
+                throw new InvalidOperationException($"Sequence contains more than one element with artifact ID '{artifact.Id}'");
+            }
+
             _artifactLookup[artifact.Id] = artifact;
         }
     }

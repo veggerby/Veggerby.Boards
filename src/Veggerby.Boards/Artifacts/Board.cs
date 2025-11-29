@@ -12,7 +12,6 @@ namespace Veggerby.Boards.Artifacts;
 public class Board : Artifact, IEquatable<Board>
 {
     private readonly Dictionary<string, Tile> _tileLookup;
-    private readonly Dictionary<(Tile From, Direction Direction), TileRelation> _relationByFromDirection;
     private readonly Dictionary<(Tile From, Tile To), TileRelation> _relationByFromTo;
 
     /// <summary>
@@ -53,20 +52,34 @@ public class Board : Artifact, IEquatable<Board>
         var tileList = relationList.SelectMany(x => new[] { x.From, x.To }).Distinct().ToList();
         Tiles = tileList.AsReadOnly();
 
-        // Build O(1) lookup dictionary for tile by id
+        // Build O(1) lookup dictionary for tile by id.
+        // Validate uniqueness: duplicate IDs would have thrown InvalidOperationException
+        // via SingleOrDefault in the original implementation.
         _tileLookup = new Dictionary<string, Tile>(tileList.Count, StringComparer.Ordinal);
         foreach (var tile in tileList)
         {
+            if (_tileLookup.ContainsKey(tile.Id))
+            {
+                throw new InvalidOperationException($"Sequence contains more than one element with tile ID '{tile.Id}'");
+            }
+
             _tileLookup[tile.Id] = tile;
         }
 
-        // Build O(1) lookup dictionaries for relations
-        _relationByFromDirection = new Dictionary<(Tile, Direction), TileRelation>(relationList.Count);
+        // Build O(1) lookup dictionary for (From, To) relation pairs.
+        // Validate uniqueness: duplicate (From, To) pairs would have thrown InvalidOperationException
+        // via SingleOrDefault in the original implementation.
         _relationByFromTo = new Dictionary<(Tile, Tile), TileRelation>(relationList.Count);
         foreach (var relation in relationList)
         {
-            _relationByFromDirection[(relation.From, relation.Direction)] = relation;
-            _relationByFromTo[(relation.From, relation.To)] = relation;
+            var fromToKey = (relation.From, relation.To);
+            if (_relationByFromTo.ContainsKey(fromToKey))
+            {
+                throw new InvalidOperationException(
+                    $"Sequence contains more than one element with (From: '{relation.From.Id}', To: '{relation.To.Id}')");
+            }
+
+            _relationByFromTo[fromToKey] = relation;
         }
     }
 
@@ -85,13 +98,19 @@ public class Board : Artifact, IEquatable<Board>
     /// <summary>
     /// Gets a relation originating from a tile in a specific direction.
     /// </summary>
+    /// <remarks>
+    /// Uses LINQ-based lookup because multiple relations can share the same (From, Direction) pair
+    /// (e.g., adjacency in Risk-style boards). Returns the first match or null.
+    /// </remarks>
     public TileRelation? GetTileRelation(Tile from, Direction direction)
     {
         ArgumentNullException.ThrowIfNull(from, nameof(from));
 
         ArgumentNullException.ThrowIfNull(direction, nameof(direction));
 
-        return _relationByFromDirection.TryGetValue((from, direction), out var relation) ? relation : null;
+        // Note: Using FirstOrDefault instead of SingleOrDefault because boards like Risk
+        // can have multiple relations from the same tile in the same direction.
+        return TileRelations.FirstOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
     }
 
     /// <summary>

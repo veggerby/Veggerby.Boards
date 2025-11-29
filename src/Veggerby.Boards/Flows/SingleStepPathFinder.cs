@@ -30,7 +30,7 @@ public class SingleStepPathFinder
         ArgumentNullException.ThrowIfNull(stepMoveCondition);
         ArgumentNullException.ThrowIfNull(dice);
 
-        if (!dice.Any())
+        if (dice.Length == 0)
         {
             throw new ArgumentException(nameof(dice));
         }

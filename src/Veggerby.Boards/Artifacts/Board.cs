@@ -11,6 +11,10 @@ namespace Veggerby.Boards.Artifacts;
 /// </summary>
 public class Board : Artifact, IEquatable<Board>
 {
+    private readonly Dictionary<string, Tile> _tileLookup;
+    private readonly Dictionary<(Tile From, Direction Direction), TileRelation> _relationByFromDirection;
+    private readonly Dictionary<(Tile From, Tile To), TileRelation> _relationByFromTo;
+
     /// <summary>
     /// Gets all tiles belonging to the board.
     /// </summary>
@@ -37,13 +41,33 @@ public class Board : Artifact, IEquatable<Board>
     {
         ArgumentNullException.ThrowIfNull(tileRelations, nameof(tileRelations));
 
-        if (!tileRelations.Any())
+        var relationList = tileRelations.ToList();
+        if (relationList.Count == 0)
         {
             throw new ArgumentException("Empty relations list", nameof(tileRelations));
         }
 
-        TileRelations = tileRelations.ToList().AsReadOnly();
-        Tiles = tileRelations.SelectMany(x => new[] { x.From, x.To }).Distinct().ToList().AsReadOnly();
+        TileRelations = relationList.AsReadOnly();
+
+        // Extract unique tiles from relations
+        var tileList = relationList.SelectMany(x => new[] { x.From, x.To }).Distinct().ToList();
+        Tiles = tileList.AsReadOnly();
+
+        // Build O(1) lookup dictionary for tile by id
+        _tileLookup = new Dictionary<string, Tile>(tileList.Count, StringComparer.Ordinal);
+        foreach (var tile in tileList)
+        {
+            _tileLookup[tile.Id] = tile;
+        }
+
+        // Build O(1) lookup dictionaries for relations
+        _relationByFromDirection = new Dictionary<(Tile, Direction), TileRelation>(relationList.Count);
+        _relationByFromTo = new Dictionary<(Tile, Tile), TileRelation>(relationList.Count);
+        foreach (var relation in relationList)
+        {
+            _relationByFromDirection[(relation.From, relation.Direction)] = relation;
+            _relationByFromTo[(relation.From, relation.To)] = relation;
+        }
     }
 
     /// <summary>
@@ -55,7 +79,7 @@ public class Board : Artifact, IEquatable<Board>
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(tileId, nameof(tileId));
 
-        return Tiles.SingleOrDefault(x => string.Equals(x.Id, tileId));
+        return _tileLookup.TryGetValue(tileId, out var tile) ? tile : null;
     }
 
     /// <summary>
@@ -67,7 +91,7 @@ public class Board : Artifact, IEquatable<Board>
 
         ArgumentNullException.ThrowIfNull(direction, nameof(direction));
 
-        return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.Direction.Equals(direction));
+        return _relationByFromDirection.TryGetValue((from, direction), out var relation) ? relation : null;
     }
 
     /// <summary>
@@ -79,7 +103,7 @@ public class Board : Artifact, IEquatable<Board>
 
         ArgumentNullException.ThrowIfNull(to, nameof(to));
 
-        return TileRelations.SingleOrDefault(x => x.From.Equals(from) && x.To.Equals(to));
+        return _relationByFromTo.TryGetValue((from, to), out var relation) ? relation : null;
     }
 
     /// <inheritdoc />

@@ -65,7 +65,7 @@ public class GameState
     /// <returns>The state instance or default when absent or different type.</returns>
     public T? GetState<T>(Artifact artifact) where T : class, IArtifactState
     {
-        return _childStates.ContainsKey(artifact) && _childStates[artifact] is T t ? t : null;
+        return _childStates.TryGetValue(artifact, out var state) && state is T t ? t : null;
     }
 
     /// <summary>
@@ -95,7 +95,8 @@ public class GameState
             return false;
         }
 
-        if (ChildStates.Count() != other.ChildStates.Count())
+        // Use Count property directly on the dictionary for O(1) access instead of Count() LINQ extension
+        if (_childStates.Count != other._childStates.Count)
         {
             return false;
         }

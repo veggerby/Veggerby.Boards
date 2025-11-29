@@ -709,7 +709,7 @@ public abstract class GameBuilder
         baseStates.AddRange(diceStates);
 
         // Materialize ActivePlayerState projections when declared.
-        if (_activePlayerAssignments.Any())
+        if (_activePlayerAssignments.Count > 0)
         {
             foreach (var (PlayerId, IsActive) in _activePlayerAssignments)
             {
@@ -756,7 +756,7 @@ public abstract class GameBuilder
 
         GamePhase? gamePhaseRoot = null;
 
-        if (_gamePhaseDefinitions.Any())
+        if (_gamePhaseDefinitions.Count > 0)
         {
             var parent = GamePhase.NewParent(1, null, null);
 

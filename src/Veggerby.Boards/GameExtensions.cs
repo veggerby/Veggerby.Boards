@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,8 +21,7 @@ public static partial class GameExtensions
     {
         ArgumentNullException.ThrowIfNull(game, nameof(game));
         ArgumentNullException.ThrowIfNull(id, nameof(id));
-        return game
-            .GetArtifact<Piece>(id);
+        return game.GetArtifact<Piece>(id);
     }
 
     /// <summary>
@@ -38,6 +38,7 @@ public static partial class GameExtensions
         {
             tile = game.Board.GetTile($"tile-{id}");
         }
+
         return tile;
     }
 
@@ -48,9 +49,9 @@ public static partial class GameExtensions
     {
         ArgumentNullException.ThrowIfNull(game, nameof(game));
         ArgumentNullException.ThrowIfNull(id, nameof(id));
-        return game
-            .Players
-            .SingleOrDefault(x => x.Id.Equals(id));
+
+        // Use O(1) dictionary lookup via internal method
+        return game.GetPlayerById(id);
     }
 
     /// <summary>
@@ -60,10 +61,9 @@ public static partial class GameExtensions
     {
         ArgumentNullException.ThrowIfNull(game, nameof(game));
         ArgumentNullException.ThrowIfNull(id, nameof(id));
-        return game
-            .Artifacts
-            .OfType<T>()
-            .SingleOrDefault(x => x.Id.Equals(id));
+
+        // Use O(1) dictionary lookup via internal method, then verify type
+        return game.GetArtifactById(id) as T;
     }
 
     /// <summary>
@@ -72,10 +72,23 @@ public static partial class GameExtensions
     public static IEnumerable<T> GetArtifacts<T>(this Game game, params string[] ids) where T : Artifact
     {
         ArgumentNullException.ThrowIfNull(game);
-        return [.. game
-            .Artifacts
-            .OfType<T>()
-            .Where(x => !(ids?.Any() ?? false) || ids.Contains(x.Id))];
+
+        if (ids is null || ids.Length == 0)
+        {
+            return [.. game.Artifacts.OfType<T>()];
+        }
+
+        // Use O(1) lookups for each specified id
+        var results = new List<T>(ids.Length);
+        foreach (var id in ids)
+        {
+            if (game.GetArtifactById(id) is T artifact)
+            {
+                results.Add(artifact);
+            }
+        }
+
+        return results;
     }
 
     /// <summary>

@@ -57,12 +57,18 @@ public static partial class GameExtensions
     /// <summary>
     /// Retrieves an artifact by identifier and type.
     /// </summary>
+    /// <remarks>
+    /// Returns null if no artifact with the ID exists, or if an artifact exists but is not of type T.
+    /// This maintains equivalent behavior to the previous LINQ-based implementation.
+    /// </remarks>
     public static T? GetArtifact<T>(this Game game, string id) where T : Artifact
     {
         ArgumentNullException.ThrowIfNull(game, nameof(game));
         ArgumentNullException.ThrowIfNull(id, nameof(id));
 
-        // Use O(1) dictionary lookup via internal method, then verify type
+        // Use O(1) dictionary lookup via internal method, then verify type.
+        // The 'as T' cast returns null if artifact exists but is not of type T,
+        // matching the previous OfType<T>().SingleOrDefault() semantics.
         return game.GetArtifactById(id) as T;
     }
 

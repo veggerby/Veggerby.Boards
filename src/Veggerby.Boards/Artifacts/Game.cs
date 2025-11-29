@@ -57,7 +57,7 @@ public class Game
         var artifactList = artifacts.ToList();
         if (artifactList.Count == 0)
         {
-            throw new ArgumentException("Empty piece list", nameof(artifacts));
+            throw new ArgumentException("Empty artifact list", nameof(artifacts));
         }
 
         Board = board;
@@ -65,6 +65,8 @@ public class Game
         Artifacts = artifactList.AsReadOnly();
 
         // Build O(1) lookup dictionaries for frequent ID-based access
+        // Note: Duplicate IDs are intentionally allowed - last occurrence wins. This preserves
+        // backward compatibility with existing behavior where duplicate IDs would not throw.
         _playerLookup = new Dictionary<string, Player>(playerList.Count, StringComparer.Ordinal);
         foreach (var player in playerList)
         {

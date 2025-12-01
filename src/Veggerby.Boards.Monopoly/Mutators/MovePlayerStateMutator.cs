@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Veggerby.Boards.Flows.Events;
@@ -12,8 +13,21 @@ namespace Veggerby.Boards.Monopoly.Mutators;
 /// <summary>
 /// Mutator that moves a player token on the board.
 /// </summary>
+/// <remarks>
+/// This mutator handles:
+/// <list type="bullet">
+/// <item>Moving the player's piece to a new tile</item>
+/// <item>Tracking consecutive doubles</item>
+/// <item>Detecting and handling passing Go (collecting $200)</item>
+/// </list>
+/// </remarks>
 public class MovePlayerStateMutator : IStateMutator<MovePlayerGameEvent>
 {
+    /// <summary>
+    /// The amount collected when passing Go.
+    /// </summary>
+    public const int PassGoAmount = 200;
+
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, MovePlayerGameEvent @event)
     {
@@ -40,6 +54,9 @@ public class MovePlayerStateMutator : IStateMutator<MovePlayerGameEvent>
         var currentPosition = MonopolyBoardConfiguration.GetPosition(currentState.CurrentTile.Id);
         var newPosition = (currentPosition + @event.Spaces) % 40;
 
+        // Detect passing Go (wrapped around the board)
+        bool passedGo = newPosition < currentPosition && currentPosition != 0;
+
         // Get the destination tile
         var newTileId = MonopolyBoardConfiguration.GetTileId(newPosition);
         var newTile = engine.Game.Board.GetTile(newTileId);
@@ -50,8 +67,9 @@ public class MovePlayerStateMutator : IStateMutator<MovePlayerGameEvent>
         }
 
         var newPieceState = new PieceState(piece, newTile);
+        var updates = new List<IArtifactState> { newPieceState };
 
-        // Update consecutive doubles tracking
+        // Update player state: consecutive doubles and Pass Go bonus
         var playerState = gameState.GetStates<MonopolyPlayerState>()
             .FirstOrDefault(ps => string.Equals(ps.Player.Id, @event.Player.Id, StringComparison.Ordinal));
 
@@ -60,9 +78,20 @@ public class MovePlayerStateMutator : IStateMutator<MovePlayerGameEvent>
             var newDoubles = @event.IsDoubles ? playerState.ConsecutiveDoubles + 1 : 0;
             var newPlayerState = playerState.WithConsecutiveDoubles(newDoubles);
 
-            return gameState.Next([newPieceState, newPlayerState]);
+            // Add $200 if passing Go
+            if (passedGo)
+            {
+                newPlayerState = newPlayerState.AdjustCash(PassGoAmount);
+            }
+
+            updates.Add(newPlayerState);
+        }
+        else if (passedGo)
+        {
+            // If there's no MonopolyPlayerState but we passed Go, just update the piece
+            // This shouldn't normally happen in a proper Monopoly game
         }
 
-        return gameState.Next([newPieceState]);
+        return gameState.Next(updates);
     }
 }

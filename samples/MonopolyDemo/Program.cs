@@ -113,7 +113,7 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns && rollIndex < dice
 
     Console.WriteLine($"│  Dice: {die1} + {die2} = {diceTotal}{(isDoubles ? " (DOUBLES!)" : "")}");
 
-    // Handle jail
+    // Handle jail - uses core events for jail mechanics
     if (playerState.InJail)
     {
         if (isDoubles)
@@ -131,12 +131,13 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns && rollIndex < dice
         else
         {
             Console.WriteLine("│  → Failed to roll doubles. Stays in jail.");
-            // Increment jail turns and pass turn
-            var updatedPlayerState = playerState.IncrementJailTurns();
-            progress = progress.NewState([updatedPlayerState]);
+            // Use core event to increment jail turns
+            var stayInJailEvent = new StayInJailGameEvent(activePlayer);
+            progress = progress.HandleEvent(stayInJailEvent);
 
-            // Switch to next player
-            SwitchToNextPlayer(ref progress, game);
+            // Use core event to switch to next player
+            var endTurnEvent = new EndTurnGameEvent();
+            progress = progress.HandleEvent(endTurnEvent);
 
             Console.WriteLine("└───────────────────────────────────────────────────────────────\n");
             continue;
@@ -144,74 +145,46 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns && rollIndex < dice
     }
 
     // Check for triple doubles -> Go to Jail
-    if (isDoubles)
+    // Note: The MovePlayerStateMutator now tracks consecutive doubles automatically,
+    // but we still need to check BEFORE the move for the jail condition
+    if (isDoubles && playerState.ConsecutiveDoubles >= 2)
     {
-        var currentDoubles = playerState.ConsecutiveDoubles + 1;
-        if (currentDoubles >= 3)
-        {
-            Console.WriteLine("│  → THIRD CONSECUTIVE DOUBLES! Go To Jail!");
-            var jailEvent = new GoToJailGameEvent(activePlayer);
-            progress = progress.HandleEvent(jailEvent);
+        Console.WriteLine("│  → THIRD CONSECUTIVE DOUBLES! Go To Jail!");
+        var jailEvent = new GoToJailGameEvent(activePlayer);
+        progress = progress.HandleEvent(jailEvent);
 
-            // Update player jail state
-            var jailedPlayerState = progress.State.GetStates<MonopolyPlayerState>()
-                .First(ps => ps.Player.Equals(activePlayer))
-                .GoToJail();
-            progress = progress.NewState([jailedPlayerState]);
+        // Use core event to switch to next player
+        var endTurnEvent = new EndTurnGameEvent();
+        progress = progress.HandleEvent(endTurnEvent);
 
-            SwitchToNextPlayer(ref progress, game);
-
-            Console.WriteLine("└───────────────────────────────────────────────────────────────\n");
-            continue;
-        }
-        else
-        {
-            var updatedPlayerState = playerState.WithConsecutiveDoubles(currentDoubles);
-            progress = progress.NewState([updatedPlayerState]);
-            playerState = updatedPlayerState;
-        }
-    }
-    else
-    {
-        // Reset consecutive doubles if not doubles
-        if (playerState.ConsecutiveDoubles > 0)
-        {
-            var updatedPlayerState = playerState.WithConsecutiveDoubles(0);
-            progress = progress.NewState([updatedPlayerState]);
-            playerState = updatedPlayerState;
-        }
+        Console.WriteLine("└───────────────────────────────────────────────────────────────\n");
+        continue;
     }
 
-    // Move player
-    int newPosition = (currentPosition + diceTotal) % 40;
-    bool passedGo = newPosition < currentPosition && currentPosition != 0;
-
+    // Move player - MovePlayerStateMutator now handles:
+    // 1. Piece position update
+    // 2. Consecutive doubles tracking
+    // 3. Passing Go detection and $200 bonus
     var moveEvent = new MovePlayerGameEvent(activePlayer, die1, die2);
     progress = progress.HandleEvent(moveEvent);
 
-    // Update token position manually (simulating movement)
-    if (token is not null)
-    {
-        var newTileId = MonopolyBoardConfiguration.GetTileId(newPosition);
-        var newTile = game.Board.GetTile(newTileId);
-        if (newTile is not null)
-        {
-            var newTokenState = new PieceState(token, newTile);
-            progress = progress.NewState([newTokenState]);
-        }
-    }
+    // Get updated position from state (set by mutator)
+    var updatedTokenState = token is not null
+        ? progress.State.GetStates<PieceState>().FirstOrDefault(ps => ps.Artifact.Equals(token))
+        : null;
+    int newPosition = updatedTokenState?.CurrentTile is not null
+        ? MonopolyBoardConfiguration.GetPosition(updatedTokenState.CurrentTile.Id)
+        : (currentPosition + diceTotal) % 40;
 
     var landedSquare = MonopolyBoardConfiguration.GetSquare(newPosition);
     Console.WriteLine($"│  → Moves to [{newPosition}] {landedSquare.Name}");
 
-    // Handle passing Go
+    // Check if passed Go (based on positions)
+    bool passedGo = newPosition < currentPosition && currentPosition != 0;
     if (passedGo)
     {
-        Console.WriteLine("│  → Passed GO! Collects $200");
-        var passGoEvent = new PassGoGameEvent(activePlayer);
-        progress = progress.HandleEvent(passGoEvent);
-
-        // Update player cash
+        Console.WriteLine("│  → Passed GO! Collects $200 (handled by mutator)");
+        // Note: The $200 is now automatically added by MovePlayerStateMutator
         playerState = progress.State.GetStates<MonopolyPlayerState>()
             .First(ps => ps.Player.Equals(activePlayer));
     }
@@ -236,10 +209,11 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns && rollIndex < dice
         progress = progress.HandleEvent(eliminateEvent);
     }
 
-    // Switch player if no doubles or turn ends
+    // Switch player if no doubles or turn ends - use core event
     if (!isDoubles)
     {
-        SwitchToNextPlayer(ref progress, game);
+        var endTurnEvent = new EndTurnGameEvent();
+        progress = progress.HandleEvent(endTurnEvent);
     }
     else
     {
@@ -394,26 +368,6 @@ static Player? GetActivePlayer(GameState state, Game game)
 {
     var activePlayerState = state.GetStates<ActivePlayerState>().FirstOrDefault(aps => aps.IsActive);
     return activePlayerState?.Artifact;
-}
-
-static void SwitchToNextPlayer(ref GameProgress progress, Game game)
-{
-    var players = game.Players.ToList();
-    var currentActive = progress.State.GetStates<ActivePlayerState>().FirstOrDefault(aps => aps.IsActive);
-
-    if (currentActive is null)
-    {
-        return;
-    }
-
-    int currentIndex = players.FindIndex(p => p.Equals(currentActive.Artifact));
-    int nextIndex = (currentIndex + 1) % players.Count;
-
-    var updates = new List<IArtifactState>();
-    updates.Add(new ActivePlayerState(currentActive.Artifact, false));
-    updates.Add(new ActivePlayerState(players[nextIndex], true));
-
-    progress = progress.NewState(updates);
 }
 
 static void PrintPlayerStates(GameState state, Game game)

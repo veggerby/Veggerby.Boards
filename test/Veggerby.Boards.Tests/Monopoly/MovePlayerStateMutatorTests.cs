@@ -163,10 +163,9 @@ public class MovePlayerStateMutatorTests
         var pieceState = newState.GetState<PieceState>(piece);
         pieceState!.CurrentTile!.Id.Should().Be("square-0");
 
-        // Landing on Go counts as passing Go, so the $200 bonus is collected
-        // The condition is: newPosition < currentPosition && currentPosition != 0
-        // With newPosition=0 and currentPosition=33: 0 < 33 is true, and 33 != 0 is true
-        // So passedGo = true
+        // In Monopoly, both passing and landing on Go award the $200 bonus.
+        // The current logic treats landing on Go as passing Go (newPosition < currentPosition && currentPosition != 0),
+        // so the bonus is awarded in both cases. This test verifies the landing case.
         var playerState = newState.GetStates<MonopolyPlayerState>()
             .First(ps => ps.Player.Equals(player));
         playerState.Cash.Should().Be(initialCash + 200);

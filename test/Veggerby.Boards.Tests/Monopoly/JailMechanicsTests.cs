@@ -90,7 +90,8 @@ public class JailMechanicsTests
         var result = condition.Evaluate(progress.Engine, progress.State, gameEvent);
 
         // assert
-        result.Result.Should().Be(ConditionResult.Ignore); // NotApplicable = Ignore
+        // ConditionResponse.NotApplicable has Result = ConditionResult.Ignore
+        result.Result.Should().Be(ConditionResult.Ignore);
     }
 
     [Fact]
@@ -201,5 +202,29 @@ public class JailMechanicsTests
         var newActive = newState.GetStates<ActivePlayerState>()
             .First(aps => aps.IsActive);
         newActive.Artifact.Id.Should().Be("Alice"); // Wrapped around
+    }
+
+    [Fact]
+    public void EndTurnStateMutator_WhenNoActivePlayer_ReturnsUnchangedState()
+    {
+        // arrange
+        var (progress, _) = SetupGame();
+        var mutator = new EndTurnStateMutator();
+        var gameEvent = new EndTurnGameEvent();
+
+        // Make no one active
+        var alice = progress.Engine.Game.GetPlayer("Alice")!;
+        var bob = progress.Engine.Game.GetPlayer("Bob")!;
+        progress = progress.NewState([
+            new ActivePlayerState(alice, false),
+            new ActivePlayerState(bob, false)
+        ]);
+
+        // act
+        var newState = mutator.MutateState(progress.Engine, progress.State, gameEvent);
+
+        // assert
+        // State should be unchanged since no active player was found
+        newState.Should().BeSameAs(progress.State);
     }
 }

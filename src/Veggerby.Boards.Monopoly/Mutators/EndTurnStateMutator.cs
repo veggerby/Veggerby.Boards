@@ -39,6 +39,12 @@ public class EndTurnStateMutator : IStateMutator<EndTurnGameEvent>
         }
 
         int currentIndex = players.FindIndex(p => p.Equals(currentActive.Artifact));
+
+        if (currentIndex == -1)
+        {
+            throw new InvalidOperationException($"Active player {currentActive.Artifact.Id} not found in player list");
+        }
+
         int nextIndex = (currentIndex + 1) % players.Count;
 
         var updates = new List<IArtifactState>

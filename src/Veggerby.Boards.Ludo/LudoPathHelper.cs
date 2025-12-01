@@ -101,30 +101,8 @@ public static class LudoPathHelper
     /// <returns>The next tile, or null if no valid path exists.</returns>
     private static Tile? GetNextTile(Board board, Tile currentTile, string playerColor, bool canEnterHome)
     {
-        // First, check for home entry if allowed (takes priority for the current player)
-        if (canEnterHome)
-        {
-            foreach (var relation in board.TileRelations)
-            {
-                if (!relation.From.Equals(currentTile))
-                {
-                    continue;
-                }
+        Tile? forwardTile = null;
 
-                if (!string.Equals(relation.Direction.Id, HomeEntryDirection, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                // Check if this home entry belongs to the current player
-                if (relation.To.Id.Contains(playerColor, StringComparison.Ordinal))
-                {
-                    return relation.To;
-                }
-            }
-        }
-
-        // Otherwise, use forward direction
         foreach (var relation in board.TileRelations)
         {
             if (!relation.From.Equals(currentTile))
@@ -132,13 +110,22 @@ public static class LudoPathHelper
                 continue;
             }
 
-            if (string.Equals(relation.Direction.Id, ForwardDirection, StringComparison.Ordinal))
+            // Check home entry first if allowed (takes priority for the current player)
+            if (canEnterHome &&
+                string.Equals(relation.Direction.Id, HomeEntryDirection, StringComparison.Ordinal) &&
+                relation.To.Id.StartsWith($"home-{playerColor}-", StringComparison.Ordinal))
             {
                 return relation.To;
             }
+
+            // Track forward direction as fallback
+            if (string.Equals(relation.Direction.Id, ForwardDirection, StringComparison.Ordinal))
+            {
+                forwardTile = relation.To;
+            }
         }
 
-        return null;
+        return forwardTile;
     }
 
     /// <summary>

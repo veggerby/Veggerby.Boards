@@ -139,7 +139,7 @@ public class MovePlayerStateMutatorTests
     }
 
     [Fact]
-    public void MovePlayer_LandingExactlyOnGo_DoesNotCollectPassGoBonus()
+    public void MovePlayer_LandingExactlyOnGo_CollectsPassGoBonus()
     {
         // arrange
         var (progress, player) = SetupGame();
@@ -163,14 +163,12 @@ public class MovePlayerStateMutatorTests
         var pieceState = newState.GetState<PieceState>(piece);
         pieceState!.CurrentTile!.Id.Should().Be("square-0");
 
-        // Landing on Go doesn't trigger the "pass Go" bonus in the mutator
-        // (that's handled by a separate rule typically in the landing phase)
+        // Landing on Go counts as passing Go, so the $200 bonus is collected
+        // The condition is: newPosition < currentPosition && currentPosition != 0
+        // With newPosition=0 and currentPosition=33: 0 < 33 is true, and 33 != 0 is true
+        // So passedGo = true
         var playerState = newState.GetStates<MonopolyPlayerState>()
             .First(ps => ps.Player.Equals(player));
-
-        // The mutator detects passing Go but not landing on Go
-        // (newPosition < currentPosition check: 0 < 33 is true, but currentPosition != 0 is true)
-        // So it should actually ADD the bonus
         playerState.Cash.Should().Be(initialCash + 200);
     }
 }

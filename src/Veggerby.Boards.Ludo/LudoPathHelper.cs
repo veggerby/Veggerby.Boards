@@ -42,11 +42,7 @@ public static class LudoPathHelper
     {
         ArgumentNullException.ThrowIfNull(board);
         ArgumentNullException.ThrowIfNull(startTile);
-
-        if (string.IsNullOrEmpty(playerColor))
-        {
-            throw new ArgumentNullException(nameof(playerColor));
-        }
+        ArgumentException.ThrowIfNullOrEmpty(playerColor);
 
         Tile? currentTile = startTile;
 
@@ -71,11 +67,7 @@ public static class LudoPathHelper
     {
         ArgumentNullException.ThrowIfNull(board);
         ArgumentNullException.ThrowIfNull(startTile);
-
-        if (string.IsNullOrEmpty(playerColor))
-        {
-            throw new ArgumentNullException(nameof(playerColor));
-        }
+        ArgumentException.ThrowIfNullOrEmpty(playerColor);
 
         var path = new List<Tile>();
         Tile? currentTile = startTile;
@@ -178,7 +170,7 @@ public static class LudoPathHelper
     /// <returns>The starting track tile ID.</returns>
     public static string GetStartingTileId(string playerColor)
     {
-        ArgumentNullException.ThrowIfNull(playerColor);
+        ArgumentException.ThrowIfNullOrEmpty(playerColor);
 
         var colorIndex = playerColor.ToLowerInvariant() switch
         {

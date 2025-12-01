@@ -6,7 +6,6 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
-using Veggerby.Boards.Flows.Patterns;
 using Veggerby.Boards.Ludo;
 using Veggerby.Boards.Ludo.Events;
 using Veggerby.Boards.States;
@@ -108,11 +107,11 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns)
         }
     }
 
-    // Try to move a piece
+    // Try to move a piece - use LudoPathHelper for path resolution
     var movablePieces = progress.State.GetStates<PieceState>()
         .Where(ps => ps.Artifact.Owner?.Equals(activePlayer) == true &&
                      ps.CurrentTile != null &&
-                     !ps.CurrentTile.Id.StartsWith($"base-"))
+                     !LudoPathHelper.IsBaseTile(ps.CurrentTile))
         .ToList();
 
     bool moveMade = false;
@@ -124,48 +123,19 @@ while (!IsGameEnded(progress.State) && turnNumber < maxTurns)
             continue;
         }
 
-        // Try to find a valid destination tile at the rolled distance
-        // For Ludo, we need to traverse forward along the path
-        Tile? currentTile = pieceState.CurrentTile;
-        Tile? destinationTile = null;
+        // Use LudoPathHelper to resolve the destination
+        // Note: canEnterHome should be true after piece completes a full lap,
+        // but for simplicity in this demo, we set it to false for all pieces
+        var destinationTile = LudoPathHelper.ResolveDestination(
+            game.Board,
+            pieceState.CurrentTile,
+            rollValue,
+            activePlayer.Id,
+            canEnterHome: false);
 
-        // Follow the "forward" direction for the dice value number of steps
-        for (int step = 0; step < rollValue && currentTile != null; step++)
+        if (destinationTile != null)
         {
-            // Check for home entry first
-            var homeEntryRelations = game.Board.TileRelations
-                .Where(r => r.From.Equals(currentTile) && r.Direction.Id == "home-entry")
-                .ToList();
-
-            if (homeEntryRelations.Any())
-            {
-                // Entering home stretch
-                currentTile = homeEntryRelations.First().To;
-            }
-            else
-            {
-                // Normal forward movement
-                var nextRelations = game.Board.TileRelations
-                    .Where(r => r.From.Equals(currentTile) && r.Direction.Id == "forward")
-                    .ToList();
-
-                if (nextRelations.Any())
-                {
-                    currentTile = nextRelations.First().To;
-                }
-                else
-                {
-                    currentTile = null;
-                    break;
-                }
-            }
-        }
-
-        if (currentTile != null)
-        {
-            destinationTile = currentTile;
-
-            // Try to resolve a path
+            // Try to resolve a path using the pattern visitor
             var resolver = new ResolveTilePathPatternVisitor(game.Board, pieceState.CurrentTile, destinationTile);
             foreach (var pattern in piece.Patterns)
             {

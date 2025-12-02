@@ -30,6 +30,10 @@ Welcome to the Veggerby.Boards documentation! This page provides a navigation gu
 - **[Chess](../src/Veggerby.Boards.Chess/README.md)** - Chess module documentation
 - **[Go](../src/Veggerby.Boards.Go/README.md)** - Go (Weiqi/Baduk) module documentation
 - **[Backgammon](../src/Veggerby.Boards.Backgammon/README.md)** - Backgammon module documentation
+- **[Checkers](../src/Veggerby.Boards.Checkers/README.md)** - Checkers/Draughts module documentation
+- **[Ludo](../src/Veggerby.Boards.Ludo/README.md)** - Ludo/Parcheesi module documentation ([detailed rules](ludo/index.md))
+- **[Monopoly](../src/Veggerby.Boards.Monopoly/README.md)** - Monopoly module documentation ([detailed rules](monopoly/index.md))
+- **[Risk](../src/Veggerby.Boards.Risk/README.md)** - Risk module documentation ([detailed rules](risk/index.md))
 - **[Deck Building](deck-building.md)** - Deck-building game module documentation
 - **[Cards](cards/)** - Card and deck primitives
 

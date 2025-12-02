@@ -64,6 +64,37 @@ Examples:
 
 Keep extensions pure and deterministic.
 
+## Testing
+
+Run the module tests:
+
+```bash
+cd test/Veggerby.Boards.Tests
+dotnet test --filter "FullyQualifiedName~Cards"
+```
+
+**Test Coverage**:
+- Deck creation and pile initialization
+- Deterministic shuffle (parity across runs with same seed)
+- Draw operations (single and multiple cards)
+- Move and discard operations
+- Peek and reveal operations
+- Reshuffle mechanics (discard to draw)
+- Invalid operation rejection
+
+## Known Limitations
+
+- **No Visibility Tracking**: Revealed cards not tracked by default (extend via extras if needed)
+- **No Card Effects**: Card-specific abilities not implemented (extend for specific games)
+- **Single Deck Focus**: Multi-deck scenarios work but require manual artifact registration
+
+## References
+
+- **Core Documentation**: See [/docs/core-concepts.md](../../docs/core-concepts.md) for engine fundamentals
+- **Cards Index**: See [/docs/cards/index.md](../../docs/cards/index.md) for detailed module documentation
+- **Cards Examples**: See [/docs/cards/examples.md](../../docs/cards/examples.md) for practical scenarios
+- **Cards API Reference**: See [/docs/cards/api-reference.md](../../docs/cards/api-reference.md) for complete API
+
 ## Interop With Core
 
 All transitions are immutable and deterministic. Cards logic is layered on core primitives (events, rules, phases) and does not introduce side effects.

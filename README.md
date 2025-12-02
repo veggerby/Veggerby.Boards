@@ -1,6 +1,17 @@
 # Veggerby.Boards
 
-Composable .NET board game engine: define boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases for turn progression. Current example modules: Backgammon, Chess, Go, Cards, and DeckBuilding.
+Composable .NET board game engine: define boards (graphs), artifacts (pieces, dice, players), immutable state, and rule-driven phases for turn progression.
+
+**Current Game Modules**:
+- **Chess** – Complete move legality, castling, en passant, promotion, checkmate/stalemate detection
+- **Go** – Stone placement, capture mechanics, ko rule, territory scoring
+- **Backgammon** – Board topology, dice mechanics, checker movement, bearing-off
+- **Checkers** – Dark-square topology, mandatory captures, king promotion
+- **Ludo** – Dice-driven race game with entry mechanics and capture rules
+- **Monopoly** – Property ownership, rent calculation, jail mechanics, auctions, trading
+- **Risk** – Territory conquest with multi-dice combat and reinforcement mechanics
+- **Cards** – Deterministic decks, piles, shuffle, draw, discard
+- **DeckBuilding** – Supply management, player zones, phase-based gameplay
 
 ## Highlights
 
@@ -52,12 +63,26 @@ See `docs/core-concepts.md` for details.
 Layered solution (current repositories focus on engine + modules; HTTP facade removed for now):
 
 ```txt
-Game Modules (Backgammon, Chess)
+Game Modules (Chess, Go, Backgammon, Checkers, Ludo, Monopoly, Risk, Cards, DeckBuilding)
                 ↓
             Core (artifacts • state • phases • rules)
 ```
 
 More in `docs/architecture.md`.
+
+## Game Modules
+
+| Module | Package | Description |
+|--------|---------|-------------|
+| [Chess](src/Veggerby.Boards.Chess/README.md) | `Veggerby.Boards.Chess` | Complete chess with move legality and SAN notation |
+| [Go](src/Veggerby.Boards.Go/README.md) | `Veggerby.Boards.Go` | Go (Weiqi/Baduk) with capture and scoring |
+| [Backgammon](src/Veggerby.Boards.Backgammon/README.md) | `Veggerby.Boards.Backgammon` | Backgammon with dice and bearing-off |
+| [Checkers](src/Veggerby.Boards.Checkers/README.md) | `Veggerby.Boards.Checkers` | Standard checkers with mandatory captures |
+| [Ludo](src/Veggerby.Boards.Ludo/README.md) | `Veggerby.Boards.Ludo` | Ludo/Parcheesi race game |
+| [Monopoly](src/Veggerby.Boards.Monopoly/README.md) | `Veggerby.Boards.Monopoly` | Economic property management game |
+| [Risk](src/Veggerby.Boards.Risk/README.md) | `Veggerby.Boards.Risk` | Territory conquest with combat resolution |
+| [Cards](src/Veggerby.Boards.Cards/README.md) | `Veggerby.Boards.Cards` | Deterministic card/deck primitives |
+| [DeckBuilding](src/Veggerby.Boards.DeckBuilding/README.md) | `Veggerby.Boards.DeckBuilding` | Deck-building game foundation |
 
 ## Extending
 

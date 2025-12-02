@@ -95,6 +95,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - **Backward Compatible**: Existing `Then()` API remains fully functional
 
 - **Documentation Improvements**:
+  - **Package README Files**: Added comprehensive README.md files to all game modules for NuGet package documentation:
+    - **Ludo**: Complete module README with entry mechanics, dice rules, capture mechanics, phase structure
+    - **Monopoly**: Complete module README with property types, rent calculation, jail mechanics, trading, auctions
+    - **Risk**: Complete module README with territory graph, combat algorithm, reinforcement calculation, phase structure
+    - **Checkers**: Complete module README with dark-square topology, mandatory captures, king promotion, endgame detection
+    - All READMEs follow consistent structure: Overview, Quick Start, Key Concepts, Events & Mutators, Testing, Known Limitations, Extending, References
+  - **Updated Main README.md**: Expanded module listing with complete table of all 9 game modules (Chess, Go, Backgammon, Checkers, Ludo, Monopoly, Risk, Cards, DeckBuilding)
+  - **Updated docs/README.md**: Added navigation links to all game module READMEs with cross-references to detailed documentation
   - **Benchmark Summary Dashboard** (`docs/performance/benchmark-summary.md`): Consolidated performance metrics and historical tracking
     - At-a-glance performance baselines across all major benchmark categories
     - Core performance, acceleration layers, module-specific metrics
@@ -112,7 +120,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
     - Common patterns by game type (racing, territory control, card games, abstract strategy)
     - Common pitfalls and anti-patterns
   - **Documentation Navigation** (`docs/README.md`): Central entry point for all documentation
-  - **Standardized Module READMEs**: All modules (Chess, Go, Backgammon, DeckBuilding) now follow consistent structure:
+  - **Standardized Module READMEs**: All modules (Chess, Go, Backgammon, Checkers, Ludo, Monopoly, Risk, Cards, DeckBuilding) now follow consistent structure:
     - Overview with feature list
     - Quick start examples
     - Key concepts tables

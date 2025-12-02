@@ -2,7 +2,7 @@
 
 Immutable, deterministic board game engine primitives: artifacts (Board, Tile, Piece, Player, Dice), immutable `GameState` history chain, declarative events, rules, phases, and safe transition execution.
 
-> This is the foundational package. Other domain/game modules (Chess, Backgammon) sit on top without extending internal mutable state.
+> This is the foundational package. Other domain/game modules (Chess, Go, Backgammon, Checkers, Ludo, Monopoly, Risk, Cards, DeckBuilding) sit on top without extending internal mutable state.
 
 ## Install
 
@@ -83,6 +83,22 @@ Semantic versioning aligned with repository releases. Breaking API changes bump 
 - Deterministic timeline hashing
 - Movement pattern compilation (DFA)
 - Optional bitboard acceleration (game-specific)
+
+## Testing
+
+Run the core tests:
+
+```bash
+cd test/Veggerby.Boards.Tests
+dotnet test --filter "FullyQualifiedName~Core"
+```
+
+## References
+
+- **Documentation Index**: See [/docs/index.md](../../docs/index.md) for full documentation set
+- **Core Concepts**: See [/docs/core-concepts.md](../../docs/core-concepts.md) for detailed concept documentation
+- **Extensibility Guide**: See [/docs/extensibility.md](../../docs/extensibility.md) for extending the engine
+- **GameBuilder Guide**: See [/docs/gamebuilder-guide.md](../../docs/gamebuilder-guide.md) for creating new game modules
 
 ## Contributing
 

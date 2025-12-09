@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+(No unreleased changes)
+
+## [0.1.0] - 2025-12-09
+
 ### Added
 
 - **Risk Game Module** (Workstream 16):
@@ -464,8 +468,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Movement path performance: `TilePath` refactored to cache relations, tiles, directions, and distance (removed LINQ from hot accessors).
 - Benchmarks assertion hygiene: converted non-critical setup artifact presence checks from exceptions to `Debug.Assert` to reduce noise without affecting release semantics.
 
-## [0.1.0] – Initial
-
-- Initial codebase structure, game engine core, Backgammon and Chess modules, and test suite (354 tests passing).
-
 [Unreleased]: https://github.com/veggerby/Veggerby.Boards/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/veggerby/Veggerby.Boards/releases/tag/v0.1.0

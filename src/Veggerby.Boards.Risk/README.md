@@ -222,6 +222,7 @@ dotnet test --filter "FullyQualifiedName~Risk"
 - **Fixed Map**: Only simplified 24-territory map included
 - **2-Player Default**: Multi-player requires custom configuration
 - **No Mission Risk**: Mission-based victory conditions not implemented
+- **Elimination Order**: Player elimination order is not tracked during gameplay
 
 ## Extending This Module
 

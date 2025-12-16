@@ -27,11 +27,7 @@ public sealed class CheckersEndgameCondition : IGameStateCondition
         _game = game;
     }
 
-    /// <summary>
-    /// Evaluates whether the game has ended.
-    /// </summary>
-    /// <param name="state">The current game state.</param>
-    /// <returns>Valid if game ended, Ignore if still in progress.</returns>
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
         if (!state.TryGetActivePlayer(out var activePlayer) || activePlayer == null)
@@ -51,8 +47,12 @@ public sealed class CheckersEndgameCondition : IGameStateCondition
             return ConditionResponse.Valid;
         }
 
-        // TODO: Check if active player has any valid moves
-        // For now, simplified - game only ends when all pieces captured
+        // Known Limitation: No-move detection not yet implemented.
+        // See README.md Known Limitations section.
+        // Future implementation will:
+        // 1. Enumerate all possible moves for each active piece
+        // 2. If no legal moves exist, return Valid (game over)
+        // 3. Otherwise, return Ignore (game continues)
 
         // Game still in progress
         return ConditionResponse.Ignore("Game not ended");

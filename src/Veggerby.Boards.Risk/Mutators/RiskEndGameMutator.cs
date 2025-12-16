@@ -63,7 +63,9 @@ public sealed class RiskEndGameMutator : IStateMutator<IGameEvent>
             // Game over - world domination achieved
             var eliminationOrder = new List<Artifacts.Player>();
 
-            // TODO: Track elimination order during game (for now, empty)
+            // Known Limitation: Elimination order tracking not yet implemented.
+            // Future enhancement could track which players were eliminated and in what order
+            // for ranking purposes in multi-player games.
             var outcomeState = new RiskOutcomeState(firstOwner, territoryStates.Count, eliminationOrder);
 
             return gameState.Next(new IArtifactState[] { new GameEndedState(), outcomeState });

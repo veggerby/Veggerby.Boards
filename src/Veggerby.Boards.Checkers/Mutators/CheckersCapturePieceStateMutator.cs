@@ -67,7 +67,11 @@ public sealed class CheckersCapturePieceStateMutator : IStateMutator<MovePieceGa
                 capturedPieces.Add(new CapturedPieceState(jumpedPiece));
             }
         }
-        // TODO: Handle multi-jump sequences (more than 2 relations)
+
+        // Known Limitation: Multi-jump sequences beyond 2 relations not yet handled.
+        // See README.md Known Limitations section.
+        // Future implementation will iterate through path.Relations and identify
+        // all intermediate tiles where opponent pieces are jumped.
 
         if (capturedPieces.Count == 0)
         {

@@ -10,19 +10,19 @@ using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Checkers.Conditions;
 
-    /// <summary>
-    /// Enforces the mandatory capture rule in checkers: if any capture is available,
-    /// player must take a capture (not a normal move), and must choose the longest available chain.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This is a simplified implementation that currently allows all moves.
-    /// Full implementation would enumerate all capture chains and enforce the longest chain rule.
-    /// </para>
-    /// <para>
-    /// See Known Limitations in README.md for details on mandatory capture implementation status.
-    /// </para>
-    /// </remarks>
+/// <summary>
+/// Placeholder for mandatory capture rule enforcement in checkers.
+/// Currently allows all moves; full enforcement pending implementation.
+/// </summary>
+/// <remarks>
+/// <para>
+/// When complete, this condition will enforce the mandatory capture rule: if any capture is available,
+/// player must take a capture (not a normal move), and must choose the longest available chain.
+/// </para>
+/// <para>
+/// See Known Limitations in README.md for details on mandatory capture implementation status.
+/// </para>
+/// </remarks>
 public sealed class MandatoryCaptureCondition : IGameEventCondition<MovePieceGameEvent>
 {
     private readonly Game _game;

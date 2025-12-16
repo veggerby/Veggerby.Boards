@@ -47,12 +47,14 @@ public sealed class CheckersEndgameCondition : IGameStateCondition
             return ConditionResponse.Valid;
         }
 
-        // Known Limitation: No-move detection not yet implemented.
-        // See README.md Known Limitations section.
-        // Future implementation will:
-        // 1. Enumerate all possible moves for each active piece
-        // 2. If no legal moves exist, return Valid (game over)
-        // 3. Otherwise, return Ignore (game continues)
+        /*
+         * Known Limitation: No-legal-moves detection not yet implemented.
+         * See README.md Known Limitations section.
+         * Future implementation will:
+         * 1. Enumerate all possible moves for each active piece
+         * 2. If no legal moves exist, return Valid (game over)
+         * 3. Otherwise, return Ignore (game continues)
+         */
 
         // Game still in progress
         return ConditionResponse.Ignore("Game not ended");

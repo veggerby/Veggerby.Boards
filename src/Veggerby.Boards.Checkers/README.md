@@ -200,6 +200,9 @@ dotnet test --filter "FullyQualifiedName~Checkers"
 
 ## Known Limitations
 
+- **Mandatory Capture**: Full mandatory capture logic not yet implemented (currently allows all moves)
+- **No Legal Moves Detection**: Endgame detection only checks for zero pieces, not absence of valid moves
+- **Multi-Jump Chains**: Only single-jump captures are handled; multi-jump sequences beyond 2 relations not implemented
 - **International Draughts**: 10×10 variant not implemented
 - **Flying Kings**: Kings limited to single-square moves (no long-range)
 - **Huffing**: Historical "huffing" rule not implemented

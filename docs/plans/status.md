@@ -154,35 +154,58 @@
 
 ### 12. Ludo / Parcheesi Game Module
 
-⏳ **Planned.**
+✅ **Complete (2025-12-16).**
 
-* Scope: race track + home stretches, safe squares, entry on 6, capture reset, win when all tokens home.
-* Pending: full builder, movement/capture conditions, win detection tests.
-* Risks: variant creep (extra-turn on 6, stacking) inflating baseline.
+* ✅ Race track + home stretches topology implemented
+* ✅ Safe squares functional
+* ✅ Entry on 6 mechanics
+* ✅ Capture reset working
+* ✅ Win detection when all tokens home
+* 10/10 tests passing
+* Module is feature-complete with documented known limitations in README
 
 ### 13. Checkers / Draughts Game Module
 
-⏳ **Planned.**
+⏳ **Partial (60% Complete, 2025-12-16).**
 
-* Scope: dark-square graph, forward men, bidirectional kings, mandatory capture, multi-jump chains, kinging, immobilization/ elimination win.
-* Pending: capture chain enumerator, deterministic path ordering, kinging mutator, tests & benchmarks.
-* Risks: branching capture explosion performance; variant divergence early.
+* ✅ Dark-square graph topology complete (32 playable tiles)
+* ✅ Forward men, bidirectional kings movement implemented
+* ✅ Kinging on back rank functional
+* ✅ Single-jump capture mechanics working
+* ✅ Zero-pieces endgame detection
+* ⚠️ Mandatory capture enforcement not yet implemented (currently allows all moves)
+* ⚠️ No-legal-moves endgame detection missing
+* ⚠️ Multi-jump chains beyond 2 relations not handled
+* 28/28 tests passing (some are placeholders for incomplete features)
+* See Known Limitations in module README and workstream 13 for details.
 
 ### 14. Monopoly Game Module
 
-⏳ **Planned.**
+✅ **Complete (2025-12-16).**
 
-* Scope: board cycle, property acquisition, rent, jail, chance/community deck (subset), doubles logic, bankruptcy elimination.
-* Pending: deck artifacts & deterministic shuffle, rent & cash transfer mutators, jail state flow, win detection tests.
-* Risks: economic complexity creep (houses/auctions) prematurely.
+* ✅ Board cycle with 40 squares
+* ✅ Property acquisition and ownership
+* ✅ Rent calculation with monopoly bonuses
+* ✅ House/hotel building
+* ✅ Jail mechanics (multiple release methods)
+* ✅ Chance/Community Chest card decks
+* ✅ Bankruptcy elimination
+* ✅ Auction and trading systems
+* 169/169 tests passing
+* Module is feature-complete with documented known limitations in README
 
 ### 16. Risk Game Module
 
-⏳ **Planned.**
+✅ **Complete (2025-12-16).**
 
-* Scope: territory graph, reinforcement calc (territories/3 min 3 + continent bonus), combat dice resolution, conquest ownership transfer, elimination, domination win.
-* Pending: reinforcement condition implementation, combat resolution mutators, win detection tests, benchmarks.
-* Risks: early card mechanic inclusion expanding surface; combat allocation overhead.
+* ✅ Territory graph with continents
+* ✅ Reinforcement calculation (territories/3 min 3 + continent bonus)
+* ✅ Combat dice resolution
+* ✅ Conquest ownership transfer
+* ✅ Player elimination
+* ✅ World domination win condition
+* 44/44 tests passing
+* Module is feature-complete with documented known limitations in README
 
 ### 17. Deck-building Core Module
 

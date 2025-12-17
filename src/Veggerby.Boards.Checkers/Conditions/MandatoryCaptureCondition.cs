@@ -11,12 +11,17 @@ using Veggerby.Boards.States;
 namespace Veggerby.Boards.Checkers.Conditions;
 
 /// <summary>
-/// Enforces the mandatory capture rule in checkers: if any capture is available,
-/// player must take a capture (not a normal move), and must choose the longest available chain.
+/// Placeholder for mandatory capture rule enforcement in checkers.
+/// Currently allows all moves; full enforcement pending implementation.
 /// </summary>
 /// <remarks>
-/// This is a simplified implementation. Full implementation would enumerate all capture chains
-/// and enforce the longest chain rule.
+/// <para>
+/// When complete, this condition will enforce the mandatory capture rule: if any capture is available,
+/// player must take a capture (not a normal move), and must choose the longest available chain.
+/// </para>
+/// <para>
+/// See Known Limitations in README.md for details on mandatory capture implementation status.
+/// </para>
 /// </remarks>
 public sealed class MandatoryCaptureCondition : IGameEventCondition<MovePieceGameEvent>
 {
@@ -31,17 +36,17 @@ public sealed class MandatoryCaptureCondition : IGameEventCondition<MovePieceGam
         _game = game;
     }
 
-    /// <summary>
-    /// Evaluates if the move satisfies the mandatory capture rule.
-    /// </summary>
-    /// <param name="engine">The game engine.</param>
-    /// <param name="state">The current game state.</param>
-    /// <param name="evt">The move event to validate.</param>
-    /// <returns>Valid if move is allowed, invalid with reason if not.</returns>
+    /// <inheritdoc />
     public ConditionResponse Evaluate(GameEngine engine, GameState state, MovePieceGameEvent evt)
     {
-        // TODO: Implement full mandatory capture logic
-        // For now, allow all moves
+        // Known Limitation: Full mandatory capture logic not yet implemented.
+        // See README.md Known Limitations section.
+        // Future implementation will:
+        // 1. Enumerate all possible moves for active player's pieces
+        // 2. Identify which moves are captures (jumps)
+        // 3. If captures exist, validate that the current move is a capture
+        // 4. Enforce longest-chain rule among available captures
+
         return ConditionResponse.Valid;
     }
 }

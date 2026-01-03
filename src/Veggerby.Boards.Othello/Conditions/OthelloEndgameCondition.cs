@@ -38,7 +38,7 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
         // Check if game has already ended
         if (state.GetStates<GameEndedState>().Any())
         {
-            return ConditionResponse.Ignore;
+            return ConditionResponse.Ignore("Game already ended");
         }
 
         // Check if board is full
@@ -62,6 +62,11 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
         var blackPlayer = _game.GetPlayer(OthelloIds.Players.Black);
         var whitePlayer = _game.GetPlayer(OthelloIds.Players.White);
 
+        if (blackPlayer == null || whitePlayer == null)
+        {
+            return ConditionResponse.Ignore("Players not found");
+        }
+
         var blackHasMove = HasAnyValidMove(state, blackPlayer);
         var whiteHasMove = HasAnyValidMove(state, whitePlayer);
 
@@ -70,7 +75,7 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
             return ConditionResponse.Valid; // Neither player can move
         }
 
-        return ConditionResponse.Ignore; // Game continues
+        return ConditionResponse.Ignore("Game continues");
     }
 
     private bool HasAnyValidMove(GameState state, Player player)
@@ -85,9 +90,11 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
         foreach (var tile in emptyTiles)
         {
             // Check if placing a disc here would flip any opponent discs
-            foreach (var direction in _game.Directions)
+            var relations = _game.Board.TileRelations.Where(r => r.From.Id == tile.Id);
+
+            foreach (var relation in relations)
             {
-                if (WouldFlipInDirection(state, tile, playerColor, direction, opponentColor))
+                if (WouldFlipInDirection(state, tile, playerColor, relation.Direction, opponentColor))
                 {
                     return true;
                 }
@@ -105,7 +112,7 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
         // Move in the direction, counting opponent pieces
         while (true)
         {
-            var relation = _game.Board.GetRelation(currentTile, direction);
+            var relation = _game.Board.GetTileRelation(currentTile, direction);
             if (relation == null)
             {
                 return false;
@@ -126,7 +133,7 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
             {
                 opponentPiecesFound++;
             }
-            else if (metadata.Color == playerColor)
+            else if (currentColor == playerColor)
             {
                 return opponentPiecesFound > 0;
             }

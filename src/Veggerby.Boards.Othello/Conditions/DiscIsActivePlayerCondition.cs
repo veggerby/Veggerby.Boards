@@ -24,7 +24,7 @@ public sealed class DiscIsActivePlayerCondition : IGameEventCondition<PlaceDiscG
 
         if (@event.Disc.Owner == null)
         {
-            return ConditionResponse.Invalid("Disc has no owner");
+            return ConditionResponse.Fail("Disc has no owner");
         }
 
         return @event.Disc.Owner.Equals(activePlayer)

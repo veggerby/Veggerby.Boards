@@ -26,6 +26,6 @@ public sealed class PlaceDiscStateMutator : IStateMutator<PlaceDiscGameEvent>
 
         var newPieceState = new PieceState(@event.Disc, @event.Target);
 
-        return gameState.Next(newPieceState);
+        return gameState.Next(new[] { newPieceState });
     }
 }

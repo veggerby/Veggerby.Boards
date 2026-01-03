@@ -66,9 +66,9 @@ public sealed class OthelloEndGameMutator : IStateMutator<IGameEvent>
         }
         // else draw (winner remains null)
 
-        var outcomeState = new OthelloOutcomeState(winner, blackCount, whiteCount, players);
+        var outcomeState = new OthelloOutcomeState(winner, blackCount, whiteCount, players.Where(p => p != null)!);
         var endedState = new GameEndedState();
 
-        return gameState.Next(outcomeState, endedState);
+        return gameState.Next(new IArtifactState[] { outcomeState, endedState });
     }
 }

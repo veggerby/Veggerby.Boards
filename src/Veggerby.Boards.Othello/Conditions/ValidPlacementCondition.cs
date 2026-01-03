@@ -41,24 +41,26 @@ public sealed class ValidPlacementCondition : IGameEventCondition<PlaceDiscGameE
 
         if (evt.Disc == null || evt.Target == null)
         {
-            return ConditionResponse.Invalid("Disc and tile must be specified");
+            return ConditionResponse.Fail("Disc and tile must be specified");
         }
 
         // Check if tile is already occupied
         var piecesOnTile = state.GetPiecesOnTile(evt.Target);
         if (piecesOnTile.Any())
         {
-            return ConditionResponse.Invalid("Tile is already occupied");
+            return ConditionResponse.Fail("Tile is already occupied");
         }
 
         // Check if this placement would flip at least one opponent disc
-        var directions = _game.Directions;
         var opponentColor = GetOpponentColor(evt.Disc);
         var hasFlips = false;
 
-        foreach (var direction in directions)
+        // Check all directions from this tile
+        var relations = _game.Board.TileRelations.Where(r => r.From.Id == evt.Target.Id);
+
+        foreach (var relation in relations)
         {
-            if (WouldFlipInDirection(state, evt.Target, evt.Disc, direction, opponentColor))
+            if (WouldFlipInDirection(state, evt.Target, evt.Disc, relation.Direction, opponentColor))
             {
                 hasFlips = true;
                 break;
@@ -67,7 +69,7 @@ public sealed class ValidPlacementCondition : IGameEventCondition<PlaceDiscGameE
 
         if (!hasFlips)
         {
-            return ConditionResponse.Invalid("Placement must flip at least one opponent disc");
+            return ConditionResponse.Fail("Placement must flip at least one opponent disc");
         }
 
         return ConditionResponse.Valid;
@@ -81,7 +83,7 @@ public sealed class ValidPlacementCondition : IGameEventCondition<PlaceDiscGameE
         // Move in the direction, collecting opponent pieces
         while (true)
         {
-            var relation = _game.Board.GetRelation(currentTile, direction);
+            var relation = _game.Board.GetTileRelation(currentTile, direction);
             if (relation == null)
             {
                 // Reached edge of board without finding our piece

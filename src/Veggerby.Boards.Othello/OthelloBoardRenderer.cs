@@ -41,6 +41,12 @@ public static class OthelloBoardRenderer
                 var tileId = $"{col}{row}";
                 var tile = game.GetTile(tileId);
 
+                if (tile == null)
+                {
+                    writer.Write("?");
+                    continue;
+                }
+
                 var piecesOnTile = state.GetPiecesOnTile(tile).ToList();
 
                 if (piecesOnTile.Any())

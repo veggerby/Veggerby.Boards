@@ -95,7 +95,6 @@ public class OthelloGameBuilder : GameBuilder
 
                 // Pass turn (when player has no valid moves)
                 .ForEvent<PassTurnGameEvent>()
-                    .If(game => new PlayerIsActiveGameEventCondition())
                 .Then()
                     .Do(game => new NextPlayerStateMutator(new SingleActivePlayerGameStateCondition()));
     }

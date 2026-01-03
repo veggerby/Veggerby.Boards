@@ -18,6 +18,9 @@ public static class OthelloHelper
     /// <returns>The current color of the disc.</returns>
     public static OthelloDiscColor GetCurrentDiscColor(Piece piece, GameState state)
     {
+        System.ArgumentNullException.ThrowIfNull(piece);
+        System.ArgumentNullException.ThrowIfNull(state);
+
         var metadata = piece.Metadata as OthelloDiscMetadata;
         if (metadata == null)
         {

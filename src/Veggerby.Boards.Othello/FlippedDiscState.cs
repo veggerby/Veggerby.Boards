@@ -45,9 +45,12 @@ public sealed class FlippedDiscState : ArtifactState<Piece>
     /// <returns>True if states are equal.</returns>
     public bool Equals(FlippedDiscState? other)
     {
-        return other != null
-            && base.Equals(other)
-            && FlippedTo == other.FlippedTo;
+        if (other == null)
+        {
+            return false;
+        }
+
+        return Artifact.Equals(other.Artifact) && FlippedTo == other.FlippedTo;
     }
 
     /// <inheritdoc />

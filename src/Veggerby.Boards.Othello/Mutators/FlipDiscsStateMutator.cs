@@ -47,9 +47,11 @@ public sealed class FlipDiscsStateMutator : IStateMutator<PlaceDiscGameEvent>
         var opponentColor = playerColor == OthelloDiscColor.Black ? OthelloDiscColor.White : OthelloDiscColor.Black;
 
         // Check all eight directions for discs to flip
-        foreach (var direction in _game.Directions)
+        var relations = _game.Board.TileRelations.Where(r => r.From.Id == @event.Target.Id);
+
+        foreach (var relation in relations)
         {
-            var discsToFlipInDirection = GetDiscsToFlipInDirection(gameState, @event.Target, playerColor, direction, opponentColor);
+            var discsToFlipInDirection = GetDiscsToFlipInDirection(gameState, @event.Target, playerColor, relation.Direction, opponentColor);
             piecesToFlip.AddRange(discsToFlipInDirection);
         }
 
@@ -72,7 +74,7 @@ public sealed class FlipDiscsStateMutator : IStateMutator<PlaceDiscGameEvent>
         // Move in the direction, collecting opponent pieces
         while (true)
         {
-            var relation = _game.Board.GetRelation(currentTile, direction);
+            var relation = _game.Board.GetTileRelation(currentTile, direction);
             if (relation == null)
             {
                 // Reached edge of board without finding our piece - no flips in this direction

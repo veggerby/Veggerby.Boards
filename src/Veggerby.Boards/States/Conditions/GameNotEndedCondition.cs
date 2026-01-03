@@ -1,16 +1,14 @@
 using System;
 using System.Linq;
 
-using Veggerby.Boards.States;
-using Veggerby.Boards.States.Conditions;
-
-namespace Veggerby.Boards.Othello.Conditions;
+namespace Veggerby.Boards.States.Conditions;
 
 /// <summary>
 /// Checks that the game has not ended (no <see cref="GameEndedState"/> present).
 /// </summary>
 /// <remarks>
 /// This condition is used to prevent moves from being processed after the game has reached a terminal state.
+/// Generic condition applicable to any game using phase-based termination.
 /// </remarks>
 public sealed class GameNotEndedCondition : IGameStateCondition
 {

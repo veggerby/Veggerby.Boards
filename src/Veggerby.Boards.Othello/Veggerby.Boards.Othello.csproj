@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Package Metadata -->
+  <PropertyGroup>
+    <Description>Othello/Reversi implementation components for Veggerby.Boards built atop the core engine.</Description>
+    <PackageTags>board-game;game-engine;immutable;rules-engine;othello;reversi</PackageTags>
+    <PackageId>Veggerby.Boards.Othello</PackageId>
+  </PropertyGroup>
+
+  <!-- References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Veggerby.Boards\Veggerby.Boards.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,135 @@
+using System;
+using System.Linq;
+
+using Veggerby.Boards.Artifacts;
+using Veggerby.Boards.Artifacts.Relations;
+using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.Rules.Conditions;
+using Veggerby.Boards.States;
+
+namespace Veggerby.Boards.Othello.Conditions;
+
+/// <summary>
+/// Detects when an Othello game has ended.
+/// </summary>
+/// <remarks>
+/// An Othello game ends when:
+/// - The board is completely full, OR
+/// - Neither player has a valid move (both must pass)
+/// </remarks>
+public sealed class OthelloEndgameCondition : IGameStateCondition
+{
+    private readonly Game _game;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OthelloEndgameCondition"/> class.
+    /// </summary>
+    /// <param name="game">The game instance.</param>
+    public OthelloEndgameCondition(Game game)
+    {
+        _game = game;
+    }
+
+    /// <inheritdoc />
+    public ConditionResponse Evaluate(GameState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        // Check if game has already ended
+        if (state.GetStates<GameEndedState>().Any())
+        {
+            return ConditionResponse.Ignore;
+        }
+
+        // Check if board is full
+        var allTiles = _game.Board.Tiles;
+        var occupiedCount = 0;
+
+        foreach (var tile in allTiles)
+        {
+            if (state.GetPiecesOnTile(tile).Any())
+            {
+                occupiedCount++;
+            }
+        }
+
+        if (occupiedCount == allTiles.Count())
+        {
+            return ConditionResponse.Valid; // Board is full
+        }
+
+        // Check if both players have no valid moves
+        var blackPlayer = _game.GetPlayer(OthelloIds.Players.Black);
+        var whitePlayer = _game.GetPlayer(OthelloIds.Players.White);
+
+        var blackHasMove = HasAnyValidMove(state, blackPlayer);
+        var whiteHasMove = HasAnyValidMove(state, whitePlayer);
+
+        if (!blackHasMove && !whiteHasMove)
+        {
+            return ConditionResponse.Valid; // Neither player can move
+        }
+
+        return ConditionResponse.Ignore; // Game continues
+    }
+
+    private bool HasAnyValidMove(GameState state, Player player)
+    {
+        // Get all empty tiles
+        var emptyTiles = _game.Board.Tiles.Where(t => !state.GetPiecesOnTile(t).Any());
+
+        // Get a disc for this player to test placements
+        var playerColor = player.Id == OthelloIds.Players.Black ? OthelloDiscColor.Black : OthelloDiscColor.White;
+        var opponentColor = playerColor == OthelloDiscColor.Black ? OthelloDiscColor.White : OthelloDiscColor.Black;
+
+        foreach (var tile in emptyTiles)
+        {
+            // Check if placing a disc here would flip any opponent discs
+            foreach (var direction in _game.Directions)
+            {
+                if (WouldFlipInDirection(state, tile, playerColor, direction, opponentColor))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool WouldFlipInDirection(GameState state, Tile startTile, OthelloDiscColor playerColor, Direction direction, OthelloDiscColor opponentColor)
+    {
+        var currentTile = startTile;
+        var opponentPiecesFound = 0;
+
+        // Move in the direction, counting opponent pieces
+        while (true)
+        {
+            var relation = _game.Board.GetRelation(currentTile, direction);
+            if (relation == null)
+            {
+                return false;
+            }
+
+            currentTile = relation.To;
+            var piecesOnTile = state.GetPiecesOnTile(currentTile).ToList();
+
+            if (!piecesOnTile.Any())
+            {
+                return false;
+            }
+
+            var piece = piecesOnTile.First();
+            var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
+
+            if (currentColor == opponentColor)
+            {
+                opponentPiecesFound++;
+            }
+            else if (metadata.Color == playerColor)
+            {
+                return opponentPiecesFound > 0;
+            }
+        }
+    }
+}

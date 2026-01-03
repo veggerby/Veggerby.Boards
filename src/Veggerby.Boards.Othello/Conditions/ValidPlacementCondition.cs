@@ -53,19 +53,12 @@ public sealed class ValidPlacementCondition : IGameEventCondition<PlaceDiscGameE
 
         // Check if this placement would flip at least one opponent disc
         var opponentColor = GetOpponentColor(evt.Disc);
-        var hasFlips = false;
 
         // Check all directions from this tile
         var relations = _game.Board.TileRelations.Where(r => r.From.Id == evt.Target.Id);
 
-        foreach (var relation in relations)
-        {
-            if (WouldFlipInDirection(state, evt.Target, evt.Disc, relation.Direction, opponentColor))
-            {
-                hasFlips = true;
-                break;
-            }
-        }
+        var hasFlips = relations.Any(relation =>
+            WouldFlipInDirection(state, evt.Target, evt.Disc, relation.Direction, opponentColor));
 
         if (!hasFlips)
         {

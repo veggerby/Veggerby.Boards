@@ -50,9 +50,14 @@ public sealed class OthelloEndGameMutator : IStateMutator<IGameEvent>
             }
         }
 
-        // Determine winner
         var blackPlayer = _game.GetPlayer(OthelloIds.Players.Black);
         var whitePlayer = _game.GetPlayer(OthelloIds.Players.White);
+
+        if (blackPlayer == null || whitePlayer == null)
+        {
+            return gameState; // Should not happen in valid game
+        }
+
         var players = new[] { blackPlayer, whitePlayer };
 
         Player? winner = null;
@@ -66,7 +71,7 @@ public sealed class OthelloEndGameMutator : IStateMutator<IGameEvent>
         }
         // else draw (winner remains null)
 
-        var outcomeState = new OthelloOutcomeState(winner, blackCount, whiteCount, players.Where(p => p != null)!);
+        var outcomeState = new OthelloOutcomeState(winner, blackCount, whiteCount, players);
         var endedState = new GameEndedState();
 
         return gameState.Next(new IArtifactState[] { outcomeState, endedState });

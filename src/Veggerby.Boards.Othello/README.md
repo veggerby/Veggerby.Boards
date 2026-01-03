@@ -43,12 +43,12 @@ var progress = builder.Compile();
 // Black places first disc at c4
 var blackDisc = progress.Game.GetPiece("black-disc-3");
 var targetTile = progress.Game.GetTile("c4");
-progress = progress.HandleEvent(new PlacePieceGameEvent(blackDisc, targetTile));
+progress = progress.HandleEvent(new PlaceDiscGameEvent(blackDisc, targetTile));
 
 // White responds at c5
 var whiteDisc = progress.Game.GetPiece("white-disc-3");
 targetTile = progress.Game.GetTile("c5");
-progress = progress.HandleEvent(new PlacePieceGameEvent(whiteDisc, targetTile));
+progress = progress.HandleEvent(new PlaceDiscGameEvent(whiteDisc, targetTile));
 
 // Display the board
 OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);

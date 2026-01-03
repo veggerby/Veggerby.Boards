@@ -91,19 +91,14 @@ public sealed class FlipDiscsStateMutator : IStateMutator<PlaceDiscGameEvent>
             }
 
             var piece = piecesOnTile.First();
-            var metadata = piece.Metadata as OthelloDiscMetadata;
+            var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
 
-            if (metadata == null)
-            {
-                return new List<Piece>();
-            }
-
-            if (metadata.Color == opponentColor)
+            if (currentColor == opponentColor)
             {
                 // Found an opponent piece, collect it
                 opponentPiecesFound.Add(piece);
             }
-            else if (metadata.Color == playerColor)
+            else if (currentColor == playerColor)
             {
                 // Found our own color piece - return all opponent pieces found
                 return opponentPiecesFound;

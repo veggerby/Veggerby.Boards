@@ -43,15 +43,8 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
 
         // Check if board is full
         var allTiles = _game.Board.Tiles;
-        var occupiedCount = 0;
-
-        foreach (var tile in allTiles)
-        {
-            if (state.GetPiecesOnTile(tile).Any())
-            {
-                occupiedCount++;
-            }
-        }
+        var occupiedTiles = allTiles.Where(tile => state.GetPiecesOnTile(tile).Any());
+        var occupiedCount = occupiedTiles.Count();
 
         if (occupiedCount == allTiles.Count())
         {
@@ -87,21 +80,12 @@ public sealed class OthelloEndgameCondition : IGameStateCondition
         var playerColor = player.Id == OthelloIds.Players.Black ? OthelloDiscColor.Black : OthelloDiscColor.White;
         var opponentColor = playerColor == OthelloDiscColor.Black ? OthelloDiscColor.White : OthelloDiscColor.Black;
 
-        foreach (var tile in emptyTiles)
+        return emptyTiles.Any(tile =>
         {
-            // Check if placing a disc here would flip any opponent discs
             var relations = _game.Board.TileRelations.Where(r => r.From.Id == tile.Id);
-
-            foreach (var relation in relations)
-            {
-                if (WouldFlipInDirection(state, tile, playerColor, relation.Direction, opponentColor))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+            return relations.Any(relation =>
+                WouldFlipInDirection(state, tile, playerColor, relation.Direction, opponentColor));
+        });
     }
 
     private bool WouldFlipInDirection(GameState state, Tile startTile, OthelloDiscColor playerColor, Direction direction, OthelloDiscColor opponentColor)

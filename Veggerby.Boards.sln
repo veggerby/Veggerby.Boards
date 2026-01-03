@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskDemo", "samples\RiskDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veggerby.Boards.Othello", "src\Veggerby.Boards.Othello\Veggerby.Boards.Othello.csproj", "{C061A5D7-840D-434B-A7A8-2616F8ADA550}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OthelloDemo", "samples\OthelloDemo\OthelloDemo.csproj", "{81B220C8-7DF1-40F6-9604-BE680255FF69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -329,6 +331,18 @@ Global
 		{C061A5D7-840D-434B-A7A8-2616F8ADA550}.Release|x64.Build.0 = Release|Any CPU
 		{C061A5D7-840D-434B-A7A8-2616F8ADA550}.Release|x86.ActiveCfg = Release|Any CPU
 		{C061A5D7-840D-434B-A7A8-2616F8ADA550}.Release|x86.Build.0 = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|x64.Build.0 = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Debug|x86.Build.0 = Debug|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|x64.ActiveCfg = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|x64.Build.0 = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|x86.ActiveCfg = Release|Any CPU
+		{81B220C8-7DF1-40F6-9604-BE680255FF69}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -356,5 +370,6 @@ Global
 		{84E8046A-A41E-422B-BD8A-45BE9F1DE399} = {BC741A71-537D-4C6E-8A36-00F6B6DC9DEF}
 		{F76A95EA-4323-49B9-8369-B0315C59A274} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 		{C061A5D7-840D-434B-A7A8-2616F8ADA550} = {BC741A71-537D-4C6E-8A36-00F6B6DC9DEF}
+		{81B220C8-7DF1-40F6-9604-BE680255FF69} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 	EndGlobalSection
 EndGlobal

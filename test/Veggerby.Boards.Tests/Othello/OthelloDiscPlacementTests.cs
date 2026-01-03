@@ -25,22 +25,34 @@ public class OthelloDiscPlacementTests
         progress = progress.HandleEvent(placeEvent);
 
         // assert
-        // d3 should now have a black disc
+        // d3 should now have a black disc (newly placed)
         var d3Pieces = progress.State.GetPiecesOnTile(tile).ToList();
         d3Pieces.Should().HaveCount(1);
 
         // d4 should have been flipped from white to black
+        // When a disc is flipped, it gets a FlippedDiscState (not a PieceState)
+        // So we need to check for the FlippedDiscState
         var d4Tile = progress.Game.GetTile(OthelloIds.Tiles.D4)!;
-        var d4Pieces = progress.State.GetPiecesOnTile(d4Tile).ToList();
-        d4Pieces.Should().HaveCount(1);
-        var d4Color = OthelloHelper.GetCurrentDiscColor(d4Pieces[0], progress.State);
+        var whiteDisc1 = progress.Game.GetPiece("white-disc-1")!;
+        var d4FlipState = progress.State.GetStates<FlippedDiscState>()
+            .FirstOrDefault(fs => fs.Artifact.Id == whiteDisc1.Id);
+        d4FlipState.Should().NotBeNull();
+        d4FlipState!.FlippedTo.Should().Be(OthelloDiscColor.Black);
+
+        // Verify the disc color using the helper (which accounts for flips)
+        var d4Color = OthelloHelper.GetCurrentDiscColor(whiteDisc1, progress.State);
         d4Color.Should().Be(OthelloDiscColor.Black);
 
         // Should now have 4 black discs and 1 white disc
-        var blackCount = progress.State.GetStates<PieceState>()
-            .Count(ps => OthelloHelper.GetCurrentDiscColor(ps.Artifact, progress.State) == OthelloDiscColor.Black);
-        var whiteCount = progress.State.GetStates<PieceState>()
-            .Count(ps => OthelloHelper.GetCurrentDiscColor(ps.Artifact, progress.State) == OthelloDiscColor.White);
+        // Count using PieceStates + FlippedDiscStates
+        var allDiscs = progress.State.GetStates<PieceState>()
+            .Select(ps => ps.Artifact)
+            .Concat(progress.State.GetStates<FlippedDiscState>().Select(fs => fs.Artifact))
+            .Distinct()
+            .ToList();
+
+        var blackCount = allDiscs.Count(piece => OthelloHelper.GetCurrentDiscColor(piece, progress.State) == OthelloDiscColor.Black);
+        var whiteCount = allDiscs.Count(piece => OthelloHelper.GetCurrentDiscColor(piece, progress.State) == OthelloDiscColor.White);
 
         blackCount.Should().Be(4);
         whiteCount.Should().Be(1);

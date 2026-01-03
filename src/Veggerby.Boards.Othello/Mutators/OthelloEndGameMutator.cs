@@ -34,11 +34,14 @@ public sealed class OthelloEndGameMutator : IStateMutator<IGameEvent>
         var blackCount = 0;
         var whiteCount = 0;
 
-        var allPieces = gameState.GetStates<PieceState>();
+        // Get all discs - both those with PieceState and those that have been flipped (FlippedDiscState)
+        var piecesWithPieceState = gameState.GetStates<PieceState>().Select(ps => ps.Artifact);
+        var piecesWithFlipState = gameState.GetStates<FlippedDiscState>().Select(fs => fs.Artifact);
+        var allDiscs = piecesWithPieceState.Concat(piecesWithFlipState).Distinct();
 
-        foreach (var pieceState in allPieces)
+        foreach (var piece in allDiscs)
         {
-            var currentColor = OthelloHelper.GetCurrentDiscColor(pieceState.Artifact, gameState);
+            var currentColor = OthelloHelper.GetCurrentDiscColor(piece, gameState);
 
             if (currentColor == OthelloDiscColor.Black)
             {

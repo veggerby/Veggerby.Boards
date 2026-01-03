@@ -66,6 +66,9 @@ public class OthelloEndgameTests
 
         // assert
         outcomeState.Should().NotBeNull();
+        // After placing black at d3, white disc at d4 is flipped to black
+        // So we have: d3 (black, new), d4 (flipped to black), d5 (black), e4 (black) = 4 black
+        // And: e5 (white) = 1 white
         outcomeState!.BlackScore.Should().Be(4);
         outcomeState.WhiteScore.Should().Be(1);
         outcomeState.Winner!.Id.Should().Be(OthelloIds.Players.Black);

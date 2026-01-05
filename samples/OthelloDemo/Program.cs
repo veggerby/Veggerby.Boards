@@ -24,8 +24,8 @@ Console.WriteLine("This demo showcases:");
 Console.WriteLine("• 8x8 board topology (64 squares)");
 Console.WriteLine("• Disc placement with flipping mechanics ✅");
 Console.WriteLine("• Valid move validation (must flip opponent discs)");
-Console.WriteLine("• Turn alternation and endgame detection");
-Console.WriteLine("• Piece counting and winner determination");
+Console.WriteLine("• Turn alternation");
+Console.WriteLine("• Disc counting and state tracking");
 Console.WriteLine("═══════════════════════════════════════════════════════════════\n");
 
 Console.WriteLine("=== Part 1: Standard Opening Moves ===\n");

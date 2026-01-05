@@ -87,13 +87,28 @@ public static class OthelloBoardRenderer
         writer.WriteLine("  └─────────────────┘");
         writer.WriteLine("   a b c d e f g h");
 
-        // Disc count
+        // Disc count - include both PieceState and FlippedDiscState
         var blackCount = 0;
         var whiteCount = 0;
 
+        // Count discs from PieceState
         foreach (var pieceState in state.GetStates<PieceState>())
         {
             var currentColor = OthelloHelper.GetCurrentDiscColor(pieceState.Artifact, state);
+            if (currentColor == OthelloDiscColor.Black)
+            {
+                blackCount++;
+            }
+            else
+            {
+                whiteCount++;
+            }
+        }
+
+        // Count discs from FlippedDiscState (flipped discs don't have PieceState)
+        foreach (var flippedState in state.GetStates<FlippedDiscState>())
+        {
+            var currentColor = OthelloHelper.GetCurrentDiscColor(flippedState.Artifact, state);
             if (currentColor == OthelloDiscColor.Black)
             {
                 blackCount++;

@@ -1,3 +1,5 @@
+using System;
+
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.States;
 
@@ -11,6 +13,7 @@ namespace Veggerby.Boards.Othello;
 /// The current color of a disc is determined by counting the number of flip states for that disc.
 /// An even number of flips (including zero) means the disc is its original color.
 /// An odd number of flips means the disc is the opposite color.
+/// This state also tracks the tile location, replacing PieceState for flipped discs.
 /// </remarks>
 public sealed class FlippedDiscState : ArtifactState<Piece>
 {
@@ -23,12 +26,24 @@ public sealed class FlippedDiscState : ArtifactState<Piece>
     }
 
     /// <summary>
+    /// Gets the tile on which the disc currently resides.
+    /// </summary>
+    public Tile CurrentTile
+    {
+        get;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="FlippedDiscState"/> class.
     /// </summary>
     /// <param name="piece">The piece (disc) that was flipped.</param>
+    /// <param name="currentTile">The tile the disc is on.</param>
     /// <param name="flippedTo">The color the disc was flipped to.</param>
-    public FlippedDiscState(Piece piece, OthelloDiscColor flippedTo) : base(piece)
+    public FlippedDiscState(Piece piece, Tile currentTile, OthelloDiscColor flippedTo) : base(piece)
     {
+        ArgumentNullException.ThrowIfNull(currentTile);
+
+        CurrentTile = currentTile;
         FlippedTo = flippedTo;
     }
 
@@ -50,12 +65,12 @@ public sealed class FlippedDiscState : ArtifactState<Piece>
             return false;
         }
 
-        return Artifact.Equals(other.Artifact) && FlippedTo == other.FlippedTo;
+        return Artifact.Equals(other.Artifact) && CurrentTile.Equals(other.CurrentTile) && FlippedTo == other.FlippedTo;
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return HashCode.Combine(base.GetHashCode(), FlippedTo);
+        return HashCode.Combine(base.GetHashCode(), CurrentTile, FlippedTo);
     }
 }

@@ -60,10 +60,24 @@ public sealed class FlipDiscsStateMutator : IStateMutator<PlaceDiscGameEvent>
             return gameState;
         }
 
-        // Create flip states for each flipped disc
-        var flipStates = piecesToFlip.Select(p => new FlippedDiscState(p, playerColor)).ToArray();
+        // Create new states for each flipped disc:
+        // FlippedDiscState tracks both the flip AND the tile location, replacing PieceState
+        var newStates = new List<IArtifactState>();
 
-        return gameState.Next(flipStates);
+        foreach (var piece in piecesToFlip)
+        {
+            // Get current location
+            var currentPieceState = gameState.GetStates<PieceState>()
+                .FirstOrDefault(ps => ps.Artifact.Equals(piece));
+
+            if (currentPieceState != null)
+            {
+                // Add flip state with tile location
+                newStates.Add(new FlippedDiscState(piece, currentPieceState.CurrentTile, playerColor));
+            }
+        }
+
+        return gameState.Next(newStates);
     }
 
     private List<Piece> GetDiscsToFlipInDirection(GameState state, Tile startTile, OthelloDiscColor playerColor, Direction direction, OthelloDiscColor opponentColor)

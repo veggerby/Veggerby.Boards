@@ -49,9 +49,22 @@ public static class OthelloBoardRenderer
 
                 var piecesOnTile = state.GetPiecesOnTile(tile).ToList();
 
+                // Also check for flipped discs (which are stored as FlippedDiscState, not PieceState)
+                var flippedDiscsOnTile = state.GetStates<FlippedDiscState>()
+                    .Where(fs => fs.CurrentTile.Equals(tile))
+                    .Select(fs => fs.Artifact)
+                    .ToList();
+
                 if (piecesOnTile.Any())
                 {
                     var piece = piecesOnTile.First();
+                    var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
+
+                    writer.Write(currentColor == OthelloDiscColor.Black ? "●" : "○");
+                }
+                else if (flippedDiscsOnTile.Any())
+                {
+                    var piece = flippedDiscsOnTile.First();
                     var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
 
                     writer.Write(currentColor == OthelloDiscColor.Black ? "●" : "○");

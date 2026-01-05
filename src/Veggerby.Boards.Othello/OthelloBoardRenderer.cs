@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -26,6 +27,11 @@ public static class OthelloBoardRenderer
 
         var columns = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 
+        // Build a lookup dictionary for flipped discs to avoid O(N) scans per tile
+        var flippedDiscsByTile = state.GetStates<FlippedDiscState>()
+            .GroupBy(fs => fs.CurrentTile)
+            .ToDictionary(g => g.Key, g => g.Select(fs => fs.Artifact).ToList());
+
         // Header
         writer.WriteLine("   a b c d e f g h");
         writer.WriteLine("  ┌─────────────────┐");
@@ -47,26 +53,16 @@ public static class OthelloBoardRenderer
                     continue;
                 }
 
+                // Check both PieceState and FlippedDiscState for discs on this tile
                 var piecesOnTile = state.GetPiecesOnTile(tile).ToList();
+                var flippedDiscsOnTile = flippedDiscsByTile.TryGetValue(tile, out var flipped) ? flipped : new List<Piece>();
 
-                // Also check for flipped discs (which are stored as FlippedDiscState, not PieceState)
-                var flippedDiscsOnTile = state.GetStates<FlippedDiscState>()
-                    .Where(fs => fs.CurrentTile.Equals(tile))
-                    .Select(fs => fs.Artifact)
-                    .ToList();
+                // Get the first piece from either source
+                var piece = piecesOnTile.FirstOrDefault() ?? flippedDiscsOnTile.FirstOrDefault();
 
-                if (piecesOnTile.Any())
+                if (piece != null)
                 {
-                    var piece = piecesOnTile.First();
                     var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
-
-                    writer.Write(currentColor == OthelloDiscColor.Black ? "●" : "○");
-                }
-                else if (flippedDiscsOnTile.Any())
-                {
-                    var piece = flippedDiscsOnTile.First();
-                    var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
-
                     writer.Write(currentColor == OthelloDiscColor.Black ? "●" : "○");
                 }
                 else

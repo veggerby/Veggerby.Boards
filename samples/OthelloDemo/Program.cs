@@ -24,44 +24,32 @@ Console.WriteLine("This demo showcases:");
 Console.WriteLine("• 8x8 board topology (64 squares)");
 Console.WriteLine("• Disc placement with flipping mechanics ✅");
 Console.WriteLine("• Valid move validation (must flip opponent discs)");
-Console.WriteLine("• Turn alternation and endgame detection");
-Console.WriteLine("• Piece counting and winner determination");
+Console.WriteLine("• Turn alternation");
+Console.WriteLine("• Disc counting and state tracking");
 Console.WriteLine("═══════════════════════════════════════════════════════════════\n");
 
 Console.WriteLine("=== Part 1: Standard Opening Moves ===\n");
 
 // Black's first move - place at d3, flipping white disc at d4
 progress = PlaceDisc(progress, "black-disc-3", "d3");
-Console.WriteLine("1. Black → d3 (flips d4 white to black)");
+Console.WriteLine("1. Black → d3 (flips d4 W→B)");
 OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 Console.WriteLine();
 
-// White's turn - place at c4, flipping black disc at d4
-progress = PlaceDisc(progress, "white-disc-3", "c4");
-Console.WriteLine("1... White → c4 (flips d4 black to white)");
+// White's turn - place at c5, flipping black disc at d5
+progress = PlaceDisc(progress, "white-disc-3", "c5");
+Console.WriteLine("1... White → c5 (flips d5 B→W)");
 OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 Console.WriteLine();
 
-// Black's second move - place at e3
-progress = PlaceDisc(progress, "black-disc-4", "e3");
-Console.WriteLine("2. Black → e3 (flips e4 white to black)");
-OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);
-Console.WriteLine();
-
-// White's second move - place at f4
-progress = PlaceDisc(progress, "white-disc-4", "f4");
-Console.WriteLine("2... White → f4 (flips e4 black to white)");
+// Black's second move - place at e6, flipping white disc at e5
+progress = PlaceDisc(progress, "black-disc-4", "e6");
+Console.WriteLine("2. Black → e6 (flips e5 W→B)");
 OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);
 Console.WriteLine();
 
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
-Console.WriteLine("=== Part 2: Demonstrating Multi-Directional Flips ===\n");
-
-// Continue with a few more moves
-progress = PlaceDisc(progress, "black-disc-5", "c3");
-Console.WriteLine("3. Black → c3 (flips c4, d4)");
-OthelloBoardRenderer.Write(progress.Game, progress.State, Console.Out);
-Console.WriteLine();
+Console.WriteLine("=== Demo Summary ===\n");
 
 Console.WriteLine("═══════════════════════════════════════════════════════════════");
 Console.WriteLine("=== Final Summary ===\n");
@@ -113,9 +101,24 @@ static (int blackCount, int whiteCount) CountDiscs(GameState state)
     var blackCount = 0;
     var whiteCount = 0;
 
+    // Count discs from PieceState
     foreach (var pieceState in state.GetStates<PieceState>())
     {
         var currentColor = OthelloHelper.GetCurrentDiscColor(pieceState.Artifact, state);
+        if (currentColor == OthelloDiscColor.Black)
+        {
+            blackCount++;
+        }
+        else
+        {
+            whiteCount++;
+        }
+    }
+
+    // Count discs from FlippedDiscState (flipped discs don't have PieceState)
+    foreach (var flippedState in state.GetStates<FlippedDiscState>())
+    {
+        var currentColor = OthelloHelper.GetCurrentDiscColor(flippedState.Artifact, state);
         if (currentColor == OthelloDiscColor.Black)
         {
             blackCount++;

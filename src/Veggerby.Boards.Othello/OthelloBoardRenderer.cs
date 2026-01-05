@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -26,6 +27,11 @@ public static class OthelloBoardRenderer
 
         var columns = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 
+        // Build a lookup dictionary for flipped discs to avoid O(N) scans per tile
+        var flippedDiscsByTile = state.GetStates<FlippedDiscState>()
+            .GroupBy(fs => fs.CurrentTile)
+            .ToDictionary(g => g.Key, g => g.Select(fs => fs.Artifact).ToList());
+
         // Header
         writer.WriteLine("   a b c d e f g h");
         writer.WriteLine("  ┌─────────────────┐");
@@ -47,13 +53,16 @@ public static class OthelloBoardRenderer
                     continue;
                 }
 
+                // Check both PieceState and FlippedDiscState for discs on this tile
                 var piecesOnTile = state.GetPiecesOnTile(tile).ToList();
+                var flippedDiscsOnTile = flippedDiscsByTile.TryGetValue(tile, out var flipped) ? flipped : new List<Piece>();
 
-                if (piecesOnTile.Any())
+                // Get the first piece from either source
+                var piece = piecesOnTile.FirstOrDefault() ?? flippedDiscsOnTile.FirstOrDefault();
+
+                if (piece != null)
                 {
-                    var piece = piecesOnTile.First();
                     var currentColor = OthelloHelper.GetCurrentDiscColor(piece, state);
-
                     writer.Write(currentColor == OthelloDiscColor.Black ? "●" : "○");
                 }
                 else
@@ -74,13 +83,28 @@ public static class OthelloBoardRenderer
         writer.WriteLine("  └─────────────────┘");
         writer.WriteLine("   a b c d e f g h");
 
-        // Disc count
+        // Disc count - include both PieceState and FlippedDiscState
         var blackCount = 0;
         var whiteCount = 0;
 
+        // Count discs from PieceState
         foreach (var pieceState in state.GetStates<PieceState>())
         {
             var currentColor = OthelloHelper.GetCurrentDiscColor(pieceState.Artifact, state);
+            if (currentColor == OthelloDiscColor.Black)
+            {
+                blackCount++;
+            }
+            else
+            {
+                whiteCount++;
+            }
+        }
+
+        // Count discs from FlippedDiscState (flipped discs don't have PieceState)
+        foreach (var flippedState in state.GetStates<FlippedDiscState>())
+        {
+            var currentColor = OthelloHelper.GetCurrentDiscColor(flippedState.Artifact, state);
             if (currentColor == OthelloDiscColor.Black)
             {
                 blackCount++;

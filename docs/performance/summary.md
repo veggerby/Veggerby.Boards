@@ -13,7 +13,7 @@ This document consolidates representative benchmark results to provide a stable 
 
 * Host: Linux (Debian bookworm, dev container)
 * CPU: Intel Core i9-14900KF (reported by container)
-* Runtime: .NET 9.0.9 (RyuJIT x86-64-v3)
+* Runtime: .NET 10.0.0 (RyuJIT x86-64-v3)
 * BenchmarkDotNet: v0.15.4 (DefaultJob, Release configuration, MemoryDiagnoser)
 
 > Note: Benchmarks are indicative, not contractual. Always re-run locally after significant rule/mutator changes. Use relative deltas rather than absolute nanoseconds for gating.

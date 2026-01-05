@@ -125,7 +125,7 @@ Be respectful and considerate in all interactions.
 ## 🛠 Local Setup
 
 - Clone the repository.
-- Build the solution (`Veggerby.Boards.sln`) using .NET 9 (primary target) — older TFMs may exist for compatibility.
+- Build the solution (`Veggerby.Boards.sln`) using .NET 10 (primary target) — older TFMs may exist for compatibility.
 - Run the tests (`Veggerby.Boards.Tests`) before pushing.
 - Keep test count and coverage stable or increased.
 

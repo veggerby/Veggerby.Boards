@@ -123,7 +123,7 @@ The `.runsettings` file configures:
 - **Test session timeout**: 5 minutes (accommodates Debug builds; Release typically completes in ~3 minutes)
 - **Serial execution**: `MaxCpuCount=1` to prevent deadlocks (see below)
 - **Platform**: x64
-- **Framework**: net9.0
+- **Framework**: net10.0
 
 **Important**: Tests must run serially (`MaxCpuCount=1`) to prevent deadlocks. The `FeatureFlagScope` test infrastructure uses a static semaphore that causes deadlocks when test assemblies run in parallel. This is a known limitation that will be addressed in a future refactoring.
 

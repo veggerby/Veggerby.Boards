@@ -105,7 +105,7 @@ dotnet run --project samples/RiskDemo
 
 All demos follow these conventions:
 
-- **Build Target**: `net9.0`
+- **Build Target**: `net10.0`
 - **Output**: Console with clear section headers
 - **Error Handling**: Try-catch blocks with descriptive messages
 - **Documentation**: README.md with overview and sample output

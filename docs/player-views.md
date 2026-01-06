@@ -73,9 +73,15 @@ public sealed class CardState : IArtifactState
 {
     public Card Card => (Card)Artifact;
     public bool IsFaceUp { get; }
+    public Player? Owner { get; }
     
-    // Card visibility depends on face-up status
-    public Visibility Visibility => IsFaceUp ? Visibility.Public : Visibility.Private;
+    // Card visibility depends on face-up status and ownership
+    // Public: face-up (everyone sees)
+    // Private: face-down with owner (only owner sees)
+    // Hidden: no owner, e.g., in deck (no one sees)
+    public Visibility Visibility => IsFaceUp 
+        ? Visibility.Public 
+        : (Owner != null ? Visibility.Private : Visibility.Hidden);
 }
 ```
 

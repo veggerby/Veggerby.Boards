@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using Veggerby.Boards.Flows.LegalMoveGeneration;
 
 namespace Veggerby.Boards.Tests.Core.LegalMoveGeneration;
@@ -163,32 +165,22 @@ public class MoveValidationDiagnosticsTests
     public void GivenCustomTemplates_WhenGettingExplanation_ThenUsesCustomTemplate()
     {
         // arrange
-        var originalTemplates = MoveValidationDiagnostics.Templates;
-
-        try
+        var customTemplates = new Dictionary<RejectionReason, string>
         {
-            // Replace with custom template
-            MoveValidationDiagnostics.Templates = new()
-            {
-                [RejectionReason.PathObstructed] = "Custom: {piece} blocked by {blocker}"
-            };
+            [RejectionReason.PathObstructed] = "Custom: {piece} blocked by {blocker}"
+        };
 
-            var reason = RejectionReason.PathObstructed;
+        var reason = RejectionReason.PathObstructed;
 
-            // act
-            var explanation = MoveValidationDiagnostics.GetExplanation(
-                reason,
-                ("piece", "rook"),
-                ("blocker", "bishop")
-            );
+        // act
+        var explanation = MoveValidationDiagnostics.GetExplanation(
+            reason,
+            customTemplates,
+            ("piece", "rook"),
+            ("blocker", "bishop")
+        );
 
-            // assert
-            explanation.Should().Be("Custom: rook blocked by bishop");
-        }
-        finally
-        {
-            // Restore original templates
-            MoveValidationDiagnostics.Templates = originalTemplates;
-        }
+        // assert
+        explanation.Should().Be("Custom: rook blocked by bishop");
     }
 }

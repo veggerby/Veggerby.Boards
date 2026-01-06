@@ -119,9 +119,15 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
         }
 
         // Generate normal piece moves using available dice
-        var playerPieces = _game.GetArtifacts<Piece>()
-            .Where(p => p.Owner == activePlayer)
-            .ToList();
+        var playerPieces = new List<Piece>();
+
+        foreach (var piece in _game.GetArtifacts<Piece>())
+        {
+            if (piece.Owner == activePlayer)
+            {
+                playerPieces.Add(piece);
+            }
+        }
 
         foreach (var piece in playerPieces)
         {
@@ -222,18 +228,9 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
         // Generate moves for this piece
         foreach (var diceValue in diceStates)
         {
-            IEnumerable<MovePieceGameEvent> moves;
-
-            if (_bar is not null && pieceState.CurrentTile == _bar)
-            {
-                // Bar re-entry
-                moves = GenerateBarReEntry(state, piece, activePlayer, diceValue);
-            }
-            else
-            {
-                // Normal moves
-                moves = GeneratePieceMoves(state, piece, pieceState.CurrentTile, activePlayer, diceValue);
-            }
+            var moves = _bar is not null && pieceState.CurrentTile == _bar
+                ? GenerateBarReEntry(state, piece, activePlayer, diceValue)
+                : GeneratePieceMoves(state, piece, pieceState.CurrentTile, activePlayer, diceValue);
 
             foreach (var move in moves)
             {
@@ -364,8 +361,16 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
         // Navigate through the board
         for (var i = 0; i < steps; i++)
         {
-            var nextRelation = _game.Board.TileRelations
-                .FirstOrDefault(r => r.From == currentTile && r.Direction.Id == direction);
+            TileRelation? nextRelation = null;
+
+            foreach (var relation in _game.Board.TileRelations)
+            {
+                if (relation.From == currentTile && relation.Direction.Id == direction)
+                {
+                    nextRelation = relation;
+                    break;
+                }
+            }
 
             if (nextRelation is null)
             {
@@ -388,16 +393,30 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
 
         for (var i = 0; i < steps; i++)
         {
-            var nextRelation = _game.Board.TileRelations
-                .FirstOrDefault(r => r.From == currentTile && r.Direction.Id == direction);
+            TileRelation? nextRelation = null;
+
+            foreach (var relation in _game.Board.TileRelations)
+            {
+                if (relation.From == currentTile && relation.Direction.Id == direction)
+                {
+                    nextRelation = relation;
+                    break;
+                }
+            }
 
             if (nextRelation is null)
             {
                 // Try to connect directly to destination if it's the last step
                 if (i == steps - 1)
                 {
-                    nextRelation = _game.Board.TileRelations
-                        .FirstOrDefault(r => r.From == currentTile && r.To == to);
+                    foreach (var relation in _game.Board.TileRelations)
+                    {
+                        if (relation.From == currentTile && relation.To == to)
+                        {
+                            nextRelation = relation;
+                            break;
+                        }
+                    }
                 }
 
                 if (nextRelation is null)
@@ -424,16 +443,17 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     private bool CanBearOff(GameState state, Piece piece, Player player)
     {
-        // Get all pieces for this player
-        var playerPieces = _game.GetArtifacts<Piece>()
-            .Where(p => p.Owner == player);
-
         // Define home board range
         var homeStart = player.Id == "white" ? 19 : 1;
         var homeEnd = player.Id == "white" ? 24 : 6;
 
-        foreach (var p in playerPieces)
+        foreach (var p in _game.GetArtifacts<Piece>())
         {
+            if (p.Owner != player)
+            {
+                continue;
+            }
+
             var pieceState = state.GetState<PieceState>(p);
 
             if (pieceState is null || pieceState.CurrentTile is null)
@@ -450,7 +470,7 @@ public sealed class BackgammonLegalMoveGenerator : ILegalMoveGenerator
             // Check if piece is in home board
             if (pieceState.CurrentTile.Id.StartsWith("point-", StringComparison.Ordinal))
             {
-                var pointNum = int.Parse(pieceState.CurrentTile.Id.Substring(6));
+                var pointNum = int.Parse(pieceState.CurrentTile.Id.AsSpan(6));
 
                 if (player.Id == "white" && (pointNum < homeStart || pointNum > homeEnd))
                 {

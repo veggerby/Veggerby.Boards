@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
@@ -27,21 +28,23 @@ namespace Veggerby.Boards.Flows.LegalMoveGeneration;
 /// </code>
 /// </para>
 /// <para>
-/// Localization: Template strings are designed to be easily replaceable with localized versions.
-/// Applications can override <see cref="Templates"/> dictionary with culture-specific strings.
+/// Localization: Applications can provide custom templates via the overloaded methods that accept
+/// an <see cref="IReadOnlyDictionary{TKey, TValue}"/> of templates. The default templates are immutable
+/// to prevent shared state modification.
 /// </para>
 /// </remarks>
 public static class MoveValidationDiagnostics
 {
     /// <summary>
     /// Default explanation templates for each rejection reason.
-    /// Applications can replace these with localized versions.
+    /// This is an immutable dictionary to prevent shared state modification.
     /// </summary>
     /// <remarks>
     /// Templates use named placeholders in {braces} for parameter substitution.
     /// Common parameters: {piece}, {player}, {tile}, {from}, {to}, {blocker}, {resource}.
+    /// For custom templates, use the overloaded methods that accept a templates parameter.
     /// </remarks>
-    public static Dictionary<RejectionReason, string> Templates { get; set; } = new()
+    public static IReadOnlyDictionary<RejectionReason, string> DefaultTemplates { get; } = new Dictionary<RejectionReason, string>
     {
         [RejectionReason.None] = "Move is legal",
         [RejectionReason.PieceNotOwned] = "Cannot move {piece}: piece belongs to {owner}, not active player {activePlayer}",
@@ -52,10 +55,11 @@ public static class MoveValidationDiagnostics
         [RejectionReason.InsufficientResources] = "Cannot perform action: insufficient {resource} (need {required}, have {available})",
         [RejectionReason.RuleViolation] = "Cannot perform action: violates game rule ({rule})",
         [RejectionReason.GameEnded] = "Cannot perform action: game has already ended"
-    };
+    }.ToImmutableDictionary();
 
     /// <summary>
     /// Gets a formatted explanation for a rejection reason with context-specific parameters.
+    /// Uses default templates.
     /// </summary>
     /// <param name="reason">The rejection reason.</param>
     /// <param name="parameters">Named parameters for template substitution (name, value pairs).</param>
@@ -72,9 +76,26 @@ public static class MoveValidationDiagnostics
     /// </example>
     public static string GetExplanation(RejectionReason reason, params (string name, string value)[] parameters)
     {
+        return GetExplanation(reason, DefaultTemplates, parameters);
+    }
+
+    /// <summary>
+    /// Gets a formatted explanation for a rejection reason with context-specific parameters.
+    /// Uses custom templates for localization.
+    /// </summary>
+    /// <param name="reason">The rejection reason.</param>
+    /// <param name="templates">Custom template dictionary (e.g., localized strings).</param>
+    /// <param name="parameters">Named parameters for template substitution (name, value pairs).</param>
+    /// <returns>A formatted explanation string with parameters substituted.</returns>
+    public static string GetExplanation(
+        RejectionReason reason,
+        IReadOnlyDictionary<RejectionReason, string> templates,
+        params (string name, string value)[] parameters)
+    {
+        ArgumentNullException.ThrowIfNull(templates);
         ArgumentNullException.ThrowIfNull(parameters);
 
-        if (!Templates.TryGetValue(reason, out var template))
+        if (!templates.TryGetValue(reason, out var template))
         {
             return $"Move rejected: {reason}";
         }
@@ -92,11 +113,28 @@ public static class MoveValidationDiagnostics
 
     /// <summary>
     /// Gets a formatted explanation for a rejection reason with artifact-aware parameter extraction.
+    /// Uses default templates.
     /// </summary>
     /// <param name="reason">The rejection reason.</param>
     /// <param name="context">Contextual information including event, artifacts, and state details.</param>
     /// <returns>A formatted explanation string.</returns>
     public static string GetExplanation(RejectionReason reason, ValidationContext context)
+    {
+        return GetExplanation(reason, DefaultTemplates, context);
+    }
+
+    /// <summary>
+    /// Gets a formatted explanation for a rejection reason with artifact-aware parameter extraction.
+    /// Uses custom templates for localization.
+    /// </summary>
+    /// <param name="reason">The rejection reason.</param>
+    /// <param name="templates">Custom template dictionary (e.g., localized strings).</param>
+    /// <param name="context">Contextual information including event, artifacts, and state details.</param>
+    /// <returns>A formatted explanation string.</returns>
+    public static string GetExplanation(
+        RejectionReason reason,
+        IReadOnlyDictionary<RejectionReason, string> templates,
+        ValidationContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
@@ -168,7 +206,7 @@ public static class MoveValidationDiagnostics
             }
         }
 
-        return GetExplanation(reason, parameters.ToArray());
+        return GetExplanation(reason, templates, parameters.ToArray());
     }
 }
 

@@ -284,11 +284,13 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
     private Piece? GetNextAvailableStone(GameState state, Player player)
     {
         // Get all stones owned by player
-        var playerStones = _game.GetArtifacts<Piece>().Where(p => p.Owner == player);
-
-        // Find first stone not on board
-        foreach (var stone in playerStones)
+        foreach (var stone in _game.GetArtifacts<Piece>())
         {
+            if (stone.Owner != player)
+            {
+                continue;
+            }
+
             var stoneState = state.GetState<PieceState>(stone);
 
             // Stone is available if it has no state (not yet placed) or if it's captured

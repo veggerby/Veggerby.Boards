@@ -54,9 +54,9 @@ public sealed class ComputeScoresStateMutator : IStateMutator<ComputeScoresEvent
             {
                 foreach (var pile in ds.Piles.Values)
                 {
-                    foreach (var card in pile)
+                    foreach (var cardState in pile)
                     {
-                        if (vp.TryGetValue(card.Id, out var points))
+                        if (vp.TryGetValue(cardState.Artifact.Id, out var points))
                         {
                             total += points;
                         }

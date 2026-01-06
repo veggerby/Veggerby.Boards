@@ -35,11 +35,12 @@ public class DeckBuildingConditionOnlyBenchmark
         var deck = progress.Game.GetArtifact<Deck>("p1-deck") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: deck p1-deck missing");
         var p1 = progress.Game.GetPlayer("P1") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: player P1 missing");
 
-        var piles = new Dictionary<string, IList<Card>>{
-            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },
-            { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
-            { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
-            { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
+        var piles = new Dictionary<string, IList<CardState>>
+        {
+            { DeckBuildingGameBuilder.Piles.Draw, new List<CardState>() },
+            { DeckBuildingGameBuilder.Piles.Discard, new List<CardState>() },
+            { DeckBuildingGameBuilder.Piles.Hand, new List<CardState>() },
+            { DeckBuildingGameBuilder.Piles.InPlay, new List<CardState>() },
         };
         var supply = new Dictionary<string, int> { { "c1", 1 } };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));

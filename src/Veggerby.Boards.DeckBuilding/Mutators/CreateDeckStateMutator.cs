@@ -21,10 +21,10 @@ public sealed class DeckBuildingCreateDeckStateMutator : IStateMutator<CreateDec
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(@event);
-        var piles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var piles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in @event.Piles)
         {
-            piles[kv.Key] = kv.Value?.ToList() ?? new List<Card>();
+            piles[kv.Key] = kv.Value?.Select(card => new CardState(card, kv.Key)).ToList() ?? new List<CardState>();
         }
         var ds = new DeckState(@event.Deck, piles, @event.Supply);
         var next = state.Next([ds]);

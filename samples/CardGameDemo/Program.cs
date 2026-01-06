@@ -28,7 +28,7 @@ class Program
         var shuffleEvt = new ShuffleDeckEvent(deck!, CardsGameBuilder.Piles.Draw);
         progress = progress.HandleEvent(shuffleEvt);
         var state = progress.State.GetState<DeckState>(deck!);
-        var shuffledOrder = state!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).ToList();
+        var shuffledOrder = state!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id).ToList();
         Console.WriteLine($"   Shuffled order: {string.Join(", ", shuffledOrder)}");
         PrintPileState(progress, deck!, "After shuffle");
 
@@ -82,7 +82,7 @@ class Program
             progress = progress.HandleEvent(peekEvt);
 
             state = progress.State.GetState<DeckState>(deck);
-            var topCards = state!.Piles[CardsGameBuilder.Piles.Draw].Take(peekCount).Select(c => c.Id).ToList();
+            var topCards = state!.Piles[CardsGameBuilder.Piles.Draw].Take(peekCount).Select(cs => cs.Artifact.Id).ToList();
             Console.WriteLine($"   Top cards: {string.Join(", ", topCards)}");
             PrintPileState(progress, deck, "After peek (state unchanged)");
         }
@@ -102,8 +102,8 @@ class Program
         var handCards = state!.Piles[CardsGameBuilder.Piles.Hand].ToList();
         if (handCards.Count > 0)
         {
-            Console.WriteLine($"   Revealing hand: {string.Join(", ", handCards.Select(c => c.Id))}");
-            var revealEvt = new RevealCardsEvent(deck, CardsGameBuilder.Piles.Hand, handCards);
+            Console.WriteLine($"   Revealing hand: {string.Join(", ", handCards.Select(cs => cs.Artifact.Id))}");
+            var revealEvt = new RevealCardsEvent(deck, CardsGameBuilder.Piles.Hand, handCards.Select(cs => cs.Artifact).ToList());
             progress = progress.HandleEvent(revealEvt);
         }
 
@@ -113,7 +113,7 @@ class Program
         if (handCards.Count > 0)
         {
             Console.WriteLine("   Discarding hand...");
-            var discardEvt = new DiscardCardsEvent(deck, CardsGameBuilder.Piles.Discard, handCards);
+            var discardEvt = new DiscardCardsEvent(deck, CardsGameBuilder.Piles.Discard, handCards.Select(cs => cs.Artifact).ToList());
             progress = progress.HandleEvent(discardEvt);
             PrintPileState(progress, deck, "After discard");
         }

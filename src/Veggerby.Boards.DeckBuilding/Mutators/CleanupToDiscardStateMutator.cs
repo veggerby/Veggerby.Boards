@@ -34,14 +34,14 @@ public sealed class CleanupToDiscardStateMutator : IStateMutator<CleanupToDiscar
             throw new BoardException(ExceptionMessages.RequiredPilesMissing);
         }
         // Optimized selective cloning: only Hand, InPlay, and Discard piles need mutation.
-        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
+        var piles = new Dictionary<string, IList<CardState>>(ds.Piles.Count, StringComparer.Ordinal);
         // Prepare mutable working copies for the three mutated piles; other piles reused.
         var originalHand = ds.Piles[handId];
         var originalInPlay = ds.Piles[inPlayId];
         var originalDiscard = ds.Piles[discardId];
-        var hand = originalHand.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalHand);
-        var inPlay = originalInPlay.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalInPlay);
-        var discard = originalDiscard.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDiscard);
+        var hand = originalHand.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalHand);
+        var inPlay = originalInPlay.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalInPlay);
+        var discard = originalDiscard.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalDiscard);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key.Equals(handId, StringComparison.Ordinal))
@@ -58,7 +58,7 @@ public sealed class CleanupToDiscardStateMutator : IStateMutator<CleanupToDiscar
             }
             else
             {
-                piles[kv.Key] = (IList<Card>)kv.Value; // reuse existing read-only list
+                piles[kv.Key] = (IList<CardState>)kv.Value; // reuse existing read-only list
             }
         }
         if (hand.Count == 0 && inPlay.Count == 0)

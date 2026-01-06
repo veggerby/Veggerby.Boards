@@ -34,17 +34,17 @@ public sealed class TrashFromHandStateMutator : IStateMutator<TrashFromHandEvent
         }
 
         // Optimized cloning: only mutate Hand pile; other piles re-used via existing read-only collections (no reallocation).
-        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
+        var piles = new Dictionary<string, IList<CardState>>(ds.Piles.Count, StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key.Equals(handId, StringComparison.Ordinal))
             {
                 // Create a mutable working list for hand modifications.
-                var handList = new List<Card>(kv.Value);
+                var handList = new List<CardState>(kv.Value);
                 // remove each specified card by identity
                 foreach (var c in @event.Cards)
                 {
-                    var idx = handList.IndexOf(c);
+                    var idx = handList.FindIndex(cs => cs.Artifact.Equals(c));
                     if (idx >= 0)
                     {
                         handList.RemoveAt(idx);
@@ -56,7 +56,7 @@ public sealed class TrashFromHandStateMutator : IStateMutator<TrashFromHandEvent
             else
             {
                 // Reuse existing read-only list; constructor will wrap again but avoids intermediate copy here.
-                piles[kv.Key] = (IList<Card>)kv.Value; // underlying type is ReadOnlyCollection<Card> implementing IList<Card>
+                piles[kv.Key] = (IList<CardState>)kv.Value; // underlying type is ReadOnlyCollection<CardState> implementing IList<CardState>
             }
         }
 

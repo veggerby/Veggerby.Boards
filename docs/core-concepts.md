@@ -75,6 +75,18 @@ Examples:
 
 Termination is typically integrated via phase-level endgame detection (`.WithEndGameDetection()`). See `game-termination.md` for implementation patterns and module integration guidelines.
 
+## Player Views & Hidden Information
+
+`GameStateView` provides filtered, player-specific projections of `GameState` for imperfect-information games. Each player or observer sees the same underlying state with appropriate visibility masking:
+
+- **Visibility levels**: `Public` (all see), `Private` (owner only), `Hidden` (none see until revealed).
+- **Default**: All states default to `Public` for backward compatibility (perfect-information games unchanged).
+- **Player views**: `progress.GetViewFor(player)` returns a `GameStateView` with only visible states.
+- **Observer roles**: `progress.GetObserverView(role)` supports spectator modes (`Full`, `Limited`, `PlayerPerspective`).
+- **Custom policies**: Implement `IVisibilityPolicy` for game-specific visibility rules (fog of war, ownership-based filtering).
+
+Projections are deterministic (pure functions), immutable (read-only), and performant (lazy evaluation + caching). See `player-views.md` for detailed usage examples, custom policy implementation, and migration guidance.
+
 ## Extension Surface
 
 Add: new event, mutator, condition, phase wiring, or pattern type. Avoid relying on internal acceleration data structures; treat `EngineCapabilities.PathResolver` + topology as the boundary.

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Veggerby.Boards.Artifacts;
@@ -61,6 +62,20 @@ public class FullVisibilityPolicyTests
     }
 
     [Fact]
+    public void CanSee_Should_Throw_When_State_Is_Null()
+    {
+        // arrange
+        var policy = FullVisibilityPolicy.Instance;
+        var player = Game.GetPlayer("player-1").EnsureNotNull();
+
+        // act
+        var act = () => policy.CanSee(player, null!);
+
+        // assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Redact_Should_Return_Original_State()
     {
         // arrange
@@ -91,5 +106,19 @@ public class FullVisibilityPolicyTests
 
         // assert
         result.Should().BeSameAs(state);
+    }
+
+    [Fact]
+    public void Redact_Should_Throw_When_State_Is_Null()
+    {
+        // arrange
+        var policy = FullVisibilityPolicy.Instance;
+        var player = Game.GetPlayer("player-1").EnsureNotNull();
+
+        // act
+        var act = () => policy.Redact(player, null!);
+
+        // assert
+        act.Should().Throw<ArgumentNullException>();
     }
 }

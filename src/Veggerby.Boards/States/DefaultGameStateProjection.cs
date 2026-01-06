@@ -61,11 +61,15 @@ public sealed class DefaultGameStateProjection : IGameStateProjection
     {
         public bool CanSee(Player? viewer, IArtifactState state)
         {
+            ArgumentNullException.ThrowIfNull(state);
+
             return state.Visibility == Visibility.Public;
         }
 
         public IArtifactState? Redact(Player? viewer, IArtifactState state)
         {
+            ArgumentNullException.ThrowIfNull(state);
+
             // For limited observers, completely omit non-public state
             return null;
         }

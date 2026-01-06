@@ -23,12 +23,16 @@ public sealed class FullVisibilityPolicy : IVisibilityPolicy
     /// <inheritdoc />
     public bool CanSee(Player? viewer, IArtifactState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
+
         return true;
     }
 
     /// <inheritdoc />
     public IArtifactState? Redact(Player? viewer, IArtifactState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
+
         return state;
     }
 }

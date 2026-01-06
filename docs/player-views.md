@@ -578,12 +578,6 @@ public void Should_Hide_Unrevealed_Pieces()
 
 ## Future Enhancements
 
-### Phase 2: Advanced Visibility Policies
-
-- `PlayerOwnedVisibilityPolicy`: Ownership-based filtering
-- `ObserverVisibilityPolicy`: Observer-specific rules
-- `RedactedPieceState`: Placeholder for hidden state
-
 ### Phase 3: Dynamic Visibility
 
 - Fog of war based on unit positions

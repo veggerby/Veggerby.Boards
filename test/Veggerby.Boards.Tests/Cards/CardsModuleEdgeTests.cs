@@ -195,7 +195,12 @@ public class CardsModuleEdgeTests
         };
 
         // act
-        Action act = () => new DeckState(deck, piles.ToDictionary(kv => kv.Key, kv => (IList<CardState>)kv.Value.Select(c => new CardState(c, kv.Key)).ToList(), StringComparer.Ordinal));
+        var invalidPiles = piles.ToDictionary(
+            kv => kv.Key,
+            kv => (IList<CardState>)kv.Value.Select(c => new CardState(c, kv.Key)).ToList(),
+            StringComparer.Ordinal);
+
+        Action act = () => new DeckState(deck, invalidPiles);
 
         // assert
         act.Should().Throw<ArgumentException>();

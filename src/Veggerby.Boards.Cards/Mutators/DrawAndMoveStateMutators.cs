@@ -198,11 +198,21 @@ internal sealed class DiscardCardsStateMutator : IStateMutator<DiscardCardsEvent
             CardState? cardState = null;
             foreach (var kv in newPiles)
             {
-                var idx = kv.Value.ToList().FindIndex(cs => cs.Artifact.Equals(c));
+                var idx = -1;
+                var pile = kv.Value;
+                for (var i = 0; i < pile.Count; i++)
+                {
+                    if (pile[i].Artifact.Equals(c))
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
                 if (idx >= 0)
                 {
-                    cardState = kv.Value[idx];
-                    kv.Value.RemoveAt(idx);
+                    cardState = pile[idx];
+                    pile.RemoveAt(idx);
                     break;
                 }
             }

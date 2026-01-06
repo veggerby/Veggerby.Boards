@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess.MoveGeneration;
 using Veggerby.Boards.Flows.Events;
+using Veggerby.Boards.Flows.LegalMoveGeneration;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Chess;
@@ -117,5 +118,44 @@ public static partial class GameExtensions
         }
 
         return progress.Move(move.Piece.Id, move.To.Id);
+    }
+
+    /// <summary>
+    /// Gets the Chess-optimized legal move generator for this game.
+    /// </summary>
+    /// <param name="progress">The game progress to generate moves for.</param>
+    /// <returns>
+    /// A <see cref="ChessLegalMoveGenerator"/> that integrates Chess-specific move generation
+    /// and legality filtering for optimal performance.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// This Chess-specific extension provides optimized move generation by integrating:
+    /// <list type="bullet">
+    /// <item><description><see cref="ChessMoveGenerator"/>: Generates pseudo-legal moves based on piece movement patterns</description></item>
+    /// <item><description><see cref="ChessLegalityFilter"/>: Filters out moves that leave the king in check</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Example usage:
+    /// <code>
+    /// var generator = progress.GetChessLegalMoveGenerator();
+    /// var legalMoves = generator.GetLegalMoves(progress.State);
+    /// foreach (var move in legalMoves)
+    /// {
+    ///     Console.WriteLine($"Legal: {move}");
+    /// }
+    /// </code>
+    /// </para>
+    /// <para>
+    /// For general-purpose move generation across all game types, use the core
+    /// <see cref="GameProgressExtensions.GetLegalMoveGenerator"/> extension instead.
+    /// </para>
+    /// </remarks>
+    public static ILegalMoveGenerator GetChessLegalMoveGenerator(this GameProgress progress)
+    {
+        ArgumentNullException.ThrowIfNull(progress);
+
+        return new ChessLegalMoveGenerator(progress.Engine, progress.State);
     }
 }

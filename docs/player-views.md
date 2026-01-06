@@ -112,6 +112,28 @@ var policy = FullVisibilityPolicy.Instance;
 // All players see all state - backward compatible with existing games
 ```
 
+**PlayerOwnedVisibilityPolicy** (for ownership-based filtering):
+```csharp
+var policy = PlayerOwnedVisibilityPolicy.Instance;
+// Players see:
+// - All Public states
+// - Private states they own (e.g., their hand cards)
+// - No Hidden states (visible to no one until revealed)
+// Non-owners see RedactedPieceState placeholders for hidden pieces
+```
+
+**ObserverVisibilityPolicy** (for spectators and arbiters):
+```csharp
+// Full visibility (admin, arbiter, post-game analysis)
+var adminPolicy = new ObserverVisibilityPolicy(ObserverRole.Full);
+
+// Public only (live tournament spectator)
+var spectatorPolicy = new ObserverVisibilityPolicy(ObserverRole.Limited);
+
+// Player perspective (coaching, training)
+var coachingPolicy = new ObserverVisibilityPolicy(ObserverRole.PlayerPerspective);
+```
+
 ### GameStateView
 
 A `GameStateView` is a filtered, read-only projection of a `GameState`:
@@ -133,6 +155,44 @@ public sealed class GameStateView
     /// Gets all visible artifact states of the specified type.
     /// </summary>
     public IEnumerable<T> GetStates<T>() where T : IArtifactState;
+}
+```
+
+### RedactedPieceState
+
+A placeholder state that indicates the presence of a piece without revealing its identity:
+
+```csharp
+public sealed class RedactedPieceState : ArtifactState<Piece>
+{
+    public Tile CurrentTile { get; }
+    // Visibility is Public (the placeholder itself is visible)
+    // But the actual piece details are hidden
+}
+```
+
+**Use cases:**
+- **Stratego**: Opponent sees a piece exists but not its rank
+- **Battleship**: Opponent sees a ship segment but not which ship
+- **Card games**: Opponent sees face-down cards but not their values
+
+**Example:**
+```csharp
+var view = progress.GetViewFor(opponent, PlayerOwnedVisibilityPolicy.Instance);
+var pieces = view.GetStates<PieceState>(); // May include RedactedPieceState instances
+
+foreach (var piece in pieces)
+{
+    if (piece is RedactedPieceState redacted)
+    {
+        // Opponent sees "something is here" but not what
+        Console.WriteLine($"Hidden piece on {redacted.CurrentTile.Id}");
+    }
+    else
+    {
+        // Opponent can see this piece (public or owned)
+        Console.WriteLine($"{piece.Artifact.Id} on {piece.CurrentTile.Id}");
+    }
 }
 ```
 
@@ -199,15 +259,22 @@ Use player views to filter hidden information:
 ```csharp
 var progress = new PokerGameBuilder().Compile();
 
-// Each player sees only their own hand
-var player1View = progress.GetViewFor(player1);
+// Use PlayerOwnedVisibilityPolicy for ownership-based filtering
+var player1View = progress.GetViewFor(player1, PlayerOwnedVisibilityPolicy.Instance);
 var player1Cards = player1View.GetStates<CardState>(); // Only player1's cards + public cards
 
-var player2View = progress.GetViewFor(player2);
+var player2View = progress.GetViewFor(player2, PlayerOwnedVisibilityPolicy.Instance);
 var player2Cards = player2View.GetStates<CardState>(); // Only player2's cards + public cards
 
-// No information leakage
-player1Cards.Should().NotContain(c => c.Owner == player2 && !c.IsFaceUp);
+// No information leakage - opponent's private cards are redacted
+var opponentPieces = player1View.GetStates<PieceState>(); // May include RedactedPieceState
+foreach (var piece in opponentPieces)
+{
+    if (piece is RedactedPieceState)
+    {
+        // Opponent's hidden card - cannot see details
+    }
+}
 ```
 
 ### Observer Mode (Tournament Spectator)
@@ -280,41 +347,39 @@ public sealed class DefaultGameStateProjection : IGameStateProjection
 
 ## Implementing Custom Visibility Policies
 
-### Example: Player-Owned Visibility
+### Built-in Policies
 
-For games where players own pieces/cards and should only see their own:
+**PlayerOwnedVisibilityPolicy** - Recommended for most card games and ownership-based scenarios:
 
 ```csharp
-public class PlayerOwnedVisibilityPolicy : IVisibilityPolicy
-{
-    public bool CanSee(Player? viewer, IArtifactState state)
-    {
-        if (state.Visibility == Visibility.Public)
-            return true;
-            
-        if (state.Visibility == Visibility.Hidden)
-            return false;
-            
-        // Private: check ownership
-        if (state is IPieceState ps && ps.Artifact.Owner == viewer)
-            return true;
-            
-        return false;
-    }
-
-    public IArtifactState? Redact(Player? viewer, IArtifactState state)
-    {
-        if (!CanSee(viewer, state))
-        {
-            // Return placeholder or null
-            return new RedactedPieceState(state.Artifact);
-        }
-        return state;
-    }
-}
+var view = progress.GetViewFor(player, PlayerOwnedVisibilityPolicy.Instance);
+// Players see:
+// - All Public states
+// - Their own Private states (owned pieces/cards)
+// - No Hidden states
+// - RedactedPieceState placeholders for opponent's Private pieces
 ```
 
-### Example: Fog of War
+**ObserverVisibilityPolicy** - For spectators and observers:
+
+```csharp
+// Tournament arbiter sees everything
+var arbiterView = progress.GetObserverView(
+    ObserverRole.Full,
+    new ObserverVisibilityPolicy(ObserverRole.Full));
+
+// Live spectator sees public only
+var spectatorView = progress.GetObserverView(
+    ObserverRole.Limited,
+    new ObserverVisibilityPolicy(ObserverRole.Limited));
+
+// Coach sees what the player sees
+var coachView = progress.GetObserverView(
+    ObserverRole.PlayerPerspective,
+    new ObserverVisibilityPolicy(ObserverRole.PlayerPerspective));
+```
+
+### Example: Custom Fog of War
 
 For strategy games where visibility depends on unit positions:
 

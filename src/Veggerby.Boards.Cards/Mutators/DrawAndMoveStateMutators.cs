@@ -7,6 +7,7 @@ using Veggerby.Boards.Cards.Events;
 using Veggerby.Boards.Cards.States;
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
+
 namespace Veggerby.Boards.Cards.Mutators;
 
 internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>
@@ -23,30 +24,36 @@ internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>
         {
             return state; // conditions should have prevented, no-op
         }
+
         if (!ds.Piles.ContainsKey(@event.FromPileId) || !ds.Piles.ContainsKey(@event.ToPileId))
         {
             throw new BoardException("Unknown pile specified.");
         }
+
         var from = ds.Piles[@event.FromPileId];
         var to = ds.Piles[@event.ToPileId];
         if (from.Count < @event.Count)
         {
             throw new BoardException("Insufficient cards to draw.");
         }
-        var moved = new List<Card>(@event.Count);
+
+        var moved = new List<CardState>(@event.Count);
         for (int i = 0; i < @event.Count; i++)
         {
-            moved.Add(from[i]);
+            // Update pile location when moving
+            var cardState = from[i];
+            moved.Add(new CardState(cardState.Artifact, @event.ToPileId, cardState.IsFaceUp, cardState.Owner));
         }
-        var remaining = new List<Card>(from.Count - @event.Count);
+
+        var remaining = new List<CardState>(from.Count - @event.Count);
         for (int i = @event.Count; i < from.Count; i++)
             remaining.Add(from[i]);
 
-        var newTo = new List<Card>(to.Count + moved.Count);
+        var newTo = new List<CardState>(to.Count + moved.Count);
         newTo.AddRange(to);
         newTo.AddRange(moved);
 
-        var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key == @event.FromPileId)
@@ -54,8 +61,9 @@ internal sealed class DrawCardsStateMutator : IStateMutator<DrawCardsEvent>
             else if (kv.Key == @event.ToPileId)
                 newPiles[kv.Key] = newTo;
             else
-                newPiles[kv.Key] = new List<Card>(kv.Value);
+                newPiles[kv.Key] = new List<CardState>(kv.Value);
         }
+
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
     }
@@ -70,24 +78,33 @@ internal sealed class MoveCardsStateMutator : IStateMutator<MoveCardsEvent>
         {
             return state; // conditions should have prevented
         }
+
         if (!ds.Piles.ContainsKey(@event.FromPileId) || !ds.Piles.ContainsKey(@event.ToPileId))
         {
             throw new BoardException("Unknown pile specified.");
         }
+
         var from = ds.Piles[@event.FromPileId];
         var to = ds.Piles[@event.ToPileId];
 
-        List<Card> selected;
+        List<CardState> selected;
         if (@event.Cards is not null)
         {
             // preserve order as provided
             // validate presence
             foreach (var c in @event.Cards)
             {
-                if (!from.Contains(c))
+                if (!from.Any(cs => cs.Artifact.Equals(c)))
                     throw new BoardException("Card not present in source pile.");
             }
-            selected = new List<Card>(@event.Cards);
+
+            selected = new List<CardState>(@event.Cards.Count);
+            foreach (var c in @event.Cards)
+            {
+                var cardState = from.First(cs => cs.Artifact.Equals(c));
+                // Update pile location when moving
+                selected.Add(new CardState(cardState.Artifact, @event.ToPileId, cardState.IsFaceUp, cardState.Owner));
+            }
         }
         else
         {
@@ -96,23 +113,27 @@ internal sealed class MoveCardsStateMutator : IStateMutator<MoveCardsEvent>
                 return state; // no-op
             if (from.Count < count)
                 throw new BoardException("Insufficient cards in source pile.");
-            selected = new List<Card>(count);
+            selected = new List<CardState>(count);
             for (int i = 0; i < count; i++)
-                selected.Add(from[i]);
+            {
+                var cardState = from[i];
+                selected.Add(new CardState(cardState.Artifact, @event.ToPileId, cardState.IsFaceUp, cardState.Owner));
+            }
         }
 
         // build new piles
-        var newFrom = new List<Card>(from);
+        var newFrom = new List<CardState>(from);
         // remove selected by identity; stable removal
         foreach (var c in selected)
         {
-            var idx = newFrom.FindIndex(x => x.Equals(c));
+            var idx = newFrom.FindIndex(x => x.Artifact.Equals(c.Artifact));
             newFrom.RemoveAt(idx);
         }
-        var newTo = new List<Card>(to);
+
+        var newTo = new List<CardState>(to);
         newTo.AddRange(selected);
 
-        var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key == @event.FromPileId)
@@ -120,8 +141,9 @@ internal sealed class MoveCardsStateMutator : IStateMutator<MoveCardsEvent>
             else if (kv.Key == @event.ToPileId)
                 newPiles[kv.Key] = newTo;
             else
-                newPiles[kv.Key] = new List<Card>(kv.Value);
+                newPiles[kv.Key] = new List<CardState>(kv.Value);
         }
+
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
     }
@@ -135,49 +157,63 @@ internal sealed class DiscardCardsStateMutator : IStateMutator<DiscardCardsEvent
         {
             return state;
         }
+
         var ds = state.GetState<DeckState>(@event.Deck);
         if (ds is null)
         {
             return state; // conditions should have prevented
         }
+
         if (!ds.Piles.ContainsKey(@event.ToPileId))
         {
             throw new BoardException("Unknown pile specified.");
         }
+
         // Cards may come from multiple piles; validate presence in any pile
         foreach (var c in @event.Cards)
         {
             var present = false;
             foreach (var p in ds.Piles.Values)
             {
-                if (p.Contains(c))
+                if (p.Any(cs => cs.Artifact.Equals(c)))
                 {
                     present = true;
                     break;
                 }
             }
+
             if (!present)
                 throw new BoardException("Card not present in any pile.");
         }
+
         // remove card from its current pile and append to destination in order
-        var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
-            newPiles[kv.Key] = new List<Card>(kv.Value);
+            newPiles[kv.Key] = new List<CardState>(kv.Value);
         }
+
         foreach (var c in @event.Cards)
         {
+            CardState? cardState = null;
             foreach (var kv in newPiles)
             {
-                var idx = kv.Value.IndexOf(c);
+                var idx = kv.Value.ToList().FindIndex(cs => cs.Artifact.Equals(c));
                 if (idx >= 0)
                 {
+                    cardState = kv.Value[idx];
                     kv.Value.RemoveAt(idx);
                     break;
                 }
             }
-            newPiles[@event.ToPileId].Add(c);
+
+            if (cardState != null)
+            {
+                // Update pile location when discarding
+                newPiles[@event.ToPileId].Add(new CardState(cardState.Artifact, @event.ToPileId, cardState.IsFaceUp, cardState.Owner));
+            }
         }
+
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
     }

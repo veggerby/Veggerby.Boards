@@ -42,13 +42,13 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
         }
 
         // Selective cloning: only draw, discard, hand piles require mutation.
-        var piles = new Dictionary<string, IList<Card>>(ds.Piles.Count, StringComparer.Ordinal);
+        var piles = new Dictionary<string, IList<CardState>>(ds.Piles.Count, StringComparer.Ordinal);
         var originalDraw = ds.Piles[drawId];
         var originalDiscard = ds.Piles[discardId];
         var originalHand = ds.Piles[handId];
-        var draw = originalDraw.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDraw);
-        var discard = originalDiscard.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalDiscard);
-        var hand = originalHand.Count == 0 ? new List<Card>(capacity: 0) : new List<Card>(originalHand);
+        var draw = originalDraw.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalDraw);
+        var discard = originalDiscard.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalDiscard);
+        var hand = originalHand.Count == 0 ? new List<CardState>(capacity: 0) : new List<CardState>(originalHand);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key.Equals(drawId, StringComparison.Ordinal))
@@ -65,7 +65,7 @@ public sealed class DrawWithReshuffleStateMutator : IStateMutator<DrawWithReshuf
             }
             else
             {
-                piles[kv.Key] = (IList<Card>)kv.Value; // reuse existing read-only list for untouched pile
+                piles[kv.Key] = (IList<CardState>)kv.Value; // reuse existing read-only list for untouched pile
             }
         }
 

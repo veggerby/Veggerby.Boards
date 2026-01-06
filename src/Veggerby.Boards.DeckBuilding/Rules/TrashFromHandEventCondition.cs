@@ -31,7 +31,7 @@ public sealed class TrashFromHandEventCondition : IGameEventCondition<TrashFromH
             var present = false;
             for (int i = 0; i < hand.Count; i++)
             {
-                if (hand[i].Equals(c))
+                if (hand[i].Artifact.Equals(c))
                 {
                     present = true;
                     break;

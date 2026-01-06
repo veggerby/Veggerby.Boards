@@ -37,11 +37,11 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
             // Defensive: condition should have rejected already.
             return gameState;
         }
-        // Build a new dictionary with IList<Card> values expected by DeckState. We reuse existing
+        // Build a new dictionary with IList<CardState> values expected by DeckState. We reuse existing
         // list instances for non-target piles (they will be cloned again inside DeckState's constructor
         // which currently materializes a read-only copy for each pile). This still avoids the previous
         // double-copy of every pile the mutator used to perform before handing off to DeckState.
-        var newPiles = new Dictionary<string, IList<Card>>(originalPiles.Count, StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(originalPiles.Count, StringComparer.Ordinal);
         foreach (var kv in originalPiles)
         {
             if (kv.Key.Equals(@event.TargetPileId, StringComparison.Ordinal))
@@ -50,19 +50,19 @@ public sealed class GainFromSupplyStateMutator : IStateMutator<GainFromSupplyEve
             }
 
             // Reuse existing read-only collection; DeckState constructor will materialize its own frozen copy.
-            newPiles[kv.Key] = (IList<Card>)kv.Value; // safe cast (ReadOnlyCollection<Card> implements IList<Card>)
+            newPiles[kv.Key] = (IList<CardState>)kv.Value; // safe cast (ReadOnlyCollection<CardState> implements IList<CardState>)
         }
 
         // Resolve card artifact by id (condition already validated existence, but defensive guard retained).
         var card = engine.Game.GetArtifact<Card>(@event.CardId) ?? throw new BoardException(ExceptionMessages.CardNotFound(@event.CardId));
 
-        var targetCloned = new List<Card>(targetPileOriginal.Count + 1);
-        // Copy existing references (no per-item cloning needed; Card artifacts are immutable).
-        foreach (var c in targetPileOriginal)
+        var targetCloned = new List<CardState>(targetPileOriginal.Count + 1);
+        // Copy existing references (no per-item cloning needed; CardState is immutable).
+        foreach (var cs in targetPileOriginal)
         {
-            targetCloned.Add(c);
+            targetCloned.Add(cs);
         }
-        targetCloned.Add(card);
+        targetCloned.Add(new CardState(card, @event.TargetPileId));
         newPiles[@event.TargetPileId] = targetCloned; // only mutated pile gets a new list we populate
 
         // Decrement supply count

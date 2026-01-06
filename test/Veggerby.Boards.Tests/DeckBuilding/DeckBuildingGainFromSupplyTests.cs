@@ -63,7 +63,7 @@ public class DeckBuildingGainFromSupplyTests
         var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
         ds!.Supply[c1.Id].Should().Be(9);
-        ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainSingle().Which.Should().Be(c1);
+        ds.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainSingle().Which.Artifact.Should().Be(c1);
     }
 
     [Fact]

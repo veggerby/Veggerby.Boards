@@ -59,7 +59,7 @@ public class CardsModuleInvalidFlowTests
         var fake = new Card("not-in-draw");
 
         // act
-        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { draw[0], fake }));
+        Action act = () => progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { draw[0].Artifact, fake }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();
@@ -84,7 +84,7 @@ public class CardsModuleInvalidFlowTests
         var card = ds!.Piles[CardsGameBuilder.Piles.Draw][0];
 
         // act
-        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck!, "unknown", new[] { card }));
+        Action act = () => progress.HandleEvent(new DiscardCardsEvent(deck!, "unknown", new[] { card.Artifact }));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();

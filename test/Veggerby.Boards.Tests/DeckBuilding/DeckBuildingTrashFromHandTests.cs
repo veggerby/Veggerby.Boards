@@ -53,7 +53,7 @@ public class DeckBuildingTrashFromHandTests
         // assert
         var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds!.Piles[DeckBuildingGameBuilder.Piles.Hand].Should().ContainSingle().Which.Should().Be(c2);
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Hand].Should().ContainSingle().Which.Artifact.Should().Be(c2);
     }
 
     [Fact]

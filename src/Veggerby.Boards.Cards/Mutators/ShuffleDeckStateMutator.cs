@@ -23,7 +23,7 @@ internal sealed class ShuffleDeckStateMutator : IStateMutator<ShuffleDeckEvent>
             throw new BoardException($"Unknown pile '{@event.PileId}' for deck '{@event.Deck.Id}'.");
         }
 
-        var arr = new List<Card>(list);
+        var arr = new List<CardState>(list);
         var rng = state.Random;
         if (rng is null || arr.Count <= 1)
         {
@@ -40,11 +40,12 @@ internal sealed class ShuffleDeckStateMutator : IStateMutator<ShuffleDeckEvent>
             (arr[i], arr[j]) = (arr[j], arr[i]);
         }
 
-        var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
-            newPiles[kv.Key] = kv.Key == @event.PileId ? arr : new List<Card>(kv.Value);
+            newPiles[kv.Key] = kv.Key == @event.PileId ? arr : new List<CardState>(kv.Value);
         }
+
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));
         return state.Next([next]);
     }

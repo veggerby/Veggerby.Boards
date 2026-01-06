@@ -73,8 +73,8 @@ public class CardsModuleTests
         var d2 = s2.GetState<DeckState>(deck2!);
         d1.Should().NotBeNull();
         d2.Should().NotBeNull();
-        d1!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id)
-            .SequenceEqual(d2!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id))
+        d1!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id)
+            .SequenceEqual(d2!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id))
             .Should().BeTrue();
     }
 

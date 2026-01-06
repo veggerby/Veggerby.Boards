@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 
+using Veggerby.Boards.Artifacts;
+
 namespace Veggerby.Boards.States;
 
 /// <summary>
@@ -65,5 +67,73 @@ public static class GameProgressExtensions
 
         // Return the first outcome found (there should only be one per game)
         return outcomeStates.FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Creates a player-specific view of the current game state.
+    /// </summary>
+    /// <param name="progress">The game progress to project.</param>
+    /// <param name="player">The player whose perspective to project.</param>
+    /// <param name="policy">
+    /// Optional visibility policy to apply. If null, uses <see cref="FullVisibilityPolicy"/>
+    /// (perfect information, backward compatible with existing games).
+    /// </param>
+    /// <returns>A filtered view showing only states visible to the specified player.</returns>
+    /// <remarks>
+    /// <para>
+    /// Player views enable imperfect-information games by filtering hidden state based on the
+    /// configured <see cref="IVisibilityPolicy"/>. For perfect-information games (Chess, Go),
+    /// the default <see cref="FullVisibilityPolicy"/> shows all state.
+    /// </para>
+    /// <para>
+    /// Example usage for a card game:
+    /// <code>
+    /// var view = progress.GetViewFor(player, new PlayerOwnedVisibilityPolicy());
+    /// var visibleCards = view.GetStates&lt;CardState&gt;();
+    /// </code>
+    /// </para>
+    /// </remarks>
+    public static GameStateView GetViewFor(this GameProgress progress, Player player, IVisibilityPolicy? policy = null)
+    {
+        ArgumentNullException.ThrowIfNull(progress);
+        ArgumentNullException.ThrowIfNull(player);
+
+        var projection = new DefaultGameStateProjection(progress.State, policy);
+        return projection.ProjectFor(player);
+    }
+
+    /// <summary>
+    /// Creates an observer view of the current game state.
+    /// </summary>
+    /// <param name="progress">The game progress to project.</param>
+    /// <param name="role">The observer role determining visibility permissions.</param>
+    /// <param name="policy">
+    /// Optional visibility policy to apply. If null, uses <see cref="FullVisibilityPolicy"/>
+    /// for <see cref="ObserverRole.Full"/>, and public-only filtering for <see cref="ObserverRole.Limited"/>.
+    /// </param>
+    /// <returns>A filtered view based on the observer's access level.</returns>
+    /// <remarks>
+    /// <para>
+    /// Observer views support spectator modes, tournament displays, and post-game analysis:
+    /// <list type="bullet">
+    /// <item><description><see cref="ObserverRole.Full"/>: Complete visibility (admin, arbiter, post-game replay)</description></item>
+    /// <item><description><see cref="ObserverRole.Limited"/>: Public state only (live tournament spectator)</description></item>
+    /// <item><description><see cref="ObserverRole.PlayerPerspective"/>: Same visibility as a player (coaching, training)</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Example usage for tournament spectator:
+    /// <code>
+    /// var spectatorView = progress.GetObserverView(ObserverRole.Limited);
+    /// var publicPieces = spectatorView.GetStates&lt;PieceState&gt;();
+    /// </code>
+    /// </para>
+    /// </remarks>
+    public static GameStateView GetObserverView(this GameProgress progress, ObserverRole role, IVisibilityPolicy? policy = null)
+    {
+        ArgumentNullException.ThrowIfNull(progress);
+
+        var projection = new DefaultGameStateProjection(progress.State, policy);
+        return projection.ProjectForObserver(role);
     }
 }

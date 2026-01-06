@@ -18,4 +18,15 @@ public interface IArtifactState
     {
         get;
     }
+
+    /// <summary>
+    /// Gets the visibility constraint for this artifact state in player-projected views.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to <see cref="Visibility.Public"/> for backward compatibility with existing implementations.
+    /// Override to return <see cref="Visibility.Private"/> or <see cref="Visibility.Hidden"/> for
+    /// imperfect-information games. Visibility is typically computed based on the state's properties
+    /// (e.g., a card's face-up/face-down status).
+    /// </remarks>
+    Visibility Visibility => Visibility.Public;
 }

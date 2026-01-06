@@ -50,7 +50,7 @@ internal sealed class ReshuffleStateMutator : IStateMutator<ReshuffleEvent>
         }
 
         // Combine piles: append from to current to
-        var combined = new List<Card>(toPile.Count + fromPile.Count);
+        var combined = new List<CardState>(toPile.Count + fromPile.Count);
         combined.AddRange(toPile);
         combined.AddRange(fromPile);
 
@@ -67,15 +67,15 @@ internal sealed class ReshuffleStateMutator : IStateMutator<ReshuffleEvent>
         }
 
         // Build new piles
-        var newPiles = new Dictionary<string, IList<Card>>(StringComparer.Ordinal);
+        var newPiles = new Dictionary<string, IList<CardState>>(StringComparer.Ordinal);
         foreach (var kv in ds.Piles)
         {
             if (kv.Key == @event.ToPileId)
                 newPiles[kv.Key] = combined;
             else if (kv.Key == @event.FromPileId)
-                newPiles[kv.Key] = new List<Card>();
+                newPiles[kv.Key] = new List<CardState>();
             else
-                newPiles[kv.Key] = new List<Card>(kv.Value);
+                newPiles[kv.Key] = new List<CardState>(kv.Value);
         }
 
         var next = new DeckState(ds.Artifact, newPiles, new Dictionary<string, int>(ds.Supply));

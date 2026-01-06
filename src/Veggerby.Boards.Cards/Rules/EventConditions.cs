@@ -69,7 +69,7 @@ internal sealed class MoveCardsEventCondition : IGameEventCondition<MoveCardsEve
         if (@event.Cards is not null)
         {
             // all must be in from
-            if (@event.Cards.Any(c => !from.Contains(c)))
+            if (@event.Cards.Any(c => !from.Any(cs => cs.Artifact.Equals(c))))
                 return ConditionResponse.Fail("Card not in source pile");
             return ConditionResponse.Valid;
         }
@@ -98,12 +98,13 @@ internal sealed class DiscardCardsEventCondition : IGameEventCondition<DiscardCa
             var present = false;
             foreach (var p in ds.Piles.Values)
             {
-                if (p.Contains(c))
+                if (p.Any(cs => cs.Artifact.Equals(c)))
                 {
                     present = true;
                     break;
                 }
             }
+
             if (!present)
                 return ConditionResponse.Fail("Card not present");
         }
@@ -144,7 +145,7 @@ internal sealed class RevealCardsEventCondition : IGameEventCondition<RevealCard
         var pile = ds.Piles[@event.PileId];
         foreach (var c in @event.Cards)
         {
-            if (!pile.Contains(c))
+            if (!pile.Any(cs => cs.Artifact.Equals(c)))
                 return ConditionResponse.Fail("Card not in specified pile");
         }
         return ConditionResponse.Valid;

@@ -59,7 +59,7 @@ public class CardsModuleMoreTests
         // assert
         var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        var hand = ds.Piles[CardsGameBuilder.Piles.Hand].Select(c => c.Id).ToArray();
+        var hand = ds.Piles[CardsGameBuilder.Piles.Hand].Select(cs => cs.Artifact.Id).ToArray();
         hand.Should().Equal(new[] { CardsGameBuilder.CardIds.C1, CardsGameBuilder.CardIds.C2, CardsGameBuilder.CardIds.C3 });
         ds.Piles[CardsGameBuilder.Piles.Draw].Count.Should().Be(2);
     }
@@ -85,13 +85,13 @@ public class CardsModuleMoreTests
         var c3 = draw[2];
 
         // act
-        progress = progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { c3, c1 }));
+        progress = progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, new List<Card> { c3.Artifact, c1.Artifact }));
 
         // assert
         ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds.Piles[CardsGameBuilder.Piles.Hand].Select(c => c.Id).Should().Equal(new[] { c3.Id, c1.Id });
-        ds.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).Should().Equal(new[] { CardsGameBuilder.CardIds.C2, CardsGameBuilder.CardIds.C4, CardsGameBuilder.CardIds.C5 });
+        ds.Piles[CardsGameBuilder.Piles.Hand].Select(cs => cs.Artifact.Id).Should().Equal(new[] { c3.Artifact.Id, c1.Artifact.Id });
+        ds.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id).Should().Equal(new[] { CardsGameBuilder.CardIds.C2, CardsGameBuilder.CardIds.C4, CardsGameBuilder.CardIds.C5 });
     }
 
     [Fact]
@@ -116,12 +116,12 @@ public class CardsModuleMoreTests
         var cFromHand = ds.Piles[CardsGameBuilder.Piles.Hand][1];
 
         // act
-        progress = progress.HandleEvent(new DiscardCardsEvent(deck!, CardsGameBuilder.Piles.Discard, new List<Card> { cFromHand, cFromDraw }));
+        progress = progress.HandleEvent(new DiscardCardsEvent(deck!, CardsGameBuilder.Piles.Discard, new List<Card> { cFromHand.Artifact, cFromDraw.Artifact }));
 
         // assert
         ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds.Piles[CardsGameBuilder.Piles.Discard].Select(c => c.Id).Should().Equal(new[] { cFromHand.Id, cFromDraw.Id });
+        ds.Piles[CardsGameBuilder.Piles.Discard].Select(cs => cs.Artifact.Id).Should().Equal(new[] { cFromHand.Artifact.Id, cFromDraw.Artifact.Id });
     }
 
     [Fact]

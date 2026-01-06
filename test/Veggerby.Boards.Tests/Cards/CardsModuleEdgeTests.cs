@@ -51,7 +51,7 @@ public class CardsModuleEdgeTests
         progress = progress.HandleEvent(new MoveCardsEvent(deck!, CardsGameBuilder.Piles.Draw, CardsGameBuilder.Piles.Hand, 4));
         var before = progress.State.GetState<DeckState>(deck!);
         before.Should().NotBeNull();
-        var beforeIds = before!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).ToArray();
+        var beforeIds = before!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id).ToArray();
 
         // act
         progress = progress.HandleEvent(new ShuffleDeckEvent(deck!, CardsGameBuilder.Piles.Draw));
@@ -59,7 +59,7 @@ public class CardsModuleEdgeTests
         // assert
         var after = progress.State.GetState<DeckState>(deck!);
         after.Should().NotBeNull();
-        after!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).Should().Equal(beforeIds);
+        after!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id).Should().Equal(beforeIds);
     }
 
     [Fact]
@@ -195,7 +195,7 @@ public class CardsModuleEdgeTests
         };
 
         // act
-        Action act = () => new DeckState(deck, piles);
+        Action act = () => new DeckState(deck, piles.ToDictionary(kv => kv.Key, kv => (IList<CardState>)kv.Value.Select(c => new CardState(c, kv.Key)).ToList(), StringComparer.Ordinal));
 
         // assert
         act.Should().Throw<ArgumentException>();

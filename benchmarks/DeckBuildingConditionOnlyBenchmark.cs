@@ -35,12 +35,12 @@ public class DeckBuildingConditionOnlyBenchmark
         var deck = progress.Game.GetArtifact<Deck>("p1-deck") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: deck p1-deck missing");
         var p1 = progress.Game.GetPlayer("P1") ?? throw new InvalidOperationException("DeckBuildingConditionOnly: player P1 missing");
 
-        var piles = new Dictionary<string, IList<CardState>>
+        var piles = new Dictionary<string, IList<Card>>
         {
-            { DeckBuildingGameBuilder.Piles.Draw, new List<CardState>() },
-            { DeckBuildingGameBuilder.Piles.Discard, new List<CardState>() },
-            { DeckBuildingGameBuilder.Piles.Hand, new List<CardState>() },
-            { DeckBuildingGameBuilder.Piles.InPlay, new List<CardState>() },
+            { DeckBuildingGameBuilder.Piles.Draw, new List<Card>() },
+            { DeckBuildingGameBuilder.Piles.Discard, new List<Card>() },
+            { DeckBuildingGameBuilder.Piles.Hand, new List<Card>() },
+            { DeckBuildingGameBuilder.Piles.InPlay, new List<Card>() },
         };
         var supply = new Dictionary<string, int> { { "c1", 1 } };
         progress = progress.HandleEvent(new CreateDeckEvent(deck, piles, supply));
@@ -49,7 +49,12 @@ public class DeckBuildingConditionOnlyBenchmark
 
         // State referencing unknown card artifact in supply
         var supplyGhost = new Dictionary<string, int> { { "ghost", 1 } };
-        var deckStateGhost = new DeckState(deck, piles, supplyGhost);
+        var pilesAsCardState = piles.ToDictionary(
+            kv => kv.Key,
+            kv => (IList<CardState>)kv.Value.Select(c => new CardState(c, kv.Key)).ToList(),
+            StringComparer.Ordinal
+        );
+        var deckStateGhost = new DeckState(deck, pilesAsCardState, supplyGhost);
         _stateMissingCardArtifact = _state.Next([deckStateGhost]);
 
         _validEvent = new GainFromSupplyEvent(p1, deck, "c1", DeckBuildingGameBuilder.Piles.Discard);

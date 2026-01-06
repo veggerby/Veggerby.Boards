@@ -83,7 +83,7 @@ public class NewCardEventsTests
         var handCards = ds!.Piles[CardsGameBuilder.Piles.Hand].ToList();
 
         // act
-        var revealEvt = new RevealCardsEvent(deck!, CardsGameBuilder.Piles.Hand, handCards);
+        var revealEvt = new RevealCardsEvent(deck!, CardsGameBuilder.Piles.Hand, handCards.Select(cs => cs.Artifact).ToList());
         var afterReveal = new GameProgress(progress.Engine, afterDraw, progress.Events).HandleEvent(revealEvt).State;
 
         // assert
@@ -112,7 +112,7 @@ public class NewCardEventsTests
         var drawCards = ds!.Piles[CardsGameBuilder.Piles.Draw].Take(2).ToList();
 
         // act - try to reveal cards from draw pile as if they're in hand
-        var act = () => new GameProgress(progress.Engine, state, progress.Events).HandleEvent(new RevealCardsEvent(deck!, CardsGameBuilder.Piles.Hand, drawCards));
+        var act = () => new GameProgress(progress.Engine, state, progress.Events).HandleEvent(new RevealCardsEvent(deck!, CardsGameBuilder.Piles.Hand, drawCards.Select(cs => cs.Artifact).ToList()));
 
         // assert
         act.Should().Throw<InvalidGameEventException>();
@@ -137,7 +137,7 @@ public class NewCardEventsTests
         // Move all cards to discard
         var ds = state.GetState<DeckState>(deck!);
         var allCards = ds!.Piles[CardsGameBuilder.Piles.Draw].ToList();
-        var discardEvt = new DiscardCardsEvent(deck!, CardsGameBuilder.Piles.Discard, allCards);
+        var discardEvt = new DiscardCardsEvent(deck!, CardsGameBuilder.Piles.Discard, allCards.Select(cs => cs.Artifact).ToList());
         state = new GameProgress(progress.Engine, state, progress.Events).HandleEvent(discardEvt).State;
 
         // act
@@ -150,8 +150,8 @@ public class NewCardEventsTests
         dsAfter!.Piles[CardsGameBuilder.Piles.Draw].Count.Should().Be(5);
         dsAfter!.Piles[CardsGameBuilder.Piles.Discard].Count.Should().Be(0);
         // Verify shuffled (not in original order)
-        var afterOrder = dsAfter.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id).ToList();
-        var originalOrder = allCards.Select(c => c.Id).ToList();
+        var afterOrder = dsAfter.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id).ToList();
+        var originalOrder = allCards.Select(cs => cs.Artifact.Id).ToList();
         afterOrder.SequenceEqual(originalOrder).Should().BeFalse();
     }
 
@@ -181,12 +181,12 @@ public class NewCardEventsTests
         // Move all cards to discard for both
         var ds1 = s1.GetState<DeckState>(deck1!);
         var allCards1 = ds1!.Piles[CardsGameBuilder.Piles.Draw].ToList();
-        var discard1 = new DiscardCardsEvent(deck1!, CardsGameBuilder.Piles.Discard, allCards1);
+        var discard1 = new DiscardCardsEvent(deck1!, CardsGameBuilder.Piles.Discard, allCards1.Select(cs => cs.Artifact).ToList());
         s1 = new GameProgress(p1.Engine, s1, p1.Events).HandleEvent(discard1).State;
 
         var ds2 = s2.GetState<DeckState>(deck2!);
         var allCards2 = ds2!.Piles[CardsGameBuilder.Piles.Draw].ToList();
-        var discard2 = new DiscardCardsEvent(deck2!, CardsGameBuilder.Piles.Discard, allCards2);
+        var discard2 = new DiscardCardsEvent(deck2!, CardsGameBuilder.Piles.Discard, allCards2.Select(cs => cs.Artifact).ToList());
         s2 = new GameProgress(p2.Engine, s2, p2.Events).HandleEvent(discard2).State;
 
         // act
@@ -198,8 +198,8 @@ public class NewCardEventsTests
         var d2 = s2.GetState<DeckState>(deck2!);
         d1.Should().NotBeNull();
         d2.Should().NotBeNull();
-        d1!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id)
-            .SequenceEqual(d2!.Piles[CardsGameBuilder.Piles.Draw].Select(c => c.Id))
+        d1!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id)
+            .SequenceEqual(d2!.Piles[CardsGameBuilder.Piles.Draw].Select(cs => cs.Artifact.Id))
             .Should().BeTrue();
     }
 

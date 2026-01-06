@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 using Veggerby.Boards.Cards;
 using Veggerby.Boards.Cards.Artifacts;
@@ -61,7 +62,7 @@ public class DeckBuildingCleanupToDiscardTests
         // assert
         var ds = progress.State.GetState<DeckState>(deck!);
         ds.Should().NotBeNull();
-        ds!.Piles[DeckBuildingGameBuilder.Piles.Discard].Should().ContainInOrder(new[] { c1, c2, c3, c4 });
+        ds!.Piles[DeckBuildingGameBuilder.Piles.Discard].Select(cs => cs.Artifact).Should().ContainInOrder(new[] { c1, c2, c3, c4 });
         ds.Piles[DeckBuildingGameBuilder.Piles.Hand].Count.Should().Be(0);
         ds.Piles[DeckBuildingGameBuilder.Piles.InPlay].Count.Should().Be(0);
     }

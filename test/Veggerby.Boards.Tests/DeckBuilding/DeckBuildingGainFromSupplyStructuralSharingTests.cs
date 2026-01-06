@@ -79,6 +79,6 @@ public class DeckBuildingGainFromSupplyStructuralSharingTests
 
         // Target pile content changed exactly by appended card.
         afterDiscard.Should().HaveCount(beforeDiscard.Count + 1);
-        afterDiscard[^1].Should().Be(c1);
+        afterDiscard[^1].Artifact.Should().Be(c1);
     }
 }

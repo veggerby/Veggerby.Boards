@@ -27,14 +27,22 @@ namespace Veggerby.Boards.Flows.LegalMoveGeneration;
 /// </list>
 /// </para>
 /// <para>
-/// This class is internal; external code should use the <see cref="GameProgressExtensions.GetLegalMoveGenerator"/>
+/// This class is public to allow module-specific subclassing for candidate generation.
+/// External code should typically use the <see cref="GameProgressExtensions.GetLegalMoveGenerator"/>
 /// extension method to obtain an instance.
 /// </para>
 /// </remarks>
-internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
+public class DecisionPlanMoveGenerator : ILegalMoveGenerator
 {
-    private readonly GameEngine _engine;
-    private readonly GameState _state;
+    /// <summary>
+    /// Gets the game engine containing the compiled decision plan.
+    /// </summary>
+    protected GameEngine Engine { get; }
+
+    /// <summary>
+    /// Gets the current game state to generate moves for.
+    /// </summary>
+    protected GameState State { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DecisionPlanMoveGenerator"/> class.
@@ -43,12 +51,12 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     /// <param name="state">The current game state to generate moves for.</param>
     public DecisionPlanMoveGenerator(GameEngine engine, GameState state)
     {
-        _engine = engine ?? throw new ArgumentNullException(nameof(engine));
-        _state = state ?? throw new ArgumentNullException(nameof(state));
+        Engine = engine ?? throw new ArgumentNullException(nameof(engine));
+        State = state ?? throw new ArgumentNullException(nameof(state));
     }
 
     /// <inheritdoc />
-    public IEnumerable<IGameEvent> GetLegalMoves(GameState state)
+    public virtual IEnumerable<IGameEvent> GetLegalMoves(GameState state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -59,7 +67,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
         }
 
         // Get active phase
-        var activePhase = _engine.GamePhaseRoot.GetActiveGamePhase(state);
+        var activePhase = Engine.GamePhaseRoot.GetActiveGamePhase(state);
 
         if (activePhase is null)
         {
@@ -68,7 +76,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
 
         // Generate candidate events and filter through validation
         // For now, we'll use a simple approach: try validation on generated candidates
-        // Module-specific generators can be plugged in via extension points in the future
+        // Module-specific generators can override GenerateCandidates to provide actual moves
 
         foreach (var candidate in GenerateCandidates(state, activePhase))
         {
@@ -82,7 +90,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     }
 
     /// <inheritdoc />
-    public MoveValidation Validate(IGameEvent @event, GameState state)
+    public virtual MoveValidation Validate(IGameEvent @event, GameState state)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(state);
@@ -94,7 +102,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
         }
 
         // Get active phase
-        var activePhase = _engine.GamePhaseRoot.GetActiveGamePhase(state);
+        var activePhase = Engine.GamePhaseRoot.GetActiveGamePhase(state);
 
         if (activePhase is null)
         {
@@ -102,15 +110,15 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
         }
 
         // Pre-process the event
-        var preProcessed = activePhase.PreProcessEvent(new GameProgress(_engine, state, null), @event);
+        var preProcessed = activePhase.PreProcessEvent(new GameProgress(Engine, state, null), @event);
 
         // Try each preprocessed event against the decision plan
         foreach (var evt in preProcessed)
         {
             // Iterate through decision plan entries
-            for (var i = 0; i < _engine.DecisionPlan.Entries.Count; i++)
+            for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
             {
-                var entry = _engine.DecisionPlan.Entries[i];
+                var entry = Engine.DecisionPlan.Entries[i];
 
                 // Check phase condition
                 if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(state).Equals(ConditionResponse.Valid))
@@ -119,7 +127,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
                 }
 
                 // Check rule
-                var ruleCheck = entry.Rule.Check(_engine, state, evt);
+                var ruleCheck = entry.Rule.Check(Engine, state, evt);
 
                 if (ruleCheck.Result == ConditionResult.Valid)
                 {
@@ -142,7 +150,7 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     }
 
     /// <inheritdoc />
-    public IEnumerable<IGameEvent> GetLegalMovesFor(Artifact artifact, GameState state)
+    public virtual IEnumerable<IGameEvent> GetLegalMovesFor(Artifact artifact, GameState state)
     {
         ArgumentNullException.ThrowIfNull(artifact);
         ArgumentNullException.ThrowIfNull(state);
@@ -162,12 +170,15 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     /// </summary>
     /// <remarks>
     /// This is an extensibility point for module-specific move generation.
-    /// Currently returns empty enumeration; modules should register candidate generators.
+    /// Base implementation returns empty enumeration; subclasses should override to provide actual candidates.
     /// </remarks>
-    private IEnumerable<IGameEvent> GenerateCandidates(GameState state, Phases.GamePhase phase)
+    /// <param name="state">Current game state.</param>
+    /// <param name="phase">Active phase.</param>
+    /// <returns>Enumerable of candidate events.</returns>
+    protected virtual IEnumerable<IGameEvent> GenerateCandidates(GameState state, Phases.GamePhase phase)
     {
         // Placeholder for candidate generation
-        // Modules can register candidate generators via extension seams
+        // Modules can override this method to provide actual candidates
         // For now, return empty to allow base validation to work
         return Enumerable.Empty<IGameEvent>();
     }
@@ -175,7 +186,10 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     /// <summary>
     /// Checks if an event involves a specific artifact.
     /// </summary>
-    private static bool EventInvolvesArtifact(IGameEvent @event, Artifact artifact)
+    /// <param name="event">The event to check.</param>
+    /// <param name="artifact">The artifact to match.</param>
+    /// <returns>True if the event involves the artifact; false otherwise.</returns>
+    protected virtual bool EventInvolvesArtifact(IGameEvent @event, Artifact artifact)
     {
         // Check common event types
         if (@event is MovePieceGameEvent moveEvent)
@@ -191,8 +205,13 @@ internal sealed class DecisionPlanMoveGenerator : ILegalMoveGenerator
     /// <summary>
     /// Maps a condition response to a structured rejection reason.
     /// </summary>
-    private static RejectionReason MapConditionToRejection(ConditionResponse response, IGameEvent @event)
+    /// <param name="response">The condition response.</param>
+    /// <param name="event">The event being validated.</param>
+    /// <returns>The corresponding rejection reason.</returns>
+    protected static RejectionReason MapConditionToRejection(ConditionResponse response, IGameEvent @event)
     {
+        ArgumentNullException.ThrowIfNull(response);
+
         var reason = response.Reason ?? string.Empty;
 
         // Map based on reason string patterns

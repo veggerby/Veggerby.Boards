@@ -152,6 +152,10 @@ public static class GameProgressExtensions
     /// to efficiently evaluate move legality without repeated rule traversal.
     /// </para>
     /// <para>
+    /// For game modules with specialized move generation (e.g., Chess), this method returns
+    /// a module-specific generator that integrates with existing infrastructure.
+    /// </para>
+    /// <para>
     /// Example usage:
     /// <code>
     /// var generator = progress.GetLegalMoveGenerator();
@@ -175,6 +179,25 @@ public static class GameProgressExtensions
     {
         ArgumentNullException.ThrowIfNull(progress);
 
+        // Check if this is a Chess game by looking for Chess-specific state extras
+        var hasChessExtras = progress.State.ChildStates
+            .Any(s => s.GetType().FullName == "Veggerby.Boards.Chess.ChessStateExtras");
+
+        if (hasChessExtras)
+        {
+            // Use Chess-specific generator
+            var chessGeneratorType = Type.GetType("Veggerby.Boards.Chess.MoveGeneration.ChessLegalMoveGenerator, Veggerby.Boards.Chess");
+            if (chessGeneratorType is not null)
+            {
+                var chessGenerator = Activator.CreateInstance(chessGeneratorType, progress.Engine, progress.State) as ILegalMoveGenerator;
+                if (chessGenerator is not null)
+                {
+                    return chessGenerator;
+                }
+            }
+        }
+
+        // Fallback to base generator
         return new DecisionPlanMoveGenerator(progress.Engine, progress.State);
     }
 }

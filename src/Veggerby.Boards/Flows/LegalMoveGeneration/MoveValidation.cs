@@ -19,8 +19,8 @@ namespace Veggerby.Boards.Flows.LegalMoveGeneration;
 /// <param name="IsLegal">True if the event is legal and can be applied; false otherwise.</param>
 /// <param name="Event">The event being validated.</param>
 /// <param name="Reason">The reason for rejection (None if legal).</param>
-/// <param name="Explanation">Human-readable explanation of the rejection (null if legal or no explanation available).</param>
-public sealed record MoveValidation(bool IsLegal, IGameEvent Event, RejectionReason Reason, string? Explanation)
+/// <param name="Explanation">Human-readable explanation of the rejection (empty string if legal or no explanation available).</param>
+public sealed record MoveValidation(bool IsLegal, IGameEvent Event, RejectionReason Reason, string Explanation)
 {
     /// <summary>
     /// Creates a validation result indicating the move is legal.
@@ -29,7 +29,7 @@ public sealed record MoveValidation(bool IsLegal, IGameEvent Event, RejectionRea
     /// <returns>A legal validation result.</returns>
     public static MoveValidation Legal(IGameEvent @event)
     {
-        return new MoveValidation(true, @event, RejectionReason.None, null);
+        return new MoveValidation(true, @event, RejectionReason.None, string.Empty);
     }
 
     /// <summary>
@@ -37,10 +37,10 @@ public sealed record MoveValidation(bool IsLegal, IGameEvent Event, RejectionRea
     /// </summary>
     /// <param name="event">The illegal event.</param>
     /// <param name="reason">The structured rejection reason.</param>
-    /// <param name="explanation">Optional human-readable explanation.</param>
+    /// <param name="explanation">Optional human-readable explanation (empty string if not provided).</param>
     /// <returns>An illegal validation result.</returns>
     public static MoveValidation Illegal(IGameEvent @event, RejectionReason reason, string? explanation = null)
     {
-        return new MoveValidation(false, @event, reason, explanation);
+        return new MoveValidation(false, @event, reason, explanation ?? string.Empty);
     }
 }

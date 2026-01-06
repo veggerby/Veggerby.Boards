@@ -71,6 +71,7 @@ public class LegalMoveGenerationApiTests
         validation.Should().NotBeNull();
         validation.IsLegal.Should().BeTrue("e2-e4 is a legal opening move");
         validation.Reason.Should().Be(RejectionReason.None);
+        validation.Explanation.Should().BeEmpty();
     }
 
     [Fact]

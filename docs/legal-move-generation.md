@@ -34,7 +34,7 @@ public sealed record MoveValidation(
     bool IsLegal, 
     IGameEvent Event, 
     RejectionReason Reason, 
-    string? Explanation);
+    string Explanation);
 ```
 
 ### RejectionReason
@@ -86,7 +86,7 @@ var progress = builder.Compile();
 var generator = progress.GetLegalMoveGenerator();
 
 // Starting position has 20 legal moves
-var legalMoves = generator.GetLegal Moves(progress.State).ToList();
+var legalMoves = generator.GetLegalMoves(progress.State).ToList();
 // 16 pawn moves (8 pawns × 2 moves each) + 4 knight moves (2 knights × 2 moves each)
 
 // Validate a specific move (e2-e4)

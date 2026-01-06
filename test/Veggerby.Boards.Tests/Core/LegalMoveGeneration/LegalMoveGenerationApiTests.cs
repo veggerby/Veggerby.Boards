@@ -54,6 +54,62 @@ public class LegalMoveGenerationApiTests
     }
 
     [Fact]
+    public void GivenChessStartingPosition_WhenGettingLegalMoves_ThenReturnsTwentyMoves()
+    {
+        // arrange
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var generator = progress.GetChessLegalMoveGenerator();
+
+        // act
+        var legalMoves = generator.GetLegalMoves(progress.State).ToList();
+
+        // assert
+        // Starting position: 16 pawn moves (8 pawns × 2 each) + 4 knight moves (2 knights × 2 each)
+        legalMoves.Should().HaveCount(20, "Starting position has exactly 20 legal moves");
+    }
+
+    [Fact]
+    public void GivenChessStartingPosition_WhenGettingLegalMovesForPiece_ThenReturnsOnlyThatPieceMoves()
+    {
+        // arrange
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+        var generator = progress.GetChessLegalMoveGenerator();
+
+        // Get the e2 pawn
+        var e2Pawn = progress.Game.GetPiece(Veggerby.Boards.Chess.Constants.ChessIds.Pieces.WhitePawn5);
+        e2Pawn.Should().NotBeNull();
+
+        // act
+        var legalMovesForPawn = generator.GetLegalMovesFor(e2Pawn!, progress.State).ToList();
+
+        // assert
+        // e2 pawn can move to e3 or e4 in starting position
+        legalMovesForPawn.Should().HaveCount(2, "e2 pawn has 2 legal moves in starting position");
+        legalMovesForPawn.Should().AllBeOfType<MovePieceGameEvent>();
+        legalMovesForPawn.Cast<MovePieceGameEvent>().Should().OnlyContain(m => m.Piece == e2Pawn);
+    }
+
+    [Fact]
+    public void GivenEndedGame_WhenGettingLegalMoves_ThenReturnsEmpty()
+    {
+        // arrange
+        var builder = new ChessGameBuilder();
+        var progress = builder.Compile();
+
+        // Manually end the game by adding GameEndedState
+        var endedState = progress.State.Next([new GameEndedState()]);
+        var generator = progress.GetChessLegalMoveGenerator();
+
+        // act
+        var legalMoves = generator.GetLegalMoves(endedState).ToList();
+
+        // assert
+        legalMoves.Should().BeEmpty("Game has ended, no legal moves should exist");
+    }
+
+    [Fact]
     public void GivenChessMove_WhenValidatingLegalMove_ThenReturnsLegal()
     {
         // arrange

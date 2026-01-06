@@ -155,14 +155,8 @@ public class DecisionPlanMoveGenerator : ILegalMoveGenerator
         ArgumentNullException.ThrowIfNull(artifact);
         ArgumentNullException.ThrowIfNull(state);
 
-        // Filter legal moves to those involving the specified artifact
-        foreach (var move in GetLegalMoves(state))
-        {
-            if (EventInvolvesArtifact(move, artifact))
-            {
-                yield return move;
-            }
-        }
+        // Filter legal moves to those involving the specified artifact - use explicit Where
+        return GetLegalMoves(state).Where(move => EventInvolvesArtifact(move, artifact));
     }
 
     /// <summary>

@@ -57,14 +57,19 @@ public sealed class ChessLegalMoveGenerator : ILegalMoveGenerator
     {
         ArgumentNullException.ThrowIfNull(state);
 
+        // Check if game has ended
+        if (state.GetStates<GameEndedState>().Any())
+        {
+            yield break;
+        }
+
         // Generate legal moves using the legality filter
         var legalMoves = _legalityFilter.GenerateLegalMoves(state);
 
-        // Convert PseudoMove to IGameEvent
+        // Convert PseudoMove to IGameEvent - iterate explicitly to avoid null issues
         foreach (var move in legalMoves)
         {
             var gameEvent = ConvertToGameEvent(move);
-
             if (gameEvent is not null)
             {
                 yield return gameEvent;
@@ -123,18 +128,15 @@ public sealed class ChessLegalMoveGenerator : ILegalMoveGenerator
         // Generate all legal moves
         var allLegalMoves = _legalityFilter.GenerateLegalMoves(state);
 
-        // Filter to moves involving this piece
-        foreach (var move in allLegalMoves)
-        {
-            if (move.Piece == piece)
-            {
-                var gameEvent = ConvertToGameEvent(move);
+        // Filter to moves involving this piece - use explicit Where and Select
+        var movesForPiece = allLegalMoves
+            .Where(move => move.Piece == piece)
+            .Select(ConvertToGameEvent)
+            .OfType<MovePieceGameEvent>();
 
-                if (gameEvent is not null)
-                {
-                    yield return gameEvent;
-                }
-            }
+        foreach (var gameEvent in movesForPiece)
+        {
+            yield return gameEvent;
         }
     }
 
@@ -143,15 +145,21 @@ public sealed class ChessLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     private MovePieceGameEvent? ConvertToGameEvent(PseudoMove move)
     {
-        // Build the tile path
-        var path = BuildTilePath(move.From, move.To);
-
-        if (path is null)
+        // Use the piece's movement patterns to resolve the path
+        // This handles both direct relations and multi-hop paths (e.g., e2-e4 pawn double advance)
+        
+        foreach (var pattern in move.Piece.Patterns)
         {
-            return null;
+            var visitor = new ResolveTilePathPatternVisitor(_game.Board, move.From, move.To);
+            pattern.Accept(visitor);
+            
+            if (visitor.ResultPath is not null)
+            {
+                return new MovePieceGameEvent(move.Piece, visitor.ResultPath);
+            }
         }
 
-        return new MovePieceGameEvent(move.Piece, path);
+        return null;
     }
 
     /// <summary>
@@ -159,24 +167,7 @@ public sealed class ChessLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     private TilePath? BuildTilePath(Tile from, Tile to)
     {
-        // For chess, we typically use simple two-tile paths (from -> to)
-        // The engine will resolve intermediate tiles via pattern matching
-
-        // Try to find a direct relation
-        var directRelations = _game.Board.TileRelations
-            .Where(r => r.From == from && r.To == to)
-            .ToList();
-
-        if (directRelations.Count > 0)
-        {
-            // Use the first matching relation
-            return new TilePath([directRelations[0]]);
-        }
-
-        // No direct relation found - for chess, moves typically go directly
-        // from one square to another via pattern matching, so if there's no
-        // direct relation, we can't build a simple path
-        // We could implement multi-hop path finding, but for now return null
+        // This method is no longer used - path resolution is done in ConvertToGameEvent
         return null;
     }
 
@@ -185,16 +176,12 @@ public sealed class ChessLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     private static PseudoMove? FindMatchingPseudoMove(IReadOnlyCollection<PseudoMove> pseudoMoves, MovePieceGameEvent moveEvent)
     {
-        foreach (var pseudoMove in pseudoMoves)
-        {
-            if (pseudoMove.Piece == moveEvent.Piece &&
+        // Use explicit Where for clarity
+        return pseudoMoves
+            .Where(pseudoMove => 
+                pseudoMove.Piece == moveEvent.Piece &&
                 pseudoMove.From == moveEvent.From &&
                 pseudoMove.To == moveEvent.To)
-            {
-                return pseudoMove;
-            }
-        }
-
-        return null;
+            .FirstOrDefault();
     }
 }

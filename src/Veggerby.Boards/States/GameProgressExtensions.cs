@@ -152,17 +152,18 @@ public static class GameProgressExtensions
     /// to efficiently evaluate move legality without repeated rule traversal.
     /// </para>
     /// <para>
-    /// For game modules with specialized move generation (e.g., Chess), this method returns
-    /// a module-specific generator that integrates with existing infrastructure.
+    /// This base implementation provides move validation for all games via DecisionPlan integration.
+    /// For optimized move enumeration in specific game modules (e.g., Chess), use the module-specific
+    /// extension methods such as <c>GetChessLegalMoveGenerator()</c>.
     /// </para>
     /// <para>
     /// Example usage:
     /// <code>
     /// var generator = progress.GetLegalMoveGenerator();
-    /// var legalMoves = generator.GetLegalMoves(progress.State);
-    /// foreach (var move in legalMoves)
+    /// var validation = generator.Validate(move, progress.State);
+    /// if (!validation.IsLegal)
     /// {
-    ///     Console.WriteLine($"Legal: {move}");
+    ///     Console.WriteLine($"{validation.Reason}: {validation.Explanation}");
     /// }
     /// </code>
     /// </para>
@@ -171,7 +172,7 @@ public static class GameProgressExtensions
     /// <list type="bullet">
     /// <item><description>First call: O(1) - creates lightweight wrapper around existing plan</description></item>
     /// <item><description>Subsequent calls: reuses same generator instance (stateless)</description></item>
-    /// <item><description>Move enumeration: varies by game complexity (Chess ~1ms, Go ~5ms)</description></item>
+    /// <item><description>Move validation: O(1) via precompiled DecisionPlan (&lt; 1ms typical)</description></item>
     /// </list>
     /// </para>
     /// </remarks>
@@ -179,25 +180,6 @@ public static class GameProgressExtensions
     {
         ArgumentNullException.ThrowIfNull(progress);
 
-        // Check if this is a Chess game by looking for Chess-specific state extras
-        var hasChessExtras = progress.State.ChildStates
-            .Any(s => s.GetType().FullName == "Veggerby.Boards.Chess.ChessStateExtras");
-
-        if (hasChessExtras)
-        {
-            // Use Chess-specific generator
-            var chessGeneratorType = Type.GetType("Veggerby.Boards.Chess.MoveGeneration.ChessLegalMoveGenerator, Veggerby.Boards.Chess");
-            if (chessGeneratorType is not null)
-            {
-                var chessGenerator = Activator.CreateInstance(chessGeneratorType, progress.Engine, progress.State) as ILegalMoveGenerator;
-                if (chessGenerator is not null)
-                {
-                    return chessGenerator;
-                }
-            }
-        }
-
-        // Fallback to base generator
         return new DecisionPlanMoveGenerator(progress.Engine, progress.State);
     }
 }

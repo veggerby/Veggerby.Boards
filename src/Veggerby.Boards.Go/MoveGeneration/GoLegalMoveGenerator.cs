@@ -87,7 +87,15 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
                 {
                     foreach (var tile in _game.Board.Tiles)
                     {
-                        if (state.GetPiecesOnTile(tile).Any())
+                        // Check if tile is occupied (without LINQ)
+                        var isOccupied = false;
+                        foreach (var p in state.GetPiecesOnTile(tile))
+                        {
+                            isOccupied = true;
+                            break;
+                        }
+
+                        if (isOccupied)
                         {
                             continue;
                         }
@@ -121,8 +129,15 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
         // Enumerate all empty tiles as potential placements
         foreach (var tile in _game.Board.Tiles)
         {
-            // Skip occupied tiles
-            if (state.GetPiecesOnTile(tile).Any())
+            // Skip occupied tiles (without LINQ)
+            var isOccupied = false;
+            foreach (var p in state.GetPiecesOnTile(tile))
+            {
+                isOccupied = true;
+                break;
+            }
+
+            if (isOccupied)
             {
                 continue;
             }
@@ -257,8 +272,15 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     private MoveValidation ValidatePlacement(PlaceStoneGameEvent @event, GameState state)
     {
-        // Check if tile is empty
-        if (state.GetPiecesOnTile(@event.Target).Any())
+        // Check if tile is empty (without LINQ)
+        var isOccupied = false;
+        foreach (var p in state.GetPiecesOnTile(@event.Target))
+        {
+            isOccupied = true;
+            break;
+        }
+
+        if (isOccupied)
         {
             return MoveValidation.Illegal(@event, RejectionReason.DestinationOccupied, "Intersection is already occupied");
         }

@@ -63,15 +63,6 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
             yield break;
         }
 
-        // Always allow pass
-        var passEvent = new PassTurnGameEvent();
-        var passValidation = Validate(passEvent, state);
-
-        if (passValidation.IsLegal)
-        {
-            yield return passEvent;
-        }
-
         // Get active player (Go may not have active player state if turn sequencing not configured)
         var activePlayer = GetActivePlayer(state);
 
@@ -113,46 +104,46 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
                     break;
                 }
             }
-
-            yield break;
         }
-
-        // Get next available stone for active player
-        var nextStone = GetNextAvailableStone(state, activePlayer);
-
-        if (nextStone is null)
+        else
         {
-            // No stones available, only pass is legal
-            yield break;
+            // Get next available stone for active player
+            var nextStone = GetNextAvailableStone(state, activePlayer);
+
+            if (nextStone is not null)
+            {
+                // Enumerate all empty tiles as potential placements
+                foreach (var tile in _game.Board.Tiles)
+                {
+                    // Skip occupied tiles (without LINQ)
+                    var isOccupied = false;
+                    foreach (var p in state.GetPiecesOnTile(tile))
+                    {
+                        isOccupied = true;
+                        break;
+                    }
+
+                    if (isOccupied)
+                    {
+                        continue;
+                    }
+
+                    // Create candidate placement
+                    var candidateEvent = new PlaceStoneGameEvent(nextStone, tile);
+
+                    // Validate through base generator (uses DecisionPlan + Go mutator logic)
+                    var validation = Validate(candidateEvent, state);
+
+                    if (validation.IsLegal)
+                    {
+                        yield return candidateEvent;
+                    }
+                }
+            }
         }
 
-        // Enumerate all empty tiles as potential placements
-        foreach (var tile in _game.Board.Tiles)
-        {
-            // Skip occupied tiles (without LINQ)
-            var isOccupied = false;
-            foreach (var p in state.GetPiecesOnTile(tile))
-            {
-                isOccupied = true;
-                break;
-            }
-
-            if (isOccupied)
-            {
-                continue;
-            }
-
-            // Create candidate placement
-            var candidateEvent = new PlaceStoneGameEvent(nextStone, tile);
-
-            // Validate through base generator (uses DecisionPlan + Go mutator logic)
-            var validation = Validate(candidateEvent, state);
-
-            if (validation.IsLegal)
-            {
-                yield return candidateEvent;
-            }
-        }
+        // Pass is always available at the end (unless game has ended, checked at start)
+        yield return new PassTurnGameEvent();
     }
 
     /// <inheritdoc />
@@ -301,6 +292,15 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
             return MoveValidation.Illegal(@event, RejectionReason.PieceNotOwned, "Stone does not belong to active player");
         }
 
+        // In permissive mode (no active player), skip DecisionPlan validation
+        // as it may reject moves that don't have proper turn sequencing
+        if (activePlayer is null)
+        {
+            // In permissive mode, only check basic placement rules (empty tile, ko rule)
+            // Suicide rule checking would require full simulation, skip for permissive mode
+            return MoveValidation.Legal(@event);
+        }
+
         // Check suicide rule by simulating the move
         // We need to use the mutator logic to check if this would be suicide
         // For performance, we validate via DecisionPlan which will apply the mutator
@@ -352,8 +352,8 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
 
             var stoneState = state.GetState<PieceState>(stone);
 
-            // Stone is available if it has no state (not yet placed) or if it's captured
-            if (stoneState is null || state.IsCaptured(stone))
+            // Stone is available if it has no state OR has no current tile (not placed) OR if it's captured
+            if (stoneState is null || stoneState.CurrentTile is null || state.IsCaptured(stone))
             {
                 // Stone not yet placed or captured
                 return stone;

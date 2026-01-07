@@ -20,6 +20,12 @@ public class GoLegalMoveGenerationTests
         // arrange
         var builder = new GoGameBuilder(9); // 9x9 for faster tests
         var progress = builder.Compile();
+
+        // Set active player (Go may not have turn sequencing by default)
+        var blackPlayer = progress.Game.GetPlayer("black");
+        var stateWithActivePlayer = progress.State.Next([new ActivePlayerState(blackPlayer!, true)]);
+        progress = new GameProgress(progress.Engine, stateWithActivePlayer, progress.Events);
+
         var generator = progress.GetGoLegalMoveGenerator();
 
         // act

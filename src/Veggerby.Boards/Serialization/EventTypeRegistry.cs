@@ -113,7 +113,7 @@ public class EventTypeRegistry
                         ?? throw new ReplayDeserializationException($"Tile '{tileIds[i + 1]}' not found");
                 }
 
-                var relation = game.Board.TileRelations.Where(r => r.From.Equals(fromTile) && r.To.Equals(toTile)).FirstOrDefault()
+                var relation = game.Board.TileRelations.FirstOrDefault(r => r.From.Equals(fromTile) && r.To.Equals(toTile))
                     ?? throw new ReplayDeserializationException($"No relation found from '{tileIds[i]}' to '{tileIds[i + 1]}'");
 
                 relations.Add(relation);

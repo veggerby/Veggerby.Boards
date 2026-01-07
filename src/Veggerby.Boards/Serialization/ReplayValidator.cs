@@ -29,12 +29,12 @@ public class ReplayValidator
     /// Validates that a replay can be reconstructed and matches expected hashes.
     /// </summary>
     /// <param name="envelope">The replay envelope to validate.</param>
-    /// <param name="initialProgress">The initial GameProgress with engine for replay.</param>
+    /// <param name="gameProgressWithEngine">The GameProgress with engine context for replay. Typically created from the same GameBuilder.</param>
     /// <returns>Validation result with hash chain verification.</returns>
-    public ReplayValidationResult ValidateReplay(ReplayEnvelope envelope, GameProgress initialProgress)
+    public ReplayValidationResult ValidateReplay(ReplayEnvelope envelope, GameProgress gameProgressWithEngine)
     {
         ArgumentNullException.ThrowIfNull(envelope);
-        ArgumentNullException.ThrowIfNull(initialProgress);
+        ArgumentNullException.ThrowIfNull(gameProgressWithEngine);
 
         var errors = new List<string>();
         var warnings = new List<string>();
@@ -44,8 +44,8 @@ public class ReplayValidator
         if (!string.IsNullOrEmpty(envelope.InitialState.Hash))
         {
             var expectedHash = envelope.InitialState.Hash;
-            var actualHash = initialProgress.State.Hash.HasValue
-                ? initialProgress.State.Hash.Value.ToString("X16")
+            var actualHash = gameProgressWithEngine.State.Hash.HasValue
+                ? gameProgressWithEngine.State.Hash.Value.ToString("X16")
                 : string.Empty;
 
             if (actualHash != expectedHash)
@@ -61,7 +61,7 @@ public class ReplayValidator
         }
 
         // Replay events and verify hashes
-        var progress = initialProgress;
+        var progress = gameProgressWithEngine;
         for (int i = 0; i < envelope.Events.Count; i++)
         {
             var eventRecord = envelope.Events[i];

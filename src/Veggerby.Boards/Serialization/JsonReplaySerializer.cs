@@ -123,8 +123,9 @@ public class JsonReplaySerializer : IGameReplaySerializer
         // 2. A way to create a GameEngine from just the Game artifact
 
         throw new NotImplementedException(
-            "Full GameProgress reconstruction requires the original GameEngine with rules and phases. " +
-            "Consider using ReconstructState() to get just the GameState, or provide a GameEngine instance.");
+            "Full GameProgress reconstruction not yet supported. " +
+            "Use ReconstructState() for state-only deserialization, " +
+            "or ReplayValidator.ValidateReplay() with an existing GameProgress instance that provides the required engine context.");
     }
 
     /// <summary>
@@ -375,6 +376,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
     private IArtifactState? DeserializeArtifactState(string stateType, JsonElement stateData, Artifact artifact)
     {
         // Handle generic types (e.g., "DiceState`1" -> "DiceState")
+        // TODO: Use reflection-based type resolution or dictionary mapping for better maintainability
         var baseTypeName = stateType.Contains('`') ? stateType.Substring(0, stateType.IndexOf('`')) : stateType;
 
         switch (baseTypeName)

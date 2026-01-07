@@ -102,7 +102,7 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
                     }
 
                     // Only enumerate moves for first player with available stones
-                    yield break;
+                    break;
                 }
             }
 
@@ -184,14 +184,51 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
         // Check if this piece is the next available stone for active player
         var activePlayer = GetActivePlayer(state);
 
-        if (activePlayer is null || piece.Owner != activePlayer)
+        // In permissive mode (no active player), allow any player's stone
+        if (activePlayer is null)
+        {
+            // Try to find if this piece belongs to any player
+            if (piece.Owner is null)
+            {
+                yield break;
+            }
+
+            var nextStone = GetNextAvailableStone(state, piece.Owner);
+
+            if (nextStone != piece)
+            {
+                // Not the next stone to be placed
+                yield break;
+            }
+
+            // Return all legal placements for this stone
+            foreach (var tile in _game.Board.Tiles)
+            {
+                if (state.GetPiecesOnTile(tile).Any())
+                {
+                    continue;
+                }
+
+                var candidateEvent = new PlaceStoneGameEvent(piece, tile);
+                var validation = Validate(candidateEvent, state);
+
+                if (validation.IsLegal)
+                {
+                    yield return candidateEvent;
+                }
+            }
+
+            yield break;
+        }
+
+        if (piece.Owner != activePlayer)
         {
             yield break;
         }
 
-        var nextStone = GetNextAvailableStone(state, activePlayer);
+        var nextStoneForActive = GetNextAvailableStone(state, activePlayer);
 
-        if (nextStone != piece)
+        if (nextStoneForActive != piece)
         {
             // Not the next stone to be placed
             yield break;

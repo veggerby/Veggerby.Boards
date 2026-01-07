@@ -181,17 +181,17 @@ public static class MoveValidationDiagnostics
             parameters.Add(("occupant", context.OccupyingPiece.Id));
         }
 
-        if (context.Phase is not null)
+        if (!string.IsNullOrEmpty(context.Phase))
         {
             parameters.Add(("phase", context.Phase));
         }
 
-        if (context.Rule is not null)
+        if (!string.IsNullOrEmpty(context.Rule))
         {
             parameters.Add(("rule", context.Rule));
         }
 
-        if (context.Resource is not null)
+        if (!string.IsNullOrEmpty(context.Resource))
         {
             parameters.Add(("resource", context.Resource));
 
@@ -235,13 +235,13 @@ public sealed record ValidationContext
     public Piece? OccupyingPiece { get; init; }
 
     /// <summary>Gets the current game phase (for WrongPhase).</summary>
-    public string? Phase { get; init; }
+    public string Phase { get; init; } = string.Empty;
 
     /// <summary>Gets the violated rule name (for RuleViolation).</summary>
-    public string? Rule { get; init; }
+    public string Rule { get; init; } = string.Empty;
 
     /// <summary>Gets the insufficient resource type (for InsufficientResources).</summary>
-    public string? Resource { get; init; }
+    public string Resource { get; init; } = string.Empty;
 
     /// <summary>Gets the required amount of the resource (for InsufficientResources).</summary>
     public int? RequiredAmount { get; init; }

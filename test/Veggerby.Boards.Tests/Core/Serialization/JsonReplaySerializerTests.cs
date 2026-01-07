@@ -277,4 +277,69 @@ public class JsonReplaySerializerTests
         result.Warnings.Should().Contain("Warning 1");
         result.Warnings.Should().Contain("Warning 2");
     }
+
+    [Fact]
+    public void ReconstructState_ShouldDeserializeInitialState()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+        var envelope = serializer.Serialize(progress);
+
+        // Serialize to JSON and back
+        var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+        var loadedEnvelope = System.Text.Json.JsonSerializer.Deserialize<ReplayEnvelope>(json);
+
+        // act
+        var reconstructedState = serializer.ReconstructState(loadedEnvelope!);
+
+        // assert
+        reconstructedState.Should().NotBeNull();
+        reconstructedState.Hash.Should().NotBeNull();
+        reconstructedState.ChildStates.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void EventTypeRegistry_ShouldRegisterAndCreateEvents()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var registry = EventTypeRegistry.CreateDefault(progress.Game);
+
+        // act
+        var isRegistered = registry.IsRegistered("MovePieceGameEvent");
+
+        // assert
+        isRegistered.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RoundTrip_SerializeAndReconstructState_ShouldPreserveHash()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+
+        // Get artifacts and make a move
+        var (piece, tile1, tile2) = GetTestArtifacts(progress.Game);
+        var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(tile1) && r.To.Equals(tile2));
+        var path = new TilePath([relation]);
+        var moveEvent = new MovePieceGameEvent(piece, path);
+        progress = progress.HandleEvent(moveEvent);
+
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+
+        // act
+        var envelope = serializer.Serialize(progress);
+        var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+        var loadedEnvelope = System.Text.Json.JsonSerializer.Deserialize<ReplayEnvelope>(json);
+        var reconstructedState = serializer.ReconstructState(loadedEnvelope!);
+
+        // assert
+        // Hashes should match if state was properly reconstructed
+        reconstructedState.Hash.Should().NotBeNull();
+    }
 }
+

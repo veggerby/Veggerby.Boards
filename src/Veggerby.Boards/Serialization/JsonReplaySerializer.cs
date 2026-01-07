@@ -21,18 +21,21 @@ public class JsonReplaySerializer : IGameReplaySerializer
 {
     private readonly Game _game;
     private readonly string _gameType;
+    private readonly EventTypeRegistry _eventRegistry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReplaySerializer"/> class.
     /// </summary>
     /// <param name="game">The game definition (required for artifact and event type resolution during deserialization).</param>
     /// <param name="gameType">The game type identifier (e.g., "chess", "go"). If null, uses "default".</param>
-    public JsonReplaySerializer(Game game, string? gameType = null)
+    /// <param name="eventRegistry">Optional event type registry. If null, uses default registry.</param>
+    public JsonReplaySerializer(Game game, string? gameType = null, EventTypeRegistry? eventRegistry = null)
     {
         ArgumentNullException.ThrowIfNull(game);
 
         _game = game;
         _gameType = gameType ?? "default";
+        _eventRegistry = eventRegistry ?? EventTypeRegistry.CreateDefault(game);
     }
 
     /// <inheritdoc />
@@ -93,7 +96,49 @@ public class JsonReplaySerializer : IGameReplaySerializer
     {
         ArgumentNullException.ThrowIfNull(envelope);
 
-        throw new NotImplementedException("Deserialization not yet implemented - requires artifact reconstruction and event factory");
+        // Validate envelope first
+        var validation = Validate(envelope);
+        if (!validation.IsValid)
+        {
+            throw new ReplayDeserializationException($"Invalid envelope: {string.Join(", ", validation.Errors)}");
+        }
+
+        // Note: We cannot fully reconstruct GameProgress without the original GameBuilder/GameEngine
+        // This is a limitation of Phase 2 - we can deserialize the state and events,
+        // but cannot replay them without the full rule engine.
+        // For now, we'll deserialize just the state and event list.
+
+        // Deserialize initial state
+        var initialState = DeserializeState(envelope.InitialState);
+
+        // Deserialize events into a list (but we can't replay them without the engine)
+        var events = new List<IGameEvent>();
+        foreach (var eventRecord in envelope.Events)
+        {
+            events.Add(DeserializeEvent(eventRecord));
+        }
+
+        // TODO: To fully implement replay, we need either:
+        // 1. The original GameBuilder to be serialized/reconstructed, or
+        // 2. A way to create a GameEngine from just the Game artifact
+
+        throw new NotImplementedException(
+            "Full GameProgress reconstruction requires the original GameEngine with rules and phases. " +
+            "Consider using ReconstructState() to get just the GameState, or provide a GameEngine instance.");
+    }
+
+    /// <summary>
+    /// Reconstructs just the GameState from a replay envelope without full GameProgress/Engine context.
+    /// </summary>
+    /// <param name="envelope">The replay envelope.</param>
+    /// <returns>The deserialized GameState.</returns>
+    public GameState ReconstructState(ReplayEnvelope envelope)
+    {
+        ArgumentNullException.ThrowIfNull(envelope);
+
+        // Use finalState if available, otherwise initialState
+        var snapshot = envelope.FinalState ?? envelope.InitialState;
+        return DeserializeState(snapshot);
     }
 
     /// <inheritdoc />
@@ -233,6 +278,20 @@ public class JsonReplaySerializer : IGameReplaySerializer
                 // CapturedPieceState only has the artifact, no additional properties
                 break;
 
+            case NullDiceState:
+                // No additional properties
+                break;
+
+            case DiceState<int> diceStateInt:
+                data["Value"] = diceStateInt.CurrentValue;
+                break;
+
+            case TurnState turnState:
+                data["Number"] = turnState.TurnNumber;
+                data["Segment"] = turnState.Segment.ToString();
+                data["PassStreak"] = turnState.PassStreak;
+                break;
+
             case ExtrasState extrasState:
                 // Serialize the wrapped value using JSON serialization
                 var extrasJson = JsonSerializer.Serialize(extrasState.Value);
@@ -269,5 +328,121 @@ public class JsonReplaySerializer : IGameReplaySerializer
         }
 
         return data;
+    }
+
+    private GameState DeserializeState(GameStateSnapshot snapshot)
+    {
+        var states = new List<IArtifactState>();
+
+        // Deserialize each artifact state
+        foreach (var kvp in snapshot.Artifacts)
+        {
+            var artifactId = kvp.Key;
+            var stateDataObj = kvp.Value;
+
+            // Handle JsonElement from deserialized JSON
+            JsonElement stateData;
+            if (stateDataObj is JsonElement je)
+            {
+                stateData = je;
+            }
+            else
+            {
+                // If it's already a dictionary, we need to convert it
+                throw new ReplayDeserializationException($"Unexpected state data type for artifact '{artifactId}'");
+            }
+
+            var stateType = stateData.GetProperty("Type").GetString() ?? throw new ReplayDeserializationException("Missing state Type");
+            var artifact = _game.GetArtifactById(artifactId) ?? throw new ReplayDeserializationException($"Artifact '{artifactId}' not found");
+
+            var state = DeserializeArtifactState(stateType, stateData, artifact);
+            if (state != null)
+            {
+                states.Add(state);
+            }
+        }
+
+        // Reconstruct random source if present
+        IRandomSource? random = null;
+        if (snapshot.Random != null)
+        {
+            random = XorShiftRandomSource.Create(snapshot.Random.Seed);
+        }
+
+        return GameState.New(states, random);
+    }
+
+    private IArtifactState? DeserializeArtifactState(string stateType, JsonElement stateData, Artifact artifact)
+    {
+        // Handle generic types (e.g., "DiceState`1" -> "DiceState")
+        var baseTypeName = stateType.Contains('`') ? stateType.Substring(0, stateType.IndexOf('`')) : stateType;
+
+        switch (baseTypeName)
+        {
+            case "PieceState":
+                var currentTileId = stateData.GetProperty("CurrentTile").GetString() ?? throw new ReplayDeserializationException("Missing CurrentTile");
+
+                // Try to find tile in game artifacts first, then in board tiles
+                var tile = _game.GetArtifactById(currentTileId) as Tile;
+                if (tile == null)
+                {
+                    tile = _game.Board.Tiles.FirstOrDefault(t => t.Id == currentTileId)
+                        ?? throw new ReplayDeserializationException($"Tile '{currentTileId}' not found");
+                }
+
+                return new PieceState((Piece)artifact, tile);
+
+            case "ActivePlayerState":
+                // ActivePlayerState has IsActive property - not in current serialization, assume active
+                return new ActivePlayerState((Player)artifact, true);
+
+            case "CapturedPieceState":
+                return new CapturedPieceState((Piece)artifact);
+
+            case "NullDiceState":
+                return new NullDiceState((Dice)artifact);
+
+            case "DiceState":
+                // DiceState<T> - we need to deserialize the value
+                // For now, we'll create a DiceState<int> assuming that's the most common
+                if (stateData.TryGetProperty("Value", out var valueElement))
+                {
+                    var value = valueElement.GetInt32();
+                    return new DiceState<int>((Dice)artifact, value);
+                }
+
+                // If no value property, return NullDiceState
+                return new NullDiceState((Dice)artifact);
+
+            case "TurnState":
+                // Deserialize turn state
+                var turnNumber = stateData.GetProperty("Number").GetInt32();
+                var segmentStr = stateData.GetProperty("Segment").GetString() ?? "Main";
+                var segment = Enum.Parse<TurnSegment>(segmentStr);
+                return new TurnState((TurnArtifact)artifact, turnNumber, segment);
+
+            case "ExtrasState":
+                // ExtrasState requires deserialization of the wrapped value
+                // For now, skip or handle specific known types
+                if (stateData.TryGetProperty("ExtrasJson", out var extrasJsonElement))
+                {
+                    var extrasJson = extrasJsonElement.GetString();
+                    if (!string.IsNullOrEmpty(extrasJson))
+                    {
+                        // TODO: Deserialize based on ExtrasTypeName
+                        // For now, skip ExtrasState deserialization
+                    }
+                }
+
+                return null;
+
+            default:
+                throw new ReplayDeserializationException($"Unknown state type '{stateType}'");
+        }
+    }
+
+    private IGameEvent DeserializeEvent(EventRecord eventRecord)
+    {
+        return _eventRegistry.Create(eventRecord.Type, eventRecord.Data);
     }
 }

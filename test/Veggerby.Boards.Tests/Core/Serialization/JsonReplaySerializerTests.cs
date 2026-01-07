@@ -341,5 +341,41 @@ public class JsonReplaySerializerTests
         // Hashes should match if state was properly reconstructed
         reconstructedState.Hash.Should().NotBeNull();
     }
+
+    [Fact]
+    public void ReplayValidator_ShouldValidateReplay()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+
+        // Make a move
+        var (piece, tile1, tile2) = GetTestArtifacts(progress.Game);
+        var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(tile1) && r.To.Equals(tile2));
+        var path = new TilePath([relation]);
+        var moveEvent = new MovePieceGameEvent(piece, path);
+        progress = progress.HandleEvent(moveEvent);
+
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+        var envelope = serializer.Serialize(progress);
+
+        // Serialize to JSON and back
+        var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+        var loadedEnvelope = System.Text.Json.JsonSerializer.Deserialize<ReplayEnvelope>(json);
+
+        // Create fresh progress for replay
+        var freshProgress = builder.Compile();
+        var validator = new ReplayValidator(serializer);
+
+        // act
+        var result = validator.ValidateReplay(loadedEnvelope!, freshProgress);
+
+        // assert
+        result.Should().NotBeNull();
+        result.IsValid.Should().BeTrue();
+        result.Errors.Should().BeEmpty();
+        result.HashMismatches.Should().BeEmpty();
+        result.FinalProgress.Should().NotBeNull();
+    }
 }
 

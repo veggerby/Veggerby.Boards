@@ -441,7 +441,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
         }
     }
 
-    private IGameEvent DeserializeEvent(EventRecord eventRecord)
+    internal IGameEvent DeserializeEvent(EventRecord eventRecord)
     {
         return _eventRegistry.Create(eventRecord.Type, eventRecord.Data);
     }

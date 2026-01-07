@@ -1,6 +1,6 @@
 # Save/Load and Replay Format
 
-**Status:** Phase 1 Complete (Core Infrastructure)  
+**Status:** Phases 1-4 Complete  
 **Version:** 1.0  
 **Last Updated:** 2026-01-07
 
@@ -9,12 +9,12 @@
 The Veggerby.Boards replay format provides a stable, versioned, JSON-based serialization format for `GameState` and event history, enabling:
 
 - **Game Persistence**: Save/load games mid-play
-- **Deterministic Replay**: Reproduce exact game sequences
+- **Deterministic Replay**: Reproduce exact game sequences with hash verification
 - **Game Sharing**: Export/import games for analysis
 - **Bug Reports**: Attach reproducible failing game states
 - **Analysis Tools**: Load historical games for study
 - **Testing**: Generate test cases from real gameplay
-- **Audit Trails**: Tournament game verification
+- **Audit Trails**: Tournament game verification with hash chain validation
 
 ## Format Specification
 
@@ -94,7 +94,7 @@ Replay files use the `.replay.json` extension and are encoded as UTF-8 JSON.
 
 ### IGameReplaySerializer Interface
 
-The primary interface for serialization and validation:
+The primary interface for serialization and deserialization:
 
 ```csharp
 public interface IGameReplaySerializer
@@ -106,6 +106,7 @@ public interface IGameReplaySerializer
 
     /// <summary>
     /// Deserializes a replay envelope back to game progress.
+    /// Note: Requires GameEngine context for full replay.
     /// </summary>
     GameProgress Deserialize(ReplayEnvelope envelope);
 
@@ -134,8 +135,60 @@ if (!validation.IsValid)
     throw new InvalidOperationException($"Invalid replay: {string.Join(", ", validation.Errors)}");
 }
 
-// Deserialize (future implementation)
-// var loadedProgress = serializer.Deserialize(envelope);
+// Reconstruct just the state (without full engine context)
+var state = serializer.ReconstructState(envelope);
+```
+
+### Event Type Registry
+
+Extensible registry for polymorphic event deserialization:
+
+```csharp
+// Create default registry (includes MovePieceGameEvent)
+var registry = EventTypeRegistry.CreateDefault(game);
+
+// Register custom event types
+registry.Register("CustomEvent", data => {
+    // Deserialize custom event from data dictionary
+    return new CustomEvent(/* ... */);
+});
+
+// Check if event type is registered
+if (registry.IsRegistered("MovePieceGameEvent"))
+{
+    var evt = registry.Create("MovePieceGameEvent", eventData);
+}
+```
+
+### Replay Validator
+
+Validates replay integrity with hash chain verification:
+
+```csharp
+var serializer = new JsonReplaySerializer(progress.Game, "chess");
+var validator = new ReplayValidator(serializer);
+
+// Validate replay with hash chain verification
+var result = validator.ValidateReplay(envelope, initialProgress);
+
+if (!result.IsValid)
+{
+    foreach (var error in result.Errors)
+    {
+        Console.WriteLine($"Error: {error}");
+    }
+
+    foreach (var mismatch in result.HashMismatches)
+    {
+        Console.WriteLine($"Hash mismatch at event {mismatch.EventIndex}: " +
+            $"expected {mismatch.ExpectedHash}, got {mismatch.ActualHash}");
+    }
+}
+else
+{
+    Console.WriteLine("Replay is valid!");
+    var finalProgress = result.FinalProgress;
+}
 ```
 
 ## Usage Examples
@@ -316,45 +369,74 @@ Future optimizations:
 - Binary format: ~50% reduction + faster parsing
 - Streaming: Constant memory for large replays
 
-## Current Limitations (Phase 1)
+## Current Implementation Status
 
-1. **No Deserialization**: `Deserialize` not yet implemented
-   - Requires artifact reconstruction from IDs
-   - Needs event factory for polymorphic event creation
+### Phase 1: Core Infrastructure ✅
+- ✅ ReplayEnvelope and record types
+- ✅ IGameReplaySerializer interface
+- ✅ JSON serialization
+- ✅ Structural validation
+- ✅ Metadata support
+
+### Phase 2: State Deserialization ✅
+- ✅ GameStateSnapshot deserialization
+- ✅ Artifact state reconstruction (PieceState, DiceState, TurnState, etc.)
+- ✅ Hash computation integration
+- ✅ `ReconstructState()` utility method
+- ⚠️ ExtrasState deserialization deferred (game-specific)
+
+### Phase 3: Event Deserialization ✅
+- ✅ EventTypeRegistry for polymorphic events
+- ✅ MovePieceGameEvent deserialization
+- ✅ Tile path reconstruction from IDs
+- ⚠️ RollDiceGameEvent deferred (generic complexity)
+- ⚠️ Custom event types require manual registration
+
+### Phase 4: Deterministic Replay ✅
+- ✅ ReplayValidator with hash chain verification
+- ✅ Event sequence replay
+- ✅ Hash mismatch detection
+- ✅ Divergence reporting
+- ⚠️ Full `Deserialize()` requires GameEngine context
+
+## Current Limitations (Phase 1-4)
+
+1. **No Full GameProgress Reconstruction**: `Deserialize()` not yet fully implemented
+   - Requires original GameEngine with rules and phases
+   - Use `ReconstructState()` for state-only deserialization
+   - Use `ReplayValidator.ValidateReplay()` with existing GameProgress
 
 2. **Partial Event Support**: Currently handles:
    - ✅ MovePieceGameEvent
-   - ⚠️ RollDiceGameEvent (generic, skipped)
-   - ❌ Other events (type name only)
+   - ⚠️ RollDiceGameEvent (generic, skipped in serialization)
+   - ❌ Other events (type name only, no deserialization)
 
-3. **No Hash Chain Validation**: Future work will verify:
-   - Event result hashes match next state
-   - No state divergence during replay
+3. **ExtrasState Deserialization**: Game-specific state requires custom handling
 
-4. **No Module Integration**: Chess/Go/Backgammon-specific states not yet handled
+4. **DiceState Type Parameter**: Only `DiceState<int>` supported currently
 
-## Future Enhancements
+## Future Enhancements (Beyond Phase 4)
 
-### Phase 2: Complete Deserialization
-- Artifact reconstruction from serialized data
-- Event factory with type registry
-- Full round-trip tests
+### Module-Specific Integration
+- Chess: Serialize chess-specific state (`ChessStateExtras`)
+- Go: Serialize Go-specific state (`GoStateExtras`)
+- Backgammon: Enhanced dice and bar state serialization
 
-### Phase 3: Deterministic Replay Engine
-- Apply events sequentially with validation
-- Hash chain verification
-- Divergence detection and reporting
-
-### Phase 4: External Format Support
+### External Format Support
 - PGN import/export (Chess)
 - SGF import/export (Go)
 - Format conversion utilities
 
-### Phase 5: Advanced Features
-- Compression (gzip)
-- Binary format (performance)
-- Streaming for large replays (1000+ moves)
-- Digital signatures (tamper-proofing)
+### Performance Optimizations
+- Compression (gzip): ~60-80% size reduction
+- Binary format: ~50% reduction + faster parsing
+- Streaming support for large replays (1000+ moves)
+
+### Advanced Features
+- Digital signatures for tamper-proofing
+- Incremental replay (resume from checkpoint)
+- Replay branching for analysis
+
 
 ## References
 

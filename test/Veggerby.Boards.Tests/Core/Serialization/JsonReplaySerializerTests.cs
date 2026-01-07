@@ -14,6 +14,16 @@ namespace Veggerby.Boards.Tests.Core.Serialization;
 /// </summary>
 public class JsonReplaySerializerTests
 {
+    // Helper method to get test artifacts from TestGameBuilder
+    private static (Piece piece, Tile tile1, Tile tile2) GetTestArtifacts(Game game)
+    {
+        var piece = game.Artifacts.OfType<Piece>().First(p => p.Id == "piece-1");
+        var tile1 = game.Board.Tiles.First(t => t.Id == "tile-1");
+        var tile2 = game.Board.Tiles.First(t => t.Id == "tile-2");
+
+        return (piece, tile1, tile2);
+    }
+
     [Fact]
     public void Serialize_WithEmptyProgress_ShouldProduceValidEnvelope()
     {
@@ -166,10 +176,8 @@ public class JsonReplaySerializerTests
         var builder = new TestGameBuilder();
         var progress = builder.Compile();
 
-        // Get artifacts from the built game
-        var piece = progress.Game.Artifacts.OfType<Piece>().First(p => p.Id == "piece-1");
-        var tile1 = progress.Game.Board.Tiles.First(t => t.Id == "tile-1");
-        var tile2 = progress.Game.Board.Tiles.First(t => t.Id == "tile-2");
+        // Get artifacts from the built game using helper
+        var (piece, tile1, tile2) = GetTestArtifacts(progress.Game);
 
         // Create a move event
         var relation = progress.Game.Board.TileRelations.Single(r => r.From.Equals(tile1) && r.To.Equals(tile2));
@@ -199,10 +207,8 @@ public class JsonReplaySerializerTests
         var builder = new TestGameBuilder();
         var progress = builder.Compile();
 
-        // Get artifacts from the built game
-        var piece = progress.Game.Artifacts.OfType<Piece>().First(p => p.Id == "piece-1");
-        var tile1 = progress.Game.Board.Tiles.First(t => t.Id == "tile-1");
-        var tile2 = progress.Game.Board.Tiles.First(t => t.Id == "tile-2");
+        // Get artifacts from the built game using helper
+        var (piece, tile1, tile2) = GetTestArtifacts(progress.Game);
 
         // Create two move events
         var relation1 = progress.Game.Board.TileRelations.Single(r => r.From.Equals(tile1) && r.To.Equals(tile2));

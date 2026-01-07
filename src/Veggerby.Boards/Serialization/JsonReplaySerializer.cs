@@ -53,7 +53,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
                 Index = index++,
                 Type = evt.GetType().Name,
                 Data = eventData,
-                Timestamp = DateTime.UtcNow, // Note: original timestamp not captured in current event model
+                Timestamp = DateTime.UtcNow, // TODO: Capture original event timestamp when event model is enhanced
                 ResultHash = string.Empty, // Will be computed during replay validation
                 ResultHash128 = null
             });
@@ -183,7 +183,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
             var turnData = turnStates[0];
             turnStateData = new TurnStateData
             {
-                Player = string.Empty, // TurnState doesn't track player directly
+                Player = string.Empty, // TODO: TurnState doesn't track active player directly - derive from ActivePlayerState
                 Number = turnData.TurnNumber,
                 Segment = turnData.Segment.ToString()
             };

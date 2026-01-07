@@ -339,10 +339,12 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
     /// </summary>
     /// <remarks>
     /// Returns the first stone owned by the player that is not currently placed on the board.
+    /// In Go, stones in the starting position don't have PieceState, so we check for null state
+    /// or state with null CurrentTile.
     /// </remarks>
     private Piece? GetNextAvailableStone(GameState state, Player player)
     {
-        // Get all stones owned by player
+        // Enumerate all pieces owned by the player
         foreach (var stone in _game.GetArtifacts<Piece>())
         {
             if (stone.Owner != player)
@@ -350,12 +352,28 @@ public sealed class GoLegalMoveGenerator : ILegalMoveGenerator
                 continue;
             }
 
-            var stoneState = state.GetState<PieceState>(stone);
-
-            // Stone is available if it has no state OR has no current tile (not placed) OR if it's captured
-            if (stoneState is null || stoneState.CurrentTile is null || state.IsCaptured(stone))
+            // Check if stone is already placed on the board by checking if it exists in any tile's pieces
+            var isPlaced = false;
+            foreach (var tile in _game.Board.Tiles)
             {
-                // Stone not yet placed or captured
+                foreach (var piece in state.GetPiecesOnTile(tile))
+                {
+                    if (piece.Id == stone.Id) // Use ID comparison instead of reference
+                    {
+                        isPlaced = true;
+                        break;
+                    }
+                }
+
+                if (isPlaced)
+                {
+                    break;
+                }
+            }
+
+            // If not placed and not captured, this stone is available
+            if (!isPlaced && !state.IsCaptured(stone))
+            {
                 return stone;
             }
         }

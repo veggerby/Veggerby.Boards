@@ -65,13 +65,13 @@ public class BackgammonLegalMoveGenerationTests
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
 
-        // Roll dice to get some values
-        progress = progress.RollDice("dice-1", "dice-2");
-
-        // Set active player manually AFTER rolling dice (Backgammon normally determines this through initial roll)
+        // Set active player FIRST (before rolling dice)
         var whitePlayer = progress.Game.GetPlayer("white");
         var stateWithActivePlayer = progress.State.Next([new ActivePlayerState(whitePlayer!, true)]);
         progress = new GameProgress(progress.Engine, stateWithActivePlayer, progress.Events);
+
+        // Roll dice to get some values (after active player is set)
+        progress = progress.RollDice("dice-1", "dice-2");
 
         var generator = progress.GetBackgammonLegalMoveGenerator();
 

@@ -65,21 +65,24 @@ public class BackgammonLegalMoveGenerationTests
         var builder = new BackgammonGameBuilder();
         var progress = builder.Compile();
 
-        // Set active player
+        // Set active player first
         var whitePlayer = progress.Game.GetPlayer("white");
+        var stateWithActivePlayer = progress.State.Next([new ActivePlayerState(whitePlayer!, true)]);
+        progress = new GameProgress(progress.Engine, stateWithActivePlayer, progress.Events);
 
-        // Roll dice with actual values (3 and 5 for example)
+        // Create a roll dice event with actual dice values
         var dice1 = progress.Game.GetArtifact<Dice>("dice-1");
         var dice2 = progress.Game.GetArtifact<Dice>("dice-2");
         dice1.Should().NotBeNull();
         dice2.Should().NotBeNull();
 
-        var stateWithDiceAndPlayer = progress.State.Next([
-            new ActivePlayerState(whitePlayer!, true),
+        var rollEvent = new RollDiceGameEvent<int>([
             new DiceState<int>(dice1!, 3),
             new DiceState<int>(dice2!, 5)
         ]);
-        progress = new GameProgress(progress.Engine, stateWithDiceAndPlayer, progress.Events);
+
+        // Apply the roll event through HandleEvent to ensure proper state mutation
+        progress = progress.HandleEvent(rollEvent);
 
         var generator = progress.GetBackgammonLegalMoveGenerator();
 

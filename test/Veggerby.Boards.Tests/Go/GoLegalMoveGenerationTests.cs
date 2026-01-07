@@ -21,44 +21,27 @@ public class GoLegalMoveGenerationTests
         var builder = new GoGameBuilder(9); // 9x9 for faster tests
         var progress = builder.Compile();
 
-        // Do NOT set active player - Go works in permissive mode without turn sequencing
-        // This allows the generator to enumerate moves for the first player with available stones
-
+        // Get the first black stone
+        var blackStone = progress.Game.GetPiece("black-stone-1");
+        blackStone.Should().NotBeNull();
+        
         var generator = progress.GetGoLegalMoveGenerator();
 
-        // act
-        var legalMoves = generator.GetLegalMoves(progress.State).ToList();
+        // act - Get legal moves for the first black stone
+        var stoneMoves = generator.GetLegalMovesFor(blackStone!, progress.State).ToList();
 
         // assert
-        // Starting position: 81 empty intersections + 1 pass = 82 legal moves
-        //legalMoves.Should().HaveCount(82, "9x9 Go board has 81 empty intersections plus pass");
-
-        // DEBUG: Output what we actually got
-        var placementMoves = legalMoves.OfType<PlaceStoneGameEvent>().ToList();
-        var passMoves = legalMoves.OfType<PassTurnGameEvent>().ToList();
+        // Starting position: should have placements for all 81 empty intersections
+        stoneMoves.Should().HaveCount(81, "9x9 Go board has 81 empty intersections for placement");
+        stoneMoves.Should().AllBeOfType<PlaceStoneGameEvent>("All moves should be stone placements");
         
-        // Try alternate approach: enumerate for first player
-        var blackPlayer = progress.Game.GetPlayer("black");
-        var blackMoves = generator.GetLegalMovesFor(blackPlayer!, progress.State).ToList();
+        // Verify pass move is also available via GetLegalMoves
+        var allMoves = generator.GetLegalMoves(progress.State).ToList();
+        var passMoves = allMoves.OfType<PassTurnGameEvent>().ToList();
+        passMoves.Should().HaveCount(1, "Pass move should always be available");
         
-        // The test expects placement moves but we're getting none.
-        // Let's see if GetLegalMovesFor works instead
-        if (placementMoves.Count == 0 && blackMoves.Count > 0)
-        {
-            // GetLegalMovesFor works but GetLegalMoves doesn't
-            // This suggests an issue with the permissive mode iteration
-            legalMoves.Should().HaveCount(82, "Expected 81 placements + 1 pass");
-        }
-        else
-        {
-            legalMoves.Should().HaveCount(82, "9x9 Go board has 81 empty intersections plus pass");
-        }
-
-        // Should have exactly one pass move
-        passMoves.Should().HaveCount(1, "Should have exactly one pass move");
-
-        // Remaining should be stone placements
-        placementMoves.Should().HaveCount(81, "Should have placement moves for all empty intersections");
+        // GetLegalMoves should return placement moves + pass move
+        allMoves.Should().HaveCount(82, "Should have 81 placement moves + 1 pass move");
     }
 
     [Fact]

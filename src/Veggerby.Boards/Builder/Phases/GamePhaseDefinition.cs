@@ -19,6 +19,9 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
     private readonly IList<GameEventPreProcessorDefinition> _preProcessorDefinitions = [];
     private readonly string _label = label;
     private string? _exclusivityGroup;
+    private RulePriority _priority = RulePriority.Normal;
+    private string? _strategyIdentifier;
+    private ConflictResolutionStrategy _conflictResolution = ConflictResolutionStrategy.FirstWins;
     private GameStateConditionFactory? _endGameConditionFactory;
     private Func<Game, IStateMutator<IGameEvent>>? _endGameMutatorFactory;
 
@@ -42,6 +45,54 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
     IGamePhaseDefinition IGamePhaseDefinition.Exclusive(string group)
     {
         return Exclusive(group);
+    }
+
+    IGamePhaseDefinition IGamePhaseDefinition.WithPriority(RulePriority priority)
+    {
+        return WithPriority(priority);
+    }
+
+    IGamePhaseDefinition IGamePhaseDefinition.WithStrategy(string identifier)
+    {
+        return WithStrategy(identifier);
+    }
+
+    IGamePhaseDefinition IGamePhaseDefinition.WithConflictResolution(ConflictResolutionStrategy strategy)
+    {
+        return WithConflictResolution(strategy);
+    }
+
+    /// <summary>
+    /// Sets the priority level for this phase's rule.
+    /// </summary>
+    /// <param name="priority">Priority level.</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    public GamePhaseDefinition WithPriority(RulePriority priority)
+    {
+        _priority = priority;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets an optional strategy identifier for grouping related rules.
+    /// </summary>
+    /// <param name="identifier">Strategy identifier (e.g., "castling", "en-passant").</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    public GamePhaseDefinition WithStrategy(string identifier)
+    {
+        _strategyIdentifier = identifier;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the conflict resolution strategy for this phase.
+    /// </summary>
+    /// <param name="strategy">Conflict resolution strategy.</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    public GamePhaseDefinition WithConflictResolution(ConflictResolutionStrategy strategy)
+    {
+        _conflictResolution = strategy;
+        return this;
     }
 
     IGamePhaseConditionDefinition IGamePhaseDefinition.If(GameStateConditionFactory factory)
@@ -106,6 +157,6 @@ internal class GamePhaseDefinition(GameBuilder builder, string label) : Definiti
         var endGameCondition = _endGameConditionFactory?.Invoke(game);
         var endGameMutator = _endGameMutatorFactory?.Invoke(game);
 
-        return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors, _exclusivityGroup, endGameCondition, endGameMutator);
+        return GamePhase.New(_number ?? number, _label, condition, rule, parent, preprocessors, _exclusivityGroup, _priority, _strategyIdentifier, _conflictResolution, endGameCondition, endGameMutator);
     }
 }

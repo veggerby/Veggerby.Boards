@@ -109,6 +109,27 @@ public interface IGamePhaseDefinition
     IGamePhaseDefinition Exclusive(string group);
 
     /// <summary>
+    /// Sets the priority level for this phase's rule.
+    /// </summary>
+    /// <param name="priority">Priority level.</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    IGamePhaseDefinition WithPriority(RulePriority priority);
+
+    /// <summary>
+    /// Sets an optional strategy identifier for grouping related rules.
+    /// </summary>
+    /// <param name="identifier">Strategy identifier (e.g., "castling", "en-passant").</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    IGamePhaseDefinition WithStrategy(string identifier);
+
+    /// <summary>
+    /// Sets the conflict resolution strategy for this phase.
+    /// </summary>
+    /// <param name="strategy">Conflict resolution strategy.</param>
+    /// <returns>This phase definition for fluent chaining.</returns>
+    IGamePhaseDefinition WithConflictResolution(ConflictResolutionStrategy strategy);
+
+    /// <summary>
     /// Configures automatic endgame detection for this phase.
     /// When the condition evaluates to valid after an event is processed, the mutator adds terminal states.
     /// </summary>

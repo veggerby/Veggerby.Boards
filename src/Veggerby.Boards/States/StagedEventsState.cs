@@ -164,10 +164,10 @@ public sealed class StagedEventsState : ArtifactState<StagedEventsArtifact>
     }
 
     /// <summary>
-    /// Gets the visibility of staged events (Private by default - only visible to the committing player in player views).
+    /// Gets the visibility of staged events (Hidden by default - not visible to any player during commitment phase).
     /// </summary>
     /// <remarks>
-    /// Committed actions are hidden from other players during the commitment phase. This integrates with
+    /// Committed actions are hidden from all players during the commitment phase. This integrates with
     /// the player view system to prevent information leakage. Observers may see pending counts but not contents.
     /// </remarks>
     public Visibility Visibility => Visibility.Hidden;

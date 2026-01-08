@@ -22,7 +22,7 @@ public class RevealCommitmentsTests
     private sealed record IncrementCounterEvent(Player Player) : IGameEvent;
 
     /// <summary>
-    /// Simple test state to track event applications.
+    /// Simple test state to track event applications (counter).
     /// </summary>
     private sealed class CounterState : IArtifactState
     {

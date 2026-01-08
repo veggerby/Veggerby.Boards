@@ -106,91 +106,56 @@ public partial class GameProgress
         foreach (var evt in preProcessed)
         {
             var handled = false;
-            // Determine conflict resolution strategy (use first entry's strategy, or default to FirstWins if no entries)
-            var strategy = Engine.DecisionPlan.Entries.Count > 0
-                ? Engine.DecisionPlan.Entries[0].ConflictResolution
-                : ConflictResolutionStrategy.FirstWins;
-
-            // Optimize for FirstWins (default, backward compatible) - use simple linear scan
-            if (strategy == ConflictResolutionStrategy.FirstWins)
+            
+            // Evaluate rules and collect matches
+            // For FirstWins optimization, we can stop at the first match
+            // For other strategies, we need all candidates
+            var candidates = new List<(int Index, Flows.DecisionPlan.DecisionPlanEntry Entry, ConditionResponse Check)>();
+            ConflictResolutionStrategy? strategy = null;
+            
+            for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
             {
-                for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
+                var entry = Engine.DecisionPlan.Entries[i];
+
+                if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
                 {
-                    var entry = Engine.DecisionPlan.Entries[i];
+                    continue;
+                }
 
-                    if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
+                var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
+                var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
+                progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
+                progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
+
+                if (ruleCheck.Result == ConditionResult.Valid)
+                {
+                    candidates.Add((i, entry, ruleCheck));
+                    
+                    // Determine strategy from first matching candidate
+                    if (strategy == null)
                     {
-                        continue;
-                    }
-
-                    var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                    var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
-                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
-
-                    if (ruleCheck.Result == ConditionResult.Valid)
-                    {
-                        var newState = entry.Rule.HandleEvent(progress.Engine, progress.State, evt);
-                        progress.Engine.Capabilities?.AccelerationContext?.OnStateTransition(progress.State, newState, evt);
-
-                        if (newState.Hash.HasValue)
+                        strategy = entry.ConflictResolution;
+                        
+                        // Optimization: for FirstWins, we can stop immediately after first match
+                        if (strategy == ConflictResolutionStrategy.FirstWins)
                         {
-                            progress.Engine.Observer.OnStateHashed(newState, newState.Hash.Value);
+                            progress = ApplyRule(progress, evt, entry, i);
+                            handled = true;
+                            break;
                         }
-
-                        progress.Engine.Observer.OnRuleApplied(observedPhase, entry.Rule, evt, progress.State, newState, i);
-
-                        // Apply endgame detection if configured for this phase
-                        if (entry.Phase != null)
-                        {
-                            newState = entry.Phase.CheckAndApplyEndGame(progress.Engine, newState, evt);
-                        }
-
-                        progress = new GameProgress(progress.Engine, newState, progress.Events.Append(evt));
-
-                        handled = true;
-                        break;
                     }
-                    else if (ruleCheck.Result == ConditionResult.Invalid)
-                    {
-                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
-                    }
+                }
+                else if (ruleCheck.Result == ConditionResult.Invalid)
+                {
+                    throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
                 }
             }
-            else
+
+            // Apply non-FirstWins strategies (we have all candidates now)
+            if (!handled && candidates.Count > 0 && strategy != null)
             {
-                // Collect all matching rules for conflict resolution
-                var candidates = new List<(int Index, Flows.DecisionPlan.DecisionPlanEntry Entry, ConditionResponse Check)>();
-                for (var i = 0; i < Engine.DecisionPlan.Entries.Count; i++)
-                {
-                    var entry = Engine.DecisionPlan.Entries[i];
-
-                    if (!entry.ConditionIsAlwaysValid && !entry.Condition.Evaluate(progress.State).Equals(ConditionResponse.Valid))
-                    {
-                        continue;
-                    }
-
-                    var ruleCheck = entry.Rule.Check(progress.Engine, progress.State, evt);
-                    var observedPhase = entry.Phase ?? progress.Engine.GamePhaseRoot;
-                    progress.Engine.Observer.OnPhaseEnter(observedPhase, progress.State);
-                    progress.Engine.Observer.OnRuleEvaluated(observedPhase, entry.Rule, ruleCheck, progress.State, i);
-
-                    if (ruleCheck.Result == ConditionResult.Valid)
-                    {
-                        candidates.Add((i, entry, ruleCheck));
-                    }
-                    else if (ruleCheck.Result == ConditionResult.Invalid)
-                    {
-                        throw new InvalidGameEventException(evt, ruleCheck, progress.Game, progress.Phase ?? progress.Engine.GamePhaseRoot, progress.State);
-                    }
-                }
-
-                // Apply conflict resolution strategy
-                if (candidates.Count > 0)
-                {
-                    handled = true;
-                    progress = ApplyConflictResolution(progress, evt, candidates, strategy);
-                }
+                progress = ApplyConflictResolution(progress, evt, candidates, strategy.Value);
+                handled = true;
             }
 
             if (!handled)
@@ -326,8 +291,14 @@ public partial class GameProgress
                 // Fail-fast if multiple rules match
                 if (candidates.Count > 1)
                 {
-                    var ruleNames = string.Join(", ", candidates.Select(c =>
-                        c.Entry.Phase?.Label ?? c.Entry.Rule.GetType().Name));
+                    // Build rule names string without LINQ (performance-sensitive path)
+                    var ruleNamesList = new List<string>(candidates.Count);
+                    for (var i = 0; i < candidates.Count; i++)
+                    {
+                        ruleNamesList.Add(candidates[i].Entry.Phase?.Label ?? candidates[i].Entry.Rule.GetType().Name);
+                    }
+
+                    var ruleNames = string.Join(", ", ruleNamesList);
                     throw new BoardException(
                         $"Exclusive conflict resolution failed: {candidates.Count} rules matched for event {evt.GetType().Name}. Conflicting rules: {ruleNames}");
                 }

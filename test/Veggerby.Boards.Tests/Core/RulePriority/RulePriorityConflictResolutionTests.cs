@@ -11,7 +11,7 @@ using Veggerby.Boards.Flows.Rules;
 using Veggerby.Boards.States;
 using Veggerby.Boards.States.Conditions;
 
-namespace Veggerby.Boards.Tests.Core.RulePriorityTests;
+namespace Veggerby.Boards.Tests.Core.RulePriority;
 
 /// <summary>
 /// Tests for rule priority and conflict resolution strategies.
@@ -62,16 +62,16 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("A")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.FirstWins);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.FirstWins);
         GamePhase.New(
             2,
             "rule-b",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("B")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.FirstWins);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.FirstWins);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -97,24 +97,24 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("Low")),
             root,
-            priority: RulePriority.Low,
-            conflictResolution: ConflictResolutionStrategy.HighestPriority);
+            priority: global::Veggerby.Boards.RulePriority.Low,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.HighestPriority);
         GamePhase.New(
             2,
             "rule-high",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("High")),
             root,
-            priority: RulePriority.High,
-            conflictResolution: ConflictResolutionStrategy.HighestPriority);
+            priority: global::Veggerby.Boards.RulePriority.High,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.HighestPriority);
         GamePhase.New(
             3,
             "rule-normal",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("Normal")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.HighestPriority);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.HighestPriority);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -140,16 +140,16 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("A")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.HighestPriority);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.HighestPriority);
         GamePhase.New(
             2,
             "rule-b",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("B")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.HighestPriority);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.HighestPriority);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -175,24 +175,24 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("A")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.LastWins);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.LastWins);
         GamePhase.New(
             2,
             "rule-b",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("B")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.LastWins);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.LastWins);
         GamePhase.New(
             3,
             "rule-c",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("C")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.LastWins);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.LastWins);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -218,16 +218,16 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("A")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.Exclusive);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.Exclusive);
         GamePhase.New(
             2,
             "rule-b",
             new NullGameStateCondition(),
             new TestRule(new TestMutator("B")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.Exclusive);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.Exclusive);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -251,8 +251,8 @@ public class RulePriorityConflictResolutionTests
             new NullGameStateCondition(),
             new TestRule(new TestMutator("A")),
             root,
-            priority: RulePriority.Normal,
-            conflictResolution: ConflictResolutionStrategy.Exclusive);
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.Exclusive);
 
         var game = CreateMinimalGame();
         var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
@@ -265,6 +265,75 @@ public class RulePriorityConflictResolutionTests
         // assert
         var marker = result.State.GetExtras<string>();
         marker.Should().Be("A");
+    }
+
+    [Fact]
+    public void GivenApplyAllStrategy_WhenMultipleRulesMatch_ThenAllRulesAppliedInPriorityOrder()
+    {
+        // arrange
+        var root = GamePhase.NewParent(100, "root", new NullGameStateCondition());
+        
+        // Create rules with different priorities - they should be applied in priority order (High, Normal, Low)
+        GamePhase.New(
+            1,
+            "rule-normal",
+            new NullGameStateCondition(),
+            new TestRule(new AppendMutator("Normal")),
+            root,
+            priority: global::Veggerby.Boards.RulePriority.Normal,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.ApplyAll);
+        GamePhase.New(
+            2,
+            "rule-high",
+            new NullGameStateCondition(),
+            new TestRule(new AppendMutator("High")),
+            root,
+            priority: global::Veggerby.Boards.RulePriority.High,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.ApplyAll);
+        GamePhase.New(
+            3,
+            "rule-low",
+            new NullGameStateCondition(),
+            new TestRule(new AppendMutator("Low")),
+            root,
+            priority: global::Veggerby.Boards.RulePriority.Low,
+            conflictResolution: global::Veggerby.Boards.ConflictResolutionStrategy.ApplyAll);
+
+        var game = CreateMinimalGame();
+        var engine = new GameEngine(game, root, global::Veggerby.Boards.Flows.DecisionPlan.DecisionPlan.Compile(root));
+        var initialState = GameState.New([]);
+        var progress = new GameProgress(engine, initialState, EventChain.Empty);
+
+        // act
+        var result = progress.HandleEvent(new TestEvent());
+
+        // assert
+        // ApplyAll should apply rules in priority order: High (75), Normal (50), Low (25)
+        var appliedList = result.State.GetExtras<List<string>>();
+        appliedList.Should().NotBeNull();
+        appliedList.Should().HaveCount(3);
+        appliedList[0].Should().Be("High");   // Applied first (highest priority)
+        appliedList[1].Should().Be("Normal"); // Applied second
+        appliedList[2].Should().Be("Low");    // Applied last (lowest priority)
+    }
+
+    private class AppendMutator(string marker) : IStateMutator<IGameEvent>
+    {
+        public string Marker
+        {
+            get;
+        } = marker;
+
+        public GameState MutateState(GameEngine engine, GameState state, IGameEvent @event)
+        {
+            // Get existing list or create new one
+            var existingList = state.GetExtras<List<string>>() ?? new List<string>();
+            var newList = new List<string>(existingList) { Marker };
+            
+            var artifact = new ExtrasArtifact($"applied-list");
+            var extras = new ExtrasState(artifact, newList, typeof(List<string>));
+            return state.Next([extras]);
+        }
     }
 
     private static Game CreateMinimalGame()

@@ -46,6 +46,7 @@ public class EqualityHashingPatternsTests
             "Veggerby.Boards.States.DiceState`1",
             "Veggerby.Boards.States.NullDiceState",
             "Veggerby.Boards.States.TurnState",
+            "Veggerby.Boards.States.StagedEventsState", // Commitment/reveal state for simultaneous turns
             "Veggerby.Boards.States.PlayerResult", // Outcome value record
             "Veggerby.Boards.States.OwnershipState`1", // Generic ownership state
             "Veggerby.Boards.States.RedactedPieceState", // Redacted piece placeholder for hidden state
@@ -101,6 +102,7 @@ public class EqualityHashingPatternsTests
         {
         "Veggerby.Boards.Artifacts.Patterns.", // pattern variants acceptable
         "Veggerby.Boards.Flows.", // decision/events value records
+        "Veggerby.Boards.Events.", // event records (CommitActionEvent, RevealCommitmentsEvent, etc.)
         "Veggerby.Boards.Simulation.", // simulation result records
         "Veggerby.Boards.Artifacts.Relations.", // relation identity helpers (Direction, etc.)
         "Veggerby.Boards.Serialization." // serialization record types (ReplayEnvelope, EventRecord, etc.)

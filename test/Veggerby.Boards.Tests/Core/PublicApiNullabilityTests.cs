@@ -34,6 +34,14 @@ public class PublicApiNullabilityTests
             typeof(EventResultStruct).FullName + ".Message",
             "Veggerby.Boards.States.PlayerResult.Metrics", // Optional game-specific metrics
             // Simulation trace removed from whitelist after normalization to non-null
+            // Serialization types - nullable strings/collections are intentional for optional metadata
+            "Veggerby.Boards.Serialization.EventRecord.ResultHash128", // Optional 128-bit hash
+            "Veggerby.Boards.Serialization.GameStateSnapshot.Hash128", // Optional 128-bit hash
+            "Veggerby.Boards.Serialization.ReplayMetadata.Title", // Optional title
+            "Veggerby.Boards.Serialization.ReplayMetadata.Tags", // Optional tags collection
+            "Veggerby.Boards.Serialization.ReplayMetadata.CustomMetadata", // Optional custom metadata
+            "Veggerby.Boards.Serialization.HashMismatch.EventType", // Optional event type description
+            "Veggerby.Boards.Serialization.TurnStateData.Segment", // Optional turn segment
         };
         var offenders = new List<string>();
 

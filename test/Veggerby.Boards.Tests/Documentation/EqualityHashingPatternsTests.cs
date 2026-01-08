@@ -99,7 +99,8 @@ public class EqualityHashingPatternsTests
         "Veggerby.Boards.Artifacts.Patterns.", // pattern variants acceptable
         "Veggerby.Boards.Flows.", // decision/events value records
         "Veggerby.Boards.Simulation.", // simulation result records
-        "Veggerby.Boards.Artifacts.Relations." // relation identity helpers (Direction, etc.)
+        "Veggerby.Boards.Artifacts.Relations.", // relation identity helpers (Direction, etc.)
+        "Veggerby.Boards.Serialization." // serialization record types (ReplayEnvelope, EventRecord, etc.)
     };
         var unexpected = actualSet.Where(x => x is not null && !expected.Contains(x) && !allowedAdditionalPrefixes.Any(pref => x.StartsWith(pref, StringComparison.Ordinal))).ToList();
         unexpected.Should().BeEmpty("No unexpected equality overrides should appear without explicit allowance: {0}", string.Join(",", unexpected));

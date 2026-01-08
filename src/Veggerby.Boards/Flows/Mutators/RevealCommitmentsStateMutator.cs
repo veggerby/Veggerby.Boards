@@ -20,7 +20,6 @@ internal sealed class RevealCommitmentsStateMutator : IStateMutator<RevealCommit
     /// <inheritdoc />
     public GameState MutateState(GameEngine engine, GameState gameState, RevealCommitmentsEvent @event)
     {
-        ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(@event);
 

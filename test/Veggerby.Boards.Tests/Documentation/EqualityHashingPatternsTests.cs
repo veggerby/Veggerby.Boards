@@ -49,7 +49,10 @@ public class EqualityHashingPatternsTests
             "Veggerby.Boards.States.PlayerResult", // Outcome value record
             "Veggerby.Boards.States.OwnershipState`1", // Generic ownership state
             "Veggerby.Boards.States.RedactedPieceState", // Redacted piece placeholder for hidden state
-            "Veggerby.Boards.Builder.Phases.TurnPhaseConfiguration" // Phase configuration record
+            "Veggerby.Boards.Builder.Phases.TurnPhaseConfiguration", // Phase configuration record
+            // Rule priority and conflict resolution diagnostics
+            "Veggerby.Boards.RuleDecision", // Decision result with conflict resolution details
+            "Veggerby.Boards.RuleMetadata" // Rule metadata for observability
         };
 
         bool Overrides(MethodInfo? m, Type t)

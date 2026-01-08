@@ -139,7 +139,15 @@ public sealed class DecisionPlan
         {
             // Leaf phase
             bool alwaysValid = phase.Condition is States.Conditions.NullGameStateCondition ngc && ngc.Result;
-            entries.Add(new DecisionPlanEntry(phase.Number, phase.Condition, phase.Rule, phase, alwaysValid));
+            entries.Add(new DecisionPlanEntry(
+                phase.Number,
+                phase.Condition,
+                phase.Rule,
+                phase,
+                alwaysValid,
+                phase.Priority,
+                phase.StrategyIdentifier,
+                phase.ConflictResolution));
             kinds.Add(EventKindClassifier.ClassifyRule(phase.Rule));
             var explicitGroup = phase.ExclusivityGroup;
             string? inferred = null;
@@ -255,7 +263,23 @@ public sealed class DecisionPlan
 /// <summary>
 /// Represents a leaf phase entry within a compiled decision plan.
 /// </summary>
-public readonly record struct DecisionPlanEntry(int PhaseNumber, IGameStateCondition Condition, IGameEventRule Rule, GamePhase Phase, bool ConditionIsAlwaysValid);
+/// <param name="PhaseNumber">Phase number identifying this entry.</param>
+/// <param name="Condition">Activation condition for the phase.</param>
+/// <param name="Rule">Event rule to evaluate.</param>
+/// <param name="Phase">Source phase reference.</param>
+/// <param name="ConditionIsAlwaysValid">Optimization flag—true when condition always evaluates to Valid.</param>
+/// <param name="Priority">Explicit priority level (defaults to <see cref="RulePriority.Normal"/> when phase has no priority).</param>
+/// <param name="StrategyIdentifier">Optional domain-specific grouping hint (e.g., "castling").</param>
+/// <param name="ConflictResolution">Conflict resolution strategy for this entry's phase (defaults to <see cref="ConflictResolutionStrategy.FirstWins"/>).</param>
+public readonly record struct DecisionPlanEntry(
+    int PhaseNumber,
+    IGameStateCondition Condition,
+    IGameEventRule Rule,
+    GamePhase Phase,
+    bool ConditionIsAlwaysValid,
+    RulePriority Priority = RulePriority.Normal,
+    string? StrategyIdentifier = null,
+    ConflictResolutionStrategy ConflictResolution = ConflictResolutionStrategy.FirstWins);
 
 /// <summary>
 /// Represents a contiguous group of entries sharing the exact same condition reference.

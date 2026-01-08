@@ -72,6 +72,30 @@ public class GamePhase
     }
 
     /// <summary>
+    /// Gets the priority level for this phase's rule. Defaults to <see cref="RulePriority.Normal"/> when not explicitly set.
+    /// </summary>
+    public RulePriority Priority
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the optional strategy identifier for grouping related rules (e.g., "castling", "en-passant").
+    /// </summary>
+    public string? StrategyIdentifier
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the conflict resolution strategy for this phase. Defaults to <see cref="ConflictResolutionStrategy.FirstWins"/>.
+    /// </summary>
+    public ConflictResolutionStrategy ConflictResolution
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the optional endgame detection condition. When present and valid, triggers endgame state addition.
     /// </summary>
     public IGameStateCondition? EndGameCondition
@@ -97,9 +121,24 @@ public class GamePhase
     /// <param name="parent">Optional parent composite phase.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
     /// <param name="exclusivityGroup">Optional exclusivity group identifier (phases sharing a non-null value are mutually exclusive candidates).</param>
+    /// <param name="priority">Rule priority level (defaults to Normal).</param>
+    /// <param name="strategyIdentifier">Optional strategy identifier for grouping related rules.</param>
+    /// <param name="conflictResolution">Conflict resolution strategy (defaults to FirstWins).</param>
     /// <param name="endGameCondition">Optional endgame detection condition.</param>
     /// <param name="endGameMutator">Optional endgame state mutator.</param>
-    protected GamePhase(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent, IEnumerable<IGameEventPreProcessor>? preProcessors, string? exclusivityGroup = null, IGameStateCondition? endGameCondition = null, IStateMutator<IGameEvent>? endGameMutator = null)
+    protected GamePhase(
+        int number,
+        string? label,
+        IGameStateCondition condition,
+        IGameEventRule rule,
+        CompositeGamePhase? parent,
+        IEnumerable<IGameEventPreProcessor>? preProcessors,
+        string? exclusivityGroup = null,
+        RulePriority priority = RulePriority.Normal,
+        string? strategyIdentifier = null,
+        ConflictResolutionStrategy conflictResolution = ConflictResolutionStrategy.FirstWins,
+        IGameStateCondition? endGameCondition = null,
+        IStateMutator<IGameEvent>? endGameMutator = null)
     {
         if (number <= 0)
         {
@@ -116,6 +155,9 @@ public class GamePhase
         Rule = rule;
         PreProcessors = preProcessors ?? Enumerable.Empty<IGameEventPreProcessor>();
         ExclusivityGroup = exclusivityGroup ?? string.Empty;
+        Priority = priority;
+        StrategyIdentifier = strategyIdentifier;
+        ConflictResolution = conflictResolution;
         EndGameCondition = endGameCondition;
         EndGameMutator = endGameMutator;
 
@@ -164,12 +206,27 @@ public class GamePhase
     /// <param name="parent">Optional parent composite.</param>
     /// <param name="preProcessors">Optional pre-processors.</param>
     /// <param name="exclusivityGroup">Optional exclusivity group identifier (mutually exclusive phase grouping hint).</param>
+    /// <param name="priority">Rule priority level (defaults to Normal).</param>
+    /// <param name="strategyIdentifier">Optional strategy identifier for grouping related rules.</param>
+    /// <param name="conflictResolution">Conflict resolution strategy (defaults to FirstWins).</param>
     /// <param name="endGameCondition">Optional endgame detection condition.</param>
     /// <param name="endGameMutator">Optional endgame state mutator.</param>
     /// <returns>New phase.</returns>
-    public static GamePhase New(int number, string? label, IGameStateCondition condition, IGameEventRule rule, CompositeGamePhase? parent = null, IEnumerable<IGameEventPreProcessor>? preProcessors = null, string? exclusivityGroup = null, IGameStateCondition? endGameCondition = null, IStateMutator<IGameEvent>? endGameMutator = null)
+    public static GamePhase New(
+        int number,
+        string? label,
+        IGameStateCondition condition,
+        IGameEventRule rule,
+        CompositeGamePhase? parent = null,
+        IEnumerable<IGameEventPreProcessor>? preProcessors = null,
+        string? exclusivityGroup = null,
+        RulePriority priority = RulePriority.Normal,
+        string? strategyIdentifier = null,
+        ConflictResolutionStrategy conflictResolution = ConflictResolutionStrategy.FirstWins,
+        IGameStateCondition? endGameCondition = null,
+        IStateMutator<IGameEvent>? endGameMutator = null)
     {
-        return new GamePhase(number, label, condition, rule, parent, preProcessors, exclusivityGroup, endGameCondition, endGameMutator);
+        return new GamePhase(number, label, condition, rule, parent, preProcessors, exclusivityGroup, priority, strategyIdentifier, conflictResolution, endGameCondition, endGameMutator);
     }
 
     /// <summary>

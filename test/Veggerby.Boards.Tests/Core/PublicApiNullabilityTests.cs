@@ -42,6 +42,11 @@ public class PublicApiNullabilityTests
             "Veggerby.Boards.Serialization.ReplayMetadata.CustomMetadata", // Optional custom metadata
             "Veggerby.Boards.Serialization.HashMismatch.EventType", // Optional event type description
             "Veggerby.Boards.Serialization.TurnStateData.Segment", // Optional turn segment
+            // Rule priority and conflict resolution diagnostics - nullable is intentional for optional diagnostic data
+            "Veggerby.Boards.RuleDecision.RejectedRules", // Optional list of rejected rules (null when no conflict)
+            "Veggerby.Boards.RuleDecision.SelectionReason", // Optional explanation of selection
+            "Veggerby.Boards.RuleMetadata.StrategyIdentifier", // Optional strategy grouping hint
+            "Veggerby.Boards.Flows.DecisionPlan.DecisionPlanEntry.StrategyIdentifier", // Optional strategy identifier
         };
         var offenders = new List<string>();
 

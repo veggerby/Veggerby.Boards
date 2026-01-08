@@ -392,11 +392,12 @@ Future optimizations:
 - ⚠️ RollDiceGameEvent deferred (generic complexity)
 - ⚠️ Custom event types require manual registration
 
-### Phase 4: Deterministic Replay ✅
-- ✅ ReplayValidator with hash chain verification
+### Phase 4: Deterministic Replay ✅ (Partial)
+- ✅ ReplayValidator with hash chain verification framework
 - ✅ Event sequence replay
 - ✅ Hash mismatch detection
 - ✅ Divergence reporting
+- ⚠️ **ResultHash not computed during serialization** - hash verification skipped when ResultHash is empty
 - ⚠️ Full `Deserialize()` requires GameEngine context
 
 ## Current Limitations (Phase 1-4)
@@ -406,7 +407,13 @@ Future optimizations:
    - Use `ReconstructState()` for state-only deserialization
    - Use `ReplayValidator.ValidateReplay()` with existing GameProgress
 
-2. **Partial Event Support**: Currently handles:
+2. **Hash Chain Validation Incomplete**: ResultHash computation not implemented
+   - `Serialize()` sets `ResultHash` to empty string (not computed during serialization)
+   - `ReplayValidator.ValidateReplay()` skips hash verification when ResultHash is empty
+   - To enable full hash chain validation, `Serialize()` would need to replay events from initial state to compute ResultHash for each event
+   - Current implementation validates hash chain only when ResultHash values are provided externally
+
+3. **Partial Event Support**: Currently handles:
    - ✅ MovePieceGameEvent
    - ⚠️ RollDiceGameEvent (generic, skipped in serialization)
    - ❌ Other events (type name only, no deserialization)

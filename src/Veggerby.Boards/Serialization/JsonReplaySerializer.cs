@@ -104,19 +104,8 @@ public class JsonReplaySerializer : IGameReplaySerializer
         }
 
         // Note: We cannot fully reconstruct GameProgress without the original GameBuilder/GameEngine
-        // This is a limitation of Phase 2 - we can deserialize the state and events,
+        // This is a limitation - we can deserialize the state and events,
         // but cannot replay them without the full rule engine.
-        // For now, we'll deserialize just the state and event list.
-
-        // Deserialize initial state
-        var initialState = DeserializeState(envelope.InitialState);
-
-        // Deserialize events into a list (but we can't replay them without the engine)
-        var events = new List<IGameEvent>();
-        foreach (var eventRecord in envelope.Events)
-        {
-            events.Add(DeserializeEvent(eventRecord));
-        }
 
         // TODO: To fully implement replay, we need either:
         // 1. The original GameBuilder to be serialized/reconstructed, or
@@ -227,9 +216,12 @@ public class JsonReplaySerializer : IGameReplaySerializer
         if (turnStates.Count > 0)
         {
             var turnData = turnStates[0];
+            var activePlayerState = state.GetStates<ActivePlayerState>().FirstOrDefault();
+            var activePlayerId = activePlayerState?.Artifact.Id ?? string.Empty;
+
             turnStateData = new TurnStateData
             {
-                Player = string.Empty, // TODO: TurnState doesn't track active player directly - derive from ActivePlayerState
+                Player = activePlayerId,
                 Number = turnData.TurnNumber,
                 Segment = turnData.Segment.ToString()
             };
@@ -272,7 +264,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
                 break;
 
             case ActivePlayerState activePlayerState:
-                // No additional properties beyond artifact
+                data["IsActive"] = activePlayerState.IsActive;
                 break;
 
             case CapturedPieceState:
@@ -377,7 +369,7 @@ public class JsonReplaySerializer : IGameReplaySerializer
     {
         // Handle generic types (e.g., "DiceState`1" -> "DiceState")
         // TODO: Use reflection-based type resolution or dictionary mapping for better maintainability
-        var baseTypeName = stateType.Contains('`') ? stateType.Substring(0, stateType.IndexOf('`')) : stateType;
+        var baseTypeName = stateType.Contains('`') ? stateType[..stateType.IndexOf('`')] : stateType;
 
         switch (baseTypeName)
         {
@@ -395,8 +387,14 @@ public class JsonReplaySerializer : IGameReplaySerializer
                 return new PieceState((Piece)artifact, tile);
 
             case "ActivePlayerState":
-                // ActivePlayerState has IsActive property - not in current serialization, assume active
-                return new ActivePlayerState((Player)artifact, true);
+                // ActivePlayerState has IsActive property - prefer serialized value when available, default to active for backward compatibility
+                var isActive = true;
+                if (stateData.TryGetProperty("IsActive", out var isActiveElement))
+                {
+                    isActive = isActiveElement.GetBoolean();
+                }
+
+                return new ActivePlayerState((Player)artifact, isActive);
 
             case "CapturedPieceState":
                 return new CapturedPieceState((Piece)artifact);
@@ -421,7 +419,14 @@ public class JsonReplaySerializer : IGameReplaySerializer
                 var turnNumber = stateData.GetProperty("Number").GetInt32();
                 var segmentStr = stateData.GetProperty("Segment").GetString() ?? "Main";
                 var segment = Enum.Parse<TurnSegment>(segmentStr);
-                return new TurnState((TurnArtifact)artifact, turnNumber, segment);
+                var passStreak = 0;
+
+                if (stateData.TryGetProperty("PassStreak", out var passStreakElement))
+                {
+                    passStreak = passStreakElement.GetInt32();
+                }
+
+                return new TurnState((TurnArtifact)artifact, turnNumber, segment, passStreak);
 
             case "ExtrasState":
                 // ExtrasState requires deserialization of the wrapped value

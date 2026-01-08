@@ -80,8 +80,7 @@ public class EventTypeRegistry
             var pieceId = data["PieceId"]?.ToString() ?? throw new ReplayDeserializationException("Missing PieceId");
 
             // Handle JsonElement for PathTileIds
-            object? pathTileIdsObj = data.ContainsKey("PathTileIds") ? data["PathTileIds"] : null;
-            if (pathTileIdsObj is not System.Text.Json.JsonElement pathTileIds)
+            if (!data.TryGetValue("PathTileIds", out var pathTileIdsObj) || pathTileIdsObj is not System.Text.Json.JsonElement pathTileIds)
             {
                 throw new ReplayDeserializationException("Missing or invalid PathTileIds");
             }

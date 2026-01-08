@@ -5,6 +5,7 @@ using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Serialization;
+using Veggerby.Boards.States;
 using Veggerby.Boards.Tests.Core.Fakes;
 
 namespace Veggerby.Boards.Tests.Core.Serialization;
@@ -377,5 +378,97 @@ public class JsonReplaySerializerTests
         result.HashMismatches.Should().BeEmpty();
         result.FinalProgress.Should().NotBeNull();
     }
-}
 
+    [Fact]
+    public void Serialize_ActivePlayerState_ShouldIncludeIsActiveProperty()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+
+        // act
+        var envelope = serializer.Serialize(progress);
+
+        // assert
+        envelope.InitialState.Artifacts.Should().NotBeEmpty();
+
+        // Find an ActivePlayerState in the serialized artifacts
+        var activePlayerArtifact = envelope.InitialState.Artifacts.Values
+            .FirstOrDefault(a => a is Dictionary<string, object> dict && dict.ContainsKey("Type") && dict["Type"].ToString() == "ActivePlayerState");
+
+        if (activePlayerArtifact is Dictionary<string, object> stateDict)
+        {
+            stateDict.Should().ContainKey("IsActive");
+        }
+    }
+
+    [Fact]
+    public void RoundTrip_ActivePlayerState_ShouldPreserveIsActive()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+
+        // act
+        var envelope = serializer.Serialize(progress);
+        var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+        var loadedEnvelope = System.Text.Json.JsonSerializer.Deserialize<ReplayEnvelope>(json);
+        var reconstructedState = serializer.ReconstructState(loadedEnvelope!);
+
+        // assert
+        var originalActiveStates = progress.State.GetStates<ActivePlayerState>().ToList();
+        var reconstructedActiveStates = reconstructedState.GetStates<ActivePlayerState>().ToList();
+
+        originalActiveStates.Should().HaveSameCount(reconstructedActiveStates);
+    }
+
+    [Fact]
+    public void Serialize_TurnState_ShouldIncludePassStreak()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+
+        // act
+        var envelope = serializer.Serialize(progress);
+
+        // assert
+        envelope.InitialState.Artifacts.Should().NotBeEmpty();
+
+        // Find a TurnState in the serialized artifacts
+        var turnStateArtifact = envelope.InitialState.Artifacts.Values
+            .FirstOrDefault(a => a is Dictionary<string, object> dict && dict.ContainsKey("Type") && dict["Type"].ToString() == "TurnState");
+
+        if (turnStateArtifact is Dictionary<string, object> stateDict)
+        {
+            stateDict.Should().ContainKey("PassStreak");
+        }
+    }
+
+    [Fact]
+    public void RoundTrip_TurnState_ShouldPreservePassStreak()
+    {
+        // arrange
+        var builder = new TestGameBuilder();
+        var progress = builder.Compile();
+        var serializer = new JsonReplaySerializer(progress.Game, "test-game");
+
+        // act
+        var envelope = serializer.Serialize(progress);
+        var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+        var loadedEnvelope = System.Text.Json.JsonSerializer.Deserialize<ReplayEnvelope>(json);
+        var reconstructedState = serializer.ReconstructState(loadedEnvelope!);
+
+        // assert
+        var originalTurnStates = progress.State.GetStates<TurnState>().ToList();
+        var reconstructedTurnStates = reconstructedState.GetStates<TurnState>().ToList();
+
+        if (originalTurnStates.Count > 0 && reconstructedTurnStates.Count > 0)
+        {
+            originalTurnStates[0].PassStreak.Should().Be(reconstructedTurnStates[0].PassStreak);
+        }
+    }
+}

@@ -92,19 +92,21 @@ public sealed class AuctionOutcome : IGameOutcome
 
             var results = new List<PlayerResult>();
             var currentRank = 1;
-            var previousBid = int.MaxValue;
+            int? previousBid = null;
 
             for (int i = 0; i < sortedBids.Count; i++)
             {
                 var bid = sortedBids[i];
 
-                // Update rank if bid amount changed
-                if (bid.Value < previousBid)
+                // Update rank only when bid amount changes
+                if (previousBid.HasValue && bid.Value < previousBid.Value)
                 {
                     currentRank = i + 1;
                 }
 
-                var outcome = bid.Key.Equals(Winner) && currentRank == 1
+                // Only the first player with the highest bid is marked as winner
+                // (deterministic tie-breaking by player ID)
+                var outcome = bid.Key.Equals(Winner)
                     ? OutcomeType.Win
                     : OutcomeType.Loss;
 

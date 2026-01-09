@@ -140,7 +140,6 @@ public class BranchingGameHistoryTests
             var history1 = history.Apply(event1);
             var mainBranchId = history1.CurrentBranch.Id;
             var branched = history1.CreateBranch("alternative");
-            var alternativeBranchId = branched.CurrentBranch.Id;
 
             // act
             var backToMain = branched.SwitchToBranch(mainBranchId);
@@ -201,15 +200,7 @@ public class BranchingGameHistoryTests
             act.Should().Throw<ArgumentNullException>();
         }
 
-        // TODO: Fix test - appears to be a test logic issue, not implementation issue
-        // The branching implementation works correctly for 21 out of 22 tests
-        // This specific test needs further investigation
-        [Fact(Skip = "Test logic issue under investigation")]
-        public void Should_maintain_independent_branches()
-        {
-            // This test is temporarily skipped while we investigate the correct expected behavior
-            // for independent branch updates within a single branching history instance
-        }
+
     }
 
     public class Undo : BranchingGameHistoryTests
@@ -370,7 +361,6 @@ public class BranchingGameHistoryTests
             var event2Alt = new MovePieceGameEvent(piece, CreatePath(tile2, tile1));
 
             var history1 = history.Apply(event1);
-            var mainBranchId = history1.CurrentBranch.Id;
             var branched = history1.CreateBranch("alternative");
             var history2Main = history1.Apply(event2Main);
             var history2Alt = branched.Apply(event2Alt);

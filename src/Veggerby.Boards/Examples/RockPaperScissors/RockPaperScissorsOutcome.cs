@@ -92,36 +92,17 @@ public sealed class RockPaperScissorsOutcome : IGameOutcome
         var choice1 = choice1State.Choice;
         var choice2 = choice2State.Choice;
 
-        Player? winner = null;
-
-        if (choice1 == choice2)
+        Player? winner = (choice1, choice2) switch
         {
-            winner = null;
-        }
-        else if (choice1 == Choice.Rock && choice2 == Choice.Scissors)
-        {
-            winner = player1;
-        }
-        else if (choice1 == Choice.Rock && choice2 == Choice.Paper)
-        {
-            winner = player2;
-        }
-        else if (choice1 == Choice.Paper && choice2 == Choice.Rock)
-        {
-            winner = player1;
-        }
-        else if (choice1 == Choice.Paper && choice2 == Choice.Scissors)
-        {
-            winner = player2;
-        }
-        else if (choice1 == Choice.Scissors && choice2 == Choice.Paper)
-        {
-            winner = player1;
-        }
-        else if (choice1 == Choice.Scissors && choice2 == Choice.Rock)
-        {
-            winner = player2;
-        }
+            var (c1, c2) when c1 == c2 => null,
+            (Choice.Rock, Choice.Scissors) => player1,
+            (Choice.Rock, Choice.Paper) => player2,
+            (Choice.Paper, Choice.Rock) => player1,
+            (Choice.Paper, Choice.Scissors) => player2,
+            (Choice.Scissors, Choice.Paper) => player1,
+            (Choice.Scissors, Choice.Rock) => player2,
+            _ => throw new InvalidOperationException($"Unexpected choices: {choice1} vs {choice2}")
+        };
 
         return new RockPaperScissorsOutcome(winner, player1, choice1, player2, choice2);
     }

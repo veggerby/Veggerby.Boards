@@ -271,7 +271,14 @@ internal sealed class CustomRevealMutator : IStateMutator<RevealCommitmentsEvent
     {
         // Game-specific conflict detection
         // Example: moves to same destination, resource contention, etc.
-        return commitments.Select(kvp => (kvp.Key, kvp.Value));
+        // Avoid LINQ in performance-sensitive paths - use explicit iteration
+        var conflicts = new List<(Player, IGameEvent)>(commitments.Count);
+        foreach (var kvp in commitments)
+        {
+            conflicts.Add((kvp.Key, kvp.Value));
+        }
+
+        return conflicts;
     }
     
     private IEnumerable<IGameEvent> ResolveConflicts(
@@ -283,7 +290,14 @@ internal sealed class CustomRevealMutator : IStateMutator<RevealCommitmentsEvent
         // - Cancel both conflicting moves
         // - Combine/merge effects
         // - Player order (default)
-        return conflicts.Select(c => c.Item2);
+        // Avoid LINQ - use explicit iteration
+        var resolvedEvents = new List<IGameEvent>();
+        foreach (var conflict in conflicts)
+        {
+            resolvedEvents.Add(conflict.Item2);
+        }
+
+        return resolvedEvents;
     }
 }
 ```
@@ -297,10 +311,14 @@ internal sealed class ConflictAwareCondition : IGameEventCondition<MoveOrderEven
         // Check if this move would conflict with already-applied simultaneous moves
         var existingMoves = state.GetStates<RecentMoveState>();
         
-        if (existingMoves.Any(m => m.Destination.Equals(@event.Destination)))
+        // Avoid LINQ in condition evaluation - use explicit iteration
+        foreach (var move in existingMoves)
         {
-            // Conflict detected - reject this move
-            return ConditionResponse.Invalid;
+            if (move.Destination.Equals(@event.Destination))
+            {
+                // Conflict detected - reject this move
+                return ConditionResponse.Invalid;
+            }
         }
         
         return ConditionResponse.Valid;

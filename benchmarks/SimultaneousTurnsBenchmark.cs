@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using BenchmarkDotNet.Attributes;
@@ -110,18 +111,24 @@ public class SimultaneousTurnsBenchmark
     }
 
     /// <summary>
-    /// Benchmarks reveal phase with pre-committed actions.
+    /// Benchmarks combined commit and reveal phases.
     /// </summary>
     /// <returns>The resulting <see cref="GameProgress"/> after reveal.</returns>
+    /// <remarks>
+    /// Note: This benchmark measures both commit and reveal overhead together.
+    /// Isolating reveal-only would require [IterationSetup] which adds measurement overhead.
+    /// The difference between this and SimultaneousTurns() is negligible, so this benchmark
+    /// could be removed if desired.
+    /// </remarks>
     [Benchmark]
     public GameProgress RevealPhaseOnly()
     {
-        // Pre-commit actions during setup for this benchmark
+        // This benchmark is kept for completeness but measures commit+reveal together
         var progress = _progressSimultaneous;
         progress = progress.HandleEvent(new CommitActionEvent(_player1, _choice1));
         progress = progress.HandleEvent(new CommitActionEvent(_player2, _choice2));
 
-        // Benchmark only the reveal
+        // Apply reveal
         progress = progress.HandleEvent(new RevealCommitmentsEvent());
 
         return progress;

@@ -69,9 +69,13 @@ var france = progress.Game.GetPlayer("france");
 var englandArmy = progress.Game.GetPiece("england-army-1");
 var franceArmy = progress.Game.GetPiece("france-army-1");
 
+var paris = progress.Game.GetTile("paris");
+var marseilles = progress.Game.GetTile("marseilles");
+
 // Initialize commitment phase
+var stagedArtifact = new StagedEventsArtifact("staged-events");
 var stagedState = new StagedEventsState(
-    artifact,
+    stagedArtifact,
     new Dictionary<Player, IGameEvent>(),
     new HashSet<Player> { england, france });
 

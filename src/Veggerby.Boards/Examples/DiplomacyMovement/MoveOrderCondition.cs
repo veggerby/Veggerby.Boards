@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 using Veggerby.Boards.Flows.Rules.Conditions;
 using Veggerby.Boards.States;
@@ -29,8 +28,16 @@ internal sealed class MoveOrderCondition : IGameEventCondition<MoveOrderEvent>
 
         // Simplified validation: just check that destination is not currently occupied by the same unit
         // In a real implementation, this would check adjacency, ownership, etc.
-        var currentPosition = gameState.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Equals(@event.Unit));
+        // Avoid LINQ in performance-sensitive condition evaluation - use explicit iteration
+        States.PieceState? currentPosition = null;
+        foreach (var ps in gameState.GetStates<States.PieceState>())
+        {
+            if (ps.Artifact.Equals(@event.Unit))
+            {
+                currentPosition = ps;
+                break;
+            }
+        }
 
         if (currentPosition is null)
         {
@@ -38,14 +45,19 @@ internal sealed class MoveOrderCondition : IGameEventCondition<MoveOrderEvent>
         }
 
         // Check if destination is already occupied by another piece
-        var occupant = gameState.GetStates<States.PieceState>()
-            .FirstOrDefault(ps => ps.CurrentTile.Equals(@event.Destination));
-
-        if (occupant is not null && !occupant.Artifact.Equals(@event.Unit))
+        foreach (var ps in gameState.GetStates<States.PieceState>())
         {
-            // Conflict: another unit already at destination
-            // The player-order tie-breaking means the first commit wins
-            return ConditionResponse.Invalid;
+            if (ps.CurrentTile.Equals(@event.Destination))
+            {
+                if (!ps.Artifact.Equals(@event.Unit))
+                {
+                    // Conflict: another unit already at destination
+                    // The player-order tie-breaking means the first commit wins
+                    return ConditionResponse.Invalid;
+                }
+
+                break;
+            }
         }
 
         return ConditionResponse.Valid;

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 using Veggerby.Boards.Flows.Mutators;
 using Veggerby.Boards.States;
@@ -28,8 +27,16 @@ internal sealed class MoveOrderStateMutator : IStateMutator<MoveOrderEvent>
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(@event);
 
-        var currentPosition = gameState.GetStates<PieceState>()
-            .FirstOrDefault(ps => ps.Artifact.Equals(@event.Unit));
+        // Avoid LINQ in performance-sensitive mutator - use explicit iteration
+        PieceState? currentPosition = null;
+        foreach (var ps in gameState.GetStates<PieceState>())
+        {
+            if (ps.Artifact.Equals(@event.Unit))
+            {
+                currentPosition = ps;
+                break;
+            }
+        }
 
         if (currentPosition is null)
         {

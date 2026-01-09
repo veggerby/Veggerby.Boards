@@ -105,7 +105,8 @@ public class EqualityHashingPatternsTests
         "Veggerby.Boards.Events.", // event records (CommitActionEvent, RevealCommitmentsEvent, etc.)
         "Veggerby.Boards.Simulation.", // simulation result records
         "Veggerby.Boards.Artifacts.Relations.", // relation identity helpers (Direction, etc.)
-        "Veggerby.Boards.Serialization." // serialization record types (ReplayEnvelope, EventRecord, etc.)
+        "Veggerby.Boards.Serialization.", // serialization record types (ReplayEnvelope, EventRecord, etc.)
+        "Veggerby.Boards.Examples." // example game states (RockPaperScissors, SealedBidAuction, etc.)
     };
         var unexpected = actualSet.Where(x => x is not null && !expected.Contains(x) && !allowedAdditionalPrefixes.Any(pref => x.StartsWith(pref, StringComparison.Ordinal))).ToList();
         unexpected.Should().BeEmpty("No unexpected equality overrides should appear without explicit allowance: {0}", string.Join(",", unexpected));

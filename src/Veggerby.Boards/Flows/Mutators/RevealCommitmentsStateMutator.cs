@@ -1,7 +1,9 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
+using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
+using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.States;
 
 namespace Veggerby.Boards.Flows.Mutators;
@@ -41,13 +43,19 @@ internal sealed class RevealCommitmentsStateMutator : IStateMutator<RevealCommit
         }
 
         // Apply committed events in deterministic order (player ID ascending)
-        var orderedCommitments = currentStaged.Commitments
-            .OrderBy(kvp => kvp.Key.Id, StringComparer.Ordinal)
-            .ToList();
+        // Manual sorting to avoid LINQ allocation in performance-sensitive path
+        var commitmentsList = new List<KeyValuePair<Player, IGameEvent>>(currentStaged.Commitments.Count);
+        foreach (var kvp in currentStaged.Commitments)
+        {
+            commitmentsList.Add(kvp);
+        }
+        
+        commitmentsList.Sort((a, b) => StringComparer.Ordinal.Compare(a.Key.Id, b.Key.Id));
 
         var resultState = gameState;
-        foreach (var (player, committedEvent) in orderedCommitments)
+        for (int i = 0; i < commitmentsList.Count; i++)
         {
+            var committedEvent = commitmentsList[i].Value;
             // Apply each committed event using the engine's rule evaluation
             // Note: We use a GameProgress wrapper to apply events through the normal rule pipeline
             var tempProgress = new GameProgress(engine, resultState, null);
@@ -56,10 +64,15 @@ internal sealed class RevealCommitmentsStateMutator : IStateMutator<RevealCommit
         }
 
         // Clear the staged events by removing the state (commitment phase ends)
-        // We need to remove the StagedEventsState artifact from the result state
-        var statesWithoutStaged = resultState.ChildStates
-            .Where(s => s is not StagedEventsState)
-            .ToList();
+        // We need to remove the StagedEventsState from the result state
+        var statesWithoutStaged = new List<IArtifactState>();
+        foreach (var state in resultState.ChildStates)
+        {
+            if (state is not StagedEventsState)
+            {
+                statesWithoutStaged.Add(state);
+            }
+        }
 
         return GameState.New(statesWithoutStaged, resultState.Random);
     }

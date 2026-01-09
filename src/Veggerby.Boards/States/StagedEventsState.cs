@@ -41,18 +41,12 @@ public sealed class StagedEventsState : ArtifactState<StagedEventsArtifact>
     /// <summary>
     /// Gets the dictionary of committed player actions.
     /// </summary>
-    public IReadOnlyDictionary<Player, IGameEvent> Commitments
-    {
-        get;
-    }
+    public IReadOnlyDictionary<Player, IGameEvent> Commitments { get; }
 
     /// <summary>
     /// Gets the set of players who have not yet committed an action.
     /// </summary>
-    public IReadOnlySet<Player> PendingPlayers
-    {
-        get;
-    }
+    public IReadOnlySet<Player> PendingPlayers { get; }
 
     /// <summary>
     /// Gets a value indicating whether all required players have committed.

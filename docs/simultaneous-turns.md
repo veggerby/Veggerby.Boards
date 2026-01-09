@@ -237,21 +237,109 @@ Events are applied in player ID order. First event succeeds, subsequent conflict
 //            Player-B's move fails (tile occupied)
 ```
 
-### Custom Conflict Resolution (Game-Specific)
+### Extension Pattern: Custom Conflict Resolution
 
-Games can implement custom conflict logic:
+Games can implement custom conflict logic by creating game-specific event processors or custom mutators. The commit/reveal system provides a foundation, and games extend it with their domain rules.
 
+**Pattern 1: Custom Mutator**
 ```csharp
-// In reveal mutator or custom event handler
-protected override GameState ResolveConflicts(
-    GameState state,
-    IReadOnlyList<(Player, IGameEvent)> conflicts)
+internal sealed class CustomRevealMutator : IStateMutator<RevealCommitmentsEvent>
 {
-    // Custom resolution logic
-    // Example: Combine moves, cancel both, resolve by priority, etc.
-    return customResolutionStrategy.Resolve(state, conflicts);
+    public GameState MutateState(GameEngine engine, GameState state, RevealCommitmentsEvent @event)
+    {
+        var staged = state.GetStates<StagedEventsState>().Single();
+        
+        // Group conflicting events
+        var conflicts = DetectConflicts(staged.Commitments);
+        
+        // Resolve using game-specific strategy
+        var resolvedEvents = ResolveConflicts(conflicts);
+        
+        // Apply resolved events
+        var resultState = state;
+        foreach (var evt in resolvedEvents)
+        {
+            resultState = engine.HandleEvent(evt).State;
+        }
+        
+        // Clear staged state
+        return ClearStagedState(resultState);
+    }
+    
+    private IEnumerable<(Player, IGameEvent)> DetectConflicts(
+        IReadOnlyDictionary<Player, IGameEvent> commitments)
+    {
+        // Game-specific conflict detection
+        // Example: moves to same destination, resource contention, etc.
+        // Avoid LINQ in performance-sensitive paths - use explicit iteration
+        var conflicts = new List<(Player, IGameEvent)>(commitments.Count);
+        foreach (var kvp in commitments)
+        {
+            conflicts.Add((kvp.Key, kvp.Value));
+        }
+
+        return conflicts;
+    }
+    
+    private IEnumerable<IGameEvent> ResolveConflicts(
+        IEnumerable<(Player, IGameEvent)> conflicts)
+    {
+        // Game-specific resolution strategy
+        // Examples:
+        // - Highest priority wins
+        // - Cancel both conflicting moves
+        // - Combine/merge effects
+        // - Player order (default)
+        // Avoid LINQ - use explicit iteration
+        var resolvedEvents = new List<IGameEvent>();
+        foreach (var conflict in conflicts)
+        {
+            resolvedEvents.Add(conflict.Item2);
+        }
+
+        return resolvedEvents;
+    }
 }
 ```
+
+**Pattern 2: Pre-Resolution Validation**
+```csharp
+internal sealed class ConflictAwareCondition : IGameEventCondition<MoveOrderEvent>
+{
+    public ConditionResponse Evaluate(GameEngine engine, GameState state, MoveOrderEvent @event)
+    {
+        // Check if this move would conflict with already-applied simultaneous moves
+        var existingMoves = state.GetStates<RecentMoveState>();
+        
+        // Avoid LINQ in condition evaluation - use explicit iteration
+        foreach (var move in existingMoves)
+        {
+            if (move.Destination.Equals(@event.Destination))
+            {
+                // Conflict detected - reject this move
+                return ConditionResponse.Invalid;
+            }
+        }
+        
+        return ConditionResponse.Valid;
+    }
+}
+```
+
+**Pattern 3: Post-Resolution Adjustment**
+```csharp
+// After reveal, apply game-specific conflict resolution
+progress = progress.HandleEvent(new RevealCommitmentsEvent());
+
+// Custom post-processing for conflicts
+var conflicts = DetectPostRevealConflicts(progress.State);
+foreach (var conflict in conflicts)
+{
+    progress = progress.HandleEvent(new ResolveConflictEvent(conflict));
+}
+```
+
+The current implementation uses the default player-order strategy, which is deterministic and works for many games. For games requiring more complex conflict resolution (like Diplomacy's support/hold mechanics), implement a custom reveal mutator or post-processing logic as shown above.
 
 ## Performance Considerations
 

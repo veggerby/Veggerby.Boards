@@ -10,7 +10,8 @@ namespace Veggerby.Boards.States.Conditions;
 /// Victory condition: highest score wins when target is reached.
 /// </summary>
 /// <remarks>
-/// Used for games where the first player to reach or exceed a target score wins.
+/// Used for games where play continues until at least one player reaches or exceeds a target score,
+/// and the winner is determined by which player has the highest score at that time.
 /// If no player has reached the target, the condition returns Ignore.
 /// </remarks>
 public sealed class HighestScoreCondition : IGameStateCondition
@@ -45,7 +46,7 @@ public sealed class HighestScoreCondition : IGameStateCondition
             return ConditionResponse.Ignore("No players in game");
         }
 
-        var highestScore = 0;
+        var highestScore = int.MinValue;
         var hasReachedTarget = false;
 
         foreach (var player in _players)

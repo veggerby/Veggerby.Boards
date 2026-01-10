@@ -73,4 +73,19 @@ public sealed class StandardGameOutcome : IArtifactState, IGameOutcome
 
         return true;
     }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+
+        hash.Add(TerminalCondition, StringComparer.Ordinal);
+
+        for (var i = 0; i < PlayerResults.Count; i++)
+        {
+            hash.Add(PlayerResults[i]);
+        }
+
+        return hash.ToHashCode();
+    }
 }

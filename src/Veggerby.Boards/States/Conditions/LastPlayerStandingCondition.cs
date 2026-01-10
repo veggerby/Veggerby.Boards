@@ -34,20 +34,29 @@ public sealed class LastPlayerStandingCondition : IGameStateCondition
     {
         ArgumentNullException.ThrowIfNull(state);
 
-        var eliminatedPlayers = state.GetStates<PlayerEliminatedState>()
-            .Select(s => s.Player)
-            .ToHashSet();
+        var eliminatedPlayers = new HashSet<Player>();
 
-        var remainingPlayers = _players
-            .Where(p => !eliminatedPlayers.Contains(p))
-            .ToList();
+        foreach (var eliminatedState in state.GetStates<PlayerEliminatedState>())
+        {
+            eliminatedPlayers.Add(eliminatedState.Player);
+        }
 
-        if (remainingPlayers.Count == 1)
+        var remainingCount = 0;
+
+        foreach (var player in _players)
+        {
+            if (!eliminatedPlayers.Contains(player))
+            {
+                remainingCount++;
+            }
+        }
+
+        if (remainingCount == 1)
         {
             return ConditionResponse.Valid;
         }
 
-        if (remainingPlayers.Count == 0)
+        if (remainingCount == 0)
         {
             return ConditionResponse.Ignore("No players remaining");
         }

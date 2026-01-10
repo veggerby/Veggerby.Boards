@@ -455,13 +455,15 @@ public GameState MutateState(GameEngine engine, GameState state, DeclareWinnerEv
     
     outcome.WithTerminalCondition("FinishLine");
     
+    var builtOutcome = outcome.Build();
+    
     return state.Next(new IArtifactState[]
     {
         new GameEndedState(),
         new StandardGameOutcome
         {
-            TerminalCondition = outcome.Build().TerminalCondition,
-            PlayerResults = outcome.Build().PlayerResults
+            TerminalCondition = builtOutcome.TerminalCondition,
+            PlayerResults = builtOutcome.PlayerResults
         }
     });
 }

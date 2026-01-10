@@ -13,6 +13,11 @@ namespace Veggerby.Boards.Utilities.Scoring;
 /// <remarks>
 /// Provides a convenient API for building <see cref="IGameOutcome"/> instances
 /// with ranked players and terminal conditions.
+/// <para>
+/// Note: This builder is stateful and maintains an internal list of player results.
+/// The Build() method should only be called once after all players have been added.
+/// Each With* method modifies the builder's internal state and returns the same instance for chaining.
+/// </para>
 /// </remarks>
 public sealed class OutcomeBuilder
 {
@@ -68,16 +73,39 @@ public sealed class OutcomeBuilder
     /// <param name="scores">The ranked scores.</param>
     /// <returns>This builder for chaining.</returns>
     /// <remarks>
-    /// The highest ranked player (rank 1) is considered the winner.
-    /// All others are assigned Loss outcome.
+    /// If only one player has rank 1, they are marked as the winner.
+    /// If multiple players are tied at rank 1, they are all marked as Draw.
+    /// All other players are assigned Loss outcome.
     /// </remarks>
     public OutcomeBuilder WithRankedPlayers(IEnumerable<PlayerScore> scores)
     {
         ArgumentNullException.ThrowIfNull(scores);
 
-        foreach (var score in scores)
+        var scoresList = scores.ToList();
+
+        // Count how many players are tied at rank 1
+        var rankOneCount = 0;
+
+        foreach (var score in scoresList)
         {
-            var outcome = score.Rank == 1 ? OutcomeType.Win : OutcomeType.Loss;
+            if (score.Rank == 1)
+            {
+                rankOneCount++;
+            }
+        }
+
+        foreach (var score in scoresList)
+        {
+            OutcomeType outcome;
+
+            if (score.Rank == 1)
+            {
+                outcome = rankOneCount > 1 ? OutcomeType.Draw : OutcomeType.Win;
+            }
+            else
+            {
+                outcome = OutcomeType.Loss;
+            }
 
             _results.Add(new PlayerResult
             {

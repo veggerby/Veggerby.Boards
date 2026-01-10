@@ -97,6 +97,39 @@ public class OutcomeBuilderTests
     }
 
     [Fact]
+    public void WithRankedPlayers_Should_Handle_Tied_Scores_As_Draw()
+    {
+        // arrange
+        var builder = new OutcomeBuilder();
+        var player1 = new Player("player-1");
+        var player2 = new Player("player-2");
+        var player3 = new Player("player-3");
+
+        // Create tied scores at rank 1
+        var scores = new[]
+        {
+            new PlayerScore { Player = player1, Score = 100, Rank = 1 },
+            new PlayerScore { Player = player2, Score = 100, Rank = 1 },
+            new PlayerScore { Player = player3, Score = 50, Rank = 3 }
+        };
+
+        // act
+        var outcome = builder.WithRankedPlayers(scores).Build();
+
+        // assert
+        outcome.PlayerResults.Should().HaveCount(3);
+        outcome.PlayerResults[0].Player.Should().Be(player1);
+        outcome.PlayerResults[0].Rank.Should().Be(1);
+        outcome.PlayerResults[0].Outcome.Should().Be(OutcomeType.Draw);
+        outcome.PlayerResults[1].Player.Should().Be(player2);
+        outcome.PlayerResults[1].Rank.Should().Be(1);
+        outcome.PlayerResults[1].Outcome.Should().Be(OutcomeType.Draw);
+        outcome.PlayerResults[2].Player.Should().Be(player3);
+        outcome.PlayerResults[2].Rank.Should().Be(3);
+        outcome.PlayerResults[2].Outcome.Should().Be(OutcomeType.Loss);
+    }
+
+    [Fact]
     public void WithTerminalCondition_Should_Set_Condition()
     {
         // arrange

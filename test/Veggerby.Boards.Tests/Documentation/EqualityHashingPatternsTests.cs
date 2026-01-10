@@ -48,6 +48,8 @@ public class EqualityHashingPatternsTests
             "Veggerby.Boards.States.TurnState",
             "Veggerby.Boards.States.StagedEventsState", // Commitment/reveal state for simultaneous turns
             "Veggerby.Boards.States.PlayerResult", // Outcome value record
+            "Veggerby.Boards.States.PlayerScore", // Scoring framework score record
+            "Veggerby.Boards.States.PlayerEliminatedState", // Elimination state
             "Veggerby.Boards.States.OwnershipState`1", // Generic ownership state
             "Veggerby.Boards.States.RedactedPieceState", // Redacted piece placeholder for hidden state
             "Veggerby.Boards.Builder.Phases.TurnPhaseConfiguration", // Phase configuration record

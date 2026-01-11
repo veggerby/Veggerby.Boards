@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using NSubstitute;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Events;
 using Veggerby.Boards.Flows.Mutators;

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using NSubstitute;
-
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Events;
@@ -22,17 +20,12 @@ public class TimeFlagStateMutatorTests
             // arrange
             var player1 = new Player("player1");
             var player2 = new Player("player2");
-
             var tile = new Tile("tile");
             var direction = new Direction("self");
             var relation = new TileRelation(tile, tile, direction);
             var board = new Board("board", new[] { relation });
             var game = new Game(board, new[] { player1, player2 }, new Artifact[] { player1, player2 });
-
             var state = GameState.New(Enumerable.Empty<IArtifactState>());
-
-            
-
             var @event = new TimeFlagEvent(player1);
             var mutator = new TimeFlagStateMutator(game);
 
@@ -63,17 +56,12 @@ public class TimeFlagStateMutatorTests
             // arrange
             var player1 = new Player("player1");
             var player2 = new Player("player2");
-
             var tile = new Tile("tile");
             var direction = new Direction("self");
             var relation = new TileRelation(tile, tile, direction);
             var board = new Board("board", new[] { relation });
             var game = new Game(board, new[] { player1, player2 }, new Artifact[] { player1, player2 });
-
             var state = GameState.New(new IArtifactState[] { new GameEndedState() });
-
-            
-
             var @event = new TimeFlagEvent(player1);
             var mutator = new TimeFlagStateMutator(game);
 

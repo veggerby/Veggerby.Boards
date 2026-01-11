@@ -4,6 +4,18 @@ Demonstration projects showing how to use different game modules.
 
 ## Available Demos
 
+### HistoryDemo
+
+Demonstrates the history navigation and undo/redo capabilities:
+- Linear history with undo/redo operations
+- Timeline navigation using GoTo
+- Branching timelines for "what-if" analysis
+- Event history tracking
+
+**Run:** `dotnet run --project HistoryDemo`
+
+See [../docs/history-undo.md](../docs/history-undo.md) for complete API documentation.
+
 ### ChessDemo
 
 Plays the famous "Immortal Game" (Anderssen vs. Kieseritzky, 1851) demonstrating:
@@ -72,6 +84,7 @@ From the repository root:
 
 ```bash
 # Run all demos sequentially
+dotnet run --project samples/HistoryDemo
 dotnet run --project samples/ChessDemo
 dotnet run --project samples/GoDemo
 dotnet run --project samples/CardGameDemo

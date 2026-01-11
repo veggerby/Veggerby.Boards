@@ -54,6 +54,8 @@ public abstract class GameBuilder
     // Extras states now keyed by concrete type to enforce single instance per type.
     private readonly Dictionary<Type, object> _extrasStates = new();
     private readonly IList<(string PlayerId, bool IsActive)> _activePlayerAssignments = new List<(string, bool)>();
+    private readonly IList<(string ClockId, Artifacts.TimeControl Control)> _clockDefinitions = [];
+    private readonly Dictionary<string, (string ClockId, Artifacts.TimeControl Control)> _clockDefinitionsById = new(StringComparer.Ordinal);
 
     private Tile CreateTile(TileDefinition tile)
     {
@@ -236,6 +238,32 @@ public abstract class GameBuilder
 
         // Defer validation (existence, uniqueness) until compile to allow out-of-order declarations.
         _activePlayerAssignments.Add((playerId, isActive));
+    }
+
+    /// <summary>
+    /// Adds a game clock with time control configuration.
+    /// </summary>
+    /// <param name="clockId">Unique identifier for the clock.</param>
+    /// <param name="control">Time control configuration (initial time, increment, delay, bonus).</param>
+    /// <remarks>
+    /// Creates a <see cref="Artifacts.GameClock"/> artifact and initializes a <see cref="States.ClockState"/>
+    /// with the configured initial time for all players. Clock start/stop/flag events must be sent explicitly
+    /// by the application or through game rules.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when a clock with the same ID has already been added.</exception>
+    protected void WithClock(string clockId, Artifacts.TimeControl control)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(clockId, nameof(clockId));
+        ArgumentNullException.ThrowIfNull(control, nameof(control));
+
+        if (_clockDefinitionsById.ContainsKey(clockId))
+        {
+            throw new InvalidOperationException($"Duplicate clock definition '{clockId}'.");
+        }
+
+        var definition = (clockId, control);
+        _clockDefinitions.Add(definition);
+        _clockDefinitionsById[clockId] = definition;
     }
 
     /// <summary>
@@ -639,6 +667,15 @@ public abstract class GameBuilder
         var pieces = _pieceDefinitions.Select(x => CreatePiece(x, _pieceDirectionPatternDefinitions, directions, players)).ToArray();
         var artifacts = _artifactDefinitions.Select(x => CreateArtifact(x)).ToList();
 
+        // Add clock artifacts
+        var clocks = new List<Artifacts.GameClock>();
+        foreach (var (clockId, control) in _clockDefinitions)
+        {
+            var clock = new Artifacts.GameClock(clockId, control);
+            clocks.Add(clock);
+            artifacts.Add(clock);
+        }
+
         // Add synthetic artifacts for extras states (one per extras type) so they participate in hashing & diffs deterministically.
         var extrasArtifacts = new Dictionary<Type, Artifact>();
         foreach (var kv in _extrasStates)
@@ -747,6 +784,18 @@ public abstract class GameBuilder
             {
                 baseStates.Add(new ExtrasState(art, extras, t));
             }
+        }
+
+        // Materialize clock states with initial time for all players
+        foreach (var clock in clocks)
+        {
+            var remainingTime = new Dictionary<Player, TimeSpan>();
+            foreach (var player in game.Players)
+            {
+                remainingTime[player] = clock.Control.InitialTime;
+            }
+
+            baseStates.Add(new States.ClockState(clock, remainingTime));
         }
 
         // Inject initial TurnState (turn 1, Start segment) only when sequencing enabled.

@@ -21,6 +21,8 @@ public sealed class TimeFlagCondition : IGameStateCondition
     /// <param name="game">The game instance.</param>
     public TimeFlagCondition(Game game)
     {
+        ArgumentNullException.ThrowIfNull(game);
+
         _game = game;
     }
 
@@ -36,12 +38,9 @@ public sealed class TimeFlagCondition : IGameStateCondition
             return ConditionResponse.Ignore("No clock configured");
         }
 
-        foreach (var player in _game.Artifacts.OfType<Player>())
+        if (_game.Artifacts.OfType<Player>().Any(player => clockState.IsTimeExpired(player)))
         {
-            if (clockState.IsTimeExpired(player))
-            {
-                return ConditionResponse.Valid;
-            }
+            return ConditionResponse.Valid;
         }
 
         return ConditionResponse.Ignore("All players have time remaining");

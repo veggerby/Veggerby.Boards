@@ -33,10 +33,7 @@ public class StartClockStateMutatorTests
             };
 
             var clockState = new ClockState(clock, remainingTime);
-
             var state = GameState.New(new[] { clockState });
-
-            
             var timestamp = new DateTime(2026, 1, 6, 12, 0, 0, DateTimeKind.Utc);
 
             var @event = new StartClockEvent(clock, player1, timestamp);
@@ -63,10 +60,7 @@ public class StartClockStateMutatorTests
 
             var clock = new GameClock("clock", control);
             var player1 = new Player("player1");
-
             var state = GameState.New(Enumerable.Empty<IArtifactState>());
-
-            
             var timestamp = new DateTime(2026, 1, 6, 12, 0, 0, DateTimeKind.Utc);
 
             var @event = new StartClockEvent(clock, player1, timestamp);

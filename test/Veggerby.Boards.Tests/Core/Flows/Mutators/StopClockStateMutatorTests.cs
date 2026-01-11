@@ -37,10 +37,7 @@ public class StopClockStateMutatorTests
 
             var clockState = new ClockState(clock, remainingTime, player1, startTimestamp);
 
-            
             var state = GameState.New(new[] { clockState });
-
-            
 
             var @event = new StopClockEvent(clock, endTimestamp);
             var mutator = new StopClockStateMutator();
@@ -81,10 +78,7 @@ public class StopClockStateMutatorTests
 
             var clockState = new ClockState(clock, remainingTime, player1, startTimestamp);
 
-            
             var state = GameState.New(new[] { clockState });
-
-            
 
             var @event = new StopClockEvent(clock, endTimestamp);
             var mutator = new StopClockStateMutator();
@@ -109,13 +103,8 @@ public class StopClockStateMutatorTests
             };
 
             var clock = new GameClock("clock", control);
-
-            
             var state = GameState.New(Enumerable.Empty<IArtifactState>());
-
-            
             var timestamp = new DateTime(2026, 1, 6, 12, 0, 0, DateTimeKind.Utc);
-
             var @event = new StopClockEvent(clock, timestamp);
             var mutator = new StopClockStateMutator();
 

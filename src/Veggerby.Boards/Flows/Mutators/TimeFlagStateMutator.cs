@@ -15,6 +15,8 @@ namespace Veggerby.Boards.Flows.Mutators;
 /// This mutator marks the game as ended and awards victory to the opponent.
 /// It follows the standard termination pattern: adds both GameEndedState and
 /// an outcome state describing the time forfeit.
+/// Currently supports two-player games only. For multi-player games, consider
+/// using a custom mutator that handles elimination differently.
 /// </remarks>
 public sealed class TimeFlagStateMutator : IStateMutator<TimeFlagEvent>
 {
@@ -26,6 +28,8 @@ public sealed class TimeFlagStateMutator : IStateMutator<TimeFlagEvent>
     /// <param name="game">The game instance.</param>
     public TimeFlagStateMutator(Game game)
     {
+        ArgumentNullException.ThrowIfNull(game);
+
         _game = game;
     }
 
@@ -40,8 +44,14 @@ public sealed class TimeFlagStateMutator : IStateMutator<TimeFlagEvent>
             return gameState;
         }
 
-        var opponent = _game.Artifacts.OfType<Player>()
-            .First(p => !p.Equals(@event.Player));
+        var allPlayers = _game.Artifacts.OfType<Player>().ToList();
+
+        if (allPlayers.Count != 2)
+        {
+            throw new InvalidOperationException($"TimeFlagStateMutator currently supports only two-player games. Found {allPlayers.Count} players.");
+        }
+
+        var opponent = allPlayers.First(p => !p.Equals(@event.Player));
 
         var outcome = new OutcomeBuilder()
             .WithWinner(opponent, new() { ["Reason"] = "TimeExpired" })

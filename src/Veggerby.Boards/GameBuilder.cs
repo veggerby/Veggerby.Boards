@@ -55,6 +55,7 @@ public abstract class GameBuilder
     private readonly Dictionary<Type, object> _extrasStates = new();
     private readonly IList<(string PlayerId, bool IsActive)> _activePlayerAssignments = new List<(string, bool)>();
     private readonly IList<(string ClockId, Artifacts.TimeControl Control)> _clockDefinitions = [];
+    private readonly Dictionary<string, (string ClockId, Artifacts.TimeControl Control)> _clockDefinitionsById = new(StringComparer.Ordinal);
 
     private Tile CreateTile(TileDefinition tile)
     {
@@ -249,12 +250,20 @@ public abstract class GameBuilder
     /// with the configured initial time for all players. Clock start/stop/flag events must be sent explicitly
     /// by the application or through game rules.
     /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when a clock with the same ID has already been added.</exception>
     protected void WithClock(string clockId, Artifacts.TimeControl control)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clockId, nameof(clockId));
         ArgumentNullException.ThrowIfNull(control, nameof(control));
 
-        _clockDefinitions.Add((clockId, control));
+        if (_clockDefinitionsById.ContainsKey(clockId))
+        {
+            throw new InvalidOperationException($"Duplicate clock definition '{clockId}'.");
+        }
+
+        var definition = (clockId, control);
+        _clockDefinitions.Add(definition);
+        _clockDefinitionsById[clockId] = definition;
     }
 
     /// <summary>

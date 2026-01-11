@@ -53,6 +53,8 @@ public class EqualityHashingPatternsTests
             "Veggerby.Boards.States.StandardGameOutcome", // Standard outcome implementation
             "Veggerby.Boards.States.OwnershipState`1", // Generic ownership state
             "Veggerby.Boards.States.RedactedPieceState", // Redacted piece placeholder for hidden state
+            "Veggerby.Boards.States.ClockState", // Clock state for time controls
+            "Veggerby.Boards.Artifacts.TimeControl", // Time control configuration record
             "Veggerby.Boards.Builder.Phases.TurnPhaseConfiguration", // Phase configuration record
             // Rule priority and conflict resolution diagnostics
             "Veggerby.Boards.RuleDecision", // Decision result with conflict resolution details

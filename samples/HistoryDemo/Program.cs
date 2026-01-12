@@ -116,7 +116,7 @@ class Program
         var atStart = history.GoTo(0);
         Console.WriteLine($"  Position {atStart.CurrentIndex}: Initial position");
 
-        Console.WriteLine("🔍 Navigating to position 3 (after 1...Nc6)...");
+        Console.WriteLine("🔍 Navigating to position 4 (after 1...Nc6)...");
         var atMove3 = history.GoTo(4);
         Console.WriteLine($"  Position {atMove3.CurrentIndex}: After black's Nc6");
 
@@ -205,23 +205,7 @@ class Program
     /// </summary>
     static GameHistory ApplyMove(GameHistory history, string san)
     {
-        try
-        {
-            var newProgress = history.Current.MoveSan(san);
-            var events = newProgress.Events.Skip(history.Current.Events.Count()).ToList();
-            if (events.Any())
-            {
-                return history.Apply(events.First());
-            }
-
-            Console.WriteLine($"  ⚠️  No event generated for move {san}");
-            return history;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"  ⚠️  Error applying move {san}: {ex.Message}");
-            return history;
-        }
+        return ApplyMoveCore(history, san, (h, evt) => h.Apply(evt));
     }
 
     /// <summary>
@@ -229,13 +213,35 @@ class Program
     /// </summary>
     static BranchingGameHistory ApplyBranchingMove(BranchingGameHistory history, string san)
     {
+        return ApplyMoveCore(history, san, (h, evt) => h.Apply(evt));
+    }
+
+    /// <summary>
+    /// Core logic for applying a chess move using SAN notation.
+    /// </summary>
+    static T ApplyMoveCore<T>(T history, string san, Func<T, Veggerby.Boards.Flows.Events.IGameEvent, T> applyFunc)
+        where T : class
+    {
         try
         {
-            var newProgress = history.Current.MoveSan(san);
-            var events = newProgress.Events.Skip(history.Current.Events.Count()).ToList();
+            var currentProperty = typeof(T).GetProperty("Current");
+            if (currentProperty == null)
+            {
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not have a Current property");
+            }
+
+            var current = (GameProgress?)currentProperty.GetValue(history);
+            if (current == null)
+            {
+                return history;
+            }
+
+            var newProgress = current.MoveSan(san);
+            var events = newProgress.Events.Skip(current.Events.Count()).ToList();
+
             if (events.Any())
             {
-                return history.Apply(events.First());
+                return applyFunc(history, events.First());
             }
 
             Console.WriteLine($"  ⚠️  No event generated for move {san}");

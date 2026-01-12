@@ -601,4 +601,4 @@ Potential future additions (not currently scoped):
 - **Visual Timeline Export**: GraphViz/DOT rendering
 - **Undo/Redo Grouping**: Multi-event transactions
 
-See [Core Backlog](plans/core-backlog.md#4-historyundo-integration) for roadmap.
+See [Core Backlog](plans/core-backlog.md#historyundo-integration) for roadmap.

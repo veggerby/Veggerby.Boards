@@ -100,11 +100,13 @@ public static class FibsRatingCalculator
         var winnerExperienceFactor = CalculateExperienceFactor(winnerExperience, matchLength);
         var loserExperienceFactor = CalculateExperienceFactor(loserExperience, matchLength);
 
-        var winnerProbability = winnerIsHigherRated ? underdogWinProbability : favoriteWinProbability;
-        var loserProbability = winnerIsHigherRated ? favoriteWinProbability : underdogWinProbability;
+        // Both winner and loser use the same probability magnitude
+        // When higher rated wins: both use U (underdog probability)
+        // When lower rated wins: both use F (favorite probability)
+        var magnitudeProbability = winnerIsHigherRated ? underdogWinProbability : favoriteWinProbability;
 
-        var winnerChange = BaseRatingChange * winnerExperienceFactor * sqrtMatchLength * winnerProbability;
-        var loserChange = -BaseRatingChange * loserExperienceFactor * sqrtMatchLength * loserProbability;
+        var winnerChange = BaseRatingChange * winnerExperienceFactor * sqrtMatchLength * magnitudeProbability;
+        var loserChange = -BaseRatingChange * loserExperienceFactor * sqrtMatchLength * magnitudeProbability;
 
         var winnerNewRating = winnerRating + winnerChange;
         var loserNewRating = loserRating + loserChange;

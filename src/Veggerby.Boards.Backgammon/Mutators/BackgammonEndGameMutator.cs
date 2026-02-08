@@ -51,7 +51,7 @@ public sealed class BackgammonEndGameMutator : IStateMutator<IGameEvent>
         var newState = state.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
 
         // Apply FIBS rating updates if configured
-        var ratingMutator = new Mutators.FibsRatingUpdateMutator(_game);
+        var ratingMutator = new FibsRatingUpdateMutator(_game);
         return ratingMutator.MutateState(engine, newState, @event);
     }
 

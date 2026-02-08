@@ -119,6 +119,9 @@ public class FibsRatingCalculatorTests
 
         loser.RatingChange.Should().BeLessThan(0.0);
         loser.RatingChange.Should().BeGreaterThan(-11.0);
+
+        // Verify both use same probability magnitude (equal experience means equal experience factors)
+        Math.Abs(winner.RatingChange + loser.RatingChange).Should().BeLessThan(0.01);
     }
 
     [Fact]
@@ -139,7 +142,62 @@ public class FibsRatingCalculatorTests
         winner.RatingChange.Should().BeGreaterThan(10.0);
 
         loser.RatingChange.Should().BeLessThan(0.0);
-        loser.RatingChange.Should().BeGreaterThan(-10.0);
+        loser.RatingChange.Should().BeGreaterThan(-12.0);
+
+        // Verify both use same probability magnitude (equal experience means equal experience factors)
+        Math.Abs(winner.RatingChange + loser.RatingChange).Should().BeLessThan(0.01);
+    }
+
+    [Fact]
+    public void Should_calculate_deterministic_values_for_unequal_ratings_favorite_wins()
+    {
+        // arrange
+        var winnerRating = 1600.0;
+        var winnerExperience = 100;
+        var loserRating = 1500.0;
+        var loserExperience = 100;
+        var matchLength = 1;
+
+        // act
+        var (winner, loser) = FibsRatingCalculator.CalculateRatingChanges(
+            winnerRating, winnerExperience, loserRating, loserExperience, matchLength);
+
+        // assert
+        // When favorite (higher rated) wins, both use underdog probability U
+        // With D=100, √n=1: U = 1/(10^(100*1/2000)+1) ≈ 0.4712
+        // PE = max(1, 5-(100+1)/100) = 3.99
+        // Change = ±4 * 3.99 * 1 * 0.4712 ≈ ±7.52
+        winner.RatingChange.Should().BeApproximately(7.52, 0.1);
+        loser.RatingChange.Should().BeApproximately(-7.52, 0.1);
+
+        // Verify equal and opposite for equal experience
+        Math.Abs(winner.RatingChange + loser.RatingChange).Should().BeLessThan(0.01);
+    }
+
+    [Fact]
+    public void Should_calculate_deterministic_values_for_unequal_ratings_underdog_wins()
+    {
+        // arrange
+        var winnerRating = 1500.0;
+        var winnerExperience = 100;
+        var loserRating = 1600.0;
+        var loserExperience = 100;
+        var matchLength = 1;
+
+        // act
+        var (winner, loser) = FibsRatingCalculator.CalculateRatingChanges(
+            winnerRating, winnerExperience, loserRating, loserExperience, matchLength);
+
+        // assert
+        // When underdog (lower rated) wins, both use favorite probability F
+        // With D=100, √n=1: U ≈ 0.4712, F = 1 - U ≈ 0.5288
+        // PE = 3.99
+        // Change = ±4 * 3.99 * 1 * 0.5288 ≈ ±8.44
+        winner.RatingChange.Should().BeApproximately(8.44, 0.1);
+        loser.RatingChange.Should().BeApproximately(-8.44, 0.1);
+
+        // Verify equal and opposite for equal experience
+        Math.Abs(winner.RatingChange + loser.RatingChange).Should().BeLessThan(0.01);
     }
 
     [Fact]

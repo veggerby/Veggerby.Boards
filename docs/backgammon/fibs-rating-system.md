@@ -18,7 +18,7 @@ The FIBS rating system was developed for online backgammon and has become a wide
 
 - **Initial Rating**: 1500 for new players
 - **Typical Range**: 1000-2000
-- **Updates**: Only after match completion (not per-game)
+- **Updates**: After each game completion in this implementation
 
 ### Experience
 
@@ -31,10 +31,26 @@ The FIBS rating system was developed for online backgammon and has become a wide
 
 ### Match Length
 
-- **Definition**: Agreed-upon target score before match starts
+- **Definition**: Agreed-upon target score representing the game's importance
 - **Common Values**: 1, 3, 5, 7, 9, 11, 13 points
-- **Not Final Score**: Match length is the pre-agreed target, not the actual final score
+- **Implementation Note**: In this implementation, each backgammon game is treated as a complete "match" for rating purposes. The match length represents the agreed-upon importance/weight of that single game.
 - **Scaling**: Rating impact scales with √n (square root of match length)
+
+## Implementation Note: Match vs Game
+
+In traditional backgammon terminology, a "match" consists of multiple games played to a target score. However, this implementation treats each individual backgammon game as a complete unit for rating calculations. The `matchLength` parameter represents the agreed-upon weight/importance of that single game (analogous to playing a match to that point value in traditional terms).
+
+**Why this approach:**
+- The current Backgammon module does not implement multi-game match tracking
+- Each game ends when one player bears off all checkers
+- Ratings update immediately after each game completion
+- The match length still serves its purpose of scaling the rating impact appropriately
+
+**For true multi-game matches:**
+If you need to track a series of games to a cumulative score, you would need to:
+1. Track cumulative scores externally across multiple game instances
+2. Only apply rating updates when the cumulative score reaches the match target
+3. Preserve player ratings between games in the series
 
 ## FIBS Formula
 

@@ -103,5 +103,3 @@ public static class BackgammonFibsExtensions
         return progress.State.GetStates<FibsMatchConfigState>().FirstOrDefault();
     }
 }
-
-

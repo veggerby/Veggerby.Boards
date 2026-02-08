@@ -88,18 +88,4 @@ public class FibsRatingIntegrationTests
         blackRating.Should().BeNull();
         matchConfig.Should().BeNull();
     }
-
-    [Fact]
-    public void Should_update_ratings_when_game_ends()
-    {
-        // arrange
-
-        // act
-
-        // assert
-
-        // This test would require simulating a full game to completion
-        // For now, we'll skip this as it would be quite complex
-        // The rating update logic is tested in FibsRatingUpdateMutatorTests
-    }
 }

@@ -48,7 +48,11 @@ public sealed class BackgammonEndGameMutator : IStateMutator<IGameEvent>
 
         var outcomeState = new BackgammonOutcomeState(winner, victoryType);
 
-        return state.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
+        var newState = state.Next(new IArtifactState[] { new GameEndedState(), outcomeState });
+
+        // Apply FIBS rating updates if configured
+        var ratingMutator = new Mutators.FibsRatingUpdateMutator(_game);
+        return ratingMutator.MutateState(engine, newState, @event);
     }
 
     private Player? DetermineWinner(GameState state)

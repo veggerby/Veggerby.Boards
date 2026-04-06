@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Flows.Events;
@@ -68,19 +66,25 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
     /// <summary>
     /// Builds a composite mutator or single mutator from the registered factories.
     /// </summary>
-    private static IStateMutator<T> BuildMutator(IEnumerable<StateMutatorFactory<T>> mutatorFactories, Game game)
+    private static IStateMutator<T> BuildMutator(IList<StateMutatorFactory<T>> mutatorFactories, Game game)
     {
-        if (!(mutatorFactories?.Any() ?? false))
+        if (mutatorFactories is null || mutatorFactories.Count == 0)
         {
             return NullStateMutator<T>.Instance;
         }
 
-        if (mutatorFactories.Count() == 1)
+        if (mutatorFactories.Count == 1)
         {
-            return mutatorFactories.Single()(game) ?? NullStateMutator<T>.Instance;
+            return mutatorFactories[0](game) ?? NullStateMutator<T>.Instance;
         }
 
-        var mutators = mutatorFactories.Select(x => x(game)).ToArray();
+        var mutators = new IStateMutator<T>[mutatorFactories.Count];
+
+        for (var i = 0; i < mutatorFactories.Count; i++)
+        {
+            mutators[i] = mutatorFactories[i](game);
+        }
+
         return new CompositeStateMutator<T>(mutators);
     }
 

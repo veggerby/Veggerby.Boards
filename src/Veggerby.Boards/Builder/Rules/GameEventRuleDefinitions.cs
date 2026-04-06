@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
 
 using Veggerby.Boards.Artifacts;
 using Veggerby.Boards.Builder.Phases;
@@ -37,10 +35,16 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
 
         if (_ruleDefinitions.Count == 1)
         {
-            return _ruleDefinitions.Single().Build(game) ?? GameEventRule<IGameEvent>.Null;
+            return _ruleDefinitions[0].Build(game) ?? GameEventRule<IGameEvent>.Null;
         }
 
-        var rules = _ruleDefinitions.Select(x => x.Build(game)).ToArray();
+        var rules = new IGameEventRule[_ruleDefinitions.Count];
+
+        for (var i = 0; i < _ruleDefinitions.Count; i++)
+        {
+            rules[i] = _ruleDefinitions[i].Build(game);
+        }
+
         return CompositeGameEventRule.CreateCompositeRule(
             _eventRuleCompositeMode,
             rules);

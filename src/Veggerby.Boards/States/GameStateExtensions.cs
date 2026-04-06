@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Veggerby.Boards.Artifacts;
 
@@ -24,6 +24,7 @@ public static class GameStateExtensions
         ArgumentNullException.ThrowIfNull(gameState);
         activePlayer = null;
         var seen = false;
+
         foreach (var aps in gameState.GetStates<ActivePlayerState>())
         {
             if (!aps.IsActive)
@@ -56,11 +57,13 @@ public static class GameStateExtensions
     public static Player GetActivePlayer(this GameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
-        return gameState
-            .GetStates<ActivePlayerState>()
-            .Where(x => x.IsActive)
-            .Select(x => x.Artifact)
-            .Single();
+
+        if (TryGetActivePlayer(gameState, out var activePlayer))
+        {
+            return activePlayer!;
+        }
+
+        throw new System.InvalidOperationException("Sequence contains no or multiple active players.");
     }
 
     /// <summary>
@@ -74,11 +77,19 @@ public static class GameStateExtensions
     {
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(tile);
-        // Only material piece states (exclude captured)
-        return [.. gameState
-            .GetStates<PieceState>()
-            .Where(x => x.CurrentTile.Equals(tile) && (owner is null || x.Artifact.Owner.Equals(owner)))
-            .Select(x => x.Artifact)];
+
+        // Only material piece states (exclude captured); explicit loop avoids LINQ allocation chain.
+        var result = new List<Piece>();
+
+        foreach (var ps in gameState.GetStates<PieceState>())
+        {
+            if (ps.CurrentTile.Equals(tile) && (owner is null || ps.Artifact.Owner.Equals(owner)))
+            {
+                result.Add(ps.Artifact);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -88,7 +99,16 @@ public static class GameStateExtensions
     {
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(piece);
-        return gameState.GetStates<CapturedPieceState>().FirstOrDefault(s => s.Artifact.Equals(piece));
+
+        foreach (var state in gameState.GetStates<CapturedPieceState>())
+        {
+            if (state.Artifact.Equals(piece))
+            {
+                return state;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -105,6 +125,7 @@ public static class GameStateExtensions
     public static T? GetExtras<T>(this GameState gameState) where T : class
     {
         ArgumentNullException.ThrowIfNull(gameState);
+
         foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
             if (extrasState.ExtrasType == typeof(T))
@@ -124,6 +145,7 @@ public static class GameStateExtensions
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(value);
         Artifact? artifact = null;
+
         foreach (var extrasState in gameState.GetStates<ExtrasState>())
         {
             if (extrasState.ExtrasType == typeof(T))

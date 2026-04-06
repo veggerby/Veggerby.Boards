@@ -64,7 +64,7 @@ public static class GameStateExtensions
             return activePlayer;
         }
 
-        throw new System.InvalidOperationException("Sequence contains no or multiple active players.");
+        throw new InvalidOperationException("Sequence contains no or multiple active players.");
     }
 
     /// <summary>

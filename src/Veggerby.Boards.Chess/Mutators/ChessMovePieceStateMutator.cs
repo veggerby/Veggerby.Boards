@@ -1,6 +1,5 @@
 using System;
 
-using Veggerby.Boards.Artifacts.Relations;
 using Veggerby.Boards.Chess.Helpers;
 using Veggerby.Boards.Flows.Events;
 using Veggerby.Boards.Flows.Mutators;
@@ -55,31 +54,18 @@ public sealed class ChessMovePieceStateMutator : IStateMutator<MovePieceGameEven
         {
             // Robust intermediate inference (supports either 2 single-step relations or a future potential single relation of distance 2)
             var pathRelations = @event.Path?.Relations;
-            var relationCount = 0;
-            TileRelation? firstRelation = null;
 
-            if (pathRelations is not null)
-            {
-                foreach (var rel in pathRelations)
-                {
-                    if (relationCount == 0)
-                    {
-                        firstRelation = rel;
-                    }
-
-                    relationCount++;
-                }
-            }
-
-            if (relationCount == 2 && firstRelation is not null)
+            if (pathRelations is not null && pathRelations.Count == 2)
             {
                 // Standard case: two explicit single-step relations; intermediate is first To
-                enPassantTarget = firstRelation.To.Id;
+                enPassantTarget = pathRelations[0].To.Id;
             }
-            else if (relationCount == 1 && firstRelation is not null && firstRelation.Distance == 2)
+            else if (pathRelations is not null && pathRelations.Count == 1 && pathRelations[0].Distance == 2)
             {
                 // Defensive: derive intermediate via coordinate arithmetic (same file, rank +/-2)
-                if (ChessCoordinates.TryParse(firstRelation.From.Id, out var fFile, out var fRank) && ChessCoordinates.TryParse(firstRelation.To.Id, out var tFile, out var tRank) && fFile == tFile && Math.Abs(tRank - fRank) == 2)
+                var rel = pathRelations[0];
+
+                if (ChessCoordinates.TryParse(rel.From.Id, out var fFile, out var fRank) && ChessCoordinates.TryParse(rel.To.Id, out var tFile, out var tRank) && fFile == tFile && Math.Abs(tRank - fRank) == 2)
                 {
                     var midRank = (fRank + tRank) / 2; // integer midpoint between ranks (e.g., 2 & 4 -> 3; 7 & 5 -> 6)
                     enPassantTarget = ChessCoordinates.BuildTileId(fFile, midRank);

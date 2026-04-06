@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using Veggerby.Boards.Artifacts;
 
@@ -19,7 +20,7 @@ public static class GameStateExtensions
     /// <remarks>
     /// This helper avoids exceptions when zero or multiple active players exist, simplifying conditions and guards.
     /// </remarks>
-    public static bool TryGetActivePlayer(this GameState gameState, out Player? activePlayer)
+    public static bool TryGetActivePlayer(this GameState gameState, [NotNullWhen(true)] out Player? activePlayer)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         activePlayer = null;
@@ -60,7 +61,7 @@ public static class GameStateExtensions
 
         if (TryGetActivePlayer(gameState, out var activePlayer))
         {
-            return activePlayer!;
+            return activePlayer;
         }
 
         throw new System.InvalidOperationException("Sequence contains no or multiple active players.");

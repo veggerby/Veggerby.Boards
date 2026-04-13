@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Veggerby.Boards.States.Conditions;
 
@@ -12,13 +11,16 @@ namespace Veggerby.Boards.States.Conditions;
 /// </remarks>
 public class CompositeGameStateCondition : IGameStateCondition
 {
+    private readonly IReadOnlyList<IGameStateCondition> _childConditions;
+
     /// <summary>
     /// Gets the child conditions participating in the composition.
     /// </summary>
-    public IEnumerable<IGameStateCondition> ChildConditions
-    {
-        get;
-    }
+    /// <remarks>
+    /// The return type is <see cref="IEnumerable{T}"/> to preserve binary compatibility with prior versions.
+    /// The backing store is a fixed-size list; callers requiring count or index access should cast or iterate.
+    /// </remarks>
+    public IEnumerable<IGameStateCondition> ChildConditions => _childConditions;
 
     /// <summary>
     /// Gets the composite mode governing evaluation semantics.
@@ -30,33 +32,93 @@ public class CompositeGameStateCondition : IGameStateCondition
 
     private CompositeGameStateCondition(IEnumerable<IGameStateCondition> childConditions, CompositeMode compositeMode)
     {
-        if (!childConditions.All(x => x is not null))
+        foreach (var condition in childConditions)
         {
-            throw new ArgumentException("Conditions cannot contain null", nameof(childConditions));
+            if (condition is null)
+            {
+                throw new ArgumentException("Conditions cannot contain null", nameof(childConditions));
+            }
         }
 
-        ChildConditions = [.. childConditions];
+        _childConditions = [.. childConditions];
         CompositeMode = compositeMode;
     }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
-        var results = ChildConditions.Select(x => x.Evaluate(state));
-        var ignoreAll = results.All(x => x.Result == ConditionResult.Ignore);
+        // Use private backing list for count/index access — avoids allocation on every Evaluate call.
+        var children = _childConditions;
+        var results = new ConditionResponse[children.Count];
+
+        for (var i = 0; i < children.Count; i++)
+        {
+            results[i] = children[i].Evaluate(state);
+        }
+
+        var ignoreAll = true;
+
+        for (var i = 0; i < results.Length; i++)
+        {
+            if (results[i].Result != ConditionResult.Ignore)
+            {
+                ignoreAll = false;
+                break;
+            }
+        }
 
         if (ignoreAll)
         {
             return ConditionResponse.NotApplicable;
         }
 
-        var compositionResult = CompositeMode == CompositeMode.All
-            ? results.All(x => x.Result != ConditionResult.Invalid) // allow ignore, there will be at least one valid, otherwise ignoreAll would be true
-            : results.Any(x => x.Result == ConditionResult.Valid);
+        bool compositionResult;
 
-        return compositionResult
-            ? ConditionResponse.Valid
-            : ConditionResponse.Fail(results.Where(x => x.Result == ConditionResult.Invalid));
+        if (CompositeMode == CompositeMode.All)
+        {
+            // All results must be non-invalid (allow ignore; ignoreAll was false so at least one is valid).
+            compositionResult = true;
+
+            for (var i = 0; i < results.Length; i++)
+            {
+                if (results[i].Result == ConditionResult.Invalid)
+                {
+                    compositionResult = false;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            // Any result must be valid.
+            compositionResult = false;
+
+            for (var i = 0; i < results.Length; i++)
+            {
+                if (results[i].Result == ConditionResult.Valid)
+                {
+                    compositionResult = true;
+                    break;
+                }
+            }
+        }
+
+        if (compositionResult)
+        {
+            return ConditionResponse.Valid;
+        }
+
+        var failures = new List<ConditionResponse>();
+
+        for (var i = 0; i < results.Length; i++)
+        {
+            if (results[i].Result == ConditionResult.Invalid)
+            {
+                failures.Add(results[i]);
+            }
+        }
+
+        return ConditionResponse.Fail(failures);
     }
 
     /// <summary>
@@ -67,9 +129,23 @@ public class CompositeGameStateCondition : IGameStateCondition
     /// <returns>Composite or simplified condition.</returns>
     internal static IGameStateCondition CreateCompositeCondition(CompositeMode mode, params IGameStateCondition[] conditions)
     {
-        return new CompositeGameStateCondition(
-            conditions.SelectMany(x => x.IsCompositeCondition(mode) ? ((CompositeGameStateCondition)x).ChildConditions : [x]),
-            mode
-        );
+        var flattened = new List<IGameStateCondition>();
+
+        foreach (var condition in conditions)
+        {
+            if (condition.IsCompositeCondition(mode))
+            {
+                foreach (var child in ((CompositeGameStateCondition)condition)._childConditions)
+                {
+                    flattened.Add(child);
+                }
+            }
+            else
+            {
+                flattened.Add(condition);
+            }
+        }
+
+        return new CompositeGameStateCondition(flattened, mode);
     }
 }

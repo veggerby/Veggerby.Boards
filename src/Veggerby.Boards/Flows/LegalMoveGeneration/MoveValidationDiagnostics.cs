@@ -220,7 +220,7 @@ public static class MoveValidationDiagnostics
 public sealed record ValidationContext
 {
     /// <summary>Gets the event being validated.</summary>
-    public IGameEvent Event { get; init; } = null!;
+    public required IGameEvent Event { get; init; }
 
     /// <summary>Gets the active player (if applicable).</summary>
     public Player? ActivePlayer { get; init; }

@@ -42,7 +42,7 @@ internal class GameEventRuleDefinitions(GameBuilder builder, GamePhaseDefinition
 
         for (var i = 0; i < _ruleDefinitions.Count; i++)
         {
-            rules[i] = _ruleDefinitions[i].Build(game);
+            rules[i] = _ruleDefinitions[i].Build(game) ?? GameEventRule<IGameEvent>.Null;
         }
 
         return CompositeGameEventRule.CreateCompositeRule(

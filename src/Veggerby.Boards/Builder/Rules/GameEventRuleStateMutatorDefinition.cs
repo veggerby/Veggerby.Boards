@@ -82,7 +82,7 @@ public class GameEventRuleStateMutatorDefinition<T> : DefinitionBase, IGameEvent
 
         for (var i = 0; i < mutatorFactories.Count; i++)
         {
-            mutators[i] = mutatorFactories[i](game);
+            mutators[i] = mutatorFactories[i](game) ?? NullStateMutator<T>.Instance;
         }
 
         return new CompositeStateMutator<T>(mutators);

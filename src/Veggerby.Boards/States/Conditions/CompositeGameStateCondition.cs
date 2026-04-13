@@ -11,13 +11,16 @@ namespace Veggerby.Boards.States.Conditions;
 /// </remarks>
 public class CompositeGameStateCondition : IGameStateCondition
 {
+    private readonly IReadOnlyList<IGameStateCondition> _childConditions;
+
     /// <summary>
     /// Gets the child conditions participating in the composition.
     /// </summary>
-    public IReadOnlyList<IGameStateCondition> ChildConditions
-    {
-        get;
-    }
+    /// <remarks>
+    /// The return type is <see cref="IEnumerable{T}"/> to preserve binary compatibility with prior versions.
+    /// The backing store is a fixed-size list; callers requiring count or index access should cast or iterate.
+    /// </remarks>
+    public IEnumerable<IGameStateCondition> ChildConditions => _childConditions;
 
     /// <summary>
     /// Gets the composite mode governing evaluation semantics.
@@ -37,15 +40,15 @@ public class CompositeGameStateCondition : IGameStateCondition
             }
         }
 
-        ChildConditions = [.. childConditions];
+        _childConditions = [.. childConditions];
         CompositeMode = compositeMode;
     }
 
     /// <inheritdoc />
     public ConditionResponse Evaluate(GameState state)
     {
-        // Materialize all child evaluations once to avoid re-executing conditions on each predicate pass.
-        var children = ChildConditions;
+        // Use private backing list for count/index access — avoids allocation on every Evaluate call.
+        var children = _childConditions;
         var results = new ConditionResponse[children.Count];
 
         for (var i = 0; i < children.Count; i++)
@@ -132,7 +135,7 @@ public class CompositeGameStateCondition : IGameStateCondition
         {
             if (condition.IsCompositeCondition(mode))
             {
-                foreach (var child in ((CompositeGameStateCondition)condition).ChildConditions)
+                foreach (var child in ((CompositeGameStateCondition)condition)._childConditions)
                 {
                     flattened.Add(child);
                 }
